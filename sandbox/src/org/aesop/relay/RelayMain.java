@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import com.linkedin.databus.container.netty.HttpRelay;
@@ -32,16 +31,14 @@ import com.linkedin.databus2.relay.config.PhysicalSourceStaticConfig;
  * Brings up a Databus Relay for change events of a specific type i.e. org.aesop.events.example.person.Person.
  * The custom change event producer is also statically registered with this relay.
  * 
+ * Note: Include all jars in "sandbox/lib" in the classpath before executing this class. Also preserve
+ * relative location of directories like "conf".
+ * 
  * @author Regunath B
  *
  */
 public class RelayMain extends DatabusRelayMain {
 	
-  public static final String MODULE = RelayMain.class.getName();
-  public static final Logger LOG = Logger.getLogger(MODULE);
-  static final String FULLY_QUALIFIED_PERSON_EVENT_NAME = "org.aesop.events.example.person.Person";
-  static final int PERSON_SRC_ID = 40;
-
   MultiServerSequenceNumberHandler _maxScnReaderWriters;
   protected Map<PhysicalPartition, EventProducer> _producers;
 
@@ -67,7 +64,7 @@ public class RelayMain extends DatabusRelayMain {
 
   }
   
-  public void customInitProducers(PhysicalSourceStaticConfig pConfig) throws Exception {
+  private void customInitProducers(PhysicalSourceStaticConfig pConfig) throws Exception {
 	 // add our producer
 	 DbusEventBufferAppendable dbusEventBuffer = getEventBuffer().getDbusEventBufferAppendable(101);
 	 PersonEventProducer producer = new PersonEventProducer(dbusEventBuffer,
@@ -118,12 +115,12 @@ public class RelayMain extends DatabusRelayMain {
 				.loadConfig(startupProps);
 
 		// Create and initialize the server instance
-		RelayMain serverContainer = new RelayMain(staticConfig, pStaticConfigs);
+		RelayMain relay = new RelayMain(staticConfig, pStaticConfigs);
 
-		serverContainer.initProducers();
-		serverContainer.customInitProducers(pStaticConfigs[0]);
+		relay.initProducers();
+		relay.customInitProducers(pStaticConfigs[0]);
 
-		serverContainer.startAndBlock();
+		relay.startAndBlock();
 	}
   
 }

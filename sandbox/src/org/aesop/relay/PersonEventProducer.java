@@ -26,6 +26,13 @@ import com.linkedin.databus2.relay.config.PhysicalSourceStaticConfig;
 import com.linkedin.databus2.schemas.SchemaRegistryService;
 import com.linkedin.databus2.schemas.utils.SchemaHelper;
 
+/**
+ * A custom Databus {@link EventProducer} that creates a fixed number of change events of type {@link Person} using in-memory data.
+ * The events are created in a separate thread and appended to the Databus event buffer instance.
+ * 
+ * @author Regunath B
+ *
+ */
 public class PersonEventProducer implements EventProducer {
 
 	private AtomicLong sinceSCN = new AtomicLong(-1);
