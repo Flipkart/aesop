@@ -21,7 +21,7 @@ import com.linkedin.databus.client.DatabusHttpClientImpl;
  *
  */
 public class RelayClientMain extends Thread {
-	static final String PERSON_SOURCE = "com.linkedin.events.example.person.Person";
+	static final String PERSON_SOURCE = "org.aesop.events.example.person.Person";
 
 	private int identifier;
 	private DatabusHttpClientImpl client;
