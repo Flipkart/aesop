@@ -27,12 +27,13 @@ import com.linkedin.databus2.schemas.SchemaRegistryService;
 import com.linkedin.databus2.schemas.utils.SchemaHelper;
 
 /**
- * A custom Databus {@link EventProducer} that creates a fixed number of change events of type {@link Person} using in-memory data.
- * The events are created in a separate thread and appended to the Databus event buffer instance. Uses code as-is, modified or in parts from the Databus sample 
- * or main codebase.
+ * A custom Databus {@link EventProducer} that creates a fixed number of change
+ * events of type {@link Person} using in-memory data. The events are created in
+ * a separate thread and appended to the Databus event buffer instance. Uses
+ * code as-is, modified or in parts from the Databus sample or main codebase.
  * 
  * @author Regunath B
- *
+ * 
  */
 public class PersonEventProducer implements EventProducer {
 
@@ -130,7 +131,8 @@ public class PersonEventProducer implements EventProducer {
 			byte[] schemaId = SchemaHelper.getSchemaId(schema);
 			int count = 100;
 			for (long i = sinceSCN.longValue(); i < (sinceSCN.longValue() + count); i++) {
-				Person person = new Person(i, "Aesop " + i, "Mr. " + i, i, "false");
+				Person person = new Person(i, "Aesop " + i, "Mr. " + i, i,
+						"false");
 				byte[] serializedEvent = serializeEvent(person);
 				DbusEventKey eventKey = new DbusEventKey(i);
 				eventBuffer.appendEvent(eventKey, (short) 1, (short) 1,

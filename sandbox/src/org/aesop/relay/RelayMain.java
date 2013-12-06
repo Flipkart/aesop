@@ -28,53 +28,60 @@ import com.linkedin.databus2.relay.config.PhysicalSourceConfig;
 import com.linkedin.databus2.relay.config.PhysicalSourceStaticConfig;
 
 /**
- * Brings up a Databus Relay for change events of a specific type i.e. org.aesop.events.example.person.Person.
- * The custom change event producer is also statically registered with this relay. Uses code as-is, modified or in parts from the Databus sample or main codebase.
+ * Brings up a Databus Relay for change events of a specific type i.e.
+ * org.aesop.events.example.person.Person. The custom change event producer is
+ * also statically registered with this relay. Uses code as-is, modified or in
+ * parts from the Databus sample or main codebase.
  * 
- * Note: Include all jars in "lib" in the classpath before executing this class. Also preserve relative location of directories like "conf".
+ * Note: Include all jars in "lib" in the classpath before executing this class.
+ * Also preserve relative location of directories like "conf".
  * 
  * <pre>
- *  java -cp .:lib/*.jar org.aesop.relay.RelayMain -p conf/relay_person.properties
+ * java -cp .:lib/*.jar org.aesop.relay.RelayMain -p conf/relay_person.properties
+ * 
  * <pre>
  * 
  * @author Regunath B
- *
+ * 
  */
 public class RelayMain extends DatabusRelayMain {
-	
-  MultiServerSequenceNumberHandler _maxScnReaderWriters;
-  protected Map<PhysicalPartition, EventProducer> _producers;
 
-  public RelayMain() throws IOException, InvalidConfigException, DatabusException
-  {
-    this(new HttpRelay.Config(), null);
-  }
+	MultiServerSequenceNumberHandler _maxScnReaderWriters;
+	protected Map<PhysicalPartition, EventProducer> _producers;
 
-  public RelayMain(HttpRelay.Config config, PhysicalSourceStaticConfig [] pConfigs)
-  throws IOException, InvalidConfigException, DatabusException
-  {
-    this(config.build(), pConfigs);
-  }
+	public RelayMain() throws IOException, InvalidConfigException,
+			DatabusException {
+		this(new HttpRelay.Config(), null);
+	}
 
-  public RelayMain(HttpRelay.StaticConfig config, PhysicalSourceStaticConfig [] pConfigs)
-  throws IOException, InvalidConfigException, DatabusException
-  {
-    super(config, pConfigs);
-	SequenceNumberHandlerFactory handlerFactory = _relayStaticConfig
-			.getDataSources().getSequenceNumbersHandler().createFactory();
-	_maxScnReaderWriters = new MultiServerSequenceNumberHandler(
-			handlerFactory);    
+	public RelayMain(HttpRelay.Config config,
+			PhysicalSourceStaticConfig[] pConfigs) throws IOException,
+			InvalidConfigException, DatabusException {
+		this(config.build(), pConfigs);
+	}
 
-  }
-  
-  private void customInitProducers(PhysicalSourceStaticConfig pConfig) throws Exception {
-	 // add our producer
-	 DbusEventBufferAppendable dbusEventBuffer = getEventBuffer().getDbusEventBufferAppendable(101);
-	 PersonEventProducer producer = new PersonEventProducer(dbusEventBuffer,
-			 getMaxSCNReaderWriter(pConfig),_inBoundStatsCollectors.getStatsCollector("statsCollector"),
-			 getSchemaRegistryService(), pConfig);
-	 producer.start(getMaxSCNReaderWriter(pConfig).getMaxScn());
-  }
+	public RelayMain(HttpRelay.StaticConfig config,
+			PhysicalSourceStaticConfig[] pConfigs) throws IOException,
+			InvalidConfigException, DatabusException {
+		super(config, pConfigs);
+		SequenceNumberHandlerFactory handlerFactory = _relayStaticConfig
+				.getDataSources().getSequenceNumbersHandler().createFactory();
+		_maxScnReaderWriters = new MultiServerSequenceNumberHandler(
+				handlerFactory);
+
+	}
+
+	private void customInitProducers(PhysicalSourceStaticConfig pConfig)
+			throws Exception {
+		// add our producer
+		DbusEventBufferAppendable dbusEventBuffer = getEventBuffer()
+				.getDbusEventBufferAppendable(101);
+		PersonEventProducer producer = new PersonEventProducer(dbusEventBuffer,
+				getMaxSCNReaderWriter(pConfig),
+				_inBoundStatsCollectors.getStatsCollector("statsCollector"),
+				getSchemaRegistryService(), pConfig);
+		producer.start(getMaxSCNReaderWriter(pConfig).getMaxScn());
+	}
 
 	/**
 	 * @param args
@@ -125,5 +132,5 @@ public class RelayMain extends DatabusRelayMain {
 
 		relay.startAndBlock();
 	}
-  
+
 }
