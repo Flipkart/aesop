@@ -1,5 +1,5 @@
 /*
- * WARNING : This code is ugly. It is a quick hack to try out features using third party libraries like
+ * WARNING : This is test code. It is a quick hack to try out features using third party libraries like
  * the LinkedIn Databus. 
  */
 
@@ -28,7 +28,8 @@ import com.linkedin.databus2.schemas.utils.SchemaHelper;
 
 /**
  * A custom Databus {@link EventProducer} that creates a fixed number of change events of type {@link Person} using in-memory data.
- * The events are created in a separate thread and appended to the Databus event buffer instance.
+ * The events are created in a separate thread and appended to the Databus event buffer instance. Uses code as-is, modified or in parts from the Databus sample 
+ * or main codebase.
  * 
  * @author Regunath B
  *
@@ -129,13 +130,13 @@ public class PersonEventProducer implements EventProducer {
 			byte[] schemaId = SchemaHelper.getSchemaId(schema);
 			int count = 100;
 			for (long i = sinceSCN.longValue(); i < (sinceSCN.longValue() + count); i++) {
-				Person person = new Person(i, "John " + i, "Smith " + i, i, "false");
+				Person person = new Person(i, "Aesop " + i, "Mr. " + i, i, "false");
 				byte[] serializedEvent = serializeEvent(person);
 				DbusEventKey eventKey = new DbusEventKey(i);
 				eventBuffer.appendEvent(eventKey, (short) 1, (short) 1,
 						System.currentTimeMillis(), (short) 101, schemaId,
 						serializedEvent, false, dbusEventsStatisticsCollector);
-				System.out.println("Added an event : " + "John Smith " + i);
+				System.out.println("Added an event : " + "Aesop Mr. " + i);
 			}
 			eventBuffer.endEvents(sinceSCN.longValue() + count,
 					dbusEventsStatisticsCollector);

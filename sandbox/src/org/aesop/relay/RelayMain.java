@@ -1,5 +1,5 @@
 /*
- * WARNING : This code is ugly. It is a quick hack to try out features using third party libraries like
+ * WARNING : This is test code. It is a quick hack to try out features using third party libraries like
  * the LinkedIn Databus. 
  */
 
@@ -29,10 +29,13 @@ import com.linkedin.databus2.relay.config.PhysicalSourceStaticConfig;
 
 /**
  * Brings up a Databus Relay for change events of a specific type i.e. org.aesop.events.example.person.Person.
- * The custom change event producer is also statically registered with this relay.
+ * The custom change event producer is also statically registered with this relay. Uses code as-is, modified or in parts from the Databus sample or main codebase.
  * 
- * Note: Include all jars in "sandbox/lib" in the classpath before executing this class. Also preserve
- * relative location of directories like "conf".
+ * Note: Include all jars in "lib" in the classpath before executing this class. Also preserve relative location of directories like "conf".
+ * 
+ * <pre>
+ *  java -cp .:lib/*.jar org.aesop.relay.RelayMain -p conf/relay_person.properties
+ * <pre>
  * 
  * @author Regunath B
  *
