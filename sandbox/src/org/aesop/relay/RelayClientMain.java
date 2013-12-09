@@ -12,9 +12,11 @@ import com.linkedin.databus.client.DatabusHttpClientImpl;
  * that is assumed to be running on host and port as defined in the {@link #main(String[])} method. 
  * 
  * Note: Include all jars in "lib" in the classpath before executing this class.
+ * Also preserve relative location of directories like "conf".
  * 
  * <pre>
- *  java -cp .:lib/*.jar org.aesop.relay.RelayClientMain
+ * java -cp .:lib/*.jar org.aesop.relay.RelayMain -p conf/client_person.properties
+ * 
  * <pre>
  * 
  * @author Regunath B
