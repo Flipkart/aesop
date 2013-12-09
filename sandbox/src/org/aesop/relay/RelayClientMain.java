@@ -15,7 +15,7 @@ import com.linkedin.databus.client.DatabusHttpClientImpl;
  * Also preserve relative location of directories like "conf".
  * 
  * <pre>
- * java -cp .:lib/*.jar org.aesop.relay.RelayMain -p conf/client_person.properties
+ * java -cp .:lib/*.jar org.aesop.relay.RelayClientMain -p conf/client_person.properties
  * 
  * <pre>
  * 
