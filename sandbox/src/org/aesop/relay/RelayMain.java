@@ -7,21 +7,16 @@ package org.aesop.relay;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Map;
 import java.util.Properties;
 
 import org.codehaus.jackson.map.ObjectMapper;
 
 import com.linkedin.databus.container.netty.HttpRelay;
 import com.linkedin.databus.core.DbusEventBufferAppendable;
-import com.linkedin.databus.core.data_model.PhysicalPartition;
 import com.linkedin.databus.core.util.ConfigLoader;
 import com.linkedin.databus.core.util.InvalidConfigException;
 import com.linkedin.databus2.core.DatabusException;
 import com.linkedin.databus2.core.container.netty.ServerContainer;
-import com.linkedin.databus2.core.seq.MultiServerSequenceNumberHandler;
-import com.linkedin.databus2.core.seq.SequenceNumberHandlerFactory;
-import com.linkedin.databus2.producers.EventProducer;
 import com.linkedin.databus2.relay.DatabusRelayMain;
 import com.linkedin.databus2.relay.config.LogicalSourceConfig;
 import com.linkedin.databus2.relay.config.PhysicalSourceConfig;
@@ -46,9 +41,6 @@ import com.linkedin.databus2.relay.config.PhysicalSourceStaticConfig;
  */
 public class RelayMain extends DatabusRelayMain {
 
-	MultiServerSequenceNumberHandler _maxScnReaderWriters;
-	protected Map<PhysicalPartition, EventProducer> _producers;
-
 	public RelayMain() throws IOException, InvalidConfigException,
 			DatabusException {
 		this(new HttpRelay.Config(), null);
@@ -64,10 +56,6 @@ public class RelayMain extends DatabusRelayMain {
 			PhysicalSourceStaticConfig[] pConfigs) throws IOException,
 			InvalidConfigException, DatabusException {
 		super(config, pConfigs);
-		SequenceNumberHandlerFactory handlerFactory = _relayStaticConfig
-				.getDataSources().getSequenceNumbersHandler().createFactory();
-		_maxScnReaderWriters = new MultiServerSequenceNumberHandler(
-				handlerFactory);
 
 	}
 
