@@ -56,8 +56,9 @@ public class PersonConsumer extends AbstractDatabusCombinedConsumer {
 					+ lastName.toString() + ", birthDate: " + birthDate
 					+ ", deleted: " + deleted.toString());
 		} catch (Exception e) {
-			LOG.error("error decoding event ", e);
-			return ConsumerCallbackResult.ERROR;
+			//LOG.error("error decoding event ", e);
+			//return ConsumerCallbackResult.ERROR;
+			LOG.error("error processing event : " + decodedEvent);
 		}
 
 		return ConsumerCallbackResult.SUCCESS;

@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
 
+import org.aesop.events.example.person.Person;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import com.linkedin.databus.container.netty.HttpRelay;
@@ -24,7 +25,7 @@ import com.linkedin.databus2.relay.config.PhysicalSourceStaticConfig;
 
 /**
  * Brings up a Databus Relay for change events of a specific type i.e.
- * org.aesop.events.example.person.Person. The custom change event producer is
+ * {@link Person} The custom change event producer is
  * also statically registered with this relay. Uses code as-is, modified or in
  * parts from the Databus sample or main codebase.
  * 
@@ -59,7 +60,7 @@ public class RelayMain extends DatabusRelayMain {
 
 	}
 
-	private void customInitProducers(PhysicalSourceStaticConfig pConfig)
+	protected void customInitProducers(PhysicalSourceStaticConfig pConfig)
 			throws Exception {
 		// add our producer
 		DbusEventBufferAppendable dbusEventBuffer = getEventBuffer()
