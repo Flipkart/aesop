@@ -111,23 +111,30 @@ public class WALEditPersonEventProducer implements EventProducer {
             	String lastName = null;
             	long dob = 0;
             	String deleted = "false";
+            	Person person = null;
                 for (KeyValue kv : sepEvent.getKeyValues()) {
-					String columnQualifier = new String(kv.getQualifier());	
-					if (columnQualifier.equalsIgnoreCase("firstName")) {
-						firstName = Bytes.toString(kv.getValue());
-					} else if (columnQualifier.equalsIgnoreCase("lastName")) {
-						lastName = Bytes.toString(kv.getValue());						
-					} else if (columnQualifier.equalsIgnoreCase("birthDate")) {
-						dob = Bytes.toLong(kv.getValue());
-					}
+                	if (kv.isDeleteFamily()) {
+                		person = new Person(Bytes.toLong(sepEvent.getRow()), "","",0L,"true");
+                	} else {
+						String columnQualifier = new String(kv.getQualifier());	
+						if (columnQualifier.equalsIgnoreCase("firstName")) {
+							firstName = Bytes.toString(kv.getValue());
+						} else if (columnQualifier.equalsIgnoreCase("lastName")) {
+							lastName = Bytes.toString(kv.getValue());						
+						} else if (columnQualifier.equalsIgnoreCase("birthDate")) {
+							dob = Bytes.toLong(kv.getValue());
+						}
+                	}
                 }
-				Person person = new Person(Bytes.toLong(sepEvent.getRow()),firstName, lastName, dob, deleted);
+                if (person == null) {
+                	person = new Person(Bytes.toLong(sepEvent.getRow()),firstName, lastName, dob, deleted);
+                }
 				byte[] serializedEvent = serializeEvent(person);
 				DbusEventKey eventKey = new DbusEventKey(Bytes.toLong(sepEvent.getRow()));
 				eventBuffer.appendEvent(eventKey, (short) 1, (short) 1,
 						System.currentTimeMillis(), (short) 101, schemaId,
 						serializedEvent, false, dbusEventsStatisticsCollector);
-				System.out.println("Added an event : " + firstName + " " + lastName + " " + dob + " " + deleted);
+				System.out.println("Added an event : " + person.getKey() + " " + person.getFirstName() + " " + person.getLastName() + " " + person.getDeleted());
 				
                 sinceSCN.getAndIncrement();
             }

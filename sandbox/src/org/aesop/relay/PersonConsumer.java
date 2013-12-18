@@ -46,12 +46,13 @@ public class PersonConsumer extends AbstractDatabusCombinedConsumer {
 	private ConsumerCallbackResult processEvent(DbusEvent event, DbusEventDecoder eventDecoder) {
 		GenericRecord decodedEvent = eventDecoder.getGenericRecord(event, null);
 		try {
+			Long key = (Long) decodedEvent.get("key");			
 			Utf8 firstName = (Utf8) decodedEvent.get("firstName");
 			Utf8 lastName = (Utf8) decodedEvent.get("lastName");
 			Long birthDate = (Long) decodedEvent.get("birthDate");
 			Utf8 deleted = (Utf8) decodedEvent.get("deleted");
 
-			System.out.println("ID:" + this.identifier + " firstName: "
+			System.out.println("ID:" + this.identifier + " key : " + key + " firstName: "
 					+ firstName.toString() + ", lastName: "
 					+ lastName.toString() + ", birthDate: " + birthDate
 					+ ", deleted: " + deleted.toString());
