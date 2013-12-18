@@ -16,6 +16,7 @@ aesop aims to leverage capabilities from a at least a couple of good projects th
 
 * [LinkedIn Databus](https://github.com/linkedin/databus) 
 * [Netflix Zeno](https://github.com/Netflix/zeno)
+* [NGDTATA hbase-sep](https://github.com/NGDATA/hbase-indexer/tree/master/hbase-sep)
   
 The "sandbox" module currently contains proof of concept code to do the following:
 
@@ -29,3 +30,13 @@ The "sandbox" module currently contains proof of concept code to do the followin
     * Runtime dependencies : None
 * [Bootstrap Client](https://github.com/regunathb/aesop/blob/master/sandbox/src/org/aesop/bootstrap/PersonBootstrapClientMain.java) : A sample bootstrap consumer that consumes snapshots in catch-up mode for change events of the sample 'Person' type. 
     * Runtime dependencies : A running 'Bootstrap Server' 
+    
+### HBase examples
+
+The "sandbox" module also has some samples for consuming WAL edits from HBase writes and making these
+available for consumption via a Databus Relay:
+
+* [WALEditRelayMain](https://github.com/regunathb/aesop/blob/master/sandbox/src/org/aesop/relay/hbase/WALEditRelayMain.java) : An implementation of the Databus Relay that uses a [WALEditPersonEventProducer](https://github.com/regunathb/aesop/blob/master/sandbox/src/org/aesop/relay/hbase/WALEditPersonEventProducer.java) that listens to HBase WAL edits and creates change events of the sample 'Person' type.
+    * Runtime dependencies : None
+* [SchemaSetupMain](https://github.com/regunathb/aesop/blob/master/sandbox/src/org/aesop/relay/hbase/SchemaSetupMain.java) and [PersonDataInjesterMain] (https://github.com/regunathb/aesop/blob/master/sandbox/src/org/aesop/relay/hbase/PersonDataInjesterMain.java) : Classes to create a sample HBase table schema and push data to it. Useful in testing the WAL edits Relay.
+    * Runtime dependencies : None
