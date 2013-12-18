@@ -16,7 +16,7 @@ aesop aims to leverage capabilities from a at least a couple of good projects th
 
 * [LinkedIn Databus](https://github.com/linkedin/databus) 
 * [Netflix Zeno](https://github.com/Netflix/zeno)
-* [NGDTATA hbase-sep](https://github.com/NGDATA/hbase-indexer/tree/master/hbase-sep)
+* [NGDATA hbase-sep](https://github.com/NGDATA/hbase-indexer/tree/master/hbase-sep)
   
 The "sandbox" module currently contains proof of concept code to do the following:
 
