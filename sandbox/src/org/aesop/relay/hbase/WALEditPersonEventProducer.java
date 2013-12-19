@@ -30,7 +30,6 @@ import com.linkedin.databus2.relay.config.PhysicalSourceStaticConfig;
 import com.linkedin.databus2.schemas.SchemaRegistryService;
 import com.linkedin.databus2.schemas.utils.SchemaHelper;
 import com.ngdata.sep.EventListener;
-import com.ngdata.sep.PayloadExtractor;
 import com.ngdata.sep.SepEvent;
 import com.ngdata.sep.SepModel;
 import com.ngdata.sep.impl.SepConsumer;
@@ -76,11 +75,8 @@ public class WALEditPersonEventProducer implements EventProducer {
 	            sepModel.addSubscriptionSilent(subscriptionName);
 	        }
 	
-	        PayloadExtractor payloadExtractor = new PersonPayloadExtractor();
-	
 	        sepConsumer = new SepConsumer(subscriptionName, 0, new RelayAppender(sinceSCN, eventBuffer, maxScnReaderWriter, dbusEventsStatisticsCollector), 
-	        		1, "localhost", zk, conf,
-	                payloadExtractor);		
+	        		1, "localhost", zk, conf);		
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -145,13 +141,6 @@ public class WALEditPersonEventProducer implements EventProducer {
 				e.printStackTrace();
 			}            
         }
-    }
-    
-    private static class PersonPayloadExtractor implements PayloadExtractor {
-		@Override
-		public byte[] extractPayload(byte[] tableName, KeyValue keyValue) {
-			return keyValue.getValue();
-		}    	
     }
     
 	private static byte[] serializeEvent(GenericRecord record) {
