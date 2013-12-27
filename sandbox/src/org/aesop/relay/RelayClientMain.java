@@ -22,33 +22,9 @@ import com.linkedin.databus.client.DatabusHttpClientImpl;
  * @author Regunath B
  *
  */
-public class RelayClientMain extends Thread {
-	static final String PERSON_SOURCE = "org.aesop.events.example.person.Person";
-
-	private int identifier;
-	private DatabusHttpClientImpl client;
-
-	public RelayClientMain(int identifier, DatabusHttpClientImpl client) {
-		this.identifier = identifier;
-		this.client = client;
-	}
-
-	public void run() {
-		try {
-			// Instantiate a client using command-line parameters if any
-			// register callbacks
-			PersonConsumer personConsumer = new PersonConsumer(this.identifier);
-			client.registerDatabusStreamListener(personConsumer, null,
-					PERSON_SOURCE);
-			client.registerDatabusBootstrapListener(personConsumer, null,
-					PERSON_SOURCE);
-
-			// fire off the Databus client
-			client.startAndBlock();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+public class RelayClientMain {
+	
+	public static final String PERSON_SOURCE = "org.aesop.events.example.person.Person";
 
 	public static void main(String[] args) throws Exception {
 		DatabusHttpClientImpl.Config configBuilder = new DatabusHttpClientImpl.Config();
@@ -60,8 +36,20 @@ public class RelayClientMain extends Thread {
 
 		DatabusHttpClientImpl client = DatabusHttpClientImpl.createFromCli(
 				args, configBuilder);
+		try {
+			// Instantiate a client using command-line parameters if any
+			// register callbacks
+			PersonConsumer personConsumer = new PersonConsumer();
+			client.registerDatabusStreamListener(personConsumer, null,
+					PERSON_SOURCE);
+			client.registerDatabusBootstrapListener(personConsumer, null,
+					PERSON_SOURCE);
 
-		new RelayClientMain(1, client).start();
+			// fire off the Databus client
+			client.startAndBlock();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 }

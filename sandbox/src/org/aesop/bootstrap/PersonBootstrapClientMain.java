@@ -4,34 +4,14 @@
  */
 package org.aesop.bootstrap;
 
-import java.io.File;
-import java.net.URISyntaxException;
-import java.util.Map;
-import java.util.Properties;
+import org.aesop.relay.PersonConsumer;
 
-import org.aesop.events.example.person.Person;
-import org.apache.avro.Schema;
-import org.apache.avro.io.BinaryDecoder;
-import org.apache.avro.io.DecoderFactory;
-import org.apache.avro.reflect.ReflectDatumReader;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.util.EntityUtils;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.type.TypeReference;
-
-import com.linkedin.databus.container.netty.HttpRelay.Config;
-import com.linkedin.databus.container.netty.HttpRelay.StaticConfig;
-import com.linkedin.databus.core.util.Base64;
-import com.linkedin.databus.core.util.ConfigLoader;
-import com.linkedin.databus2.relay.config.LogicalSourceStaticConfig;
-import com.linkedin.databus2.relay.config.PhysicalSourceConfig;
-import com.linkedin.databus2.relay.config.PhysicalSourceStaticConfig;
-import com.linkedin.databus2.schemas.FileSystemSchemaRegistryService;
+import com.linkedin.databus.client.CheckpointMessage;
+import com.linkedin.databus.client.DatabusHttpClientImpl;
+import com.linkedin.databus.client.DatabusSourcesConnection;
+import com.linkedin.databus.core.Checkpoint;
+import com.linkedin.databus.core.DbusClientMode;
+import com.linkedin.databus.core.async.LifecycleMessage;
 
 /**
  * A sample client that consumes snapshots served by a {@link GenericBootstrapHttpServerMain} or similar Databus bootstrap server accessible from the endpoint : 
@@ -48,94 +28,69 @@ import com.linkedin.databus2.schemas.FileSystemSchemaRegistryService;
  * @author Regunath B
  *
  */
-public class PersonBootstrapClientMain extends Thread {
+public class PersonBootstrapClientMain {
 
-	static final String BOOTSTRAP_SERVICE_URL = "http://localhost:11111/bootstrap";
+	public static final String PERSON_SOURCE = "org.aesop.events.example.person.Person";
 
-	private static final TypeReference<Map<String, Object>> JSON_GENERIC_MAP_TYPEREF = new TypeReference<Map<String, Object>>() {
-	};
-	private ObjectMapper objectMapper = new ObjectMapper();
-
-	public void run() {
-
-		Schema schema = null;
-
-		File sourcesJson = new File("conf/sources-person.json");
-		PhysicalSourceStaticConfig pStaticConfig = null;
+	public static void main(String[] args) throws Exception {
+		
+		DatabusHttpClientImpl.Config configBuilder = new DatabusHttpClientImpl.Config();
+		// Try to connect to a bootstrap on localhost
+		configBuilder.getRuntime().getBootstrap().getService("1").setName("bst1");
+		configBuilder.getRuntime().getBootstrap().getService("1").setHost("localhost");
+		configBuilder.getRuntime().getBootstrap().getService("1").setPort(11111);
+		configBuilder.getRuntime().getBootstrap().getService("1").setSources(PERSON_SOURCE);
+		
+		// Try to connect to a relay on localhost
+		configBuilder.getRuntime().getRelay("1").setHost("localhost");
+		configBuilder.getRuntime().getRelay("1").setPort(11115);
+		configBuilder.getRuntime().getRelay("1").setSources(PERSON_SOURCE);
+		
+		DatabusHttpClientImpl client = DatabusHttpClientImpl.createFromCli(
+				args, configBuilder);
+		BootstrapStarter starter = new BootstrapStarter(client);
 		try {
-			Config config = new Config();
-			ConfigLoader<StaticConfig> staticConfigLoader = new ConfigLoader<StaticConfig>(
-					"databus.bootstrap.", config);
-			StaticConfig sConfig = staticConfigLoader
-					.loadConfig(new Properties());
-			pStaticConfig = objectMapper.readValue(sourcesJson,
-					PhysicalSourceConfig.class).build();
-			LogicalSourceStaticConfig sourceConfig = pStaticConfig.getSources()[0];
-			FileSystemSchemaRegistryService schemaRegistryService = FileSystemSchemaRegistryService
-					.build(sConfig.getSchemaRegistry().getFileSystem());
-			schema = schemaRegistryService.fetchLatestVersionedSchemaByType(
-					sourceConfig.getName()).getSchema();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+			// Instantiate a client using command-line parameters if any
+			// register callbacks
+			PersonConsumer personConsumer = new PersonConsumer();
+			client.registerDatabusStreamListener(personConsumer, null,
+					PERSON_SOURCE);
+			client.registerDatabusBootstrapListener(personConsumer, null,
+					PERSON_SOURCE);
 
-		DefaultHttpClient client = new DefaultHttpClient();
-		HttpGet httpget = new HttpGet(BOOTSTRAP_SERVICE_URL);
-		URIBuilder uriBuilder = new URIBuilder(httpget.getURI());
-		uriBuilder
-				.addParameter(
-						"checkPoint",
-						"{\"windowOffset\":-1,\"snapshot_offset\":-1,\"prevScn\":-1,\"windowScn\":0,\"bootstrap_target_scn\":900,\"catchup_source\":\"org.aesop.events.example.person.Person\",\"consumption_mode\":\"BOOTSTRAP_CATCHUP\"}");
-		uriBuilder.addParameter("batchSize", "100000");
-		uriBuilder.addParameter("output", "json");
-		try {
-			((HttpRequestBase) httpget).setURI(uriBuilder.build());
-		} catch (URISyntaxException e1) {
-			e1.printStackTrace();
-		}
-
-		BinaryDecoder binDecoder = null;
-
-		try {
-			HttpResponse response = client.execute(httpget);
-			HttpEntity responseEntity = response.getEntity();
-			byte[] responseData = EntityUtils.toByteArray(responseEntity);
-			String[] lines = new String(responseData).split("\n");
-			int count = 0;
-			for (String line : lines) {
-				if (count == lines.length - 1) {
-					Map<String, Object> jsonObj = objectMapper.readValue(line,
-							JSON_GENERIC_MAP_TYPEREF);
-					byte[] valueBytes = Base64.decode((String) jsonObj
-							.get("value"));
-					System.out.println(new String(valueBytes));
-				} else {
-					Map<String, Object> jsonObj = objectMapper.readValue(line,
-							JSON_GENERIC_MAP_TYPEREF);
-					byte[] valueBytes = Base64.decode((String) jsonObj
-							.get("value"));
-					binDecoder = new DecoderFactory().binaryDecoder(valueBytes,
-							binDecoder);
-					ReflectDatumReader<Person> reader = new ReflectDatumReader<Person>(
-							schema);
-					Person person = new Person();
-					person = reader.read(person, binDecoder);
-					System.out.println(" key : "
-							+ person.getKey() + " firstName: "
-							+ person.getFirstName() + ", lastName: "
-							+ person.getLastName() + ", birthDate: "
-							+ person.getBirthDate() + ", deleted: "
-							+ person.getDeleted());
-				}
-				count += 1;
-			}
+			// fire off the Databus client
+			client.startAndBlock();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-
-	public static void main(String[] args) throws Exception {
-		new PersonBootstrapClientMain().start();
+	
+	private static class BootstrapStarter extends Thread {
+		private DatabusHttpClientImpl client;
+		public BootstrapStarter(DatabusHttpClientImpl client) {
+			this.client = client;
+			start();
+		}
+		public void run() {
+			try {
+				Thread.sleep(5000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			for (DatabusSourcesConnection con : client.getRelayConnections()) {
+				Checkpoint cp = new Checkpoint();
+				cp.setConsumptionMode(DbusClientMode.BOOTSTRAP_CATCHUP);
+				cp.setCatchupSource("org.aesop.events.example.person.Person");
+				cp.setWindowOffset(-1L);
+				cp.setSnapshotOffset(-1L);
+				cp.setPrevScn(-1L);
+				cp.setWindowScn(0L);
+				cp.setBootstrapTargetScn(900L);				
+				CheckpointMessage cpM = CheckpointMessage.createSetCheckpointMessage(cp);
+				con.getBootstrapPuller().doExecuteAndChangeState(cpM);
+				con.getBootstrapPuller().enqueueMessage(LifecycleMessage.createStartMessage());
+			}
+		}
 	}
 
 }

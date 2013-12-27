@@ -25,12 +25,6 @@ public class PersonConsumer extends AbstractDatabusCombinedConsumer {
 	
 	public static final Logger LOG = Logger.getLogger(PersonConsumer.class.getName());
 
-	private int identifier;
-
-	public PersonConsumer(int identifier) {
-		this.identifier = identifier;
-	}
-
 	@Override
 	public ConsumerCallbackResult onDataEvent(DbusEvent event,
 			DbusEventDecoder eventDecoder) {
@@ -52,7 +46,7 @@ public class PersonConsumer extends AbstractDatabusCombinedConsumer {
 			Long birthDate = (Long) decodedEvent.get("birthDate");
 			Utf8 deleted = (Utf8) decodedEvent.get("deleted");
 
-			System.out.println("ID:" + this.identifier + " key : " + key + " firstName: "
+			System.out.println(" key : " + key + " firstName: "
 					+ firstName.toString() + ", lastName: "
 					+ lastName.toString() + ", birthDate: " + birthDate
 					+ ", deleted: " + deleted.toString());
