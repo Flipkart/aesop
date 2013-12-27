@@ -14,8 +14,8 @@ import com.linkedin.databus.core.DbusClientMode;
 import com.linkedin.databus.core.async.LifecycleMessage;
 
 /**
- * A sample client that consumes snapshots served by a {@link GenericBootstrapHttpServerMain} or similar Databus bootstrap server accessible from the endpoint : 
- * PersonBootstrapClientMain#BOOTSTRAP_SERVICE_URL. Note that the parameters passed for fetching snapshots is not externalized but rather hard-coded in this class.
+ * A sample client that consumes snapshots served by a {@link GenericBootstrapHttpServerMain} or similar Databus bootstrap server accessible at localhost:11111. 
+ * Also connects and consumes change events as stream from a Relay running at localhost:11115 Note that the parameters passed for fetching snapshots is not externalized but rather hard-coded in this class.
  * Value of Parameter such as "bootstrap_target_scn" would need to be changed depending on values found in column 'windowscn' in the MySQL table 'bootstrap_producer_state'. 
  * 
  * Note: Include all jars in "lib" in the classpath before executing this class. 
