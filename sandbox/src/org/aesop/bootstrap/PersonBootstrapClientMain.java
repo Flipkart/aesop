@@ -79,13 +79,16 @@ public class PersonBootstrapClientMain {
 			}
 			for (DatabusSourcesConnection con : client.getRelayConnections()) {
 				Checkpoint cp = new Checkpoint();
+				cp.setConsumptionMode(DbusClientMode.BOOTSTRAP_SNAPSHOT);
+				/*
 				cp.setConsumptionMode(DbusClientMode.BOOTSTRAP_CATCHUP);
 				cp.setCatchupSource("org.aesop.events.example.person.Person");
 				cp.setWindowOffset(-1L);
 				cp.setSnapshotOffset(-1L);
 				cp.setPrevScn(-1L);
 				cp.setWindowScn(0L);
-				cp.setBootstrapTargetScn(900L);				
+				cp.setBootstrapTargetScn(900L);		
+				*/		
 				CheckpointMessage cpM = CheckpointMessage.createSetCheckpointMessage(cp);
 				con.getBootstrapPuller().doExecuteAndChangeState(cpM);
 				con.getBootstrapPuller().enqueueMessage(LifecycleMessage.createStartMessage());
