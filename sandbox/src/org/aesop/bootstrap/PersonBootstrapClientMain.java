@@ -48,7 +48,6 @@ public class PersonBootstrapClientMain {
 		
 		DatabusHttpClientImpl client = DatabusHttpClientImpl.createFromCli(
 				args, configBuilder);
-		BootstrapStarter starter = new BootstrapStarter(client);
 		try {
 			// Instantiate a client using command-line parameters if any
 			// register callbacks
@@ -59,41 +58,32 @@ public class PersonBootstrapClientMain {
 					PERSON_SOURCE);
 
 			// fire off the Databus client
-			client.startAndBlock();
+			client.start();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
+		// wait for a while and simulate a slow consumer requesting a bootstrap snapshot
+		
+		Thread.sleep(2000);
+		
+		for (DatabusSourcesConnection con : client.getRelayConnections()) {
+			Checkpoint cp = new Checkpoint();
+			cp.setConsumptionMode(DbusClientMode.BOOTSTRAP_SNAPSHOT);
+			/*
+			cp.setConsumptionMode(DbusClientMode.BOOTSTRAP_CATCHUP);
+			cp.setCatchupSource("org.aesop.events.example.person.Person");
+			cp.setWindowOffset(-1L);
+			cp.setSnapshotOffset(-1L);
+			cp.setPrevScn(-1L);
+			cp.setWindowScn(0L);
+			cp.setBootstrapTargetScn(900L);		
+			*/					
+			CheckpointMessage cpM = CheckpointMessage.createSetCheckpointMessage(cp);
+			con.getBootstrapPuller().doExecuteAndChangeState(cpM);
+			con.getBootstrapPuller().enqueueMessage(LifecycleMessage.createStartMessage());
+		}
+		
 	}
 	
-	private static class BootstrapStarter extends Thread {
-		private DatabusHttpClientImpl client;
-		public BootstrapStarter(DatabusHttpClientImpl client) {
-			this.client = client;
-			start();
-		}
-		public void run() {
-			try {
-				Thread.sleep(5000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-			for (DatabusSourcesConnection con : client.getRelayConnections()) {
-				Checkpoint cp = new Checkpoint();
-				cp.setConsumptionMode(DbusClientMode.BOOTSTRAP_SNAPSHOT);
-				/*
-				cp.setConsumptionMode(DbusClientMode.BOOTSTRAP_CATCHUP);
-				cp.setCatchupSource("org.aesop.events.example.person.Person");
-				cp.setWindowOffset(-1L);
-				cp.setSnapshotOffset(-1L);
-				cp.setPrevScn(-1L);
-				cp.setWindowScn(0L);
-				cp.setBootstrapTargetScn(900L);		
-				*/		
-				CheckpointMessage cpM = CheckpointMessage.createSetCheckpointMessage(cp);
-				con.getBootstrapPuller().doExecuteAndChangeState(cpM);
-				con.getBootstrapPuller().enqueueMessage(LifecycleMessage.createStartMessage());
-			}
-		}
-	}
-
 }
