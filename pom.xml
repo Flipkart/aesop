@@ -48,6 +48,7 @@
     </properties>
 
     <modules>
+        <module>runtime</module>
         <module>runtime-relay</module>
     </modules>
 
