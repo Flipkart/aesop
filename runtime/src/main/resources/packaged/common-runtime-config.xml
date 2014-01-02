@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+    http://www.springframework.org/schema/beans classpath:org/springframework/beans/factory/xml/spring-beans-2.5.xsd	
+    http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd
+    http://www.springframework.org/schema/context classpath:org/springframework/context/config/spring-context-2.5.xsd">
+
+	
+	<!-- This event producer bean is declared primarily for publishing Bootstrap lifecycle events -->
+	<bean id="platformEventProducer" class="org.trpr.platform.core.impl.event.PlatformEventProducerImpl"/>
+
+    <!--The types of URI based subscriptions supported by this runtime-->
+    <bean id="applicationEventMulticaster" class="org.trpr.platform.core.impl.event.PlatformEventMulticaster">
+        <property name="subscriptions">
+            <list>
+                <value>evt://org.aesop.runtime.events.CLIENT_REGISTRATION</value>
+            </list>
+        </property>
+    </bean>
+
+</beans>
