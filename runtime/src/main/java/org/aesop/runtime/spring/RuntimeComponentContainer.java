@@ -15,8 +15,17 @@
  */
 package org.aesop.runtime.spring;
 
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.LinkedList;
+import java.util.List;
+
 import org.aesop.runtime.RuntimeFrameworkConstants;
+import org.aesop.runtime.spring.registry.ServerContainerConfigInfo;
 import org.springframework.context.support.AbstractApplicationContext;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.trpr.platform.core.PlatformException;
 import org.trpr.platform.core.spi.event.PlatformEventProducer;
@@ -46,6 +55,9 @@ public abstract class RuntimeComponentContainer implements ComponentContainer {
 	/** The common runtime beans context */
 	private static AbstractApplicationContext commonRuntimeBeansContext;
 
+	/** The list of ServerContainerConfigInfo holding all runtime instances loaded by this container */
+	private List<ServerContainerConfigInfo> runtimeConfigInfoList = new LinkedList<ServerContainerConfigInfo>();
+	
 	/** Local reference for all BootstrapExtensionS loaded by the Container and set on this ComponentContainer*/
 	private BootstrapExtension[] loadedBootstrapExtensions;
 
@@ -53,11 +65,12 @@ public abstract class RuntimeComponentContainer implements ComponentContainer {
 	private ClassLoader tccl;
 	
 	/**
-	 * Interface method implementation. Stores local references to the specified BootstrapExtension instances.
-	 * @see org.trpr.platform.runtime.spi.component.ComponentContainer#setLoadedBootstrapExtensions(org.trpr.platform.runtime.spi.bootstrapext.BootstrapExtension[])
+	 * Returns the common Runtime Spring beans application context that is intended as parent of all Runtime application contexts 
+	 * WARN : this method can return null if this ComponentContainer is not suitably initialized via a call to {@link #init()}
+	 * @return null or the common runtime AbstractApplicationContext
 	 */
-	public void setLoadedBootstrapExtensions(BootstrapExtension...bootstrapExtensions) {
-		this.loadedBootstrapExtensions = bootstrapExtensions;
+	public static AbstractApplicationContext getCommonRuntimeBeansContext() {
+		return RuntimeComponentContainer.commonRuntimeBeansContext;
 	}
 
 	/**
@@ -68,13 +81,31 @@ public abstract class RuntimeComponentContainer implements ComponentContainer {
 		return this.getClass().getName();
 	}
 	
+	/**
+	 * Interface method implementation. Stores local references to the specified BootstrapExtension instances.
+	 * @see org.trpr.platform.runtime.spi.component.ComponentContainer#setLoadedBootstrapExtensions(org.trpr.platform.runtime.spi.bootstrapext.BootstrapExtension[])
+	 */
+	public void setLoadedBootstrapExtensions(BootstrapExtension...bootstrapExtensions) {
+		this.loadedBootstrapExtensions = bootstrapExtensions;
+	}
+
 	public void init() throws PlatformException {
 	}
 
 	public void destroy() throws PlatformException {
 	}
 
+	/**
+	 * Interface method implementation. Loads/Reloads runtime(s) defined in the specified {@link FileSystemResource} 
+	 * @see org.trpr.platform.runtime.spi.component.ComponentContainer#loadComponent(org.springframework.core.io.Resource)
+	 */
 	public void loadComponent(Resource resource) {
+		if (!FileSystemResource.class.isAssignableFrom(resource.getClass()) || 
+				!resource.getFilename().equalsIgnoreCase(this.getRuntimeConfigFileName())) {
+			throw new UnsupportedOperationException("Runtimes can be loaded only from files by name : " + 
+					this.getRuntimeConfigFileName() + ". Specified resource is : " + resource.toString());
+		}
+		loadRuntimeContext(new ServerContainerConfigInfo(((FileSystemResource)resource).getFile()));
 	}
 
 	/**
@@ -102,6 +133,43 @@ public abstract class RuntimeComponentContainer implements ComponentContainer {
 	 * Returns the config file name that defines bean instances of type {@link ServerContainer}
 	 * @return Spring beans file name containing bean deifnitions of type {@link ServerContainer}
 	 */
-	protected abstract String getRuntimeConfigFileName();
+	public abstract String getRuntimeConfigFileName();
 
+	/**
+	 * Loads the runtime context from path specified in the ServerContainerConfigInfo. Looks for file by name {@link RuntimeComponentContainer#getRuntimeConfigFileName()}.
+	 * @param serverContainerConfigInfo containing absolute path to the runtime's configuration location i.e. folder
+	 */
+	private void loadRuntimeContext(ServerContainerConfigInfo serverContainerConfigInfo) {
+		// check if a context exists already for this config path 
+		for (ServerContainerConfigInfo loadedRuntimeConfigInfo : this.runtimeConfigInfoList) {
+			if (loadedRuntimeConfigInfo.equals(serverContainerConfigInfo)) {
+				serverContainerConfigInfo = loadedRuntimeConfigInfo;
+				break;
+			}
+		}
+		if (serverContainerConfigInfo.getRuntimeContext() != null) {
+			// close the context and remove from list
+			serverContainerConfigInfo.getRuntimeContext().close();
+			this.runtimeConfigInfoList.remove(serverContainerConfigInfo);
+		}
+		ClassLoader runtimeCL = this.tccl;
+		// check to see if the runtime and dependent binaries are deployed outside of the runtime class path. If yes, include them using a custom URL classloader.
+		File customLibPath = new File (serverContainerConfigInfo.getXmlConfigFile().getParentFile(), ServerContainerConfigInfo.BINARIES_PATH);
+		if (customLibPath.exists() && customLibPath.isDirectory()) {
+			try {
+				File[] libFiles = customLibPath.listFiles();
+				URL[] libURLs = new URL[libFiles.length];
+				for (int i=0; i < libFiles.length; i++) {
+					libURLs[i] = new URL(ServerContainerConfigInfo.FILE_PREFIX + libFiles[i].getAbsolutePath());
+				}
+				runtimeCL = new URLClassLoader(libURLs, this.tccl);
+			} catch (MalformedURLException e) {
+				throw new PlatformException(e);
+			}
+		} 
+		// now load the runtime context and add it into the serverContainerConfigInfo list
+		serverContainerConfigInfo.loadRuntimeContext(runtimeCL,RuntimeComponentContainer.getCommonRuntimeBeansContext());
+		this.runtimeConfigInfoList.add(serverContainerConfigInfo);		
+	}
+	
 }
