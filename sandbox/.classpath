@@ -25,7 +25,7 @@
 	<classpathentry kind="lib" path="lib/databus-bootstrap-common-api.jar"/>
 	<classpathentry kind="lib" path="lib/databus-bootstrap-common-impl.jar"/>
 	<classpathentry kind="lib" path="lib/databus-bootstrap-producer-impl.jar"/>
-	<classpathentry kind="lib" path="lib/databus-bootstrap-server-impl.jar"/>
+	<classpathentry kind="lib" path="lib/databus-bootstrap-server-impl.jar" sourcepath="/Users/regunath.balasubramanian/Documents/workspace/github/databus"/>
 	<classpathentry kind="lib" path="lib/databus-bootstrap-utils-impl.jar"/>
 	<classpathentry kind="lib" path="lib/databus-client-api.jar"/>
 	<classpathentry kind="lib" path="lib/databus-client-common.jar"/>
@@ -38,7 +38,7 @@
 	<classpathentry kind="lib" path="lib/databus-group-leader-impl.jar"/>
 	<classpathentry kind="lib" path="lib/databus-util-cmdline-impl.jar"/>
 	<classpathentry kind="lib" path="lib/databus2-example-relay.jar"/>
-	<classpathentry kind="lib" path="lib/databus2-relay-impl.jar"/>
+	<classpathentry kind="lib" path="lib/databus2-relay-impl.jar" sourcepath="/Users/regunath.balasubramanian/Documents/workspace/github/databus"/>
 	<classpathentry kind="lib" path="lib/gentlyweb-utils-1.5.jar"/>
 	<classpathentry kind="lib" path="lib/helix-core-0.5.31.jar"/>
 	<classpathentry kind="lib" path="lib/httpclient-4.2.1.jar"/>
