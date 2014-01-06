@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.aesop.runtime.impl.admin;
+package org.aesop.runtime.spi.admin;
 
 import java.io.File;
 import java.util.List;

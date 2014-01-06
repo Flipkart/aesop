@@ -24,6 +24,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.aesop.runtime.RuntimeFrameworkConstants;
+import org.aesop.runtime.impl.admin.RuntimeConfigServiceImpl;
+import org.aesop.runtime.spi.admin.RuntimeConfigService;
 import org.aesop.runtime.spi.registry.AbstractRuntimeRegistry;
 import org.aesop.runtime.spring.registry.ServerContainerConfigInfo;
 import org.springframework.context.support.AbstractApplicationContext;
@@ -64,6 +66,9 @@ public abstract class RuntimeComponentContainer implements ComponentContainer {
 	 */
 	private static final String DEFAULT_EVENT_PRODUCER = "platformEventProducer";
 
+	/** The bean names of the runtime framework classes initialized by this container */
+	private static final String CONFIG_SERVICE_BEAN = "configService";
+	
 	/** The common runtime beans context */
 	private static AbstractApplicationContext commonRuntimeBeansContext;
 
@@ -79,6 +84,9 @@ public abstract class RuntimeComponentContainer implements ComponentContainer {
     /** The list of registered registries */
     private List<AbstractRuntimeRegistry> registries = new ArrayList<AbstractRuntimeRegistry>();
 	
+	/** The configService instance */
+	private RuntimeConfigService configService;
+    
 	/**
 	 * Returns the common Runtime Spring beans application context that is intended as parent of all Runtime application contexts 
 	 * WARN : this method can return null if this ComponentContainer is not suitably initialized via a call to {@link #init()}
@@ -126,6 +134,10 @@ public abstract class RuntimeComponentContainer implements ComponentContainer {
 		// add the common runtime beans independently to the list of runtime contexts 
 		this.runtimeConfigInfoList.add(new ServerContainerConfigInfo(new File(RuntimeFrameworkConstants.COMMON_RUNTIME_CONFIG), null, RuntimeComponentContainer.commonRuntimeBeansContext));
 		
+		// Get the Config Service Bean
+		this.configService = (RuntimeConfigServiceImpl)RuntimeComponentContainer.commonRuntimeBeansContext.getBean(RuntimeComponentContainer.CONFIG_SERVICE_BEAN);
+        ((RuntimeConfigServiceImpl)this.configService).setComponentContainer(this);
+		
 		// Load additional if runtime nature is "server". This context is the new common beans context
 		if (RuntimeVariables.getRuntimeNature().equalsIgnoreCase(RuntimeConstants.SERVER)) {
 			RuntimeComponentContainer.commonRuntimeBeansContext = new ClassPathXmlApplicationContext(
@@ -159,16 +171,16 @@ public abstract class RuntimeComponentContainer implements ComponentContainer {
                 try {
                 	AbstractRuntimeRegistry.InitedRuntimeInfo[] initedRuntimeInfos = registry.init(this.runtimeConfigInfoList);
                     LOGGER.info("Initialized runtime registry: " + registry.getClass().getName());
-        			//Add the file path of each inited handler to SPConfigService (for configuration console)
+        			//Add the file path of each inited runtime to RuntimeConfigService (for configuration console)
                     for (AbstractRuntimeRegistry.InitedRuntimeInfo initedRuntimeInfo: initedRuntimeInfos) {
-                    	this.configService.addHandlerConfigPath(initedRuntimeInfo.getRuntimeConfigInfo().getXmlConfigFile(), initedRuntimeInfo.getInitedRuntime());
+                    	this.configService.addRuntimeConfigPath(initedRuntimeInfo.getRuntimeConfigInfo().getXmlConfigFile(), initedRuntimeInfo.getInitedRuntime());
                     }
                 } catch (Exception e) {
                     LOGGER.error("Error initializing registry: " + registry.getClass().getName());
                     throw new PlatformException("Error initializing registry: " + registry.getClass().getName(), e);
                 }
                 // add registry to config
-                this.configService.addHandlerRegistry(registry);
+                this.configService.addRuntimeRegistry(registry);
                 // add registry to local list
                 this.registries.add(registry);
             }
