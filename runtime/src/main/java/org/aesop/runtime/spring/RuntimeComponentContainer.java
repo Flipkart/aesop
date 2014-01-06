@@ -19,17 +19,26 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.aesop.runtime.RuntimeFrameworkConstants;
+import org.aesop.runtime.spi.registry.AbstractRuntimeRegistry;
 import org.aesop.runtime.spring.registry.ServerContainerConfigInfo;
 import org.springframework.context.support.AbstractApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.trpr.platform.core.PlatformException;
+import org.trpr.platform.core.impl.logging.LogFactory;
 import org.trpr.platform.core.spi.event.PlatformEventProducer;
+import org.trpr.platform.core.spi.logging.Logger;
 import org.trpr.platform.model.event.PlatformEvent;
+import org.trpr.platform.runtime.common.RuntimeConstants;
+import org.trpr.platform.runtime.common.RuntimeVariables;
+import org.trpr.platform.runtime.impl.bootstrapext.spring.ApplicationContextFactory;
+import org.trpr.platform.runtime.impl.config.FileLocator;
 import org.trpr.platform.runtime.spi.bootstrapext.BootstrapExtension;
 import org.trpr.platform.runtime.spi.component.ComponentContainer;
 
@@ -47,6 +56,9 @@ import com.linkedin.databus2.core.container.netty.ServerContainer;
  */
 public abstract class RuntimeComponentContainer implements ComponentContainer {
 
+	/** Logger for this class*/
+	private static final Logger LOGGER = LogFactory.getLogger(RuntimeComponentContainer.class);
+	
 	/**
 	 * The default Event producer bean name
 	 */
@@ -63,6 +75,9 @@ public abstract class RuntimeComponentContainer implements ComponentContainer {
 
 	/** The Thread's context class loader that is used in on the fly loading of ServerContainer definitions */
 	private ClassLoader tccl;
+	
+    /** The list of registered registries */
+    private List<AbstractRuntimeRegistry> registries = new ArrayList<AbstractRuntimeRegistry>();
 	
 	/**
 	 * Returns the common Runtime Spring beans application context that is intended as parent of all Runtime application contexts 
@@ -89,10 +104,96 @@ public abstract class RuntimeComponentContainer implements ComponentContainer {
 		this.loadedBootstrapExtensions = bootstrapExtensions;
 	}
 
+	/**
+	 * Interface method implementation. Locates and loads all configured runtime instances.
+	 * @see ComponentContainer#init()
+	 */
 	public void init() throws PlatformException {
+		// store the thread's context class loader for later use in on the fly loading of runtime app contexts
+		this.tccl = Thread.currentThread().getContextClassLoader();
+
+		// The common runtime beans context is loaded first using the Platform common beans context as parent
+		// load this from classpath as it is packaged with the binaries
+		ApplicationContextFactory defaultCtxFactory = null;
+		for (BootstrapExtension be : this.loadedBootstrapExtensions) {
+			if (ApplicationContextFactory.class.isAssignableFrom(be.getClass())) {
+				defaultCtxFactory = (ApplicationContextFactory)be;
+				break;
+			}
+		}
+
+		RuntimeComponentContainer.commonRuntimeBeansContext = new ClassPathXmlApplicationContext(new String[]{RuntimeFrameworkConstants.COMMON_RUNTIME_CONFIG},defaultCtxFactory.getCommonBeansContext());
+		// add the common runtime beans independently to the list of runtime contexts 
+		this.runtimeConfigInfoList.add(new ServerContainerConfigInfo(new File(RuntimeFrameworkConstants.COMMON_RUNTIME_CONFIG), null, RuntimeComponentContainer.commonRuntimeBeansContext));
+		
+		// Load additional if runtime nature is "server". This context is the new common beans context
+		if (RuntimeVariables.getRuntimeNature().equalsIgnoreCase(RuntimeConstants.SERVER)) {
+			RuntimeComponentContainer.commonRuntimeBeansContext = new ClassPathXmlApplicationContext(
+                new String[]{RuntimeFrameworkConstants.COMMON_RUNTIME_SERVER_NATURE_CONFIG},
+                RuntimeComponentContainer.getCommonRuntimeBeansContext()
+            );
+			// now add the common server nature runtime beans to the contexts list
+			this.runtimeConfigInfoList.add(new ServerContainerConfigInfo(new File(RuntimeFrameworkConstants.COMMON_RUNTIME_SERVER_NATURE_CONFIG),
+                    null, RuntimeComponentContainer.getCommonRuntimeBeansContext()
+                )
+            );
+		}
+		
+	    // locate and load the individual runtime XML files using the common runtime beans context as parent
+        File[] runtimeBeansFiles = FileLocator.findFiles(this.getRuntimeConfigFileName());
+        for (File runtimeBeansFile : runtimeBeansFiles) {
+        	ServerContainerConfigInfo runtimeConfigInfo = new ServerContainerConfigInfo(runtimeBeansFile);
+            // load the runtime's app context
+            this.loadRuntimeContext(runtimeConfigInfo);
+            LOGGER.info("Loaded: " + runtimeBeansFile);
+        }
+		
+        // load all registries
+        for (ServerContainerConfigInfo serverContainerConfigInfo : this.runtimeConfigInfoList) {
+            // runtime registries
+            String[] registryBeans = serverContainerConfigInfo.getRuntimeContext().getBeanNamesForType(AbstractRuntimeRegistry.class);
+            for (String registryBean:registryBeans) {
+            	AbstractRuntimeRegistry registry = (AbstractRuntimeRegistry) serverContainerConfigInfo.getRuntimeContext().getBean(registryBean);
+                LOGGER.info("Found runtime registry: " + registry.getClass().getName());
+                // init the Registry
+                try {
+                	AbstractRuntimeRegistry.InitedRuntimeInfo[] initedRuntimeInfos = registry.init(this.runtimeConfigInfoList);
+                    LOGGER.info("Initialized runtime registry: " + registry.getClass().getName());
+        			//Add the file path of each inited handler to SPConfigService (for configuration console)
+                    for (AbstractRuntimeRegistry.InitedRuntimeInfo initedRuntimeInfo: initedRuntimeInfos) {
+                    	this.configService.addHandlerConfigPath(initedRuntimeInfo.getRuntimeConfigInfo().getXmlConfigFile(), initedRuntimeInfo.getInitedRuntime());
+                    }
+                } catch (Exception e) {
+                    LOGGER.error("Error initializing registry: " + registry.getClass().getName());
+                    throw new PlatformException("Error initializing registry: " + registry.getClass().getName(), e);
+                }
+                // add registry to config
+                this.configService.addHandlerRegistry(registry);
+                // add registry to local list
+                this.registries.add(registry);
+            }
+        }
+        
 	}
 
+	/**
+	 * Interface method implementation. Destroys the Spring application context containing loaded runtime definitions.
+	 * @see ComponentContainer#destroy()
+	 */
 	public void destroy() throws PlatformException {
+		// shutdown all runtime instances
+        for (AbstractRuntimeRegistry registry:registries) {
+            try {
+                registry.shutdown();
+            } catch (Exception e) {
+                LOGGER.warn("Error shutting down registry: " + registry.getClass().getName());
+            }
+        }
+        // finally close the context
+		for (ServerContainerConfigInfo runtimeConfigInfo : this.runtimeConfigInfoList) {
+			runtimeConfigInfo.getRuntimeContext().close();
+		}
+		this.runtimeConfigInfoList = null;
 	}
 
 	/**
@@ -101,26 +202,24 @@ public abstract class RuntimeComponentContainer implements ComponentContainer {
 	 * @param resource the location to load the new definition of the runtime from
 	 */
 	public void reloadRuntime(ServerContainer runtime, Resource resource) {
-		/*
-		AbstractHandlerRegistry registry = this.getRegistry(handler.getName());
-		registry.unregisterTaskHandler(handler);
-		LOGGER.debug("Unregistered TaskHandler: "+handler.getName());
+		AbstractRuntimeRegistry registry = this.getRegistry(runtime.getComponentAdmin().getComponentName());
+		registry.unregisterRuntime(runtime);
+		LOGGER.debug("Unregistered ServerContainer: "+ runtime.getComponentAdmin().getComponentName());
 		this.loadComponent(resource);
-		// now add the newly loaded handler to its registry
-		for (HandlerConfigInfo handlerConfigInfo : this.handlerConfigInfoList) {
-			if (handlerConfigInfo.getXmlConfigFile().getAbsolutePath().equalsIgnoreCase(((FileSystemResource)resource).getFile().getAbsolutePath())) {
-				List<HandlerConfigInfo> reloadHandlerConfigInfoList = new LinkedList<HandlerConfigInfo>();
-				reloadHandlerConfigInfoList.add(handlerConfigInfo);
+		// now add the newly loaded runtime to its registry
+		for (ServerContainerConfigInfo runtimeConfigInfo : this.runtimeConfigInfoList) {
+			if (runtimeConfigInfo.getXmlConfigFile().getAbsolutePath().equalsIgnoreCase(((FileSystemResource)resource).getFile().getAbsolutePath())) {
+				List<ServerContainerConfigInfo> reloadRuntimeConfigInfoList = new LinkedList<ServerContainerConfigInfo>();
+				reloadRuntimeConfigInfoList.add(runtimeConfigInfo);
 				try {
-					registry.init(reloadHandlerConfigInfoList, taskContext);
+					registry.init(reloadRuntimeConfigInfoList);
 				}catch (Exception e) {
-		            LOGGER.error("Error updating registry : " +  registry.getClass().getName() + " for handler : " + handler.getName(), e);
-		            throw new PlatformException("Error updating registry : " +  registry.getClass().getName() + " for handler : " + handler.getName(), e);
+		            LOGGER.error("Error updating registry : " +  registry.getClass().getName() + " for runtime : " + runtime.getComponentAdmin().getComponentName(), e);
+		            throw new PlatformException("Error updating registry : " +  registry.getClass().getName() + " for runtime : " + runtime.getComponentAdmin().getComponentName(), e);
 		        }
 				return;
 			}
 		}
-		*/
 	}
 	
 	/**
@@ -157,6 +256,21 @@ public abstract class RuntimeComponentContainer implements ComponentContainer {
 		publisher.publishEvent(event);
 	}
 
+	/**
+	 * Returns the AbstractRuntimeRegistry in which a ServerContainer identified by the specified name has been registered
+	 * @param runtimeName the ServerContainer name
+	 * @return AbstractRuntimeRegistry where the runtime is registered
+	 * @throws UnsupportedOperationException if a registry is not found
+	 */
+	public AbstractRuntimeRegistry getRegistry (String runtimeName) {
+		for (AbstractRuntimeRegistry registry : this.registries) {
+			if (registry.getRuntime(runtimeName) != null) {
+				return registry;
+			}
+		}
+		throw new UnsupportedOperationException("No known regsitries exist for ServerContainer by name : " + runtimeName);
+	}
+	
 	/**
 	 * Returns the config file name that defines bean instances of type {@link ServerContainer}
 	 * @return Spring beans file name containing bean deifnitions of type {@link ServerContainer}
