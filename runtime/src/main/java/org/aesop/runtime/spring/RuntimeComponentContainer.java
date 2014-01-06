@@ -96,6 +96,34 @@ public abstract class RuntimeComponentContainer implements ComponentContainer {
 	}
 
 	/**
+	 * Reloads and re-initalizes the specified runtime. The new definition is loaded from the specified Resource location
+	 * @param runtime the ServerContainer to be de-registered
+	 * @param resource the location to load the new definition of the runtime from
+	 */
+	public void reloadRuntime(ServerContainer runtime, Resource resource) {
+		/*
+		AbstractHandlerRegistry registry = this.getRegistry(handler.getName());
+		registry.unregisterTaskHandler(handler);
+		LOGGER.debug("Unregistered TaskHandler: "+handler.getName());
+		this.loadComponent(resource);
+		// now add the newly loaded handler to its registry
+		for (HandlerConfigInfo handlerConfigInfo : this.handlerConfigInfoList) {
+			if (handlerConfigInfo.getXmlConfigFile().getAbsolutePath().equalsIgnoreCase(((FileSystemResource)resource).getFile().getAbsolutePath())) {
+				List<HandlerConfigInfo> reloadHandlerConfigInfoList = new LinkedList<HandlerConfigInfo>();
+				reloadHandlerConfigInfoList.add(handlerConfigInfo);
+				try {
+					registry.init(reloadHandlerConfigInfoList, taskContext);
+				}catch (Exception e) {
+		            LOGGER.error("Error updating registry : " +  registry.getClass().getName() + " for handler : " + handler.getName(), e);
+		            throw new PlatformException("Error updating registry : " +  registry.getClass().getName() + " for handler : " + handler.getName(), e);
+		        }
+				return;
+			}
+		}
+		*/
+	}
+	
+	/**
 	 * Interface method implementation. Loads/Reloads runtime(s) defined in the specified {@link FileSystemResource} 
 	 * @see org.trpr.platform.runtime.spi.component.ComponentContainer#loadComponent(org.springframework.core.io.Resource)
 	 */
