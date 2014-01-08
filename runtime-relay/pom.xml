@@ -50,7 +50,34 @@
             <groupId>org.aesop</groupId>
             <artifactId>runtime</artifactId>
             <version>1.0.0</version>
-        </dependency>        
+        </dependency>    
+        <!-- Databus dependencies -->
+        <dependency>
+            <groupId>com.linkedin.databus</groupId>
+            <artifactId>databus2-relay-impl</artifactId>
+            <version>${com.linkedin.databus.version}</version>
+			<exclusions>
+				<!-- Removing these dependencies from log4j:1.2.15 that is no longer included-->
+			    <exclusion>
+			        <groupId>com.sun.jmx</groupId>
+			        <artifactId>jmxri</artifactId>
+			    </exclusion>
+			    <exclusion>
+			        <groupId>com.sun.jdmk</groupId>
+			        <artifactId>jmxtools</artifactId>
+			    </exclusion>
+				<!-- Removing servlet-api dependency from Jetty -->
+			    <exclusion>
+			        <groupId>org.mortbay.jetty</groupId>
+			        <artifactId>servlet-api</artifactId>
+			    </exclusion>
+				<!-- Removing Oracle OJDBC dependency -->
+			    <exclusion>
+			        <groupId>com.oracle</groupId>
+			        <artifactId>ojdbc6</artifactId>
+			    </exclusion>
+			</exclusions>            
+		</dependency>            
     </dependencies>
 
     <build>
@@ -91,4 +118,15 @@
             </plugin>
         </plugins>
     </build>
+    
+    <!-- Additional repositories for Databus dependencies -->
+    <repositories>
+		<repository>
+		  <id>repo.fusesource.com</id>
+		  <name>repo.fusesource.com</name>
+		  <url>http://repo.fusesource.com/maven2-legacy/</url>
+		  <layout>default</layout>
+		</repository>
+	</repositories>    
+	
 </project>

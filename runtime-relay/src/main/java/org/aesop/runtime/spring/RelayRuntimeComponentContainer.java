@@ -15,6 +15,14 @@
  */
 package org.aesop.runtime.spring;
 
+/**
+ * The <code>RelayRuntimeComponentContainer</code> class is a concrete subtype of the {@link RuntimeComponentContainer}
+ * used for managing Databus Relay instances. 
+ * 
+ * @see org.trpr.platform.runtime.spi.component.ComponentContainer
+ * @author Regunath B
+ * @version 1.0, 08 Jan 2014
+ */
 public class RelayRuntimeComponentContainer extends RuntimeComponentContainer {
 	
 	/**
