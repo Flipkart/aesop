@@ -19,4 +19,7 @@
         </property>
     </bean>
 
+	<bean id="configService" class="org.aesop.runtime.impl.admin.RuntimeConfigServiceImpl">
+	</bean>
+
 </beans>
