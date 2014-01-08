@@ -51,6 +51,7 @@
     <modules>
         <module>runtime</module>
         <module>runtime-relay</module>
+        <module>sample-memory-relay</module>
     </modules>
 
 </project>
