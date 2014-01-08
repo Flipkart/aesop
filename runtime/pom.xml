@@ -71,6 +71,11 @@
 			        <groupId>com.sun.jdmk</groupId>
 			        <artifactId>jmxtools</artifactId>
 			    </exclusion>
+				<!-- Removing servlet-api dependency from Jetty -->
+			    <exclusion>
+			        <groupId>org.mortbay.jetty</groupId>
+			        <artifactId>servlet-api</artifactId>
+			    </exclusion>
 			</exclusions>            
         </dependency>        
         <!-- Third party dependencies -->
