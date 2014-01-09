@@ -44,6 +44,30 @@
         </developer>
     </developers>
 
+	<dependencyManagement>
+		<!-- All databus dependencies are marked as scope compile as we extend their classes and need them during compile and not just runtime -->
+		<dependencies>
+			<dependency>
+			  <groupId>com.linkedin.databus</groupId>
+			  <artifactId>databus2-relay-impl</artifactId>
+			  <version>${com.linkedin.databus.version}</version>
+			  <scope>compile</scope>
+			</dependency>
+			<dependency>
+			  <groupId>com.linkedin.databus</groupId>
+			  <artifactId>databus2-event-producer-common</artifactId>
+			  <version>${com.linkedin.databus.version}</version>
+			  <scope>compile</scope>
+			</dependency>			
+			<dependency>
+			  <groupId>com.linkedin.databus</groupId>
+			  <artifactId>databus-core-impl</artifactId>
+			  <version>${com.linkedin.databus.version}</version>
+			  <scope>compile</scope>
+			</dependency>			
+		</dependencies>
+	</dependencyManagement>
+	
     <dependencies>   
         <!-- aesop dependencies -->
         <dependency>
@@ -77,7 +101,7 @@
 			        <artifactId>ojdbc6</artifactId>
 			    </exclusion>
 			</exclusions>            
-		</dependency>            
+		</dependency>       
     </dependencies>
 
     <build>
