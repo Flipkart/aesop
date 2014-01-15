@@ -280,7 +280,7 @@ public abstract class RuntimeComponentContainer implements ComponentContainer {
 				return registry;
 			}
 		}
-		throw new UnsupportedOperationException("No known regsitries exist for ServerContainer by name : " + runtimeName);
+		throw new UnsupportedOperationException("No known registries exist for ServerContainer by name : " + runtimeName);
 	}
 	
 	/**

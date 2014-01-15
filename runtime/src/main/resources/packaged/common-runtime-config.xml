@@ -22,4 +22,6 @@
 	<bean id="configService" class="org.aesop.runtime.impl.admin.RuntimeConfigServiceImpl">
 	</bean>
 
+    <bean id="runtimeRegistry" class="org.aesop.runtime.impl.registry.ServerContainerRegistry" />
+
 </beans>
