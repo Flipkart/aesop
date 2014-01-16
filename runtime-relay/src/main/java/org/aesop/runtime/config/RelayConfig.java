@@ -18,6 +18,9 @@ package org.aesop.runtime.config;
 
 import java.util.Properties;
 
+import org.springframework.beans.factory.InitializingBean;
+import org.trpr.platform.core.PlatformException;
+
 /**
  * <code>RelayConfig</code> holds Databus configuration properties for a Relay instance. This config treats the
  * properties as opaque and is intended for use as a holder of the information.
@@ -26,10 +29,25 @@ import java.util.Properties;
  * @version 1.0, 15 Jan 2014
  */
 
-public class RelayConfig {
+public class RelayConfig implements InitializingBean {
 
+	/** The property name prefix for all Databus relay properties*/
+	public static final String RELAY_PROPERTIES_PREFIX = "databus.relay.";
+	
 	/** The Properties instance holding Relay configuration data*/
 	private Properties relayProperties = new Properties();
+
+	/**
+	 * Interface method implementation. Ensures that all property names start with {@link RelayConfig#RELAY_PROPERTIES_PREFIX}
+	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
+	 */
+	public void afterPropertiesSet() throws Exception {
+		for (Object key : this.relayProperties.keySet()) {
+			if (!((String)key).startsWith(RelayConfig.RELAY_PROPERTIES_PREFIX)) {
+				throw new PlatformException("Property : " + key + " does not begin with the prefix : " + RelayConfig.RELAY_PROPERTIES_PREFIX);
+			}
+		}
+	}
 	
 	/** Getter/Setter properties*/
 	public Properties getRelayProperties() {

@@ -18,7 +18,6 @@ package org.aesop.runtime.relay;
 import java.io.IOException;
 import java.util.Map;
 
-import org.springframework.beans.factory.InitializingBean;
 import org.trpr.platform.core.impl.logging.LogFactory;
 import org.trpr.platform.core.spi.logging.Logger;
 
@@ -27,10 +26,10 @@ import com.linkedin.databus.core.data_model.PhysicalPartition;
 import com.linkedin.databus.core.util.InvalidConfigException;
 import com.linkedin.databus2.core.DatabusException;
 import com.linkedin.databus2.core.seq.MultiServerSequenceNumberHandler;
-import com.linkedin.databus2.core.seq.SequenceNumberHandlerFactory;
 import com.linkedin.databus2.producers.EventProducer;
 import com.linkedin.databus2.producers.RelayEventProducersRegistry;
 import com.linkedin.databus2.relay.DatabusRelayMain;
+import com.linkedin.databus2.relay.config.PhysicalSourceStaticConfig;
 
 /**
  * The <code>DefaultRelay</code> class defines behavior of a default Databus Relay. Provides methods to register
@@ -45,7 +44,7 @@ import com.linkedin.databus2.relay.DatabusRelayMain;
  * @author Regunath B
  * @version 1.0, 08 Jan 2014
  */
-public class DefaultRelay extends HttpRelay implements InitializingBean {
+public class DefaultRelay extends HttpRelay {
 
 	/** Logger for this class*/
 	protected static final Logger LOGGER = LogFactory.getLogger(DefaultRelay.class);
@@ -58,28 +57,13 @@ public class DefaultRelay extends HttpRelay implements InitializingBean {
     
     /** Map of Event Producers keyed by physical partitions*/
 	protected Map<PhysicalPartition, EventProducer> producersMap;        
-    
-	/**
-	 * No args constructor. Useful for Setter DI based initialization for dependencies
-	 * @see HttpRelay
-	 */
-	public DefaultRelay() throws IOException, InvalidConfigException, DatabusException {
-		super(new HttpRelay.Config(), null);
-	}
 
 	/**
-	 * Interface method implementation. Checks for mandatory dependencies and initializes this Relay
-	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
+	 * Constructor for this class. Invokes constructor of the super-type with the passed-in arguments
 	 */
-	public void afterPropertiesSet() throws Exception {
-		if (this.producersRegistry == null) {
-			this.producersRegistry = RelayEventProducersRegistry.getInstance();			
-		}
-		if (this.getMaxScnReaderWriters() == null) {
-			SequenceNumberHandlerFactory handlerFactory = _relayStaticConfig.getDataSources().getSequenceNumbersHandler().createFactory();
-			this.maxScnReaderWriters = new MultiServerSequenceNumberHandler(handlerFactory);
-		}
-	}
+    public DefaultRelay(StaticConfig config, PhysicalSourceStaticConfig[] pConfigs) throws IOException, InvalidConfigException, DatabusException {
+    	super(config, pConfigs);
+    }
 
 	/** Getter/Setter methods to override default implementations of various components used by this Relay*/
 	public RelayEventProducersRegistry getProducersRegistry() {
@@ -98,5 +82,4 @@ public class DefaultRelay extends HttpRelay implements InitializingBean {
 	public Map<PhysicalPartition, EventProducer> getProducersMap() {
 		return this.producersMap;
 	}
-	
 }
