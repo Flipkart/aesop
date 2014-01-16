@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+    <bean id="sampleRelay" class="org.aesop.runtime.relay.DefaultRelayFactory">
+    	<property name="relayConfig" ref="relayConfig"/>
+    	<property name="producerRegistrationList">
+    		<list>
+    			<bean class="org.aesop.runtime.config.ProducerRegistration">
+    			</bean>
+    		</list>
+    	</property>
+    </bean>
+    
+    <bean id="relayConfig" class="org.aesop.runtime.config.RelayConfig">
+    	<property name="relayProperties">
+			<bean id="relayPropertiesFactory" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+		    	<property name="singleton" value="true"/>
+		    	<property name="properties">
+		    		<props>
+			        	<prop key="databus.relay.container.httpPort">11115</prop>
+						<prop key="databus.relay.container.jmx.rmiEnabled">false</prop>
+						<prop key="databus.relay.eventBuffer.allocationPolicy">MMAPPED_MEMORY</prop>
+						<prop key="databus.relay.eventBuffer.queuePolicy">OVERWRITE_ON_WRITE</prop>
+						<prop key="databus.relay.eventLogReader.enabled">false</prop>
+						<prop key="databus.relay.eventLogWriter.enabled">false</prop>
+						<prop key="databus.relay.schemaRegistry.type">FILE_SYSTEM</prop>
+						<prop key="databus.relay.eventBuffer.maxSize">10240000</prop>
+						<prop key="databus.relay.eventBuffer.readBufferSize">10240</prop>
+						<prop key="databus.relay.eventBuffer.scnIndexSize">10240000</prop>
+						<prop key="databus.relay.physicalSourcesConfigsPattern">conf/sources-person.json</prop>
+						<prop key="databus.relay.dataSources.sequenceNumbersHandler.file.scnDir">./maxScn</prop>			        	
+			        </props>
+			    </property>    
+	    	</bean>    	
+    	</property>
+    </bean>
+
+</beans>
