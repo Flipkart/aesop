@@ -17,6 +17,8 @@
 package org.aesop.runtime.config;
 
 import org.aesop.runtime.relay.DefaultRelay;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.util.Assert;
 
 import com.linkedin.databus2.producers.EventProducer;
 import com.linkedin.databus2.relay.config.PhysicalSourceConfig;
@@ -28,14 +30,23 @@ import com.linkedin.databus2.relay.config.PhysicalSourceConfig;
  * @author Regunath B
  * @version 1.0, 15 Jan 2014
  */
-public class ProducerRegistration {
+public class ProducerRegistration implements InitializingBean {
 
 	/** The EventProducer to be registered*/
 	private EventProducer eventProducer;
 	
 	/** The physical databus source configuration*/
 	private PhysicalSourceConfig physicalSourceConfig;
-	
+
+	/**
+	 * Interface method implementation. Ensures that a EventProducer and PhysicalSourceConfig is set
+	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
+	 */
+	public void afterPropertiesSet() throws Exception {
+		Assert.notNull(this.eventProducer,"'eventProducer' cannot be null. An EventProducer must be specified");
+		Assert.notNull(this.physicalSourceConfig,"'physicalSourceConfig' cannot be null. A PhysicalSourceConfig must be specified");
+	}
+
 	/** Getter/Setter methods*/
 	public EventProducer getEventProducer() {
 		return this.eventProducer;

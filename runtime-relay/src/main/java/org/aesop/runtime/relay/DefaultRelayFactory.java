@@ -85,7 +85,7 @@ public class DefaultRelayFactory  implements FactoryBean<DefaultRelay>, Initiali
 	 */
 	public void afterPropertiesSet() throws Exception {
 		Assert.notNull(this.relayConfig,"'relayConfig' cannot be null. This Relay will not be initialized");
-		Assert.notEmpty(this.producerRegistrationList,"'producerRegistrationList' cannot be empty. No Event producers reistered");		
+		Assert.notEmpty(this.producerRegistrationList,"'producerRegistrationList' cannot be empty. No Event producers registered");		
 	}
 	
 	/**
