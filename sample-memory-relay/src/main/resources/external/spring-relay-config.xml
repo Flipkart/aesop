@@ -30,8 +30,6 @@
 						<prop key="databus.relay.eventBuffer.maxSize">10240000</prop>
 						<prop key="databus.relay.eventBuffer.readBufferSize">10240</prop>
 						<prop key="databus.relay.eventBuffer.scnIndexSize">10240000</prop>
-						<prop key="databus.relay.physicalSourcesConfigsPattern">conf/sources-person.json</prop>
-						<prop key="databus.relay.dataSources.sequenceNumbersHandler.file.scnDir">./maxScn</prop>			        	
 			        </props>
 			    </property>    
 	    	</bean>    	
