@@ -109,6 +109,11 @@
             <artifactId>jetty-webapp</artifactId>
             <version>${jetty.version}</version>
         </dependency>
+		<dependency>
+			<groupId>org.apache.avro</groupId>
+		    <artifactId>avro</artifactId>
+		    <version>1.7.5</version>
+		</dependency>        
     </dependencies>
 
     <build>
