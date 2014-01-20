@@ -47,7 +47,7 @@ public class DefaultRelayFactory  implements FactoryBean<DefaultRelay>, Initiali
 	
 	/** Constant for the Databus stats collector*/
 	public static final String STATS_COLLECTOR = "statsCollector";
-
+	
 	/** The configuration details for creating the Relay*/
 	private RelayConfig relayConfig;
 	
@@ -76,7 +76,7 @@ public class DefaultRelayFactory  implements FactoryBean<DefaultRelay>, Initiali
 				config.setSourceName(String.valueOf(logicalSourceConfig.getId()), logicalSourceConfig.getName());
 			}			
 		}
-
+		
 		HttpRelay.StaticConfig staticConfig = staticConfigLoader.loadConfig(this.relayConfig.getRelayProperties());
 
 	    FileSystemSchemaRegistryService.Config configBuilder = new FileSystemSchemaRegistryService.Config();

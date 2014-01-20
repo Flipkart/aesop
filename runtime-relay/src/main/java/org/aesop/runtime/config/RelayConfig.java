@@ -16,11 +16,13 @@
 
 package org.aesop.runtime.config;
 
+import java.io.File;
 import java.util.Properties;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 import org.trpr.platform.core.PlatformException;
+import org.trpr.platform.runtime.common.RuntimeVariables;
 import org.trpr.platform.runtime.impl.config.FileLocator;
 
 /**
@@ -36,18 +38,31 @@ public class RelayConfig implements InitializingBean {
 	/** The property name prefix for all Databus relay properties*/
 	public static final String RELAY_PROPERTIES_PREFIX = "databus.relay.";
 	
+	/** The Memory mapped file directory property name*/
+	public static final String MMAPPED_DIR_PROPERTY = "eventBuffer.mmapDirectory";
+	
+	/** The MaxSCN information file location property name*/
+	public static final String MAXSCN_DIR_PROPERTY = "dataSources.sequenceNumbersHandler.file.scnDir";
+	
 	/** The Properties instance holding Relay configuration data*/
 	private Properties relayProperties = new Properties();
 
 	/** The schemas registry location*/
 	private String schemaRegistryLocation;
-		
+	
+	/** The Memory mapped event buffer directory location*/
+	private String mmappedDirectoryLocation;
+
+	/** The MAX SCN file directory location*/
+	private String maxScnDirectoryLocation;
+	
 	/**
 	 * Interface method implementation. Ensures that all property names start with {@link RelayConfig#RELAY_PROPERTIES_PREFIX}
 	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
 	 */
 	public void afterPropertiesSet() throws Exception {
 		Assert.notNull(this.schemaRegistryLocation,"'schemaRegistryLocation' cannot be null. This Relay will not be initialized");		
+		Assert.notNull(this.mmappedDirectoryLocation,"'mmappedDirectoryLocation' cannot be null. This Relay will not be initialized");		
 		for (Object key : this.relayProperties.keySet()) {
 			if (!((String)key).startsWith(RelayConfig.RELAY_PROPERTIES_PREFIX)) {
 				throw new PlatformException("Property : " + key + " does not begin with the prefix : " + RelayConfig.RELAY_PROPERTIES_PREFIX);
@@ -67,6 +82,26 @@ public class RelayConfig implements InitializingBean {
 	}
 	public void setSchemaRegistryLocation(String schemaRegistryLocation) {
 		this.schemaRegistryLocation = FileLocator.findDirectories(schemaRegistryLocation,null)[0].getAbsolutePath();
+	}
+	public String getMmappedDirectoryLocation() {
+		return mmappedDirectoryLocation;
+	}
+	public void setMmappedDirectoryLocation(String mmappedDirectoryLocation) {
+		this.mmappedDirectoryLocation = mmappedDirectoryLocation;
+		// add the Memory mapped file directory location to the properties specified for the Relay. 
+		// The MMapped directory is relative to projects root
+		this.getRelayProperties().put(RELAY_PROPERTIES_PREFIX + MMAPPED_DIR_PROPERTY, 
+				new File(RuntimeVariables.getProjectsRoot() + File.separator  + this.mmappedDirectoryLocation).getAbsolutePath());		
+	}
+	public String getMaxScnDirectoryLocation() {
+		return maxScnDirectoryLocation;
+	}
+	public void setMaxScnDirectoryLocation(String maxScnDirectoryLocation) {
+		this.maxScnDirectoryLocation = maxScnDirectoryLocation;
+		// add the Max SCN file directory location to the properties specified for the Relay. 
+		// The Max SCN directory is relative to projects root
+		this.getRelayProperties().put(RELAY_PROPERTIES_PREFIX + MAXSCN_DIR_PROPERTY, 
+				new File(RuntimeVariables.getProjectsRoot() + File.separator  + this.maxScnDirectoryLocation).getAbsolutePath());		
 	}
 			
 }
