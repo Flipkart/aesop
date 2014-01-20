@@ -9,9 +9,30 @@
     	<property name="producerRegistrationList">
     		<list>
     			<bean class="org.aesop.runtime.config.ProducerRegistration">
+    				<property name="eventProducer" ref="personProducer"/>
+    				<property name="physicalSourceConfig" ref="physicalSourceConfig"/>
     			</bean>
     		</list>
     	</property>
+    </bean>
+    
+    <bean id="personProducer" class="org.aesop.relay.sample.PersonEventProducer">
+    </bean>
+
+    <bean id="physicalSourceConfig" class="com.linkedin.databus2.relay.config.PhysicalSourceConfig">
+		<property name="id" value="100"/>
+		<property name="name" value="personPhysicalSource"/>
+		<property name="uri" value="jvm://local"/>
+		<property name="sources">
+			<list>
+				<bean id="logicalSourceConfig" class="com.linkedin.databus2.relay.config.LogicalSourceConfig">
+					<property name="id" value="101"/>
+					<property name="name" value="personLogicalSource"/>
+					<property name="uri" value="person.Person"/>
+					<property name="partitionFunction" value="constant:1"/>					
+				</bean>
+			</list>
+		</property>
     </bean>
     
     <bean id="relayConfig" class="org.aesop.runtime.config.RelayConfig">
@@ -34,6 +55,7 @@
 			    </property>    
 	    	</bean>    	
     	</property>
+		<property name="schemaRegistryLocation" value="schemas_registry"/>
     </bean>
 
 </beans>

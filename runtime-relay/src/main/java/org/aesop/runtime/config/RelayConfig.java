@@ -19,7 +19,9 @@ package org.aesop.runtime.config;
 import java.util.Properties;
 
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.util.Assert;
 import org.trpr.platform.core.PlatformException;
+import org.trpr.platform.runtime.impl.config.FileLocator;
 
 /**
  * <code>RelayConfig</code> holds Databus configuration properties for a Relay instance. This config treats the
@@ -37,11 +39,15 @@ public class RelayConfig implements InitializingBean {
 	/** The Properties instance holding Relay configuration data*/
 	private Properties relayProperties = new Properties();
 
+	/** The schemas registry location*/
+	private String schemaRegistryLocation;
+		
 	/**
 	 * Interface method implementation. Ensures that all property names start with {@link RelayConfig#RELAY_PROPERTIES_PREFIX}
 	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
 	 */
 	public void afterPropertiesSet() throws Exception {
+		Assert.notNull(this.schemaRegistryLocation,"'schemaRegistryLocation' cannot be null. This Relay will not be initialized");		
 		for (Object key : this.relayProperties.keySet()) {
 			if (!((String)key).startsWith(RelayConfig.RELAY_PROPERTIES_PREFIX)) {
 				throw new PlatformException("Property : " + key + " does not begin with the prefix : " + RelayConfig.RELAY_PROPERTIES_PREFIX);
@@ -56,5 +62,11 @@ public class RelayConfig implements InitializingBean {
 	public void setRelayProperties(Properties relayProperties) {
 		this.relayProperties = relayProperties;
 	}
-		
+	public String getSchemaRegistryLocation() {
+		return schemaRegistryLocation;
+	}
+	public void setSchemaRegistryLocation(String schemaRegistryLocation) {
+		this.schemaRegistryLocation = FileLocator.findDirectories(schemaRegistryLocation,null)[0].getAbsolutePath();
+	}
+			
 }

@@ -15,24 +15,89 @@
  */
 package org.aesop.runtime.producer;
 
+import java.io.ByteArrayOutputStream;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.apache.avro.generic.GenericDatumWriter;
+import org.apache.avro.generic.GenericRecord;
+import org.apache.avro.io.BinaryEncoder;
+import org.apache.avro.io.Encoder;
+import org.apache.avro.io.EncoderFactory;
+import org.trpr.platform.core.impl.logging.LogFactory;
+import org.trpr.platform.core.spi.logging.Logger;
+
 import com.linkedin.databus.core.DbusEventBufferAppendable;
+import com.linkedin.databus.core.monitoring.mbean.DbusEventsStatisticsCollector;
 import com.linkedin.databus2.core.seq.MaxSCNReaderWriter;
+import com.linkedin.databus2.producers.EventProducer;
+import com.linkedin.databus2.relay.config.LogicalSourceStaticConfig;
+import com.linkedin.databus2.relay.config.PhysicalSourceConfig;
+import com.linkedin.databus2.relay.config.PhysicalSourceStaticConfig;
+import com.linkedin.databus2.schemas.SchemaRegistryService;
+import com.linkedin.databus2.schemas.utils.SchemaHelper;
 
-public abstract class AbstractEventProducer {
+/**
+ * <code>AbstractEventProducer</code> is an implementation of {@link EventProducer} that provides convenience methods for all sub-types
+ *
+ * @author Regunath B
+ * @version 1.0, 17 Jan 2014
+ */
 
-	protected String name;
+public abstract class AbstractEventProducer implements EventProducer {
+
+	/** Logger for this class*/
+	protected static final Logger LOGGER = LogFactory.getLogger(AbstractEventProducer.class);
+	
+	/** Source related member variables*/
+	protected PhysicalSourceConfig physicalSourceConfig;
+	protected PhysicalSourceStaticConfig physicalSourceStaticConfig;
+	protected byte[] schemaId;	
+	
+	/** Event-handling related member variables*/
 	protected AtomicLong sinceSCN = new AtomicLong(-1);
 	protected DbusEventBufferAppendable eventBuffer;
 	protected MaxSCNReaderWriter maxScnReaderWriter;
+	protected DbusEventsStatisticsCollector dbusEventsStatisticsCollector;	
 	
-	/** Getter/Setter methods */		
-	public String getName() {
-		return name;
+	/** Avro serialization related member variables*/
+	protected EncoderFactory factory = EncoderFactory.get();
+	protected BinaryEncoder cachedAvroEncoder;
+	
+	/**
+	 * Serializes the specified Avro record into a byte array
+	 * @param record the Avrop record
+	 * @return byte array containing serialized form of the specified Avro record
+	 */
+	protected byte[] serializeEvent(GenericRecord record) {
+		byte[] serializedValue;
+		try {
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			Encoder encoder = factory.directBinaryEncoder(bos,cachedAvroEncoder);
+			GenericDatumWriter<GenericRecord> writer = new GenericDatumWriter<GenericRecord>(record.getSchema());
+			writer.write(record, encoder);
+			serializedValue = bos.toByteArray();
+			return serializedValue;
+		} catch (Exception ex) {
+			LOGGER.error("Error serializing Avro object : " + record.getSchema(), ex);
+		}
+		return null;
 	}
-	public void setName(String name) {
-		this.name = name;
+	
+	/** Getter/Setter methods */	
+	public void setSchemaRegistryService(SchemaRegistryService schemaRegistryService) throws Exception {
+		this.physicalSourceStaticConfig = this.physicalSourceConfig.build();
+		LogicalSourceStaticConfig sourceConfig = physicalSourceStaticConfig.getSources()[0]; // here we assume that all logical sources share the same schema
+		String schema = schemaRegistryService.fetchLatestSchemaBySourceName(sourceConfig.getName());
+		this.schemaId =  SchemaHelper.getSchemaId(schema);
+	}		
+	public void setDbusEventsStatisticsCollector(DbusEventsStatisticsCollector dbusEventsStatisticsCollector) {
+		this.dbusEventsStatisticsCollector = dbusEventsStatisticsCollector;
+	}
+	public PhysicalSourceConfig getPhysicalSourceConfig() {
+		return physicalSourceConfig;
+	}
+	public void setPhysicalSourceConfig(PhysicalSourceConfig physicalSourceConfig) {
+		this.physicalSourceConfig = physicalSourceConfig;		
 	}
 	public AtomicLong getSinceSCN() {
 		return sinceSCN;
@@ -51,6 +116,9 @@ public abstract class AbstractEventProducer {
 	}
 	public void setMaxScnReaderWriter(MaxSCNReaderWriter maxScnReaderWriter) {
 		this.maxScnReaderWriter = maxScnReaderWriter;
+	}
+	public PhysicalSourceStaticConfig getPhysicalSourceStaticConfig() {
+		return physicalSourceStaticConfig;
 	}
 	
 }

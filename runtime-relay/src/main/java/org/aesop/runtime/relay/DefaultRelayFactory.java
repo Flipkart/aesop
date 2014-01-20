@@ -20,6 +20,7 @@ import java.util.List;
 
 import org.aesop.runtime.config.ProducerRegistration;
 import org.aesop.runtime.config.RelayConfig;
+import org.aesop.runtime.producer.AbstractEventProducer;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
@@ -31,7 +32,10 @@ import com.linkedin.databus.core.util.ConfigLoader;
 import com.linkedin.databus2.core.seq.MultiServerSequenceNumberHandler;
 import com.linkedin.databus2.core.seq.SequenceNumberHandlerFactory;
 import com.linkedin.databus2.producers.RelayEventProducersRegistry;
+import com.linkedin.databus2.relay.config.LogicalSourceConfig;
 import com.linkedin.databus2.relay.config.PhysicalSourceStaticConfig;
+import com.linkedin.databus2.schemas.FileSystemSchemaRegistryService;
+import com.linkedin.databus2.schemas.SourceIdNameRegistry;
 
 /**
  * The Spring factory bean for creating {@link DefaultRelay} instances based on configured properties
@@ -40,6 +44,9 @@ import com.linkedin.databus2.relay.config.PhysicalSourceStaticConfig;
  * @version 1.0, 16 Jan 2014
  */
 public class DefaultRelayFactory  implements FactoryBean<DefaultRelay>, InitializingBean {
+	
+	/** Constant for the Databus stats collector*/
+	public static final String STATS_COLLECTOR = "statsCollector";
 
 	/** The configuration details for creating the Relay*/
 	private RelayConfig relayConfig;
@@ -60,13 +67,26 @@ public class DefaultRelayFactory  implements FactoryBean<DefaultRelay>, Initiali
 	public DefaultRelay getObject() throws Exception {
 		Config config = new Config();		
 		ConfigLoader<StaticConfig> staticConfigLoader = new ConfigLoader<StaticConfig>(RelayConfig.RELAY_PROPERTIES_PREFIX, config);
-		HttpRelay.StaticConfig staticConfig = staticConfigLoader.loadConfig(this.relayConfig.getRelayProperties());
 		
 		PhysicalSourceStaticConfig[] pStaticConfigs = new PhysicalSourceStaticConfig[this.producerRegistrationList.size()];
 		for (int i=0; i < this.producerRegistrationList.size(); i++) {
-			pStaticConfigs[i] = this.producerRegistrationList.get(i).getPhysicalSourceConfig().build();			
+			pStaticConfigs[i] = this.producerRegistrationList.get(i).getPhysicalSourceConfig().build();	
+			// Register all sources with the static config
+			for (LogicalSourceConfig logicalSourceConfig :this.producerRegistrationList.get(i).getPhysicalSourceConfig().getSources()) {
+				config.setSourceName(String.valueOf(logicalSourceConfig.getId()), logicalSourceConfig.getName());
+			}			
 		}
-		DefaultRelay relay = new DefaultRelay(staticConfig,pStaticConfigs);
+
+		HttpRelay.StaticConfig staticConfig = staticConfigLoader.loadConfig(this.relayConfig.getRelayProperties());
+
+	    FileSystemSchemaRegistryService.Config configBuilder = new FileSystemSchemaRegistryService.Config();
+	    configBuilder.setFallbackToResources(true);
+	    configBuilder.setSchemaDir(this.getRelayConfig().getSchemaRegistryLocation());
+	    FileSystemSchemaRegistryService.StaticConfig schemaRegistryServiceConfig = configBuilder.build();
+	    FileSystemSchemaRegistryService schemaRegistryService = FileSystemSchemaRegistryService.build(schemaRegistryServiceConfig);		
+		
+		DefaultRelay relay = new DefaultRelay(staticConfig,pStaticConfigs, SourceIdNameRegistry.createFromIdNamePairs(staticConfig.getSourceIds()),schemaRegistryService);
+		
 		if (this.producersRegistry == null) {
 			this.producersRegistry = RelayEventProducersRegistry.getInstance();
 			relay.setProducersRegistry(this.producersRegistry);
@@ -75,6 +95,18 @@ public class DefaultRelayFactory  implements FactoryBean<DefaultRelay>, Initiali
 			SequenceNumberHandlerFactory handlerFactory = staticConfig.getDataSources().getSequenceNumbersHandler().createFactory();
 			this.maxScnReaderWriters = new MultiServerSequenceNumberHandler(handlerFactory);
 			relay.setMaxScnReaderWriters(this.maxScnReaderWriters);
+		}
+		// now set all the Relay initialized services on the producers, if they are of type AbstractEventProducer
+		for (int i=0; i < this.producerRegistrationList.size(); i++) {
+			ProducerRegistration producerRegistration = this.producerRegistrationList.get(i); 
+			PhysicalSourceStaticConfig pStaticConfig = pStaticConfigs[i];
+			if (producerRegistration.getEventProducer().getClass().isAssignableFrom(AbstractEventProducer.class)) {				
+				AbstractEventProducer producer = (AbstractEventProducer)producerRegistration.getEventProducer();
+				producer.setEventBuffer(relay.getEventBuffer().getDbusEventBufferAppendable(pStaticConfig.getId()));								
+				producer.setMaxScnReaderWriter(this.maxScnReaderWriters.getOrCreateHandler(pStaticConfig.getPhysicalPartition()));
+				producer.setSchemaRegistryService(relay.getSchemaRegistryService());
+				producer.setDbusEventsStatisticsCollector(relay.getInBoundStatsCollectors().getStatsCollector(STATS_COLLECTOR));
+			}
 		}
 		return relay;
 	}
@@ -130,5 +162,4 @@ public class DefaultRelayFactory  implements FactoryBean<DefaultRelay>, Initiali
 	public List<ProducerRegistration> getProducerRegistrationList() {
 		return this.producerRegistrationList;
 	}
-	
 }

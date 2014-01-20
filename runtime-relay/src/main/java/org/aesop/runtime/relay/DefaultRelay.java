@@ -30,6 +30,8 @@ import com.linkedin.databus2.producers.EventProducer;
 import com.linkedin.databus2.producers.RelayEventProducersRegistry;
 import com.linkedin.databus2.relay.DatabusRelayMain;
 import com.linkedin.databus2.relay.config.PhysicalSourceStaticConfig;
+import com.linkedin.databus2.schemas.SchemaRegistryService;
+import com.linkedin.databus2.schemas.SourceIdNameRegistry;
 
 /**
  * The <code>DefaultRelay</code> class defines behavior of a default Databus Relay. Provides methods to register
@@ -61,8 +63,9 @@ public class DefaultRelay extends HttpRelay {
 	/**
 	 * Constructor for this class. Invokes constructor of the super-type with the passed-in arguments
 	 */
-    public DefaultRelay(StaticConfig config, PhysicalSourceStaticConfig[] pConfigs) throws IOException, InvalidConfigException, DatabusException {
-    	super(config, pConfigs);
+    public DefaultRelay(StaticConfig config, PhysicalSourceStaticConfig[] pConfigs, SourceIdNameRegistry sourcesIdNameRegistry,
+            SchemaRegistryService schemaRegistry) throws IOException, InvalidConfigException, DatabusException {
+    	super(config, pConfigs, sourcesIdNameRegistry, schemaRegistry);
     }
 
 	/** Getter/Setter methods to override default implementations of various components used by this Relay*/
