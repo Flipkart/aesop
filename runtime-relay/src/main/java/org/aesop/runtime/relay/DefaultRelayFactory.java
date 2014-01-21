@@ -87,10 +87,6 @@ public class DefaultRelayFactory  implements FactoryBean<DefaultRelay>, Initiali
 		
 		DefaultRelay relay = new DefaultRelay(staticConfig,pStaticConfigs, SourceIdNameRegistry.createFromIdNamePairs(staticConfig.getSourceIds()),schemaRegistryService);
 		
-		if (this.producersRegistry == null) {
-			this.producersRegistry = RelayEventProducersRegistry.getInstance();
-			relay.setProducersRegistry(this.producersRegistry);
-		}
 		if (this.maxScnReaderWriters == null) {
 			SequenceNumberHandlerFactory handlerFactory = staticConfig.getDataSources().getSequenceNumbersHandler().createFactory();
 			this.maxScnReaderWriters = new MultiServerSequenceNumberHandler(handlerFactory);
@@ -100,14 +96,17 @@ public class DefaultRelayFactory  implements FactoryBean<DefaultRelay>, Initiali
 		for (int i=0; i < this.producerRegistrationList.size(); i++) {
 			ProducerRegistration producerRegistration = this.producerRegistrationList.get(i); 
 			PhysicalSourceStaticConfig pStaticConfig = pStaticConfigs[i];
-			if (producerRegistration.getEventProducer().getClass().isAssignableFrom(AbstractEventProducer.class)) {				
+			if (AbstractEventProducer.class.isAssignableFrom(producerRegistration.getEventProducer().getClass())) {				
 				AbstractEventProducer producer = (AbstractEventProducer)producerRegistration.getEventProducer();
-				producer.setEventBuffer(relay.getEventBuffer().getDbusEventBufferAppendable(pStaticConfig.getId()));								
+				producer.setEventBuffer(relay.getEventBuffer().getDbusEventBufferAppendable(
+						pStaticConfig.getSources()[0].getId())); // here we assume single event buffer is shared among all logical sources								
 				producer.setMaxScnReaderWriter(this.maxScnReaderWriters.getOrCreateHandler(pStaticConfig.getPhysicalPartition()));
 				producer.setSchemaRegistryService(relay.getSchemaRegistryService());
 				producer.setDbusEventsStatisticsCollector(relay.getInBoundStatsCollectors().getStatsCollector(STATS_COLLECTOR));
 			}
 		}
+		// set the ProducerRegistration instances on the Relay
+		relay.setProducerRegistrationList(this.producerRegistrationList);
 		return relay;
 	}
 

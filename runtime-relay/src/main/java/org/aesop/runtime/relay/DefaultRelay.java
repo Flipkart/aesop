@@ -16,18 +16,19 @@
 package org.aesop.runtime.relay;
 
 import java.io.IOException;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.aesop.runtime.config.ProducerRegistration;
+import org.aesop.runtime.producer.AbstractEventProducer;
 import org.trpr.platform.core.impl.logging.LogFactory;
 import org.trpr.platform.core.spi.logging.Logger;
 
 import com.linkedin.databus.container.netty.HttpRelay;
-import com.linkedin.databus.core.data_model.PhysicalPartition;
 import com.linkedin.databus.core.util.InvalidConfigException;
 import com.linkedin.databus2.core.DatabusException;
 import com.linkedin.databus2.core.seq.MultiServerSequenceNumberHandler;
 import com.linkedin.databus2.producers.EventProducer;
-import com.linkedin.databus2.producers.RelayEventProducersRegistry;
 import com.linkedin.databus2.relay.DatabusRelayMain;
 import com.linkedin.databus2.relay.config.PhysicalSourceStaticConfig;
 import com.linkedin.databus2.schemas.SchemaRegistryService;
@@ -51,15 +52,12 @@ public class DefaultRelay extends HttpRelay {
 	/** Logger for this class*/
 	protected static final Logger LOGGER = LogFactory.getLogger(DefaultRelay.class);
 	
-	/** The event producers registry*/
-    protected RelayEventProducersRegistry producersRegistry;	
-	
     /** The SCN reader-writer*/
     protected MultiServerSequenceNumberHandler maxScnReaderWriters;
     
-    /** Map of Event Producers keyed by physical partitions*/
-	protected Map<PhysicalPartition, EventProducer> producersMap;        
-
+	/** The ProducerRegistration list for the Relay*/
+    protected List<ProducerRegistration> producerRegistrationList = new ArrayList<ProducerRegistration>();    
+    
 	/**
 	 * Constructor for this class. Invokes constructor of the super-type with the passed-in arguments
 	 */
@@ -67,14 +65,29 @@ public class DefaultRelay extends HttpRelay {
             SchemaRegistryService schemaRegistry) throws IOException, InvalidConfigException, DatabusException {
     	super(config, pConfigs, sourcesIdNameRegistry, schemaRegistry);
     }
+    
+    /**
+     * Overriden superclass method. Starts up the registered Producers after calling super.doStart()
+     * @see com.linkedin.databus.container.netty.HttpRelay#doStart()
+     */
+    protected void doStart() {
+    	super.doStart();
+    	for (ProducerRegistration producerRegistration : this.producerRegistrationList) {
+    		EventProducer producer = producerRegistration.getEventProducer();
+    		long startScn = -1;
+    		if (AbstractEventProducer.class.isAssignableFrom(producer.getClass())) {
+    			try {
+    				startScn = ((AbstractEventProducer)producer).getMaxScnReaderWriter().getMaxScn();
+    			} catch(Exception e) {
+    				LOGGER.error("Error starting producer : '" + ((AbstractEventProducer)producer).getName() + "'. Producer not started.", e);
+    				continue;
+    			}
+    		}
+    		producer.start(startScn);
+    	}
+    }
 
 	/** Getter/Setter methods to override default implementations of various components used by this Relay*/
-	public RelayEventProducersRegistry getProducersRegistry() {
-		return this.producersRegistry;
-	}
-	public void setProducersRegistry(RelayEventProducersRegistry producersRegistry) {
-		this.producersRegistry = producersRegistry;
-	}
 	public MultiServerSequenceNumberHandler getMaxScnReaderWriters() {
 		return this.maxScnReaderWriters;
 	}
@@ -82,7 +95,11 @@ public class DefaultRelay extends HttpRelay {
 			MultiServerSequenceNumberHandler maxScnReaderWriters) {
 		this.maxScnReaderWriters = maxScnReaderWriters;
 	}
-	public Map<PhysicalPartition, EventProducer> getProducersMap() {
-		return this.producersMap;
+	public void setProducerRegistrationList(List<ProducerRegistration> producerRegistrationList) {
+		this.producerRegistrationList = producerRegistrationList;
 	}
+	public List<ProducerRegistration> getProducerRegistrationList() {
+		return this.producerRegistrationList;
+	}
+	
 }

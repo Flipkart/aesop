@@ -17,6 +17,7 @@
     </bean>
     
     <bean id="personProducer" class="org.aesop.relay.sample.PersonEventProducer">
+    	<property name="physicalSourceConfig" ref="physicalSourceConfig"/>
     </bean>
 
     <bean id="physicalSourceConfig" class="com.linkedin.databus2.relay.config.PhysicalSourceConfig">
@@ -27,7 +28,7 @@
 			<list>
 				<bean id="logicalSourceConfig" class="com.linkedin.databus2.relay.config.LogicalSourceConfig">
 					<property name="id" value="101"/>
-					<property name="name" value="personLogicalSource"/>
+					<property name="name" value="org.aesop.events.sample.person.Person"/>
 					<property name="uri" value="person.Person"/>
 					<property name="partitionFunction" value="constant:1"/>					
 				</bean>
