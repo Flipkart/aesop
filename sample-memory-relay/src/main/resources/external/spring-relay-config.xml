@@ -52,6 +52,7 @@
 						<prop key="databus.relay.eventBuffer.maxSize">10240000</prop>
 						<prop key="databus.relay.eventBuffer.readBufferSize">10240</prop>
 						<prop key="databus.relay.eventBuffer.scnIndexSize">10240000</prop>
+						<prop key="databus.relay.eventBuffer.restoreMMappedBuffers">true</prop>
 			        </props>
 			    </property>    
 	    	</bean>    	
