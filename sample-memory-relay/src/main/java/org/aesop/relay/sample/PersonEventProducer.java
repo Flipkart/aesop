@@ -18,13 +18,10 @@ package org.aesop.relay.sample;
 import org.aesop.events.sample.person.Person;
 import org.aesop.runtime.producer.AbstractEventProducer;
 
-import com.linkedin.databus.core.DbusEventBufferAppendable;
 import com.linkedin.databus.core.DbusEventInfo;
 import com.linkedin.databus.core.DbusEventKey;
 import com.linkedin.databus.core.DbusOpcode;
-import com.linkedin.databus.core.monitoring.mbean.DbusEventsStatisticsCollector;
 import com.linkedin.databus2.core.DatabusException;
-import com.linkedin.databus2.core.seq.MaxSCNReaderWriter;
 
 /**
  * <code>PersonEventProducer</code> is a sub-type of {@link AbstractEventProducer}} that creates a specified number 
@@ -55,7 +52,7 @@ public class PersonEventProducer extends AbstractEventProducer {
 	 */
 	public void start (long sinceSCN) {
 		this.sinceSCN.set(sinceSCN);
-		EventProducerThread thread = new EventProducerThread(this.eventBuffer, this.maxScnReaderWriter, this.dbusEventsStatisticsCollector);
+		EventProducerThread thread = new EventProducerThread();
 		thread.start();
 	}
 
@@ -97,18 +94,8 @@ public class PersonEventProducer extends AbstractEventProducer {
 	
 	/** Thread that creates a specified number of Person instances from in-memory data*/
 	private class EventProducerThread extends Thread {
-		private DbusEventBufferAppendable eventBuffer;
-		private MaxSCNReaderWriter maxScnReaderWriter;
-		private DbusEventsStatisticsCollector dbusEventsStatisticsCollector;
-		EventProducerThread(DbusEventBufferAppendable eventBuffer,
-				MaxSCNReaderWriter maxScnReaderWriter,
-				DbusEventsStatisticsCollector dbusEventsStatisticsCollector) {
-			this.eventBuffer = eventBuffer;
-			this.maxScnReaderWriter = maxScnReaderWriter;
-			this.dbusEventsStatisticsCollector = dbusEventsStatisticsCollector;
-		}
 		public void run() {
-			this.eventBuffer.startEvents();
+			eventBuffer.startEvents();
 			for (long i = sinceSCN.longValue(); i < (sinceSCN.longValue() + numberOfEventsPerRun); i++) {
 				Person person = new Person(i, "Aesop " + i, "Mr. " + i, i,"false");
 				byte[] serializedEvent = serializeEvent(person);
@@ -117,13 +104,13 @@ public class PersonEventProducer extends AbstractEventProducer {
 						(short)physicalSourceStaticConfig.getId(),(short)physicalSourceStaticConfig.getId(),
 						System.nanoTime(),(short)physicalSourceStaticConfig.getId(),
 						schemaId,serializedEvent, false, true);
-				this.eventBuffer.appendEvent(eventKey, eventInfo, dbusEventsStatisticsCollector);
+				eventBuffer.appendEvent(eventKey, eventInfo, dbusEventsStatisticsCollector);
 				LOGGER.info("Added an event : " + "Aesop Mr. " + i);
 			}
-			this.eventBuffer.endEvents(sinceSCN.longValue() + numberOfEventsPerRun,
+			eventBuffer.endEvents(sinceSCN.longValue() + numberOfEventsPerRun,
 					dbusEventsStatisticsCollector);
 			try {
-				this.maxScnReaderWriter.saveMaxScn(sinceSCN.longValue() + numberOfEventsPerRun);
+				maxScnReaderWriter.saveMaxScn(sinceSCN.longValue() + numberOfEventsPerRun);
 			} catch (DatabusException e) {
 				LOGGER.error("Error persisting Max SCN : " + e.getMessage(), e);
 			}
