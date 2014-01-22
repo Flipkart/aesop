@@ -68,6 +68,17 @@
             <groupId>com.linkedin.databus</groupId>
             <artifactId>databus-client-http</artifactId>
             <version>${com.linkedin.databus.version}</version>
+			<exclusions>
+				<!-- Removing these dependencies from log4j:1.2.15 that is no longer included-->
+			    <exclusion>
+			        <groupId>com.sun.jmx</groupId>
+			        <artifactId>jmxri</artifactId>
+			    </exclusion>
+			    <exclusion>
+			        <groupId>com.sun.jdmk</groupId>
+			        <artifactId>jmxtools</artifactId>
+			    </exclusion>
+			</exclusions>            
 		</dependency>       
     </dependencies>
 
@@ -109,5 +120,15 @@
             </plugin>
         </plugins>
     </build>
+    
+    <!-- Additional repositories for Databus dependencies -->
+    <repositories>
+		<repository>
+		  <id>repo.fusesource.com</id>
+		  <name>repo.fusesource.com</name>
+		  <url>http://repo.fusesource.com/maven2-legacy/</url>
+		  <layout>default</layout>
+		</repository>
+	</repositories>    
     
 </project>
