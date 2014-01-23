@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+    <bean id="clientConfig" class="org.aesop.runtime.config.ClientConfig">
+    	<property name="relayClientProperties">
+			<bean id="relayClientPropertiesFactory" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+		    	<property name="singleton" value="true"/>
+		    	<property name="properties">
+		    		<props>
+			        	<prop key="databus.client.container.httpPort">11125</prop>
+						<prop key="databus.client.container.jmx.rmiEnabled">false</prop>
+						<prop key="databus.client.connectionDefaults.pullerRetries.initSleep">1</prop>
+						<prop key="databus.client.checkpointPersistence.clearBeforeUse">false</prop>
+						<prop key="databus.client.connectionDefaults.enablePullerMessageQueueLogging">false</prop>
+			        </props>
+			    </property>    
+	    	</bean>    	
+    	</property>
+		<property name="checkpointDirectoryLocation" value="../../../sandbox/client_checkpoint_directory"/> <!-- This is relative to projects root -->
+    </bean>
+
+</beans>
