@@ -63,6 +63,7 @@ public class RelayConfig implements InitializingBean {
 	public void afterPropertiesSet() throws Exception {
 		Assert.notNull(this.schemaRegistryLocation,"'schemaRegistryLocation' cannot be null. This Relay will not be initialized");		
 		Assert.notNull(this.mmappedDirectoryLocation,"'mmappedDirectoryLocation' cannot be null. This Relay will not be initialized");		
+		Assert.notNull(this.maxScnDirectoryLocation,"'maxScnDirectoryLocation' cannot be null. This Relay will not be initialized");		
 		for (Object key : this.relayProperties.keySet()) {
 			if (!((String)key).startsWith(RelayConfig.RELAY_PROPERTIES_PREFIX)) {
 				throw new PlatformException("Property : " + key + " does not begin with the prefix : " + RelayConfig.RELAY_PROPERTIES_PREFIX);
