@@ -67,6 +67,37 @@ public class DefaultRelay extends HttpRelay {
     }
     
     /**
+     * Overriden superclass method. Calls pause on the registered Producers after calling super.pause()
+     * @see com.linkedin.databus.container.netty.HttpRelay#pause()
+     */
+    public void pause() {
+    	super.pause();
+    	for (ProducerRegistration producerRegistration : this.producerRegistrationList) {
+    		producerRegistration.getEventProducer().pause();
+    	}    	
+    }
+    /**
+     * Overriden superclass method. Calls resume on the registered Producers after calling super.resume()
+     * @see com.linkedin.databus.container.netty.HttpRelay#resume()
+     */
+    public void resume() {
+    	super.resume();
+    	for (ProducerRegistration producerRegistration : this.producerRegistrationList) {
+    		producerRegistration.getEventProducer().unpause();
+    	}    	
+    }
+    /**
+     * Overriden superclass method. Calls shutdown on the registered Producers after calling super.suspendOnError()
+     * @see com.linkedin.databus.container.netty.HttpRelay#suspendOnError(java.lang.Throwable)
+     */
+    public void suspendOnError(Throwable cause) {
+    	super.suspendOnError(cause);
+    	for (ProducerRegistration producerRegistration : this.producerRegistrationList) {
+    		producerRegistration.getEventProducer().shutdown();
+    	}    	
+    }    
+    
+    /**
      * Overriden superclass method. Starts up the registered Producers after calling super.doStart()
      * @see com.linkedin.databus.container.netty.HttpRelay#doStart()
      */
@@ -86,7 +117,18 @@ public class DefaultRelay extends HttpRelay {
     		producer.start(startScn);
     	}
     }
-
+    
+    /**
+     * Overriden superclass method. Stops the registered Producers after calling super.doShutdown()
+     * @see com.linkedin.databus.container.netty.HttpRelay#doShutdown()
+     */
+    protected void doShutdown() {
+    	super.doShutdown();
+    	for (ProducerRegistration producerRegistration : this.producerRegistrationList) {
+    		producerRegistration.getEventProducer().shutdown();
+    	}
+    }
+    
 	/** Getter/Setter methods to override default implementations of various components used by this Relay*/
 	public MultiServerSequenceNumberHandler getMaxScnReaderWriters() {
 		return this.maxScnReaderWriters;
