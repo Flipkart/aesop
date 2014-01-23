@@ -65,6 +65,12 @@
 			  <version>${com.linkedin.databus.version}</version>
 			  <scope>compile</scope>
 			</dependency>			
+			<dependency>
+			  <groupId>com.linkedin.databus</groupId>
+			  <artifactId>databus-core-schemas</artifactId>
+			  <version>${com.linkedin.databus.version}</version>
+			  <scope>compile</scope>
+			</dependency>			
 		</dependencies>
 	</dependencyManagement>
 	
