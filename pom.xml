@@ -53,6 +53,7 @@
         <module>runtime-relay</module>
         <module>runtime-client</module>
         <module>sample-memory-relay</module>
+        <module>sample-client</module>
     </modules>
 
 </project>
