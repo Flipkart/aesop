@@ -49,7 +49,19 @@
 		<dependencies>
 			<dependency>
 			  <groupId>com.linkedin.databus</groupId>
+			  <artifactId>databus-core-impl</artifactId>
+			  <version>${com.linkedin.databus.version}</version>
+			  <scope>compile</scope>
+			</dependency>
+			<dependency>
+			  <groupId>com.linkedin.databus</groupId>
 			  <artifactId>databus-client-http</artifactId>
+			  <version>${com.linkedin.databus.version}</version>
+			  <scope>compile</scope>
+			</dependency>
+			<dependency>
+			  <groupId>com.linkedin.databus</groupId>
+			  <artifactId>databus-client-api</artifactId>
 			  <version>${com.linkedin.databus.version}</version>
 			  <scope>compile</scope>
 			</dependency>
