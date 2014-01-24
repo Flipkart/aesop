@@ -40,6 +40,12 @@ public class ClientConfig implements InitializingBean {
 	/** The client checkpoint file location property name*/
 	public static final String CHECKPOINT_DIR_PROPERTY = "checkpointPersistence.fileSystem.rootDirectory";
 	
+	/** The identifier for the Relay that the Relay Client is connecting to*/
+	private String relayId;
+	
+	/** The Logical Source name in the Relay that the Relay Client will consume change events from */
+	private String relayLogicalSourceName;
+	
 	/** The Properties instance holding Relay Client configuration data*/
 	private Properties relayClientProperties = new Properties();
 
@@ -52,6 +58,8 @@ public class ClientConfig implements InitializingBean {
 	 */
 	public void afterPropertiesSet() throws Exception {
 		Assert.notNull(this.checkpointDirectoryLocation,"'checkpointDirectoryLocation' cannot be null. This Relay Client will not be initialized");		
+		Assert.notNull(this.relayId,"'relayId' cannot be null. This Relay Client will not be initialized");		
+		Assert.notNull(this.relayLogicalSourceName,"'relayLogicalSourceName' cannot be null. This Relay Client will not be initialized");		
 		for (Object key : this.relayClientProperties.keySet()) {
 			if (!((String)key).startsWith(ClientConfig.CLIENT_PROPERTIES_PREFIX)) {
 				throw new PlatformException("Property : " + key + " does not begin with the prefix : " + ClientConfig.CLIENT_PROPERTIES_PREFIX);
@@ -76,5 +84,16 @@ public class ClientConfig implements InitializingBean {
 		this.getRelayClientProperties().put(CLIENT_PROPERTIES_PREFIX + CHECKPOINT_DIR_PROPERTY, 
 				new File(RuntimeVariables.getProjectsRoot() + File.separator  + this.checkpointDirectoryLocation).getAbsolutePath());				
 	}
-	
+	public String getRelayId() {
+		return relayId;
+	}
+	public void setRelayId(String relayId) {
+		this.relayId = relayId;
+	}
+	public String getRelayLogicalSourceName() {
+		return relayLogicalSourceName;
+	}
+	public void setRelayLogicalSourceName(String relayLogicalSourceName) {
+		this.relayLogicalSourceName = relayLogicalSourceName;
+	}	
 }

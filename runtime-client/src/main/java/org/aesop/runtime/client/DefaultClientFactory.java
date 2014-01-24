@@ -20,6 +20,11 @@ import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
+import com.linkedin.databus.client.DatabusHttpClientImpl;
+import com.linkedin.databus.client.DatabusHttpClientImpl.Config;
+import com.linkedin.databus.client.DatabusHttpClientImpl.StaticConfig;
+import com.linkedin.databus.core.util.ConfigLoader;
+
 /**
  * The Spring factory bean for creating {@link DefaultClient} instances based on configured properties
  * 
@@ -39,7 +44,11 @@ public class DefaultClientFactory  implements FactoryBean<DefaultClient>, Initia
      * @see org.springframework.beans.factory.FactoryBean#getObject()
      */
 	public DefaultClient getObject() throws Exception {
-		return null;
+		Config config = new Config();		
+		ConfigLoader<StaticConfig> staticConfigLoader = new ConfigLoader<StaticConfig>(ClientConfig.CLIENT_PROPERTIES_PREFIX, config);
+		DatabusHttpClientImpl.StaticConfig staticConfig = staticConfigLoader.loadConfig(this.clientConfig.getRelayClientProperties());
+		DefaultClient defaultClient = new DefaultClient(staticConfig);
+	    return defaultClient;	
 	}
 
 	/**

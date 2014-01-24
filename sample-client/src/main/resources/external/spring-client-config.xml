@@ -4,6 +4,10 @@
 	xsi:schemaLocation="
     http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
+    <bean id="sampleClient" class="org.aesop.runtime.client.DefaultClientFactory">
+    	<property name="clientConfig" ref="clientConfig"/>
+    </bean>
+
     <bean id="clientConfig" class="org.aesop.runtime.config.ClientConfig">
     	<property name="relayClientProperties">
 			<bean id="relayClientPropertiesFactory" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
@@ -19,6 +23,8 @@
 			    </property>    
 	    	</bean>    	
     	</property>
+    	<property name="relayId" value="100"/>
+    	<property name="relayLogicalSourceName" value="org.aesop.events.sample.person.Person"/>
 		<property name="checkpointDirectoryLocation" value="../../../sandbox/client_checkpoint_directory"/> <!-- This is relative to projects root -->
     </bean>
 
