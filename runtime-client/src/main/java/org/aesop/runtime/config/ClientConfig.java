@@ -37,11 +37,23 @@ public class ClientConfig implements InitializingBean {
 	/** The property name prefix for all Databus relay client properties*/
 	public static final String CLIENT_PROPERTIES_PREFIX = "databus.client.";
 	
+	/** Property names for referencing the Relay*/
+	public static final String RELAY="runtime.relay";
+	public static final String RELAY_HOST=".host";
+	public static final String RELAY_PORT=".port";
+	public static final String RELAY_LOGICAL_SOURCES=".sources";	
+	
 	/** The client checkpoint file location property name*/
 	public static final String CHECKPOINT_DIR_PROPERTY = "checkpointPersistence.fileSystem.rootDirectory";
 	
 	/** The identifier for the Relay that the Relay Client is connecting to*/
 	private String relayId;
+	
+	/** The Relay host DNS name*/
+	private String relayHost;
+	
+	/** The Relay port number*/
+	private Integer relayPort;
 	
 	/** The Logical Source name in the Relay that the Relay Client will consume change events from */
 	private String relayLogicalSourceName;
@@ -57,9 +69,11 @@ public class ClientConfig implements InitializingBean {
 	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
 	 */
 	public void afterPropertiesSet() throws Exception {
-		Assert.notNull(this.checkpointDirectoryLocation,"'checkpointDirectoryLocation' cannot be null. This Relay Client will not be initialized");		
 		Assert.notNull(this.relayId,"'relayId' cannot be null. This Relay Client will not be initialized");		
+		Assert.notNull(this.relayHost,"'relayHost' cannot be null. This Relay Client will not be initialized");		
+		Assert.notNull(this.relayPort,"'relayPort' cannot be null. This Relay Client will not be initialized");		
 		Assert.notNull(this.relayLogicalSourceName,"'relayLogicalSourceName' cannot be null. This Relay Client will not be initialized");		
+		Assert.notNull(this.checkpointDirectoryLocation,"'checkpointDirectoryLocation' cannot be null. This Relay Client will not be initialized");		
 		for (Object key : this.relayClientProperties.keySet()) {
 			if (!((String)key).startsWith(ClientConfig.CLIENT_PROPERTIES_PREFIX)) {
 				throw new PlatformException("Property : " + key + " does not begin with the prefix : " + ClientConfig.CLIENT_PROPERTIES_PREFIX);
@@ -79,14 +93,31 @@ public class ClientConfig implements InitializingBean {
 	}
 	public void setCheckpointDirectoryLocation(String checkpointDirectoryLocation) {
 		this.checkpointDirectoryLocation = checkpointDirectoryLocation;
-		// add the checkpoint directory location to the properties specified for the Relay Cient. 
+		// add the checkpoint directory location to the properties specified for the Relay Client. 
 		// The checkpoint directory is relative to projects root
 		this.getRelayClientProperties().put(CLIENT_PROPERTIES_PREFIX + CHECKPOINT_DIR_PROPERTY, 
 				new File(RuntimeVariables.getProjectsRoot() + File.separator  + this.checkpointDirectoryLocation).getAbsolutePath());				
 	}
 	public String getRelayId() {
 		return relayId;
+	}	
+	public String getRelayHost() {
+		return relayHost;
 	}
+	public void setRelayHost(String relayHost) {
+		this.relayHost = relayHost;
+		// add the relay host to the properties specified for the Relay Client. 
+		this.getRelayClientProperties().put(CLIENT_PROPERTIES_PREFIX + this.getRelayProperty() + RELAY_HOST, this.relayHost);
+	}
+	public Integer getRelayPort() {
+		return relayPort;
+	}
+	public void setRelayPort(Integer relayPort) {
+		this.relayPort = relayPort;
+		// add the relay port to the properties specified for the Relay Client. 
+		this.getRelayClientProperties().put(CLIENT_PROPERTIES_PREFIX + this.getRelayProperty() + RELAY_PORT, this.relayPort);
+	}
+
 	public void setRelayId(String relayId) {
 		this.relayId = relayId;
 	}
@@ -95,5 +126,14 @@ public class ClientConfig implements InitializingBean {
 	}
 	public void setRelayLogicalSourceName(String relayLogicalSourceName) {
 		this.relayLogicalSourceName = relayLogicalSourceName;
+		// add the relay logical source name to the properties specified for the Relay Client. 
+		this.getRelayClientProperties().put(CLIENT_PROPERTIES_PREFIX + this.getRelayProperty() + RELAY_LOGICAL_SOURCES, this.relayLogicalSourceName);
 	}	
+	
+	/**
+	 * Helper method to get the Relay property appended with the relay ID
+	 */
+	private String getRelayProperty() {
+		return RELAY + "(" + this.getRelayId() + ")";
+	}
 }

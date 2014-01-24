@@ -65,8 +65,8 @@ public class DefaultRelayFactory  implements FactoryBean<DefaultRelay>, Initiali
      * @see org.springframework.beans.factory.FactoryBean#getObject()
      */
 	public DefaultRelay getObject() throws Exception {
-		Config config = new Config();		
-		ConfigLoader<StaticConfig> staticConfigLoader = new ConfigLoader<StaticConfig>(RelayConfig.RELAY_PROPERTIES_PREFIX, config);
+		HttpRelay.Config config = new HttpRelay.Config();		
+		ConfigLoader<HttpRelay.StaticConfig> staticConfigLoader = new ConfigLoader<HttpRelay.StaticConfig>(RelayConfig.RELAY_PROPERTIES_PREFIX, config);
 		
 		PhysicalSourceStaticConfig[] pStaticConfigs = new PhysicalSourceStaticConfig[this.producerRegistrationList.size()];
 		for (int i=0; i < this.producerRegistrationList.size(); i++) {
