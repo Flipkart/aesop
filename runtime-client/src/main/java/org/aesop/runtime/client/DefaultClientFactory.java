@@ -21,7 +21,6 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
 import com.linkedin.databus.client.DatabusHttpClientImpl;
-import com.linkedin.databus.client.pub.ServerInfo.ServerInfoBuilder;
 import com.linkedin.databus.core.util.ConfigLoader;
 
 /**
@@ -45,7 +44,6 @@ public class DefaultClientFactory  implements FactoryBean<DefaultClient>, Initia
 	public DefaultClient getObject() throws Exception {
 		DatabusHttpClientImpl.Config config = new DatabusHttpClientImpl.Config();		
 		ConfigLoader<DatabusHttpClientImpl.StaticConfig> staticConfigLoader = new ConfigLoader<DatabusHttpClientImpl.StaticConfig>(ClientConfig.CLIENT_PROPERTIES_PREFIX, config);
-		// now load all configs relevant for the Relay Client instance
 		DatabusHttpClientImpl.StaticConfig staticConfig = staticConfigLoader.loadConfig(this.clientConfig.getRelayClientProperties());
 		DefaultClient defaultClient = new DefaultClient(staticConfig);
 	    return defaultClient;	
