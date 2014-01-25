@@ -6,6 +6,16 @@
 
     <bean id="sampleClient" class="org.aesop.runtime.client.DefaultClientFactory">
     	<property name="clientConfig" ref="clientConfig"/>
+    	<property name="consumerRegistrationList">
+    		<list>
+    			<bean class="org.aesop.runtime.config.ConsumerRegistration">
+    				<property name="eventConsumer">
+    					<bean class="org.aesop.client.sample.PersonEventConsumer"/>
+    				</property>
+    				<property name="relayLogicalSourceName" value="org.aesop.events.sample.person.Person"/>
+    			</bean>
+    		</list>
+    	</property>
     </bean>
 
     <bean id="clientConfig" class="org.aesop.runtime.config.ClientConfig">
@@ -23,7 +33,7 @@
 			    </property>    
 	    	</bean>    	
     	</property>
-    	<property name="relayId" value="101"/>
+    	<property name="relayId" value="100"/>
     	<property name="relayHost" value="localhost"/>
     	<property name="relayPort" value="25020"/>
     	<property name="relayLogicalSourceName" value="org.aesop.events.sample.person.Person"/>
