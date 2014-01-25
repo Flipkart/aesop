@@ -15,7 +15,11 @@
  */
 package org.aesop.runtime.client;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.aesop.runtime.config.ClientConfig;
+import org.aesop.runtime.config.ConsumerRegistration;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
@@ -37,6 +41,9 @@ public class DefaultClientFactory  implements FactoryBean<DefaultClient>, Initia
 	/** The configuration details for creating the Relay Client*/
 	private ClientConfig clientConfig;
 	
+	/** The ConsumerRegistration list for the Relay Client*/
+	private List<ConsumerRegistration> consumerRegistrationList = new ArrayList<ConsumerRegistration>();
+	
     /**
      * Interface method implementation. Creates and returns a {@link DefaultClient} instance
      * @see org.springframework.beans.factory.FactoryBean#getObject()
@@ -46,6 +53,11 @@ public class DefaultClientFactory  implements FactoryBean<DefaultClient>, Initia
 		ConfigLoader<DatabusHttpClientImpl.StaticConfig> staticConfigLoader = new ConfigLoader<DatabusHttpClientImpl.StaticConfig>(ClientConfig.CLIENT_PROPERTIES_PREFIX, config);
 		DatabusHttpClientImpl.StaticConfig staticConfig = staticConfigLoader.loadConfig(this.clientConfig.getRelayClientProperties());
 		DefaultClient defaultClient = new DefaultClient(staticConfig);
+		// register all Event Consumers with the Relay Client
+		for (ConsumerRegistration consumerRegistration : this.consumerRegistrationList) {
+			defaultClient.registerDatabusStreamListener(consumerRegistration.getEventConsumer(), null, consumerRegistration.getRelayLogicalSourceName());
+			defaultClient.registerDatabusBootstrapListener(consumerRegistration.getEventConsumer(), null, consumerRegistration.getRelayLogicalSourceName());			
+		}
 	    return defaultClient;	
 	}
 
@@ -55,6 +67,7 @@ public class DefaultClientFactory  implements FactoryBean<DefaultClient>, Initia
 	 */
 	public void afterPropertiesSet() throws Exception {
 		Assert.notNull(this.clientConfig,"'clientConfig' cannot be null. This Relay Client will not be initialized");
+		Assert.notEmpty(this.consumerRegistrationList,"'consumerRegistrationList' cannot be empty. No Event consumers registered");		
 	}
 	
 	/**
@@ -80,4 +93,11 @@ public class DefaultClientFactory  implements FactoryBean<DefaultClient>, Initia
 	public void setClientConfig(ClientConfig clientConfig) {
 		this.clientConfig = clientConfig;
 	}
+	public List<ConsumerRegistration> getConsumerRegistrationList() {
+		return consumerRegistrationList;
+	}
+	public void setConsumerRegistrationList(List<ConsumerRegistration> consumerRegistrationList) {
+		this.consumerRegistrationList = consumerRegistrationList;
+	}
+	
 }
