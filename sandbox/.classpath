@@ -13,34 +13,41 @@
 	<classpathentry kind="lib" path="lib/com.noelios.restlet-1.1.10.jar"/>
 	<classpathentry kind="lib" path="lib/commons-beanutils-1.7.0.jar"/>
 	<classpathentry kind="lib" path="lib/commons-cli-1.2.jar"/>
-	<classpathentry kind="lib" path="lib/commons-codec-1.3.jar"/>
 	<classpathentry kind="lib" path="lib/commons-collections-3.2.1.jar"/>
+	<classpathentry kind="lib" path="lib/commons-configuration-1.8.jar"/>
 	<classpathentry kind="lib" path="lib/commons-io-1.4.jar"/>
 	<classpathentry kind="lib" path="lib/commons-lang-2.5.jar"/>
 	<classpathentry kind="lib" path="lib/commons-logging-1.1.jar"/>
 	<classpathentry kind="lib" path="lib/commons-logging-api-1.1.jar"/>
 	<classpathentry kind="lib" path="lib/commons-management-1.0.jar"/>
 	<classpathentry kind="lib" path="lib/commons-math-2.1.jar"/>
-	<classpathentry kind="lib" path="lib/databus-bootstrap-client-impl.jar"/>
-	<classpathentry kind="lib" path="lib/databus-bootstrap-common-api.jar"/>
-	<classpathentry kind="lib" path="lib/databus-bootstrap-common-impl.jar"/>
-	<classpathentry kind="lib" path="lib/databus-bootstrap-producer-impl.jar"/>
-	<classpathentry kind="lib" path="lib/databus-bootstrap-server-impl.jar" sourcepath="/Users/regunath.balasubramanian/Documents/workspace/github/databus"/>
-	<classpathentry kind="lib" path="lib/databus-bootstrap-utils-impl.jar"/>
-	<classpathentry kind="lib" path="lib/databus-client-api.jar"/>
-	<classpathentry kind="lib" path="lib/databus-client-common.jar"/>
-	<classpathentry kind="lib" path="lib/databus-client-http.jar" sourcepath="/Users/regunath.balasubramanian/Documents/workspace/github/databus"/>
-	<classpathentry kind="lib" path="lib/databus-cluster-manager-impl.jar"/>
-	<classpathentry kind="lib" path="lib/databus-core-container.jar" sourcepath="/Users/regunath.balasubramanian/Documents/workspace/github/databus"/>
-	<classpathentry kind="lib" path="lib/databus-core-impl.jar" sourcepath="/Users/regunath.balasubramanian/Documents/workspace/github/databus"/>
-	<classpathentry kind="lib" path="lib/databus-core-schemas.jar"/>
-	<classpathentry kind="lib" path="lib/databus-group-leader-api.jar"/>
-	<classpathentry kind="lib" path="lib/databus-group-leader-impl.jar"/>
-	<classpathentry kind="lib" path="lib/databus-util-cmdline-impl.jar"/>
-	<classpathentry kind="lib" path="lib/databus2-example-relay.jar"/>
-	<classpathentry kind="lib" path="lib/databus2-relay-impl.jar" sourcepath="/Users/regunath.balasubramanian/Documents/workspace/github/databus"/>
+	<classpathentry kind="lib" path="lib/databus-bootstrap-common-impl-1.0.jar"/>
+	<classpathentry kind="lib" path="lib/databus-bootstrap-producer-impl-1.0.jar"/>
+	<classpathentry kind="lib" path="lib/databus-bootstrap-server-impl-1.0.jar"/>
+	<classpathentry kind="lib" path="lib/databus-client-api-1.0.jar"/>
+	<classpathentry kind="lib" path="lib/databus-client-common-1.0.jar"/>
+	<classpathentry kind="lib" path="lib/databus-client-http-1.0.jar"/>
+	<classpathentry kind="lib" path="lib/databus-cluster-manager-impl-1.0.jar"/>
+	<classpathentry kind="lib" path="lib/databus-core-container-1.0.jar"/>
+	<classpathentry kind="lib" path="lib/databus-core-impl-1.0.jar"/>
+	<classpathentry kind="lib" path="lib/databus-core-schemas-1.0.jar"/>
+	<classpathentry kind="lib" path="lib/databus-group-leader-api-1.0.jar"/>
+	<classpathentry kind="lib" path="lib/databus-group-leader-impl-1.0.jar"/>
+	<classpathentry kind="lib" path="lib/databus-util-cmdline-impl-1.0.jar"/>
+	<classpathentry kind="lib" path="lib/databus2-event-producer-common-1.0.jar"/>
+	<classpathentry kind="lib" path="lib/databus2-event-producer-mock-1.0.jar"/>
+	<classpathentry kind="lib" path="lib/databus2-relay-impl-1.0.jar"/>
 	<classpathentry kind="lib" path="lib/gentlyweb-utils-1.5.jar"/>
+	<classpathentry kind="lib" path="lib/guava-14.0.1.jar"/>
+	<classpathentry kind="lib" path="lib/hadoop-auth-2.0.0-cdh4.2.0.jar"/>
+	<classpathentry kind="lib" path="lib/hadoop-client-2.0.0-cdh4.2.0.jar"/>
+	<classpathentry kind="lib" path="lib/hadoop-common-2.0.0-cdh4.2.0.jar"/>
+	<classpathentry kind="lib" path="lib/hbase-0.94.6-cdh4.3.0.jar"/>
+	<classpathentry kind="lib" path="lib/hbase-sep-api-1.3.jar"/>
+	<classpathentry kind="lib" path="lib/hbase-sep-impl-1.3-hbase0.94-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="lib/hbase-sep-impl-common-1.3.jar"/>
 	<classpathentry kind="lib" path="lib/helix-core-0.5.31.jar"/>
+	<classpathentry kind="lib" path="lib/high-scale-lib-1.1.1.jar"/>
 	<classpathentry kind="lib" path="lib/httpclient-4.2.1.jar"/>
 	<classpathentry kind="lib" path="lib/httpcore-4.2.1.jar"/>
 	<classpathentry kind="lib" path="lib/jackson-core-asl-1.8.5.jar"/>
@@ -63,10 +70,13 @@
 	<classpathentry kind="lib" path="lib/paranamer-2.2.jar"/>
 	<classpathentry kind="lib" path="lib/paranamer-ant-2.2.jar"/>
 	<classpathentry kind="lib" path="lib/paranamer-generator-2.2.jar"/>
+	<classpathentry kind="lib" path="lib/protobuf-java-2.4.0a.jar"/>
 	<classpathentry kind="lib" path="lib/qdox-1.10.1.jar"/>
 	<classpathentry kind="lib" path="lib/servlet-api-2.3.jar"/>
 	<classpathentry kind="lib" path="lib/servlet-api-2.5-20081211.jar"/>
 	<classpathentry kind="lib" path="lib/slf4j-api-1.5.11.jar"/>
+	<classpathentry kind="lib" path="lib/slf4j-api-1.6.4.jar"/>
+	<classpathentry kind="lib" path="lib/slf4j-simple-1.6.4.jar"/>
 	<classpathentry kind="lib" path="lib/spring-beans-3.2.5.RELEASE.jar"/>
 	<classpathentry kind="lib" path="lib/spring-core-3.2.5.RELEASE.jar"/>
 	<classpathentry kind="lib" path="lib/spring-jdbc-3.2.5.RELEASE.jar"/>
@@ -76,18 +86,6 @@
 	<classpathentry kind="lib" path="lib/xstream-1.3.1.jar"/>
 	<classpathentry kind="lib" path="lib/zkclient-0.1.jar"/>
 	<classpathentry kind="lib" path="lib/zookeeper-3.3.4.jar"/>
-	<classpathentry kind="lib" path="lib/hadoop-client-2.0.0-cdh4.2.0.jar"/>
-	<classpathentry kind="lib" path="lib/hbase-0.94.6-cdh4.3.0.jar"/>
-	<classpathentry kind="lib" path="lib/hadoop-common-2.0.0-cdh4.2.0.jar"/>
-	<classpathentry kind="lib" path="lib/hbase-sep-api-1.3.jar"/>
-	<classpathentry kind="lib" path="lib/hbase-sep-impl-common-1.3.jar"/>
-	<classpathentry kind="lib" path="lib/hbase-sep-impl-1.3-hbase0.94-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="lib/guava-14.0.1.jar"/>
-	<classpathentry kind="lib" path="lib/commons-configuration-1.8.jar"/>
-	<classpathentry kind="lib" path="lib/hadoop-auth-2.0.0-cdh4.2.0.jar"/>
-	<classpathentry kind="lib" path="lib/slf4j-api-1.6.4.jar"/>
-	<classpathentry kind="lib" path="lib/slf4j-simple-1.6.4.jar"/>
-	<classpathentry kind="lib" path="lib/protobuf-java-2.4.0a.jar"/>
-	<classpathentry kind="lib" path="lib/high-scale-lib-1.1.1.jar"/>
+	<classpathentry kind="lib" path="lib/commons-codec-1.6.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

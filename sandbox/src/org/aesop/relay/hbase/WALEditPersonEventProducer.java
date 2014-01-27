@@ -61,7 +61,7 @@ public class WALEditPersonEventProducer implements EventProducer {
 			PhysicalSourceStaticConfig physicalSourceConfig) {		
 		try {			
 			LogicalSourceStaticConfig sourceConfig = physicalSourceConfig.getSources()[0];
-			schema = schemaRegistryService.fetchLatestSchemaByType(sourceConfig.getName());
+			schema = schemaRegistryService.fetchLatestSchemaBySourceName(sourceConfig.getName());
 			
 	        Configuration conf = HBaseConfiguration.create();
 	        conf.setBoolean("hbase.replication", true);

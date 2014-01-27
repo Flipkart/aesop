@@ -54,7 +54,7 @@ public class PersonEventProducer implements EventProducer {
 		LogicalSourceStaticConfig sourceConfig = physicalSourceConfig
 				.getSources()[0];
 		try {
-			schema = schemaRegistryService.fetchLatestSchemaByType(sourceConfig
+			schema = schemaRegistryService.fetchLatestSchemaBySourceName(sourceConfig
 					.getName());
 		} catch (Exception e) {
 			e.printStackTrace();
