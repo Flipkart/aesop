@@ -5,3 +5,6 @@
 /personclient-checkpoints
 /databus2-checkpoints
 /bootstrap-checkpoints
+/client_checkpoint_directory
+/maxscn_directory
+/mmapped_directory
