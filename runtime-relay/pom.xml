@@ -81,12 +81,6 @@
             <artifactId>runtime</artifactId>
             <version>1.0.0</version>
         </dependency>    
-        <!-- Add the log4j over slf4j bridge to support logging in Databus libraries -->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>log4j-over-slf4j</artifactId>
-            <version>1.7.5</version>
-        </dependency>    
         <!-- Databus dependencies -->
         <dependency>
             <groupId>com.linkedin.databus</groupId>
@@ -112,7 +106,12 @@
 			        <groupId>com.oracle</groupId>
 			        <artifactId>ojdbc6</artifactId>
 			    </exclusion>
-			</exclusions>            
+				<!-- Removing log4j as we use log4j-over-slf4j bridge -->
+			    <exclusion>
+			        <groupId>log4j</groupId>
+			        <artifactId>log4j</artifactId>
+			    </exclusion>			    
+			</exclusions>      			      
 		</dependency>       
     </dependencies>
 
