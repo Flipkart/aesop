@@ -16,6 +16,36 @@
     <name>Sample Client</name>
     <description>Sample Client</description>
 
+	<dependencyManagement>
+		<!-- All databus dependencies are marked as scope compile as we extend their classes and need them during compile and not just runtime -->
+		<dependencies>
+			<dependency>
+			  <groupId>com.linkedin.databus</groupId>
+			  <artifactId>databus-core-impl</artifactId>
+			  <version>${com.linkedin.databus.version}</version>
+			  <scope>compile</scope>
+			</dependency>
+			<dependency>
+			  <groupId>com.linkedin.databus</groupId>
+			  <artifactId>databus-client-common</artifactId>
+			  <version>${com.linkedin.databus.version}</version>
+			  <scope>compile</scope>
+			</dependency>
+			<dependency>
+			  <groupId>com.linkedin.databus</groupId>
+			  <artifactId>databus-client-http</artifactId>
+			  <version>${com.linkedin.databus.version}</version>
+			  <scope>compile</scope>
+			</dependency>
+			<dependency>
+			  <groupId>com.linkedin.databus</groupId>
+			  <artifactId>databus-client-api</artifactId>
+			  <version>${com.linkedin.databus.version}</version>
+			  <scope>compile</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
     <dependencies>
         <!-- aesop dependencies -->
         <dependency>
