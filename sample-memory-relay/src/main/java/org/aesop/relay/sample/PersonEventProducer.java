@@ -102,9 +102,10 @@ public class PersonEventProducer extends AbstractEventProducer {
 				DbusEventKey eventKey = new DbusEventKey(i);
 				DbusEventInfo eventInfo = new DbusEventInfo(DbusOpcode.UPSERT,i,
 						(short)physicalSourceStaticConfig.getId(),(short)physicalSourceStaticConfig.getId(),
-						System.nanoTime(),(short)physicalSourceStaticConfig.getId(),
+						System.nanoTime(),(short)physicalSourceStaticConfig.getSources()[0].getId(), // here we use the Logical Source Id
 						schemaId,serializedEvent, false, true);
 				eventBuffer.appendEvent(eventKey, eventInfo, dbusEventsStatisticsCollector);
+				
 				LOGGER.info("Added an event : " + "Aesop Mr. " + i);
 			}
 			eventBuffer.endEvents(sinceSCN.longValue() + numberOfEventsPerRun,
