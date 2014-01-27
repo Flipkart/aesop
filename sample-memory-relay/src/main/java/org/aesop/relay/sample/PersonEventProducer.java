@@ -105,11 +105,10 @@ public class PersonEventProducer extends AbstractEventProducer {
 						System.nanoTime(),(short)physicalSourceStaticConfig.getSources()[0].getId(), // here we use the Logical Source Id
 						schemaId,serializedEvent, false, true);
 				eventBuffer.appendEvent(eventKey, eventInfo, dbusEventsStatisticsCollector);
-				
+				sinceSCN.getAndIncrement();
 				LOGGER.info("Added an event : " + "Aesop Mr. " + i);
 			}
-			eventBuffer.endEvents(sinceSCN.longValue() + numberOfEventsPerRun,
-					dbusEventsStatisticsCollector);
+			eventBuffer.endEvents(sinceSCN.longValue() , dbusEventsStatisticsCollector);
 			try {
 				maxScnReaderWriter.saveMaxScn(sinceSCN.longValue() + numberOfEventsPerRun);
 			} catch (DatabusException e) {
