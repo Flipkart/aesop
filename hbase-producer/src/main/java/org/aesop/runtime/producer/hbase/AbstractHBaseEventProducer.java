@@ -22,9 +22,14 @@ import org.aesop.runtime.producer.AbstractEventProducer;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
+import org.apache.hadoop.hbase.KeyValue;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
+import com.linkedin.databus.core.DbusEventInfo;
+import com.linkedin.databus.core.DbusEventKey;
+import com.linkedin.databus.core.DbusOpcode;
+import com.linkedin.databus2.core.DatabusException;
 import com.ngdata.sep.EventListener;
 import com.ngdata.sep.SepEvent;
 import com.ngdata.sep.SepModel;
@@ -40,7 +45,6 @@ import com.ngdata.sep.util.zookeeper.ZooKeeperItf;
  * @author Regunath B
  * @version 1.0, 17 Jan 2014
  */
-
 public abstract class AbstractHBaseEventProducer<T extends GenericRecord> extends AbstractEventProducer implements InitializingBean {
 	
 	/** The HBase replication configuration parameter */
@@ -62,6 +66,9 @@ public abstract class AbstractHBaseEventProducer<T extends GenericRecord> extend
 	/** The number of WAL edits processing worker threads*/
 	protected int workerThreads = WORKER_THREADS;
 	
+	/** The SepEventMapper for translating WAL edits to change events*/
+	protected SepEventMapper<T> sepEventMapper;
+	
 	/**
 	 * Interface method implementation. Checks for mandatory dependencies and creates the SEP consumer
 	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
@@ -69,6 +76,7 @@ public abstract class AbstractHBaseEventProducer<T extends GenericRecord> extend
 	public void afterPropertiesSet() throws Exception {
 		Assert.notNull(this.zkQuorum,"'zkQuorum' cannot be null. Zookeeper quorum list must be specified. This HBase Events producer will not be initialized");
 		Assert.notNull(this.zkPort,"'zkPort' cannot be null. Zookeeper port must be specified. This HBase Events producer will not be initialized");		
+		Assert.notNull(this.sepEventMapper,"'sepEventMapper' cannot be null. No WAL edits event mapper found. This HBase Events producer will not be initialized");		
 		this.localHost = InetAddress.getLocalHost().getHostName();
 	}
 	
@@ -96,12 +104,43 @@ public abstract class AbstractHBaseEventProducer<T extends GenericRecord> extend
 	        if (!sepModel.hasSubscription(subscriptionName)) {
 	            sepModel.addSubscriptionSilent(subscriptionName);
 	        }
-	        this.sepConsumer = new SepConsumer(subscriptionName, 0, new RelayAppender(), 1, this.localHost, zk, conf);							
+	        this.sepConsumer = new SepConsumer(subscriptionName, this.sinceSCN.get(), new RelayAppender(), this.workerThreads, this.localHost, zk, conf);							
 			this.sepConsumer.start();
 		} catch (Exception e) {
 			LOGGER.error("Error starting WAL edits consumer. Producer not started!. Error message : " + e.getMessage(), e);
 		}
 	}
+	
+	/**
+	 * The SEP EventListener that consumes {@link SepEvent} instances and appends them to the Databus event buffer after suitable conversion/interpretation.
+	 */
+	class RelayAppender implements EventListener {
+		public void processEvents(List<SepEvent> sepEvents) {
+			eventBuffer.startEvents();
+            for (SepEvent sepEvent : sepEvents) {
+            	T changeEvent = sepEventMapper.mapSepEvent(sepEvent);
+            	byte[] serializedEvent = serializeEvent(changeEvent);
+            	// we find the last processed timestamp and are conservative to take the earliest
+            	long earliestTimestamp = 0;
+            	for (KeyValue kv : sepEvent.getKeyValues()) {
+            		earliestTimestamp = Math.min(earliestTimestamp, kv.getTimestamp());
+            	}
+				DbusEventKey eventKey = new DbusEventKey(sepEvent.getRow()); // we use the SepEvent row key as the identifier
+				DbusEventInfo eventInfo = new DbusEventInfo(DbusOpcode.UPSERT,earliestTimestamp,
+						(short)physicalSourceStaticConfig.getId(),(short)physicalSourceStaticConfig.getId(),
+						System.nanoTime(),(short)physicalSourceStaticConfig.getSources()[0].getId(), // here we use the Logical Source Id
+						schemaId,serializedEvent, false, true);
+				eventBuffer.appendEvent(eventKey, eventInfo, dbusEventsStatisticsCollector);    
+				sinceSCN.set(earliestTimestamp);
+            }
+            eventBuffer.endEvents(sinceSCN.longValue() , dbusEventsStatisticsCollector);
+			try {
+				maxScnReaderWriter.saveMaxScn(sinceSCN.longValue());
+			} catch (DatabusException e) {
+				LOGGER.error("Unable to persist last processed SCN. SCN value is stale. Error is : " + e.getMessage(), e);
+			}                        
+		}		 	        	
+    }
 	
 	/**
 	 * Interface method implementation. Stops the SEP consumer
@@ -141,7 +180,7 @@ public abstract class AbstractHBaseEventProducer<T extends GenericRecord> extend
 	public void waitForShutdown() throws InterruptedException,IllegalStateException {throw new UnsupportedOperationException("'waitForShutdown' is not supported on this event producer");}
 	public void waitForShutdown(long time) throws InterruptedException,IllegalStateException {throw new UnsupportedOperationException("'waitForShutdown(long time)' is not supported on this event producer");}
 
-	/** Setter/Getter methods*/
+	/** Start Setter/Getter methods*/
 	public String getZkQuorum() {
 		return zkQuorum;
 	}
@@ -160,15 +199,12 @@ public abstract class AbstractHBaseEventProducer<T extends GenericRecord> extend
 	public void setWorkerThreads(int workerThreads) {
 		this.workerThreads = workerThreads;
 	}
-
-	/**
-	 * The SEP events listener that is called when WAL edits are received by the SEP consumer 
-	 */
-	private class RelayAppender implements EventListener {
-		@Override
-		public void processEvents(List<SepEvent> events) {
-			
-		}		 
+	public SepEventMapper<T> getSepEventMapper() {
+		return sepEventMapper;
 	}
-		
+	public void setSepEventMapper(SepEventMapper<T> sepEventMapper) {
+		this.sepEventMapper = sepEventMapper;
+	}
+	/** End Setter/Getter methods*/
+
 }

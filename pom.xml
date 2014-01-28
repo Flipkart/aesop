@@ -54,6 +54,7 @@
         <module>runtime-client</module>
         <module>sample-memory-relay</module>
         <module>sample-client</module>
+        <module>hbase-producer</module>
     </modules>
 
 </project>
