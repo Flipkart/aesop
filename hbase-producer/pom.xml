@@ -21,7 +21,25 @@
 		<dependencies>
 			<dependency>
 			  <groupId>com.linkedin.databus</groupId>
+			  <artifactId>databus2-relay-impl</artifactId>
+			  <version>${com.linkedin.databus.version}</version>
+			  <scope>compile</scope>
+			</dependency>
+			<dependency>
+			  <groupId>com.linkedin.databus</groupId>
 			  <artifactId>databus2-event-producer-common</artifactId>
+			  <version>${com.linkedin.databus.version}</version>
+			  <scope>compile</scope>
+			</dependency>			
+			<dependency>
+			  <groupId>com.linkedin.databus</groupId>
+			  <artifactId>databus-core-impl</artifactId>
+			  <version>${com.linkedin.databus.version}</version>
+			  <scope>compile</scope>
+			</dependency>			
+			<dependency>
+			  <groupId>com.linkedin.databus</groupId>
+			  <artifactId>databus-core-schemas</artifactId>
 			  <version>${com.linkedin.databus.version}</version>
 			  <scope>compile</scope>
 			</dependency>			

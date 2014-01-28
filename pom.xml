@@ -52,9 +52,10 @@
         <module>runtime</module>
         <module>runtime-relay</module>
         <module>runtime-client</module>
-        <module>sample-memory-relay</module>
-        <module>sample-client</module>
         <module>hbase-producer</module>
+        <module>sample-memory-relay</module>
+        <module>sample-hbase-relay</module>
+        <module>sample-client</module>
     </modules>
 
 </project>
