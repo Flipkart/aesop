@@ -9,15 +9,20 @@
     	<property name="producerRegistrationList">
     		<list>
     			<bean class="org.aesop.runtime.config.ProducerRegistration">
-    				<property name="eventProducer" ref="personProducer"/>
+    				<property name="eventProducer" ref="hbasePersonProducer"/>
     				<property name="physicalSourceConfig" ref="physicalSourceConfig"/>
     			</bean>
     		</list>
     	</property>
     </bean>
     
-    <bean id="personProducer" class="org.aesop.relay.sample.PersonEventProducer">
+    <bean id="hbasePersonProducer" class="org.aesop.runtime.producer.hbase.HBaseEventProducer">
     	<property name="physicalSourceConfig" ref="physicalSourceConfig"/>
+    	<property name="zkQuorum" value="localhost"/>
+    	<property name="zkPort" ref="20000"/>
+    	<property name="sepEventMapper">
+    		<bean class="org.aesop.relay.sample.PersonSepEventMapper"/>
+    	</property>
     </bean>
 
     <bean id="physicalSourceConfig" class="com.linkedin.databus2.relay.config.PhysicalSourceConfig">

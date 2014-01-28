@@ -39,13 +39,13 @@ import com.ngdata.sep.util.zookeeper.ZkUtil;
 import com.ngdata.sep.util.zookeeper.ZooKeeperItf;
 
 /**
- * <code>AbstractHBaseEventProducer</code> that listens to HBase WAL edits using the hbase-sep module library classes such as {@link SepConsumer} and {@link EventListener} and in 
+ * <code>HBaseEventProducer</code> that listens to HBase WAL edits using the hbase-sep module library classes such as {@link SepConsumer} and {@link EventListener} and in 
  * turn creates change events of {@link GenericRecord} sub-type T.
  *
  * @author Regunath B
- * @version 1.0, 17 Jan 2014
+ * @version 1.0, 28 Jan 2014
  */
-public abstract class AbstractHBaseEventProducer<T extends GenericRecord> extends AbstractEventProducer implements InitializingBean {
+public class HBaseEventProducer<T extends GenericRecord> extends AbstractEventProducer implements InitializingBean {
 	
 	/** The HBase replication configuration parameter */
 	private static final String HBASE_REPLICATION_CONFIG = "hbase.replication";
@@ -68,6 +68,14 @@ public abstract class AbstractHBaseEventProducer<T extends GenericRecord> extend
 	
 	/** The SepEventMapper for translating WAL edits to change events*/
 	protected SepEventMapper<T> sepEventMapper;
+
+	/**
+	 * Interface method implementation. Returns {@link SepEventMapper#getUniqueName()}
+	 * @see com.linkedin.databus2.producers.EventProducer#getName()
+	 */
+	public String getName() {
+		return this.sepEventMapper.getUniqueName();
+	}
 	
 	/**
 	 * Interface method implementation. Checks for mandatory dependencies and creates the SEP consumer

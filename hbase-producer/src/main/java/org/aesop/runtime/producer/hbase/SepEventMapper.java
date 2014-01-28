@@ -23,7 +23,7 @@ import com.ngdata.sep.SepEvent;
  * <code>SepEventMapper</code> maps a single {@link SepEvent} to an appropriate instance of the {@link GenericRecord} sub-type T.
  *
  * @author Regunath B
- * @version 1.0, 17 Jan 2014
+ * @version 1.0, 28 Jan 2014
  */
 public interface SepEventMapper <T extends GenericRecord> {
 	
@@ -33,5 +33,11 @@ public interface SepEventMapper <T extends GenericRecord> {
 	 * @return a mapped GenericRecord instance
 	 */
 	public T mapSepEvent(SepEvent event);
+	
+	/**
+	 * Returns a name unique to this mapper type.
+	 * @return unique name for this mapper type
+	 */
+	public String getUniqueName();
 
 }
