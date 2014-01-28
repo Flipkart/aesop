@@ -15,13 +15,23 @@
  */
 package org.aesop.runtime.producer.hbase;
 
+import java.net.InetAddress;
+import java.util.List;
+
 import org.aesop.runtime.producer.AbstractEventProducer;
 import org.apache.avro.generic.GenericRecord;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
 import com.ngdata.sep.EventListener;
+import com.ngdata.sep.SepEvent;
+import com.ngdata.sep.SepModel;
 import com.ngdata.sep.impl.SepConsumer;
+import com.ngdata.sep.impl.SepModelImpl;
+import com.ngdata.sep.util.zookeeper.ZkUtil;
+import com.ngdata.sep.util.zookeeper.ZooKeeperItf;
 
 /**
  * <code>AbstractHBaseEventProducer</code> that listens to HBase WAL edits using the hbase-sep module library classes such as {@link SepConsumer} and {@link EventListener} and in 
@@ -32,13 +42,25 @@ import com.ngdata.sep.impl.SepConsumer;
  */
 
 public abstract class AbstractHBaseEventProducer<T extends GenericRecord> extends AbstractEventProducer implements InitializingBean {
+	
+	/** The HBase replication configuration parameter */
+	private static final String HBASE_REPLICATION_CONFIG = "hbase.replication";
+	
+	/** The default number of worker threads that process WAL edit events*/
+	private static final int WORKER_THREADS = 10;
 
 	/** The SEP consumer instance initialized by this Producer*/
 	protected SepConsumer sepConsumer;
 	
+	/** Host name where this producer is running i.e. local host name*/
+	private String localHost;
+	
 	/** The Zookeeper connection properties*/
 	protected String zkQuorum;
 	protected Integer zkPort;
+	
+	/** The number of WAL edits processing worker threads*/
+	protected int workerThreads = WORKER_THREADS;
 	
 	/**
 	 * Interface method implementation. Checks for mandatory dependencies and creates the SEP consumer
@@ -46,7 +68,8 @@ public abstract class AbstractHBaseEventProducer<T extends GenericRecord> extend
 	 */
 	public void afterPropertiesSet() throws Exception {
 		Assert.notNull(this.zkQuorum,"'zkQuorum' cannot be null. Zookeeper quorum list must be specified. This HBase Events producer will not be initialized");
-		Assert.notNull(this.zkPort,"'zkPort' cannot be null. Zookeeper port must be specified. This HBase Events producer will not be initialized");
+		Assert.notNull(this.zkPort,"'zkPort' cannot be null. Zookeeper port must be specified. This HBase Events producer will not be initialized");		
+		this.localHost = InetAddress.getLocalHost().getHostName();
 	}
 	
 	/**
@@ -55,6 +78,37 @@ public abstract class AbstractHBaseEventProducer<T extends GenericRecord> extend
 	 */
 	public void start (long sinceSCN) {
 		this.sinceSCN.set(sinceSCN);
+		LOGGER.info("Starting SEP subscription : " + this.getName());
+		LOGGER.info("ZK connection details [host:port] = {} : {}", this.zkQuorum, this.zkPort);
+		LOGGER.info("Using hostname to bind to : " + this.localHost);
+		LOGGER.info("Using worker threads : " + this.workerThreads);
+		LOGGER.info("Listening to WAL edits from : " + this.sinceSCN);
+		try {
+	        Configuration conf = HBaseConfiguration.create();
+	        // enable replication to get WAL edits
+	        conf.setBoolean(HBASE_REPLICATION_CONFIG, true);
+
+	        ZooKeeperItf zk = ZkUtil.connect(this.zkQuorum, this.zkPort);
+	        SepModel sepModel = new SepModelImpl(zk, conf);
+
+	        final String subscriptionName = this.getName();
+
+	        if (!sepModel.hasSubscription(subscriptionName)) {
+	            sepModel.addSubscriptionSilent(subscriptionName);
+	        }
+	        this.sepConsumer = new SepConsumer(subscriptionName, 0, new RelayAppender(), 1, this.localHost, zk, conf);							
+			this.sepConsumer.start();
+		} catch (Exception e) {
+			LOGGER.error("Error starting WAL edits consumer. Producer not started!. Error message : " + e.getMessage(), e);
+		}
+	}
+	
+	/**
+	 * Interface method implementation. Stops the SEP consumer
+	 * @see com.linkedin.databus2.producers.EventProducer#shutdown()
+	 */
+	public void shutdown() {
+		this.sepConsumer.stop();
 	}
 
 	/**
@@ -66,27 +120,26 @@ public abstract class AbstractHBaseEventProducer<T extends GenericRecord> extend
 	}
 
 	/**
-	 * Interface method implementation. Returns false always
+	 * Interface method implementation. Returns inverted status of {@link #isRunning()}
 	 * @see com.linkedin.databus2.producers.EventProducer#isPaused()
 	 */
 	public boolean isPaused() {
-		return false;
+		return !this.isRunning();
 	}
 
 	/**
-	 * Interface method implementation. Returns true always
+	 * Interface method implementation. Returns {@link SepConsumer#isRunning()}
 	 * @see com.linkedin.databus2.producers.EventProducer#isRunning()
 	 */
 	public boolean isRunning() {
-		return true;
+		return this.sepConsumer.isRunning();
 	}
 
-	/** No Op methods*/
-	public void pause() {}
-	public void shutdown() {}
-	public void unpause() {}
-	public void waitForShutdown() throws InterruptedException,IllegalStateException {}
-	public void waitForShutdown(long time) throws InterruptedException,IllegalStateException {}
+	/** Methods that are not supported and therefore throw {@link UnsupportedOperationException}*/
+	public void pause() {throw new UnsupportedOperationException("'pause' is not supported on this event producer");}
+	public void unpause() {throw new UnsupportedOperationException("'unpause' is not supported on this event producer");}
+	public void waitForShutdown() throws InterruptedException,IllegalStateException {throw new UnsupportedOperationException("'waitForShutdown' is not supported on this event producer");}
+	public void waitForShutdown(long time) throws InterruptedException,IllegalStateException {throw new UnsupportedOperationException("'waitForShutdown(long time)' is not supported on this event producer");}
 
 	/** Setter/Getter methods*/
 	public String getZkQuorum() {
@@ -100,6 +153,22 @@ public abstract class AbstractHBaseEventProducer<T extends GenericRecord> extend
 	}
 	public void setZkPort(Integer zkPort) {
 		this.zkPort = zkPort;
+	}
+	public int getWorkerThreads() {
+		return workerThreads;
+	}
+	public void setWorkerThreads(int workerThreads) {
+		this.workerThreads = workerThreads;
+	}
+
+	/**
+	 * The SEP events listener that is called when WAL edits are received by the SEP consumer 
+	 */
+	private class RelayAppender implements EventListener {
+		@Override
+		public void processEvents(List<SepEvent> events) {
+			
+		}		 
 	}
 		
 }
