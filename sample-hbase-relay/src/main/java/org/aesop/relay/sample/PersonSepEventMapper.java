@@ -19,6 +19,8 @@ import org.aesop.events.sample.person.Person;
 import org.aesop.runtime.producer.hbase.SepEventMapper;
 import org.apache.hadoop.hbase.KeyValue;
 import org.apache.hadoop.hbase.util.Bytes;
+import org.trpr.platform.core.impl.logging.LogFactory;
+import org.trpr.platform.core.spi.logging.Logger;
 
 import com.ngdata.sep.SepEvent;
 
@@ -31,6 +33,9 @@ import com.ngdata.sep.SepEvent;
  */
 
 public class PersonSepEventMapper implements SepEventMapper<Person> {
+	
+	/** Logger for this class*/
+	protected static final Logger LOGGER = LogFactory.getLogger(PersonSepEventMapper.class);
 	
 	/**
 	 * Interface method implementation. Returns the name of this type
@@ -51,6 +56,7 @@ public class PersonSepEventMapper implements SepEventMapper<Person> {
     	String deleted = "false";
         for (KeyValue kv : sepEvent.getKeyValues()) {
         	if (kv.isDeleteFamily()) {
+                LOGGER.info("Returning Delete Person object : " + sepEvent.getRow() + " " + deleted);        
         		return new Person(Bytes.toLong(sepEvent.getRow()), "","",0L,"true");
         	} else {
 				String columnQualifier = new String(kv.getQualifier());	
@@ -63,6 +69,7 @@ public class PersonSepEventMapper implements SepEventMapper<Person> {
 				}
         	}
         }
+        LOGGER.info("Returning Person object : " + sepEvent.getRow() + " " + firstName + " " + lastName);        
         return new Person(Bytes.toLong(sepEvent.getRow()),firstName, lastName, dob, deleted);
 	}
 

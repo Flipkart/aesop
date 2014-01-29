@@ -51,7 +51,7 @@ public class PersonDataInjesterMain {
         HTable htable = new HTable(conf, "aesop-person");
         htable.setAutoFlush(true);
         // insert rows
-        for (long i=0; i < 1000; i++) {
+        for (long i=990; i < 1000; i++) {
         	 byte[] rowkey = Bytes.toBytes(i);
              Put put = new Put(rowkey);
              put.add(infoCf, firstNameCq, Bytes.toBytes("Aesop " + i));
@@ -60,6 +60,7 @@ public class PersonDataInjesterMain {
              htable.put(put);
              System.out.println(i + " Added row " + Bytes.toString(rowkey) + " " + "Aesop " + i);
         }
+        /*
         // update rows
         for (long i=200; i < 500; i++) {
         	 byte[] rowkey = Bytes.toBytes(i);
@@ -77,6 +78,7 @@ public class PersonDataInjesterMain {
              htable.delete(delete);
              System.out.println(i + " Deleted row " + Bytes.toString(rowkey) + " " + "Updated Aesop " + i);
         }
+        */
         htable.close();
         System.out.println("Done injesting");        
 	}

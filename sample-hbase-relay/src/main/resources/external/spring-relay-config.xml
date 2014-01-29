@@ -19,7 +19,7 @@
     <bean id="hbasePersonProducer" class="org.aesop.runtime.producer.hbase.HBaseEventProducer">
     	<property name="physicalSourceConfig" ref="physicalSourceConfig"/>
     	<property name="zkQuorum" value="localhost"/>
-    	<property name="zkPort" ref="20000"/>
+    	<property name="zkPort" value="20000"/>
     	<property name="sepEventMapper">
     		<bean class="org.aesop.relay.sample.PersonSepEventMapper"/>
     	</property>
