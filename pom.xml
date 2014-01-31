@@ -25,6 +25,27 @@
         </repository>
     </distributionManagement>
 
+    <!-- Additional repositories for Trooper, Databus and SEP dependencies -->
+    <repositories>
+    	<repository>
+      		<id>clojars</id>
+      		<name>Clojars repository</name>
+      		<url>https://clojars.org/repo</url>
+    	</repository>    
+        <repository>
+            <id>cloudera-hadoop</id>
+            <name>Cloudera Hadoop repo</name>
+            <url>https://repository.cloudera.com/artifactory/cloudera-repos/</url>
+        </repository>        	                       
+		<repository>
+		  <id>repo.fusesource.com</id>
+		  <name>repo.fusesource.com</name>
+		  <url>http://repo.fusesource.com/maven2-legacy/</url>
+		  <layout>default</layout>
+		</repository>
+	</repositories>    
+    
+
     <scm>
         <url>https://github.com/regunathb/aesop</url>
         <connection>https://github.com/regunathb/aesop.git</connection>
