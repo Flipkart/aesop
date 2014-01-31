@@ -155,7 +155,7 @@ public class HBaseEventProducer<T extends GenericRecord> extends AbstractEventPr
 				LOGGER.error("Unable to persist last processed SCN. SCN value is stale. Error is : " + e.getMessage(), e);
 				throw new PlatformException("Unable to write last processed SCN to log. Signalling for re-delivery of WAL edits from : " + lastSavedSCN);
 			} 
-			LOGGER.info("Processed SEP event count : " + sepEvents.size());
+			LOGGER.debug("Processed SEP event count : " + sepEvents.size());
 		}		 	        	
     }
 	
