@@ -5,24 +5,15 @@
 
 package org.aesop.relay;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.Properties;
 
 import org.aesop.events.example.person.Person;
-import org.aesop.relay.hbase.WALEditRelayMain;
-import org.codehaus.jackson.map.ObjectMapper;
 
 import com.linkedin.databus.container.netty.HttpRelay;
-import com.linkedin.databus.container.netty.HttpRelay.Cli;
 import com.linkedin.databus.core.DbusEventBufferAppendable;
-import com.linkedin.databus.core.util.ConfigLoader;
 import com.linkedin.databus.core.util.InvalidConfigException;
 import com.linkedin.databus2.core.DatabusException;
-import com.linkedin.databus2.core.container.netty.ServerContainer;
 import com.linkedin.databus2.relay.DatabusRelayMain;
-import com.linkedin.databus2.relay.config.LogicalSourceConfig;
-import com.linkedin.databus2.relay.config.PhysicalSourceConfig;
 import com.linkedin.databus2.relay.config.PhysicalSourceStaticConfig;
 
 /**
