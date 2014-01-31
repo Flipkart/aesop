@@ -46,7 +46,7 @@ import com.linkedin.databus2.schemas.utils.SchemaHelper;
 public abstract class AbstractEventProducer implements EventProducer {
 
 	/** Logger for this class*/
-	protected static final Logger LOGGER = LogFactory.getLogger(AbstractEventProducer.class);
+	private static final Logger LOGGER = LogFactory.getLogger(AbstractEventProducer.class);
 	
 	/** Source related member variables*/
 	protected PhysicalSourceConfig physicalSourceConfig;

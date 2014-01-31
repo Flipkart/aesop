@@ -25,6 +25,9 @@ import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.KeyValue;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
+import org.trpr.platform.core.PlatformException;
+import org.trpr.platform.core.impl.logging.LogFactory;
+import org.trpr.platform.core.spi.logging.Logger;
 
 import com.linkedin.databus.core.DbusEventInfo;
 import com.linkedin.databus.core.DbusEventKey;
@@ -47,11 +50,14 @@ import com.ngdata.sep.util.zookeeper.ZooKeeperItf;
  */
 public class HBaseEventProducer<T extends GenericRecord> extends AbstractEventProducer implements InitializingBean {
 	
+	/** Logger for this class*/
+	private static final Logger LOGGER = LogFactory.getLogger(HBaseEventProducer.class);
+	
 	/** The HBase replication configuration parameter */
 	private static final String HBASE_REPLICATION_CONFIG = "hbase.replication";
 	
 	/** The default number of worker threads that process WAL edit events*/
-	private static final int WORKER_THREADS = 10;
+	private static final int WORKER_THREADS = 1;
 
 	/** The SEP consumer instance initialized by this Producer*/
 	protected SepConsumer sepConsumer;
@@ -124,29 +130,32 @@ public class HBaseEventProducer<T extends GenericRecord> extends AbstractEventPr
 	 */
 	class RelayAppender implements EventListener {
 		public void processEvents(List<SepEvent> sepEvents) {
+			long lastSavedSCN = sinceSCN.get();
 			eventBuffer.startEvents();
             for (SepEvent sepEvent : sepEvents) {
             	T changeEvent = sepEventMapper.mapSepEvent(sepEvent);
             	byte[] serializedEvent = serializeEvent(changeEvent);
             	// we find the last processed timestamp and are conservative to take the earliest
-            	long earliestTimestamp = 0;
+            	long latestTimestamp = 0;
             	for (KeyValue kv : sepEvent.getKeyValues()) {
-            		earliestTimestamp = Math.min(earliestTimestamp, kv.getTimestamp());
+            		latestTimestamp = Math.max(latestTimestamp, kv.getTimestamp());
             	}
 				DbusEventKey eventKey = new DbusEventKey(sepEvent.getRow()); // we use the SepEvent row key as the identifier
-				DbusEventInfo eventInfo = new DbusEventInfo(DbusOpcode.UPSERT,earliestTimestamp,
+				DbusEventInfo eventInfo = new DbusEventInfo(DbusOpcode.UPSERT,latestTimestamp,
 						(short)physicalSourceStaticConfig.getId(),(short)physicalSourceStaticConfig.getId(),
 						System.nanoTime(),(short)physicalSourceStaticConfig.getSources()[0].getId(), // here we use the Logical Source Id
 						schemaId,serializedEvent, false, true);
 				eventBuffer.appendEvent(eventKey, eventInfo, dbusEventsStatisticsCollector);    
-				sinceSCN.set(earliestTimestamp);
+				sinceSCN.set(Math.max(lastSavedSCN, latestTimestamp));
             }
-            eventBuffer.endEvents(sinceSCN.longValue() , dbusEventsStatisticsCollector);
+            eventBuffer.endEvents(sinceSCN.get() , dbusEventsStatisticsCollector);
 			try {
-				maxScnReaderWriter.saveMaxScn(sinceSCN.longValue());
+				maxScnReaderWriter.saveMaxScn(sinceSCN.get());
 			} catch (DatabusException e) {
 				LOGGER.error("Unable to persist last processed SCN. SCN value is stale. Error is : " + e.getMessage(), e);
-			}                        
+				throw new PlatformException("Unable to write last processed SCN to log. Signalling for re-delivery of WAL edits from : " + lastSavedSCN);
+			} 
+			LOGGER.info("Processed SEP event count : " + sepEvents.size());
 		}		 	        	
     }
 	

@@ -17,6 +17,8 @@ package org.aesop.relay.sample;
 
 import org.aesop.events.sample.person.Person;
 import org.aesop.runtime.producer.AbstractEventProducer;
+import org.trpr.platform.core.impl.logging.LogFactory;
+import org.trpr.platform.core.spi.logging.Logger;
 
 import com.linkedin.databus.core.DbusEventInfo;
 import com.linkedin.databus.core.DbusEventKey;
@@ -31,6 +33,9 @@ import com.linkedin.databus2.core.DatabusException;
  * @version 1.0, 17 Jan 2014
  */
 public class PersonEventProducer extends AbstractEventProducer {
+
+	/** Logger for this class*/
+	private static final Logger LOGGER = LogFactory.getLogger(PersonEventProducer.class);
 
 	/** The default number of events to produce in a single run*/
 	private static final int NUM_EVENTS = 100;

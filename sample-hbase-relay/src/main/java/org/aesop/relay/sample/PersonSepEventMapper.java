@@ -56,7 +56,7 @@ public class PersonSepEventMapper implements SepEventMapper<Person> {
     	String deleted = "false";
         for (KeyValue kv : sepEvent.getKeyValues()) {
         	if (kv.isDeleteFamily()) {
-                LOGGER.info("Returning Delete Person object : " + sepEvent.getRow() + " " + deleted);        
+                LOGGER.debug("Returning Delete Person object : " + sepEvent.getRow() + " " + deleted);        
         		return new Person(Bytes.toLong(sepEvent.getRow()), "","",0L,"true");
         	} else {
 				String columnQualifier = new String(kv.getQualifier());	
@@ -69,7 +69,7 @@ public class PersonSepEventMapper implements SepEventMapper<Person> {
 				}
         	}
         }
-        LOGGER.info("Returning Person object : " + sepEvent.getRow() + " " + firstName + " " + lastName);        
+        LOGGER.debug("Returning Person object : " + sepEvent.getRow() + " " + firstName + " " + lastName);        
         return new Person(Bytes.toLong(sepEvent.getRow()),firstName, lastName, dob, deleted);
 	}
 
