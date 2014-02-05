@@ -25,9 +25,7 @@ import com.linkedin.databus.core.util.InvalidConfigException;
 import com.linkedin.databus2.core.DatabusException;
 
 /**
- * The <code>DefaultClient</code> class defines behavior of a default Databus Relay Client. Provides methods to register
- * one or more Databus Change Event consumers. Also propagates all lifecycle commands on this Relay Client to all registered
- * event consumers. 
+ * The <code>DefaultClient</code> class defines behavior of a default Databus Relay Client. 
  * 
  * @author Regunath B
  * @version 1.0, 23 Jan 2014
