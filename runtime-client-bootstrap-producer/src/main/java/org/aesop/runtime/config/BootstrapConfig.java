@@ -35,6 +35,13 @@ public class BootstrapConfig extends ClientConfig {
 	private Properties relayClientBootstrapProperties = new Properties();
 
 	/**
+	 * Returns the configuration prefix for Relay Client Bootstrap properties 
+	 */
+	public static String getPropertiesPrefix() {
+		return BootstrapConfig.BOOTSTRAP_PROPERTIES_PREFIX;
+	}
+	
+	/**
 	 * Interface method implementation. Ensures that all property names start with {@link ClientConfig#CLIENT_PROPERTIES_PREFIX}
 	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
 	 */
