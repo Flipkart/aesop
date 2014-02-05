@@ -33,7 +33,7 @@ import com.linkedin.databus.core.util.ConfigLoader;
  * @author Regunath B
  * @version 1.0, 16 Jan 2014
  */
-public class DefaultClientFactory  implements FactoryBean<DefaultClient>, InitializingBean {
+public class DefaultClientFactory implements FactoryBean<DefaultClient>, InitializingBean {
 	
 	/** The configuration details for creating the Relay Client*/
 	private ClientConfig clientConfig;
@@ -47,7 +47,7 @@ public class DefaultClientFactory  implements FactoryBean<DefaultClient>, Initia
      */
 	public DefaultClient getObject() throws Exception {
 		DatabusHttpClientImpl.Config config = new DatabusHttpClientImpl.Config();		
-		ConfigLoader<DatabusHttpClientImpl.StaticConfig> staticConfigLoader = new ConfigLoader<DatabusHttpClientImpl.StaticConfig>(ClientConfig.CLIENT_PROPERTIES_PREFIX, config);
+		ConfigLoader<DatabusHttpClientImpl.StaticConfig> staticConfigLoader = new ConfigLoader<DatabusHttpClientImpl.StaticConfig>(ClientConfig.getPropertiesPrefix(), config);
 		DatabusHttpClientImpl.StaticConfig staticConfig = staticConfigLoader.loadConfig(this.clientConfig.getRelayClientProperties());
 		DefaultClient defaultClient = new DefaultClient(staticConfig);
 		// register all Event Consumers with the Relay Client
