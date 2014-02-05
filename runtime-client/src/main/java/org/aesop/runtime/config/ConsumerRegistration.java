@@ -34,8 +34,8 @@ public class ConsumerRegistration implements InitializingBean {
 	/** The AbstractDatabusCombinedConsumer to be registered*/
 	private AbstractDatabusCombinedConsumer eventConsumer;
 	
-	/** The Relay Logical Source name*/
-	private String relayLogicalSourceName;
+	/** The Client Config */
+	private ClientConfig clientConfig;
 
 	/**
 	 * Interface method implementation. Ensures that a AbstractDatabusCombinedConsumer and Relay Logical Source name is set
@@ -43,7 +43,7 @@ public class ConsumerRegistration implements InitializingBean {
 	 */
 	public void afterPropertiesSet() throws Exception {
 		Assert.notNull(this.eventConsumer,"'eventConsumer' cannot be null. An AbstractDatabusCombinedConsumer must be specified");
-		Assert.notNull(this.relayLogicalSourceName,"'relayLogicalSourceName' cannot be null. A Relay Logical Source name must be specified");
+		Assert.notNull(this.clientConfig,"'clientConfig' cannot be null. A Client configuration pointing to a relay logical source must be specified");
 	}
 
 	/** Getter/Setter methods*/	
@@ -53,11 +53,11 @@ public class ConsumerRegistration implements InitializingBean {
 	public void setEventConsumer(AbstractDatabusCombinedConsumer eventConsumer) {
 		this.eventConsumer = eventConsumer;
 	}
-	public String getRelayLogicalSourceName() {
-		return relayLogicalSourceName;
+	public ClientConfig getClientConfig() {
+		return clientConfig;
 	}
-	public void setRelayLogicalSourceName(String relayLogicalSourceName) {
-		this.relayLogicalSourceName = relayLogicalSourceName;
+	public void setClientConfig(ClientConfig clientConfig) {
+		this.clientConfig = clientConfig;
 	}
 
 }

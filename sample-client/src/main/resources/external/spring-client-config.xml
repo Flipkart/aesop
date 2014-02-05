@@ -12,7 +12,7 @@
     				<property name="eventConsumer">
     					<bean class="org.aesop.client.sample.PersonEventConsumer"/>
     				</property>
-    				<property name="relayLogicalSourceName" value="org.aesop.events.sample.person.Person"/>
+    				<property name="clientConfig" ref="clientConfig"/>
     			</bean>
     		</list>
     	</property>
