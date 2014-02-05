@@ -35,9 +35,6 @@ import com.linkedin.databus.core.util.ConfigLoader;
  */
 public class DefaultClientFactory  implements FactoryBean<DefaultClient>, InitializingBean {
 	
-	/** Constant for the Databus stats collector*/
-	public static final String STATS_COLLECTOR = "statsCollector";
-	
 	/** The configuration details for creating the Relay Client*/
 	private ClientConfig clientConfig;
 	
