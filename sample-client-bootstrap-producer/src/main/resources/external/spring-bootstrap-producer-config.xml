@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+    <bean id="sampleBootstrapClient" class="org.aesop.runtime.bootstrap.DefaultBootstrapProducerFactory">
+    	<property name="bootstrapConfig" ref="bootstrapConfig"/>
+    </bean>
+
+    <bean id="bootstrapConfig" class="org.aesop.runtime.config.BootstrapConfig">
+    	<property name="relayClientBootstrapProperties">
+			<bean id="relayClientBootstrapPropertiesFactory" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+		    	<property name="singleton" value="true"/>
+		    	<property name="properties">
+		    		<props>
+			        	<prop key="databus.bootstrap.bootstrapDBHostname">localhost</prop>
+						<prop key="databus.bootstrap.bootstrapDBUsername">bootstrap</prop>
+						<prop key="databus.bootstrap.bootstrapDBPassword">bootstrap</prop>
+						<prop key="databus.bootstrap.bootstrapLogSize">1024000</prop>
+			        </props>
+			    </property>    
+	    	</bean>    	
+    	</property>
+    	<property name="relayClientProperties">
+			<bean id="relayClientPropertiesFactory" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+		    	<property name="singleton" value="true"/>
+		    	<property name="properties">
+		    		<props>
+			        	<prop key="databus.bootstrap.client.container.httpPort">11135</prop>
+						<prop key="databus.bootstrap.client.container.jmx.rmiEnabled">false</prop>
+						<prop key="databus.bootstrap.client.connectionDefaults.pullerRetries.initSleep">50</prop>
+						<prop key="databus.bootstrap.client.connectionDefaults.pullerRetries.maxSleep">60000</prop>
+						<prop key="databus.bootstrap.client.connectionDefaults.pullerRetries.maxRetryNum">-1</prop>
+						<prop key="databus.bootstrap.client.connectionDefaults.dispatcherRetries.initSleep">0</prop>
+						<prop key="databus.bootstrap.client.connectionDefaults.dispatcherRetries.maxSleep">60000</prop>
+						<prop key="databus.bootstrap.client.connectionDefaults.dispatcherRetries.maxRetryNum">-1</prop>
+						<prop key="databus.bootstrap.client.connectionDefaults.eventBuffer.maxSize">10240000</prop>
+						<prop key="databus.bootstrap.client.connectionDefaults.eventBuffer.readBufferSize">1024000</prop>
+						<prop key="databus.bootstrap.client.connectionDefaults.eventBuffer.scnIndexSize">128</prop>
+						<prop key="databus.bootstrap.client.connectionDefaults.eventBuffer.allocationPolicy">HEAP_MEMORY</prop>
+			        </props>
+			    </property>    
+	    	</bean>    	
+    	</property>
+    	<property name="relayId" value="100"/>
+    	<property name="relayHost" value="localhost"/>
+    	<property name="relayPort" value="25020"/>
+    	<property name="relayLogicalSourceName" value="org.aesop.events.sample.person.Person"/>
+		<property name="checkpointDirectoryLocation" value="../../../sandbox/client_checkpoint_directory"/> <!-- This is relative to projects root -->
+    </bean>
+
+</beans>

@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.aesop</groupId>
+        <artifactId>aesop</artifactId>
+        <version>1.0.0</version>
+    </parent>
+
+    <groupId>org.aesop</groupId>
+    <artifactId>sample-client-bootstrap-producer</artifactId>
+    <version>1.0.0</version>
+    <name>Sample Client Bootstrap Producer</name>
+    <description>Sample Client Bootstrap Producer</description>
+
+	<dependencyManagement>
+		<!-- All databus dependencies are marked as scope compile as we extend their classes and need them during compile and not just runtime -->
+		<dependencies>
+			<dependency>
+			  	<groupId>com.linkedin.databus</groupId>
+			  	<artifactId>databus-core-impl</artifactId>
+			  	<version>${com.linkedin.databus.version}</version>
+			  	<scope>compile</scope>
+			</dependency>
+			<dependency>
+			  	<groupId>com.linkedin.databus</groupId>
+			  	<artifactId>databus-client-common</artifactId>
+			  	<version>${com.linkedin.databus.version}</version>
+			  	<scope>compile</scope>
+			</dependency>
+			<dependency>
+			  	<groupId>com.linkedin.databus</groupId>
+			  	<artifactId>databus-client-http</artifactId>
+			  	<version>${com.linkedin.databus.version}</version>
+			  	<scope>compile</scope>
+			</dependency>
+			<dependency>
+				<groupId>com.linkedin.databus</groupId>
+			  	<artifactId>databus-client-api</artifactId>
+			  	<version>${com.linkedin.databus.version}</version>
+			  	<scope>compile</scope>
+			</dependency>
+        	<dependency>
+            	<groupId>com.linkedin.databus</groupId>
+            	<artifactId>databus-bootstrap-producer-impl</artifactId>
+            	<version>${com.linkedin.databus.version}</version>
+			  	<scope>compile</scope>
+        	</dependency>			
+        	<dependency>
+            	<groupId>com.linkedin.databus</groupId>
+            	<artifactId>databus-bootstrap-common-impl</artifactId>
+            	<version>${com.linkedin.databus.version}</version>
+			  	<scope>compile</scope>
+        	</dependency>			
+		</dependencies>
+	</dependencyManagement>
+
+    <dependencies>
+        <!-- aesop dependencies -->
+        <dependency>
+            <groupId>org.aesop</groupId>
+            <artifactId>runtime-client-bootstrap-producer</artifactId>
+            <version>1.0.0</version>
+        </dependency>    
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>${maven-jar-plugin.version}</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                        </manifest>
+                    </archive>
+                    <includes>
+                        <include>packaged/**/*</include>
+                        <include>org/**/*</include>
+                    </includes>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven-compiler-plugin.version}</version>
+                <configuration>
+                    <source>${jdk.version}</source>
+                    <target>${jdk.version}</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/lib</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+
+</project>
