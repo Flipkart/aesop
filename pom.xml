@@ -74,10 +74,12 @@
         <module>runtime-relay</module>
         <module>runtime-client</module>
         <module>runtime-client-bootstrap-producer</module>
+        <module>runtime-bootstrap</module>
         <module>hbase-producer</module>
         <module>sample-memory-relay</module>
         <module>sample-hbase-relay</module>
         <module>sample-client</module>
+        <module>sample-client-bootstrap-producer</module>
     </modules>
 
 </project>

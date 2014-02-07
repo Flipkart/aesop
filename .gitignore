@@ -169,6 +169,7 @@ pip-log.txt
 .DS_Store
 
 *.class
+containerPortNum_*
 target
 bin
 .svn/README.md~
