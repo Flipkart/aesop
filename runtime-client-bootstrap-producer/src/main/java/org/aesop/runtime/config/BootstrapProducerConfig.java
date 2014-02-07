@@ -20,7 +20,7 @@ import java.util.Properties;
 import org.trpr.platform.core.PlatformException;
 
 /**
- * <code>BootstrapConfig</code> holds Databus configuration properties for a Relay Client instance that acts as a Bootstrap
+ * <code>BootstrapProducerConfig</code> holds Databus configuration properties for a Relay Client instance that acts as a Bootstrap
  * data producer. This config treats the properties as opaque and is intended for use as a holder of the information.
  *
  * @author Regunath B
