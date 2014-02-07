@@ -47,7 +47,7 @@ public class DefaultClientFactory implements FactoryBean<DefaultClient>, Initial
      */
 	public DefaultClient getObject() throws Exception {
 		DatabusHttpClientImpl.Config config = new DatabusHttpClientImpl.Config();		
-		ConfigLoader<DatabusHttpClientImpl.StaticConfig> staticConfigLoader = new ConfigLoader<DatabusHttpClientImpl.StaticConfig>(ClientConfig.getPropertiesPrefix(), config);
+		ConfigLoader<DatabusHttpClientImpl.StaticConfig> staticConfigLoader = new ConfigLoader<DatabusHttpClientImpl.StaticConfig>(clientConfig.getClientPropertiesPrefix(), config);
 		DatabusHttpClientImpl.StaticConfig staticConfig = staticConfigLoader.loadConfig(this.clientConfig.getRelayClientProperties());
 		DefaultClient defaultClient = new DefaultClient(staticConfig);
 		// register all Event Consumers with the Relay Client

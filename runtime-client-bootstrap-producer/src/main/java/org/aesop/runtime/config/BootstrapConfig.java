@@ -20,13 +20,13 @@ import java.util.Properties;
 import org.trpr.platform.core.PlatformException;
 
 /**
- * <code>BootstrapConfig</code> is a sub-type of {@link ClientConfig} that holds Databus configuration properties for a Relay Client instance that acts as a Bootstrap
+ * <code>BootstrapConfig</code> holds Databus configuration properties for a Relay Client instance that acts as a Bootstrap
  * data producer. This config treats the properties as opaque and is intended for use as a holder of the information.
  *
  * @author Regunath B
  * @version 1.0, 06 Feb 2014
  */
-public class BootstrapConfig extends ClientConfig {
+public class BootstrapConfig {
 
 	/** The property name prefix for all Databus relay client bootstrap properties*/
 	public static final String BOOTSTRAP_PROPERTIES_PREFIX = "databus.bootstrap.";
@@ -35,18 +35,10 @@ public class BootstrapConfig extends ClientConfig {
 	private Properties relayClientBootstrapProperties = new Properties();
 
 	/**
-	 * Returns the configuration prefix for Relay Client Bootstrap properties 
-	 */
-	public static String getPropertiesPrefix() {
-		return BootstrapConfig.BOOTSTRAP_PROPERTIES_PREFIX;
-	}
-	
-	/**
-	 * Interface method implementation. Ensures that all property names start with {@link ClientConfig#CLIENT_PROPERTIES_PREFIX}
+	 * Interface method implementation. Ensures that all property names start with {@link BootstrapConfig#BOOTSTRAP_PROPERTIES_PREFIX}
 	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
 	 */
 	public void afterPropertiesSet() throws Exception {
-		super.afterPropertiesSet();
 		for (Object key : this.relayClientBootstrapProperties.keySet()) {
 			if (!((String)key).startsWith(BootstrapConfig.BOOTSTRAP_PROPERTIES_PREFIX)) {
 				throw new PlatformException("Property : " + key + " does not begin with the prefix : " + BootstrapConfig.BOOTSTRAP_PROPERTIES_PREFIX);
@@ -62,5 +54,4 @@ public class BootstrapConfig extends ClientConfig {
 		this.relayClientBootstrapProperties = relayClientBootstrapProperties;
 	}
 
-	
 }

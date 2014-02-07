@@ -18,6 +18,7 @@ package org.aesop.runtime.bootstrap;
 import java.util.Properties;
 
 import org.aesop.runtime.config.BootstrapConfig;
+import org.aesop.runtime.config.ClientConfig;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
@@ -37,6 +38,9 @@ public class DefaultBootstrapProducerFactory implements FactoryBean<DefaultBoots
 	/** The configuration details for creating the Relay Client Bootstrap producer */
 	private BootstrapConfig bootstrapConfig;
 	
+	/** The configuration details for creating the Relay Client*/
+	private ClientConfig clientConfig;
+	
     /**
      * Interface method implementation. Creates and returns a {@link DefaultBootstrapProducer} instance
      * @see org.springframework.beans.factory.FactoryBean#getObject()
@@ -44,10 +48,10 @@ public class DefaultBootstrapProducerFactory implements FactoryBean<DefaultBoots
 	public DefaultBootstrapProducer getObject() throws Exception {
 		BootstrapProducerConfig producerConfig = new BootstrapProducerConfig();
 		ConfigLoader<BootstrapProducerStaticConfig> staticProducerConfigLoader = new ConfigLoader<BootstrapProducerStaticConfig>(
-				BootstrapConfig.getPropertiesPrefix(), producerConfig);
+				BootstrapConfig.BOOTSTRAP_PROPERTIES_PREFIX, producerConfig);
 		// create a merged properties list from Relay Client and Bootstrap specific properties
 		Properties mergedProperties = this.bootstrapConfig.getRelayClientBootstrapProperties();
-		mergedProperties.putAll(this.bootstrapConfig.getRelayClientProperties());		
+		mergedProperties.putAll(this.clientConfig.getRelayClientProperties());		
 		BootstrapProducerStaticConfig staticProducerConfig = staticProducerConfigLoader.loadConfig(mergedProperties);
 	    return new DefaultBootstrapProducer(staticProducerConfig);	
 	}
@@ -58,6 +62,7 @@ public class DefaultBootstrapProducerFactory implements FactoryBean<DefaultBoots
 	 */
 	public void afterPropertiesSet() throws Exception {
 		Assert.notNull(this.bootstrapConfig,"'bootstrapConfig' cannot be null. This Relay Client Bootstrap producer will not be initialized");
+		Assert.notNull(this.clientConfig,"'clientConfig' cannot be null. This Relay Client Bootstrap producer will not be initialized");
 	}
 	
 	/**
@@ -82,6 +87,12 @@ public class DefaultBootstrapProducerFactory implements FactoryBean<DefaultBoots
 	}
 	public void setBootstrapConfig(BootstrapConfig bootstrapConfig) {
 		this.bootstrapConfig = bootstrapConfig;
+	}
+	public ClientConfig getClientConfig() {
+		return this.clientConfig;
+	}
+	public void setClientConfig(ClientConfig clientConfig) {
+		this.clientConfig = clientConfig;
 	}
 	
 }
