@@ -1,0 +1,164 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.aesop</groupId>
+        <artifactId>aesop</artifactId>
+        <version>1.0.0</version>
+    </parent>
+
+    <groupId>org.aesop</groupId>
+    <artifactId>runtime-bootstrap</artifactId>
+    <name>Bootstrap Runtime</name>
+    <version>1.0.0</version>
+    <description>Bootstrap Runtime</description>
+
+    <properties>
+        <jetty.version>8.1.5.v20120716</jetty.version>
+        <jetty.jsp.version>8.1.4.v20120524</jetty.jsp.version>
+    </properties>
+
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <distributionManagement>
+        <repository>
+            <id>clojars</id>
+            <name>Clojars repository</name>
+            <url>https://clojars.org/repo</url>
+        </repository>
+    </distributionManagement>
+
+    <scm>
+        <url>https://github.com/regunathb/aesop</url>
+        <connection>https://github.com/regunathb/aesop.git</connection>
+    </scm>
+
+    <developers>
+        <developer>
+            <id>regunathb</id>
+            <name>Regunath B</name>
+            <email>regunathb@gmail.com</email>
+        </developer>
+    </developers>
+
+    <dependencies>
+        <!-- Trooper dependencies -->
+        <dependency>
+            <groupId>org.trpr</groupId>
+            <artifactId>runtime-core</artifactId>
+            <version>${org.trpr.version}</version>
+        </dependency>
+        <!-- Databus dependencies -->
+        <dependency>
+            <groupId>com.linkedin.databus</groupId>
+            <artifactId>databus-core-container</artifactId>
+            <version>${com.linkedin.databus.version}</version>
+			<exclusions>
+				<!-- Removing these dependencies from log4j:1.2.15 that is no longer included-->
+			    <exclusion>
+			        <groupId>com.sun.jmx</groupId>
+			        <artifactId>jmxri</artifactId>
+			    </exclusion>
+			    <exclusion>
+			        <groupId>com.sun.jdmk</groupId>
+			        <artifactId>jmxtools</artifactId>
+			    </exclusion>
+				<!-- Removing servlet-api dependency from Jetty -->
+			    <exclusion>
+			        <groupId>org.mortbay.jetty</groupId>
+			        <artifactId>servlet-api</artifactId>
+			    </exclusion>
+				<!-- Removing log4j as we use log4j-over-slf4j bridge -->
+			    <exclusion>
+			        <groupId>log4j</groupId>
+			        <artifactId>log4j</artifactId>
+			    </exclusion>
+			</exclusions>            
+        </dependency>        
+        <!-- Third party dependencies -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+            <version>${org.springframework.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
+            <version>${org.springframework.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.freemarker</groupId>
+            <artifactId>freemarker</artifactId>
+            <version>2.3.14</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-server</artifactId>
+            <version>${jetty.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-webapp</artifactId>
+            <version>${jetty.version}</version>
+        </dependency>
+		<dependency>
+			<groupId>org.apache.avro</groupId>
+		    <artifactId>avro</artifactId>
+		    <version>1.7.5</version>
+		</dependency>        
+        <!-- Add the log4j over slf4j bridge to support logging in Databus libraries -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>log4j-over-slf4j</artifactId>
+            <version>1.7.5</version>
+        </dependency>    
+    </dependencies>
+
+    <build>
+        <sourceDirectory>src/main/java</sourceDirectory>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>**/*.*</include>
+                </includes>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>${maven-jar-plugin.version}</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                        </manifest>
+                    </archive>
+                    <includes>
+                        <include>packaged/**/*</include>
+                        <include>WEB-INF/**/*</include>
+                        <include>org/**/*</include>
+                    </includes>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven-compiler-plugin.version}</version>
+                <configuration>
+                    <source>${jdk.version}</source>
+                    <target>${jdk.version}</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
