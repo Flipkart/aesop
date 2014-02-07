@@ -26,7 +26,7 @@ import org.trpr.platform.core.PlatformException;
  * @author Regunath B
  * @version 1.0, 06 Feb 2014
  */
-public class BootstrapConfig {
+public class BootstrapProducerConfig {
 
 	/** The property name prefix for all Databus relay client bootstrap properties*/
 	public static final String BOOTSTRAP_PROPERTIES_PREFIX = "databus.bootstrap.";
@@ -35,13 +35,13 @@ public class BootstrapConfig {
 	private Properties relayClientBootstrapProperties = new Properties();
 
 	/**
-	 * Interface method implementation. Ensures that all property names start with {@link BootstrapConfig#BOOTSTRAP_PROPERTIES_PREFIX}
+	 * Interface method implementation. Ensures that all property names start with {@link BootstrapProducerConfig#BOOTSTRAP_PROPERTIES_PREFIX}
 	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
 	 */
 	public void afterPropertiesSet() throws Exception {
 		for (Object key : this.relayClientBootstrapProperties.keySet()) {
-			if (!((String)key).startsWith(BootstrapConfig.BOOTSTRAP_PROPERTIES_PREFIX)) {
-				throw new PlatformException("Property : " + key + " does not begin with the prefix : " + BootstrapConfig.BOOTSTRAP_PROPERTIES_PREFIX);
+			if (!((String)key).startsWith(BootstrapProducerConfig.BOOTSTRAP_PROPERTIES_PREFIX)) {
+				throw new PlatformException("Property : " + key + " does not begin with the prefix : " + BootstrapProducerConfig.BOOTSTRAP_PROPERTIES_PREFIX);
 			}
 		}
 	}

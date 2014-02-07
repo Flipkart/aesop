@@ -5,11 +5,11 @@
     http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
     <bean id="sampleBootstrapClient" class="org.aesop.runtime.bootstrap.DefaultBootstrapProducerFactory">
-    	<property name="bootstrapConfig" ref="bootstrapConfig"/>
+    	<property name="bootstrapProducerConfig" ref="bootstrapProducerConfig"/>
     	<property name="clientConfig" ref="clientConfig"/>
     </bean>
 
-    <bean id="bootstrapConfig" class="org.aesop.runtime.config.BootstrapConfig">
+    <bean id="bootstrapProducerConfig" class="org.aesop.runtime.config.BootstrapProducerConfig">
     	<property name="relayClientBootstrapProperties">
 			<bean id="relayClientBootstrapPropertiesFactory" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
 		    	<property name="singleton" value="true"/>

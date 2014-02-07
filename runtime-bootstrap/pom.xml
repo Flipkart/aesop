@@ -50,12 +50,12 @@
     </developers>
 
     <dependencies>
-        <!-- Trooper dependencies -->
+        <!-- aesop dependencies -->
         <dependency>
-            <groupId>org.trpr</groupId>
-            <artifactId>runtime-core</artifactId>
-            <version>${org.trpr.version}</version>
-        </dependency>
+            <groupId>org.aesop</groupId>
+            <artifactId>runtime</artifactId>
+            <version>1.0.0</version>
+        </dependency>    
         <!-- Databus dependencies -->
         <dependency>
             <groupId>com.linkedin.databus</groupId>

@@ -17,13 +17,12 @@ package org.aesop.runtime.bootstrap;
 
 import java.util.Properties;
 
-import org.aesop.runtime.config.BootstrapConfig;
+import org.aesop.runtime.config.BootstrapProducerConfig;
 import org.aesop.runtime.config.ClientConfig;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
-import com.linkedin.databus.bootstrap.producer.BootstrapProducerConfig;
 import com.linkedin.databus.bootstrap.producer.BootstrapProducerStaticConfig;
 import com.linkedin.databus.core.util.ConfigLoader;
 
@@ -36,7 +35,7 @@ import com.linkedin.databus.core.util.ConfigLoader;
 public class DefaultBootstrapProducerFactory implements FactoryBean<DefaultBootstrapProducer>, InitializingBean {
 	
 	/** The configuration details for creating the Relay Client Bootstrap producer */
-	private BootstrapConfig bootstrapConfig;
+	private BootstrapProducerConfig bootstrapProducerConfig;
 	
 	/** The configuration details for creating the Relay Client*/
 	private ClientConfig clientConfig;
@@ -46,11 +45,13 @@ public class DefaultBootstrapProducerFactory implements FactoryBean<DefaultBoots
      * @see org.springframework.beans.factory.FactoryBean#getObject()
      */
 	public DefaultBootstrapProducer getObject() throws Exception {
-		BootstrapProducerConfig producerConfig = new BootstrapProducerConfig();
+		// using fully qualified class name for Databus BootstrapProducerConfig reference as we have class with same name in Aesop as well
+		com.linkedin.databus.bootstrap.producer.BootstrapProducerConfig producerConfig = 
+				new com.linkedin.databus.bootstrap.producer.BootstrapProducerConfig(); 
 		ConfigLoader<BootstrapProducerStaticConfig> staticProducerConfigLoader = new ConfigLoader<BootstrapProducerStaticConfig>(
-				BootstrapConfig.BOOTSTRAP_PROPERTIES_PREFIX, producerConfig);
+				BootstrapProducerConfig.BOOTSTRAP_PROPERTIES_PREFIX, producerConfig);
 		// create a merged properties list from Relay Client and Bootstrap specific properties
-		Properties mergedProperties = this.bootstrapConfig.getRelayClientBootstrapProperties();
+		Properties mergedProperties = this.bootstrapProducerConfig.getRelayClientBootstrapProperties();
 		mergedProperties.putAll(this.clientConfig.getRelayClientProperties());		
 		BootstrapProducerStaticConfig staticProducerConfig = staticProducerConfigLoader.loadConfig(mergedProperties);
 	    return new DefaultBootstrapProducer(staticProducerConfig);	
@@ -61,7 +62,7 @@ public class DefaultBootstrapProducerFactory implements FactoryBean<DefaultBoots
 	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
 	 */
 	public void afterPropertiesSet() throws Exception {
-		Assert.notNull(this.bootstrapConfig,"'bootstrapConfig' cannot be null. This Relay Client Bootstrap producer will not be initialized");
+		Assert.notNull(this.bootstrapProducerConfig,"'bootstrapProducerConfig' cannot be null. This Relay Client Bootstrap producer will not be initialized");
 		Assert.notNull(this.clientConfig,"'clientConfig' cannot be null. This Relay Client Bootstrap producer will not be initialized");
 	}
 	
@@ -82,11 +83,11 @@ public class DefaultBootstrapProducerFactory implements FactoryBean<DefaultBoots
 	}
 
 	/** Getter/Setter methods to override default implementations of various components used by this Relay Client*/
-	public BootstrapConfig getBootstrapConfig() {
-		return bootstrapConfig;
+	public BootstrapProducerConfig getBootstrapProducerConfig() {
+		return bootstrapProducerConfig;
 	}
-	public void setBootstrapConfig(BootstrapConfig bootstrapConfig) {
-		this.bootstrapConfig = bootstrapConfig;
+	public void setBootstrapProducerConfig(BootstrapProducerConfig bootstrapProducerConfig) {
+		this.bootstrapProducerConfig = bootstrapProducerConfig;
 	}
 	public ClientConfig getClientConfig() {
 		return this.clientConfig;
