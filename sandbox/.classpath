@@ -22,7 +22,7 @@
 	<classpathentry kind="lib" path="lib/commons-management-1.0.jar"/>
 	<classpathentry kind="lib" path="lib/commons-math-2.1.jar"/>
 	<classpathentry kind="lib" path="lib/databus-bootstrap-common-impl-1.0.jar"/>
-	<classpathentry kind="lib" path="lib/databus-bootstrap-producer-impl-1.0.jar"/>
+	<classpathentry kind="lib" path="lib/databus-bootstrap-producer-impl-1.0.jar" sourcepath="/Users/regunath.balasubramanian/Documents/workspace/github/databus/databus-bootstrap-producer"/>
 	<classpathentry kind="lib" path="lib/databus-bootstrap-server-impl-1.0.jar"/>
 	<classpathentry kind="lib" path="lib/databus-client-api-1.0.jar"/>
 	<classpathentry kind="lib" path="lib/databus-client-common-1.0.jar"/>

@@ -8,3 +8,4 @@
 /client_checkpoint_directory
 /maxscn_directory
 /mmapped_directory
+/bootstrap_checkpoint_directory
