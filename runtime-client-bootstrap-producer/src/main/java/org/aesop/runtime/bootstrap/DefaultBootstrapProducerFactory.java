@@ -58,7 +58,7 @@ public class DefaultBootstrapProducerFactory implements FactoryBean<DefaultBoots
 	}
 
 	/**
-	 * Interface method implementation. Checks for mandatory dependencies and initializes this Relay Client Bootstrap producer
+	 * Interface method implementation. Checks for mandatory dependencies 
 	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
 	 */
 	public void afterPropertiesSet() throws Exception {
