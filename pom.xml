@@ -80,6 +80,7 @@
         <module>sample-hbase-relay</module>
         <module>sample-client</module>
         <module>sample-client-bootstrap-producer</module>
+        <module>sample-bootstrap-server</module>
     </modules>
 
 </project>
