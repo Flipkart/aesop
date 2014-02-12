@@ -26,7 +26,7 @@ import com.linkedin.databus2.core.DatabusException;
  * to bootstrap slow databus consumers {@link DatabusBootstrapConsumer}
  * 
  * @author Regunath B
- * @version 1.0, 06 Feb 2014
+ * @version 1.0, 12 Feb 2014
  */
 public class DefaultBootstrapServer extends BootstrapHttpServer {
 	
