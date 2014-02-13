@@ -25,8 +25,9 @@
     	</property>
     </bean>
     <bean id="clientConfig" class="org.aesop.runtime.config.ClientConfig">
-    	<property name="relayClientProperties">
-			<bean id="relayClientPropertiesFactory" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+    	<property name="clientPropertiesPrefix" value="databus.bootstrap.client."/>
+    	<property name="clientProperties">
+			<bean id="clientPropertiesFactory" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
 		    	<property name="singleton" value="true"/>
 		    	<property name="properties">
 		    		<props>
@@ -46,11 +47,14 @@
 			    </property>    
 	    	</bean>    	
     	</property>
-    	<property name="clientPropertiesPrefix" value="databus.bootstrap.client."/>
-    	<property name="relayId" value="100"/>
-    	<property name="relayHost" value="localhost"/>
-    	<property name="relayPort" value="25020"/>
-    	<property name="relayLogicalSourceName" value="org.aesop.events.sample.person.Person"/>
+    	<property name="relayClientConfig">
+	    	<bean class="org.aesop.runtime.config.RelayClientConfig">
+		    	<property name="relayId" value="100"/>
+		    	<property name="relayHost" value="localhost"/>
+		    	<property name="relayPort" value="25020"/>
+		    	<property name="relayLogicalSourceName" value="org.aesop.events.sample.person.Person"/>
+	    	</bean>
+    	</property>
 		<property name="checkpointDirectoryLocation" value="../../../sandbox/bootstrap_producer_checkpoint_directory"/> <!-- This is relative to projects root -->
     </bean>
 

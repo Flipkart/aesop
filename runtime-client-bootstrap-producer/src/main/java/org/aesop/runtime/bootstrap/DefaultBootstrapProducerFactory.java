@@ -52,7 +52,7 @@ public class DefaultBootstrapProducerFactory implements FactoryBean<DefaultBoots
 				BootstrapProducerConfig.BOOTSTRAP_PROPERTIES_PREFIX, producerConfig);
 		// create a merged properties list from Relay Client and Bootstrap specific properties
 		Properties mergedProperties = this.bootstrapProducerConfig.getRelayClientBootstrapProperties();
-		mergedProperties.putAll(this.clientConfig.getRelayClientProperties());		
+		mergedProperties.putAll(this.clientConfig.getClientProperties());		
 		BootstrapProducerStaticConfig staticProducerConfig = staticProducerConfigLoader.loadConfig(mergedProperties);
 	    return new DefaultBootstrapProducer(staticProducerConfig);	
 	}
