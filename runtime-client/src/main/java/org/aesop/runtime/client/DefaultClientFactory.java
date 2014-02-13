@@ -48,12 +48,14 @@ public class DefaultClientFactory implements FactoryBean<DefaultClient>, Initial
 	public DefaultClient getObject() throws Exception {
 		DatabusHttpClientImpl.Config config = new DatabusHttpClientImpl.Config();		
 		ConfigLoader<DatabusHttpClientImpl.StaticConfig> staticConfigLoader = new ConfigLoader<DatabusHttpClientImpl.StaticConfig>(clientConfig.getClientPropertiesPrefix(), config);
-		DatabusHttpClientImpl.StaticConfig staticConfig = staticConfigLoader.loadConfig(this.clientConfig.getRelayClientProperties());
+		DatabusHttpClientImpl.StaticConfig staticConfig = staticConfigLoader.loadConfig(this.clientConfig.getClientProperties());
 		DefaultClient defaultClient = new DefaultClient(staticConfig);
 		// register all Event Consumers with the Relay Client
 		for (ConsumerRegistration consumerRegistration : this.consumerRegistrationList) {
-			defaultClient.registerDatabusStreamListener(consumerRegistration.getEventConsumer(), null, consumerRegistration.getClientConfig().getRelayLogicalSourceName());
-			defaultClient.registerDatabusBootstrapListener(consumerRegistration.getEventConsumer(), null, consumerRegistration.getClientConfig().getRelayLogicalSourceName());			
+			defaultClient.registerDatabusStreamListener(consumerRegistration.getEventConsumer(), null, 
+					consumerRegistration.getClientConfig().getRelayClientConfig().getRelayLogicalSourceName());
+			defaultClient.registerDatabusBootstrapListener(consumerRegistration.getEventConsumer(), null, 
+					consumerRegistration.getClientConfig().getRelayClientConfig().getRelayLogicalSourceName());			
 		}
 	    return defaultClient;	
 	}
