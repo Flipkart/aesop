@@ -32,10 +32,16 @@ import com.linkedin.databus.core.DbusEvent;
  * @author Regunath B
  * @version 1.0, 24 Jan 2014
  */
-public class PersonEventConsumer extends AbstractDatabusCombinedConsumer {
+public class PersonEventConsumer extends AbstractDatabusCombinedConsumer {	
 	
 	/** Logger for this class*/
 	public static final Logger LOGGER = LogFactory.getLogger(PersonEventConsumer.class);
+	
+	/** The frequency of logging consumed messages*/
+	private static final long FREQUENCY_OF_LOGGING = 100;
+	
+	/** The event count*/
+	private long eventCount = 0;
 	
 	/**
 	 * Overriden superclass method. Returns the result of calling {@link PersonEventConsumer#processEvent(DbusEvent, DbusEventDecoder)}
@@ -61,21 +67,24 @@ public class PersonEventConsumer extends AbstractDatabusCombinedConsumer {
 	 */
 	private ConsumerCallbackResult processEvent(DbusEvent event, DbusEventDecoder eventDecoder) {
 		GenericRecord decodedEvent = eventDecoder.getGenericRecord(event, null);
-		try {
-			Long key = (Long) decodedEvent.get("key");			
-			Utf8 firstName = (Utf8) decodedEvent.get("firstName");
-			Utf8 lastName = (Utf8) decodedEvent.get("lastName");
-			Long birthDate = (Long) decodedEvent.get("birthDate");
-			Utf8 deleted = (Utf8) decodedEvent.get("deleted");
-
-			LOGGER.info(" key : " + key + " firstName: "
-					+ firstName.toString() + ", lastName: "
-					+ lastName.toString() + ", birthDate: " + birthDate
-					+ ", deleted: " + deleted.toString());
-		} catch (Exception e) {
-			LOGGER.error("error processing event : " + decodedEvent);
-			return ConsumerCallbackResult.ERROR;
+		if (eventCount % FREQUENCY_OF_LOGGING == 0) {
+			try {
+				Long key = (Long) decodedEvent.get("key");			
+				Utf8 firstName = (Utf8) decodedEvent.get("firstName");
+				Utf8 lastName = (Utf8) decodedEvent.get("lastName");
+				Long birthDate = (Long) decodedEvent.get("birthDate");
+				Utf8 deleted = (Utf8) decodedEvent.get("deleted");
+	
+				LOGGER.info(" key : " + key + " firstName: "
+						+ firstName.toString() + ", lastName: "
+						+ lastName.toString() + ", birthDate: " + birthDate
+						+ ", deleted: " + deleted.toString());
+			} catch (Exception e) {
+				LOGGER.error("error processing event : " + decodedEvent);
+				return ConsumerCallbackResult.ERROR;
+			}
 		}
+		eventCount += 1;
 		return ConsumerCallbackResult.SUCCESS;
 	}
 	
