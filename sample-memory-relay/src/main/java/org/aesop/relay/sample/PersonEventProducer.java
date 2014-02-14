@@ -101,7 +101,7 @@ public class PersonEventProducer extends AbstractEventProducer {
 	private class EventProducerThread extends Thread {
 		int count = 0;
 		public void run() {
-			while (count < 50) {
+			while (count < 2) {
 				eventBuffer.startEvents();
 				long endValue = sinceSCN.longValue() + numberOfEventsPerRun;
 				for (long i = sinceSCN.longValue(); i < endValue; i++) {
