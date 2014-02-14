@@ -42,5 +42,13 @@ public class DefaultClient extends DatabusHttpClientImpl {
 	public DefaultClient(StaticConfig config) throws InvalidConfigException,IOException, DatabusException {
 		super(config);
 	}
+	
+	/**
+	 * Overriden superclass method. Creates the Bootstrap checkpoint if this client has gone stale and then starts up
+	 * @see com.linkedin.databus.client.DatabusHttpClientImpl#doStart()
+	 */
+	protected void doStart() {
+		super.doStart();
+	}
 
 }

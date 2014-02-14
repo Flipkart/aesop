@@ -49,6 +49,9 @@ public class ClientConfig implements InitializingBean {
 	private static final String BOOTSTRAP_PORT=".port";
 	private static final String BOOTSTRAP_LOGICAL_SOURCES=".sources";	
 	
+	/** The property to signal Bootstrap enabling*/
+	private static final String BOOTSTRAP_ENABLED="runtime.bootstrap.enabled";
+	
 	/** The client checkpoint file location property name*/
 	public static final String CHECKPOINT_DIR_PROPERTY = "checkpointPersistence.fileSystem.rootDirectory";
 	
@@ -72,9 +75,7 @@ public class ClientConfig implements InitializingBean {
 	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
 	 */
 	public void afterPropertiesSet() throws Exception {
-		if (this.relayClientConfig == null && this.bootstrapClientConfig == null) {
-			throw new PlatformException("Ateast one of 'relayClientConfig' or 'bootstrapClientConfig' must be specified. This Databus Client will not be initialized");
-		}
+		Assert.notNull(this.relayClientConfig,"'relayClientConfig' cannot be null. This Databus Client will not be initialized");		
 		Assert.notNull(this.checkpointDirectoryLocation,"'checkpointDirectoryLocation' cannot be null. This Databus Client will not be initialized");		
 		for (Object key : this.clientProperties.keySet()) {
 			if (!((String)key).startsWith(getClientPropertiesPrefix())) {
@@ -129,6 +130,8 @@ public class ClientConfig implements InitializingBean {
 		this.getClientProperties().put(getClientPropertiesPrefix() + this.getBootstrapProperty() + BOOTSTRAP_PORT, this.bootstrapClientConfig.getBootstrapPort());
 		// add the bootstrap logical source name to the properties specified for the Bootstrap Client. 
 		this.getClientProperties().put(getClientPropertiesPrefix() + this.getBootstrapProperty() + BOOTSTRAP_LOGICAL_SOURCES, this.bootstrapClientConfig.getBootstrapLogicalSourceName());
+		// add property to indicate that Bootstrapping is enabled for the client
+		this.getClientProperties().put(getClientPropertiesPrefix() + BOOTSTRAP_ENABLED, true);
 	}
 
 	/**
