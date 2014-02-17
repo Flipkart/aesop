@@ -16,11 +16,16 @@
 package org.aesop.runtime.client;
 
 import java.io.IOException;
+import java.util.List;
 
+import org.trpr.platform.core.PlatformException;
 import org.trpr.platform.core.impl.logging.LogFactory;
 import org.trpr.platform.core.spi.logging.Logger;
 
 import com.linkedin.databus.client.DatabusHttpClientImpl;
+import com.linkedin.databus.core.BootstrapCheckpointHandler;
+import com.linkedin.databus.core.Checkpoint;
+import com.linkedin.databus.core.data_model.DatabusSubscription;
 import com.linkedin.databus.core.util.InvalidConfigException;
 import com.linkedin.databus2.core.DatabusException;
 
@@ -44,10 +49,30 @@ public class DefaultClient extends DatabusHttpClientImpl {
 	}
 	
 	/**
-	 * Overriden superclass method. Creates the Bootstrap checkpoint if this client has gone stale and then starts up
+	 * Overriden superclass method. Creates the Bootstrap checkpoint using the last seen SCN (or) 0, if none is found, if bootstrapping is enabled.
+	 * This client will then go into Relay "fall off" mode and start with Bootstrap, move on to Catchup and then finally onto Online consumption.
 	 * @see com.linkedin.databus.client.DatabusHttpClientImpl#doStart()
 	 */
 	protected void doStart() {
+		for(List<DatabusSubscription> subscriptionList: this._relayGroups.keySet()) {
+			BootstrapCheckpointHandler bstCheckpointHandler = new BootstrapCheckpointHandler(DatabusSubscription.getStrList(subscriptionList).toArray(new String[0]));
+			if (!this._bootstrapGroups.isEmpty()) {
+				Checkpoint bootstrapCheckpoint = new Checkpoint();
+				// check if a persistent checkpoint exists for this source
+				Checkpoint persistentCheckpoint = this.getCheckpointPersistenceProvider().loadCheckpoint(DatabusSubscription.getStrList(subscriptionList));
+				bootstrapCheckpoint = bstCheckpointHandler.createInitialBootstrapCheckpoint(bootstrapCheckpoint, 
+						persistentCheckpoint != null ? persistentCheckpoint.getWindowScn() : 0L);
+				bootstrapCheckpoint.setWindowScn(bootstrapCheckpoint.getBootstrapSinceScn());
+				// create this checkpoint in the persistence location
+				this.getCheckpointPersistenceProvider().removeCheckpoint(DatabusSubscription.getStrList(subscriptionList));
+				try {
+					this.getCheckpointPersistenceProvider().storeCheckpoint(DatabusSubscription.getStrList(subscriptionList), bootstrapCheckpoint);
+				} catch (IOException e) {
+					LOGGER.error("Error handling checkpoint information for client : " + this.getClientStaticConfig(), e);
+					throw new PlatformException("Error starting up Databus client : " + this.getClientStaticConfig(), e);
+				}
+			}
+		}
 		super.doStart();
 	}
 
