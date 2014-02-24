@@ -27,8 +27,6 @@ public class RuntimeFrameworkConstants {
 	 * Constants for the conventions on config file names
 	 */
 	public static final String COMMON_RUNTIME_CONFIG = "packaged/common-runtime-config.xml"; // its a file picked up from classpath
-	public static final String COMMON_RUNTIME_SERVER_NATURE_CONFIG = "packaged/common-runtime-server-nature-config.xml"; // its a file picked up from classpath	
-	
-	public static final String SPRING_RELAY_CONFIG = "spring-relay-config.xml"; // files picked up from config locations
+	public static final String COMMON_RUNTIME_SERVER_NATURE_CONFIG = "packaged/common-runtime-server-nature-config.xml"; // its a file picked up from classpath
 	
 }
