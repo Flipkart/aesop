@@ -18,6 +18,8 @@ package org.aesop.serializer.batch.writer;
 import java.util.List;
 
 import org.springframework.batch.item.ItemWriter;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.util.Assert;
 import org.trpr.platform.core.impl.logging.LogFactory;
 import org.trpr.platform.core.spi.logging.Logger;
 
@@ -35,7 +37,7 @@ import com.netflix.zeno.fastblob.FastBlobStateEngine;
  * @author Regunath B
  * @version 1.0, 24 Feb 2014
  */
-public class SnapshotWriter<T> implements ItemWriter<T>{
+public class SnapshotWriter<T> implements ItemWriter<T>, InitializingBean {
 
 	/** The Logger interface*/
 	private static final Logger LOGGER = LogFactory.getLogger(SnapshotWriter.class);
@@ -51,9 +53,17 @@ public class SnapshotWriter<T> implements ItemWriter<T>{
 		for (T item : items) {
 			this.stateEngine.add(item.getClass().getName(), item);
 		}
-		LOGGER.info("Appended {} items of type {} to Fast blob state engine", items.size(), items.get(0).getClass().getName());
+		LOGGER.debug("Appended {} items of type {} to Fast blob state engine", items.size(), items.get(0).getClass().getName());
 	}
 
+	/**
+	 * Interface method implementation. Checks for mandatory dependencies
+	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
+	 */
+	public void afterPropertiesSet() throws Exception {
+		Assert.notNull(this.stateEngine,"'stateEngine' cannot be null. This Snaphot writer will not be initialized");
+	}
+	
 	/** Getter/Setter methods */
 	public FastBlobStateEngine getStateEngine() {
 		return stateEngine;
