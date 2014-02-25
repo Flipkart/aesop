@@ -25,7 +25,6 @@ import org.trpr.platform.core.spi.logging.Logger;
 import com.linkedin.databus.client.DatabusHttpClientImpl;
 import com.linkedin.databus.core.BootstrapCheckpointHandler;
 import com.linkedin.databus.core.Checkpoint;
-import com.linkedin.databus.core.DbusClientMode;
 import com.linkedin.databus.core.data_model.DatabusSubscription;
 import com.linkedin.databus.core.util.InvalidConfigException;
 import com.linkedin.databus2.core.DatabusException;
@@ -59,15 +58,11 @@ public class DefaultClient extends DatabusHttpClientImpl {
 			BootstrapCheckpointHandler bstCheckpointHandler = new BootstrapCheckpointHandler(DatabusSubscription.getStrList(subscriptionList).toArray(new String[0]));
 			if (!this._bootstrapGroups.isEmpty()) {
 				Checkpoint bootstrapCheckpoint = new Checkpoint();
-				bootstrapCheckpoint.setWindowScn(0L);
-				bootstrapCheckpoint.setConsumptionMode(DbusClientMode.ONLINE_CONSUMPTION);
 				// check if a persistent checkpoint exists for this source
-				/*
 				Checkpoint persistentCheckpoint = this.getCheckpointPersistenceProvider().loadCheckpoint(DatabusSubscription.getStrList(subscriptionList));
 				bootstrapCheckpoint = bstCheckpointHandler.createInitialBootstrapCheckpoint(bootstrapCheckpoint, 
 						persistentCheckpoint != null ? persistentCheckpoint.getWindowScn() : 0L);
 				bootstrapCheckpoint.setWindowScn(bootstrapCheckpoint.getBootstrapSinceScn());
-				*/
 				// create this checkpoint in the persistence location
 				this.getCheckpointPersistenceProvider().removeCheckpoint(DatabusSubscription.getStrList(subscriptionList));
 				try {
