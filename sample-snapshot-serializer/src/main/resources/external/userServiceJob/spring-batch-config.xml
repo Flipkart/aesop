@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:batch="http://www.springframework.org/schema/batch"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="
+    http://www.springframework.org/schema/beans classpath:org/springframework/beans/factory/xml/spring-beans-2.5.xsd	
+    http://www.springframework.org/schema/batch classpath:packaged/xsd/spring-batch-2.1.xsd
+    http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd
+    http://www.springframework.org/schema/context classpath:org/springframework/context/config/spring-context-2.5.xsd">
+
+	<!-- Bean for registering the jobs with the JobRegistry. Mandatory bean -->
+	<bean class="org.springframework.batch.core.configuration.support.JobRegistryBeanPostProcessor">
+		<property name="jobRegistry" ref="jobRegistry"/>
+	</bean>		
+
+	<!--
+		Configuring the User service Job Scheduler Bean that will be executed when the trigger fires.
+	-->
+	<bean name="userServiceJobDetailBean" class="org.springframework.scheduling.quartz.JobDetailBean">
+		<property name="jobClass" value="org.trpr.platform.batch.impl.spring.job.BatchJob" />
+		<property name="group" value="serializer-batch" />
+		<property name="jobDataAsMap">
+			<map>
+				<entry key="jobName" value-ref="userServiceJob" />
+				<entry key="jobLocator" value-ref="jobRepository" />
+				<entry key="jobLauncher" value-ref="jobLauncher" />
+			</map>
+		</property>
+	</bean>
+	
+	<!--
+		Associating the User service Job with a Quartz
+		Cron Trigger. Triggers define when a job is executed.
+	-->
+	<bean id="userServiceJobCronTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="userServiceJobDetailBean" />
+		<property name="cronExpression" value="0 0/5 * * * ?" />
+	</bean>
+
+	<!--
+		A list of Triggers to be scheduled and executed by Quartz for
+	-->
+	<bean
+		class="org.trpr.platform.batch.impl.quartz.SchedulerFactoryBean">
+		<property name="triggers">
+			<list>
+				<ref bean="userServiceJobCronTrigger" />
+			</list>
+		</property>
+	</bean>
+	
+	<!--
+		User service Job Task Executor Multi-Threaded-Pool Configuration.
+	-->
+	<bean id="userServiceJobTaskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+		<property name="corePoolSize" value="10" />
+		<property name="maxPoolSize" value="100" />
+		<property name="queueCapacity" value="500" />
+	</bean>	
+	
+	<!--
+		Multi-Threaded User service Batch Job configuration
+	-->
+	<batch:job id="userServiceJob" incrementer="incrementer">
+		<batch:step id="init" next="fetch">
+	       <batch:tasklet ref="stateEngineInitializerStep"/>
+    	</batch:step>
+		<batch:step id="fetch" next="write">
+			<batch:tasklet task-executor="userServiceJobTaskExecutor">
+				<batch:chunk reader="compositeUserServiceDataReader" processor="passThroughProcessor" writer="snapshotWriter" commit-interval="10"/>
+			</batch:tasklet>
+		</batch:step>		
+		<batch:step id="write">
+	       <batch:tasklet ref="stateEngineFinalizerStep"/>
+    	</batch:step>
+	</batch:job>
+
+	<bean id="compositeUserServiceDataReader" class="org.trpr.platform.batch.impl.spring.reader.CompositeItemStreamReader">
+		<constructor-arg><ref bean="userServiceDataReader"/></constructor-arg>
+	</bean>	
+	<bean id="userServiceDataReader" class="">
+	</bean>		
+	<bean id="passThroughProcessor" class="org.aesop.serializer.batch.processor.PassThroughItemProcessor"/>		
+	<bean id="snapshotWriter" class="org.aesop.serializer.batch.writer.SnapshotWriter">
+		<property name="stateEngine" ref="stateEngine" />
+	</bean>
+	
+
+</beans>
+				
