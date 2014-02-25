@@ -9,3 +9,4 @@
 /maxscn_directory
 /mmapped_directory
 /bootstrap_checkpoint_directory
+/bootstrap_producer_checkpoint_directory
