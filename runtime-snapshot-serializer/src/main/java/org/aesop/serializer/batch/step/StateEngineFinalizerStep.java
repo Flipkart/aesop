@@ -33,6 +33,21 @@ import org.trpr.platform.core.spi.logging.Logger;
 import com.netflix.zeno.fastblob.FastBlobStateEngine;
 import com.netflix.zeno.fastblob.io.FastBlobWriter;
 
+/**
+ * The <code>StateEngineFinalizerStep</code> class is an implementation of the Spring batch {@link Tasklet} that writes contents of the Zeno {@link FastBlobStateEngine}
+ * for snapshot (as described here : {@link https://github.com/Netflix/zeno/wiki/Producing-a-Snapshot}) or a delta (as described here : https://github.com/Netflix/zeno/wiki/Producing-a-Delta).
+ * 
+ * This tasklet is intended to be used in a batch job definition comprising steps as described below:
+ * <pre>
+ * 	<step1>Prepare Fast blob state engine for snapshot or delta write</step1>  
+ * 	<step2>Fetch, process and append events to the Fast blob state engine</step2>
+ * 	<step3>Use this tasklet to write out the snapshot or delta to persistent store</step3>
+ * </pre>
+ * 
+ * @author Regunath B
+ * @version 1.0, 24 Feb 2014
+ */
+
 public class StateEngineFinalizerStep implements Tasklet, InitializingBean {
 
 	/** The Logger interface*/
