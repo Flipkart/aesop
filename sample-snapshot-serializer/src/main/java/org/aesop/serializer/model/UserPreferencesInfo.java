@@ -28,7 +28,10 @@ public class UserPreferencesInfo {
     private Map<String,String> value;
     private int version;
     private String last_modified;
-        
+    
+    public UserPreferencesInfo() {    	
+    }
+    
     /** Constructor from all fields*/
     public UserPreferencesInfo(String id, String preferences_name,
 			Map<String, String> value, int version, String last_modified) {

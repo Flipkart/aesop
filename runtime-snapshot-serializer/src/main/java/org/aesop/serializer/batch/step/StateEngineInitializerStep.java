@@ -62,19 +62,19 @@ public class StateEngineInitializerStep implements Tasklet, InitializingBean {
 	public RepeatStatus execute(StepContribution stepContribution, ChunkContext chunkContext) throws Exception {
 		File serializedDataLocationFile = new File(this.serializedDataLocation);
 		if (!serializedDataLocationFile.exists()) {
-			serializedDataLocationFile.createNewFile();
+			serializedDataLocationFile.mkdirs();
 		}
 		File snapshotsLocationFile = new File(serializedDataLocationFile, SerializerConstants.SNAPSHOT_LOCATION);
 		File deltaLocationFile = new File(serializedDataLocationFile, SerializerConstants.DELTA_LOCATION);
 		if (!snapshotsLocationFile.exists()) {
-			snapshotsLocationFile.createNewFile();			
+			snapshotsLocationFile.mkdirs();			
 		}
 		if (snapshotsLocationFile.listFiles().length == 0) {
 			LOGGER.info("Fast blob state engine initialized for producing snapshot");
 			return RepeatStatus.FINISHED; // snapshots do not exist, so return right away			
 		}
 		if (!deltaLocationFile.exists()) {
-			deltaLocationFile.createNewFile();
+			deltaLocationFile.mkdirs();
 		}
 		// note that the decision to snapshot or produce delta is not based on foolproof logic. Ideally actual snapshot contents must be verified
 		this.stateEngine.prepareForNextCycle(); // snapshot exists (at least the directory does), therefore initialize for delta

@@ -75,10 +75,14 @@ public class StateEngineFinalizerStep implements Tasklet, InitializingBean {
 		
 		DataOutputStream dataOS = null;		
 		if (snapshotsLocationFile.listFiles().length == 0) {
-			dataOS = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(snapshotsLocationFile)));
+			File snapshotFile = new File(snapshotsLocationFile, (SerializerConstants.SNAPSHOT_LOCATION + (snapshotsLocationFile.listFiles().length + 1)));
+			snapshotFile.createNewFile();
+			dataOS = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(snapshotFile)));
 			writer.writeSnapshot(dataOS);
 		} else {
-			dataOS = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(deltaLocationFile)));
+			File deltaFile = new File(deltaLocationFile, (SerializerConstants.DELTA_LOCATION + (deltaLocationFile.listFiles().length + 1)));
+			deltaFile.createNewFile();
+			dataOS = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(deltaFile)));
 			writer.writeDelta(dataOS);
 		}
 	    dataOS.close();

@@ -76,16 +76,30 @@
     	</batch:step>
 	</batch:job>
 
+	<bean id="stateEngineInitializerStep" class="org.aesop.serializer.batch.step.StateEngineInitializerStep">
+		<property name="stateEngine" ref="stateEngine" />
+		<property name="serializedDataLocation" value="/Users/regunath.balasubramanian/Documents/junk/zeno" />
+	</bean>
+
+	<bean id="stateEngineFinalizerStep" class="org.aesop.serializer.batch.step.StateEngineFinalizerStep">
+		<property name="stateEngine" ref="stateEngine" />
+		<property name="serializedDataLocation" value="/Users/regunath.balasubramanian/Documents/junk/zeno" />
+	</bean>
+
 	<bean id="compositeUserServiceDataReader" class="org.trpr.platform.batch.impl.spring.reader.CompositeItemStreamReader">
 		<constructor-arg><ref bean="userServiceDataReader"/></constructor-arg>
 	</bean>	
-	<bean id="userServiceDataReader" class="">
-	</bean>		
+	<bean id="userServiceDataReader" class="org.aesop.serializer.batch.reader.UserInfoServiceReader"/>
 	<bean id="passThroughProcessor" class="org.aesop.serializer.batch.processor.PassThroughItemProcessor"/>		
 	<bean id="snapshotWriter" class="org.aesop.serializer.batch.writer.SnapshotWriter">
 		<property name="stateEngine" ref="stateEngine" />
 	</bean>
 	
-
+	<bean id="stateEngine" class="com.netflix.zeno.fastblob.FastBlobStateEngine">
+		<constructor-arg>
+			<bean class="org.aesop.serializer.serializers.RootSerializerFactory"/>
+		</constructor-arg>
+	</bean>	
+	
 </beans>
 				

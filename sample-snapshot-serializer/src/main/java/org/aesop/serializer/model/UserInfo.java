@@ -47,6 +47,9 @@ public class UserInfo {
     private String last_modified;
     private String creating_system;
     
+    public UserInfo() {    	 
+    }
+    
     /** Constructor from all fields*/
     public UserInfo(String id, String primary_account_id, String first_name,
 			String last_name, String primary_email, String primary_phone,

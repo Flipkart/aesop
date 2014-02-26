@@ -44,6 +44,9 @@ public class UserAddressInfo {
     private String creating_system;
     private Map<String,String> preferences;
     
+    public UserAddressInfo() {    	
+    }
+    
     /** Constructor from all fields*/    
     public UserAddressInfo(String id, String account_id, String first_name,
 			String last_name, String address_line1, String address_line2,

@@ -16,13 +16,39 @@
     <name>Sample Snapshot Serializer</name>
     <description>Sample Snapshot Serializer</description>
 
+	<dependencyManagement>
+	    <dependencies>
+			<dependency>
+				<groupId>org.slf4j</groupId>
+			  	<artifactId>slf4j-api</artifactId>
+			  	<version>1.6.4</version>
+			</dependency>
+	    </dependencies>
+	</dependencyManagement>
+
     <dependencies>
         <!-- aesop dependencies -->
         <dependency>
             <groupId>org.aesop</groupId>
             <artifactId>runtime-snapshot-serializer</artifactId>
             <version>1.0.0</version>
+		    <exclusions>
+	        	<exclusion> <!-- Remove slf4j over log4j -->
+		      	  <groupId>org.slf4j</groupId> 
+		          <artifactId>slf4j-log4j12</artifactId>
+		        </exclusion>
+	        	<exclusion> <!-- Remove jcl over slf4j  -->
+				  <groupId>org.slf4j</groupId>
+				  <artifactId>jcl-over-slf4j</artifactId>
+		        </exclusion>		        
+		    </exclusions>		             
         </dependency>    
+        <!-- Thrid party dependencies -->
+        <dependency>
+		    <groupId>org.apache.httpcomponents</groupId>
+		    <artifactId>httpclient</artifactId>
+		    <version>4.2.5</version>
+        </dependency>            
     </dependencies>
 
     <build>

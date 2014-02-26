@@ -44,12 +44,32 @@
         </developer>
     </developers>
 
+	<dependencyManagement>
+	    <dependencies>
+			<dependency>
+				<groupId>org.slf4j</groupId>
+			  	<artifactId>slf4j-api</artifactId>
+			  	<version>1.6.4</version>
+			</dependency>
+	    </dependencies>
+	</dependencyManagement>
+
     <dependencies>
         <!-- Trooper dependencies -->
         <dependency>
             <groupId>org.trpr</groupId>
             <artifactId>batch-core</artifactId>
             <version>${org.trpr.version}</version>
+		    <exclusions>
+	        	<exclusion> <!-- Remove slf4j over log4j -->
+		      	  <groupId>org.slf4j</groupId> 
+		          <artifactId>slf4j-log4j12</artifactId>
+		        </exclusion>
+	        	<exclusion> <!-- Remove jcl over slf4j  -->
+				  <groupId>org.slf4j</groupId>
+				  <artifactId>jcl-over-slf4j</artifactId>
+		        </exclusion>		        
+		    </exclusions>		 
         </dependency>
         <!-- Zeno dependencies -->
 		<dependency>
