@@ -47,7 +47,38 @@ public class UserInfo {
     private String last_modified;
     private String creating_system;
     
-    /** Getter/Setter methods*/    
+    /** Constructor from all fields*/
+    public UserInfo(String id, String primary_account_id, String first_name,
+			String last_name, String primary_email, String primary_phone,
+			String profile_name, String blacklisted_parent, String status,
+			boolean active, boolean guest, Boolean blacklisted,
+			Map<String, UserPreferencesInfo> preferences,
+			Set<UserAddressInfo> addresses, List<String> merged_account_ids,
+			int version, String creation_date, String last_modified,
+			String creating_system) {
+		super();
+		this.id = id;
+		this.primary_account_id = primary_account_id;
+		this.first_name = first_name;
+		this.last_name = last_name;
+		this.primary_email = primary_email;
+		this.primary_phone = primary_phone;
+		this.profile_name = profile_name;
+		this.blacklisted_parent = blacklisted_parent;
+		this.status = status;
+		this.active = active;
+		this.guest = guest;
+		this.blacklisted = blacklisted;
+		this.preferences = preferences;
+		this.addresses = addresses;
+		this.merged_account_ids = merged_account_ids;
+		this.version = version;
+		this.creation_date = creation_date;
+		this.last_modified = last_modified;
+		this.creating_system = creating_system;
+	}
+    
+	/** Getter/Setter methods*/    
 	public String getId() {
 		return id;
 	}
