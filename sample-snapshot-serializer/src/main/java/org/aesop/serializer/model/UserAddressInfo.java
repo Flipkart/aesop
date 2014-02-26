@@ -42,9 +42,40 @@ public class UserAddressInfo {
     private String creation_date;
     private String last_modified;
     private String creating_system;
-    private Map<String,Object> preferences;
+    private Map<String,String> preferences;
     
-    /**Getter/Setter methods */    
+    /** Constructor from all fields*/    
+    public UserAddressInfo(String id, String account_id, String first_name,
+			String last_name, String address_line1, String address_line2,
+			String landmark, String city, String state, String state_code,
+			String country, String pincode, String phone, boolean guest,
+			boolean active, int version, String creation_date,
+			String last_modified, String creating_system,
+			Map<String, String> preferences) {
+		super();
+		this.id = id;
+		this.account_id = account_id;
+		this.first_name = first_name;
+		this.last_name = last_name;
+		this.address_line1 = address_line1;
+		this.address_line2 = address_line2;
+		this.landmark = landmark;
+		this.city = city;
+		this.state = state;
+		this.state_code = state_code;
+		this.country = country;
+		this.pincode = pincode;
+		this.phone = phone;
+		this.guest = guest;
+		this.active = active;
+		this.version = version;
+		this.creation_date = creation_date;
+		this.last_modified = last_modified;
+		this.creating_system = creating_system;
+		this.preferences = preferences;
+	}
+    
+	/**Getter/Setter methods */    
 	public String getId() {
 		return id;
 	}
@@ -159,10 +190,10 @@ public class UserAddressInfo {
 	public void setCreating_system(String creating_system) {
 		this.creating_system = creating_system;
 	}
-	public Map<String, Object> getPreferences() {
+	public Map<String, String> getPreferences() {
 		return preferences;
 	}
-	public void setPreferences(Map<String, Object> preferences) {
+	public void setPreferences(Map<String, String> preferences) {
 		this.preferences = preferences;
 	}
         
