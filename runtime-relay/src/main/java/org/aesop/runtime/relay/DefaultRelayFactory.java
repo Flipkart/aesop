@@ -26,8 +26,6 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
 import com.linkedin.databus.container.netty.HttpRelay;
-import com.linkedin.databus.container.netty.HttpRelay.Config;
-import com.linkedin.databus.container.netty.HttpRelay.StaticConfig;
 import com.linkedin.databus.core.util.ConfigLoader;
 import com.linkedin.databus2.core.seq.MultiServerSequenceNumberHandler;
 import com.linkedin.databus2.core.seq.SequenceNumberHandlerFactory;
