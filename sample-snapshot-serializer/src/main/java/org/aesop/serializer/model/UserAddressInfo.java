@@ -42,7 +42,7 @@ public class UserAddressInfo {
     private String creation_date;
     private String last_modified;
     private String creating_system;
-    private Map<String,String> preferences;
+    private Map<String,Object> preferences;
     
     public UserAddressInfo() {    	
     }
@@ -54,7 +54,7 @@ public class UserAddressInfo {
 			String country, String pincode, String phone, boolean guest,
 			boolean active, int version, String creation_date,
 			String last_modified, String creating_system,
-			Map<String, String> preferences) {
+			Map<String, Object> preferences) {
 		super();
 		this.id = id;
 		this.account_id = account_id;
@@ -193,10 +193,10 @@ public class UserAddressInfo {
 	public void setCreating_system(String creating_system) {
 		this.creating_system = creating_system;
 	}
-	public Map<String, String> getPreferences() {
+	public Map<String, Object> getPreferences() {
 		return preferences;
 	}
-	public void setPreferences(Map<String, String> preferences) {
+	public void setPreferences(Map<String, Object> preferences) {
 		this.preferences = preferences;
 	}
         

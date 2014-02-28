@@ -16,12 +16,16 @@
 package org.aesop.serializer.serializers;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.aesop.serializer.model.UserPreferencesInfo;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.springframework.core.serializer.support.SerializationFailedException;
 
-import com.netflix.zeno.fastblob.record.FastBlobSchema;
-import com.netflix.zeno.fastblob.record.FastBlobSchema.FieldType;
+import com.netflix.zeno.fastblob.record.schema.FastBlobSchema;
+import com.netflix.zeno.fastblob.record.schema.FastBlobSchema.FieldType;
 import com.netflix.zeno.serializer.NFDeserializationRecord;
 import com.netflix.zeno.serializer.NFSerializationRecord;
 import com.netflix.zeno.serializer.NFTypeSerializer;
@@ -32,9 +36,12 @@ import com.netflix.zeno.serializer.common.StringSerializer;
  * The <code>UserPreferencesInfoSerializer</code> class is a sub-type of {@link NFTypeSerializer} for the root example model type {@link UserPreferencesInfo}
  * 
  * @author Regunath B
- * @version 1.0, 29 Feb 2014
+ * @version 1.0, 28 Feb 2014
  */
 public class UserPreferencesInfoSerializer extends NFTypeSerializer<UserPreferencesInfo> {
+
+	/** The ObjectMapper to use for JSON (de)serialization of {@link UserPreferencesInfo#getValue()}*/
+	private ObjectMapper objectMapper = new ObjectMapper();
 
 	/**
 	 * Constructor for this class
@@ -51,7 +58,7 @@ public class UserPreferencesInfoSerializer extends NFTypeSerializer<UserPreferen
 		return schema(
 			field("id",FieldType.STRING),
 			field("preferences_name",FieldType.STRING),
-			field("value"),
+			mapField("value", StringSerializer.NAME, StringSerializer.NAME),
 			field("version",FieldType.INT),
 			field("last_modified",FieldType.STRING)
 		);
@@ -61,10 +68,12 @@ public class UserPreferencesInfoSerializer extends NFTypeSerializer<UserPreferen
 	 * Deserializes a UserPreferencesInfo instance from the specified NFDeserializationRecord
 	 * @see com.netflix.zeno.serializer.NFTypeSerializer#doDeserialize(com.netflix.zeno.serializer.NFDeserializationRecord)
 	 */
+    @SuppressWarnings("unchecked")
 	protected UserPreferencesInfo doDeserialize(NFDeserializationRecord record) {
 		String id = deserializePrimitiveString(record, "id");
 	    String preferences_name = deserializePrimitiveString(record, "preferences_name");
-	    Map<String,String> value = deserializeObject(record, "value", "value");
+	    //Map<String,String> value = deserializeObject(record, "value");
+	    Map<String,Object> value = serializationFramework.getFrameworkDeserializer().deserializeMap(record, "value", new StringSerializer(), new StringSerializer());
 	    int version = deserializeInteger(record,"version");
 	    String last_modified = deserializePrimitiveString(record, "last_modified");
 		return new UserPreferencesInfo(id, preferences_name,value,version, last_modified);
@@ -74,10 +83,24 @@ public class UserPreferencesInfoSerializer extends NFTypeSerializer<UserPreferen
 	 * Serializes the specified UserPreferencesInfo object into the specified NFSerializationRecord
 	 * @see com.netflix.zeno.serializer.NFTypeSerializer#doSerialize(java.lang.Object, com.netflix.zeno.serializer.NFSerializationRecord)
 	 */
+    @SuppressWarnings("unchecked")
 	public void doSerialize(UserPreferencesInfo userPreferencesInfo, NFSerializationRecord record) {
 		serializePrimitive(record, "id", userPreferencesInfo.getId());		
-		serializePrimitive(record, "preferences_name", userPreferencesInfo.getPreferences_name());		
-		serializeObject(record, "value", "value", userPreferencesInfo.getValue());	    
+		serializePrimitive(record, "preferences_name", userPreferencesInfo.getPreferences_name());	
+		if (userPreferencesInfo.getValue() != null) {
+			Map<String,String> valueAsStringMap = new HashMap<String, String>();	
+			Iterator<String> iterator = userPreferencesInfo.getValue().keySet().iterator();
+			while(iterator.hasNext()) {
+				String key = iterator.next();
+				try {
+					valueAsStringMap.put(key, objectMapper.writer().writeValueAsString(userPreferencesInfo.getValue().get(key)));
+				} catch (Exception e) {
+					throw new SerializationFailedException("Serialization failed for userPreferencesInfo.getValue().get(key). Error is : " + e.getMessage(), e);
+				}				
+			}		
+			serializationFramework.getFrameworkSerializer().serializeMap(record, "value", StringSerializer.NAME, StringSerializer.NAME, valueAsStringMap);				
+			//serializeObject(record, "value", userPreferencesInfo.getValue());	    
+		}
 		serializePrimitive(record, "version", userPreferencesInfo.getVersion());		
 		serializePrimitive(record, "last_modified", userPreferencesInfo.getLast_modified());		
 	}

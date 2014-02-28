@@ -16,12 +16,16 @@
 package org.aesop.serializer.serializers;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.aesop.serializer.model.UserAddressInfo;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.springframework.core.serializer.support.SerializationFailedException;
 
-import com.netflix.zeno.fastblob.record.FastBlobSchema;
-import com.netflix.zeno.fastblob.record.FastBlobSchema.FieldType;
+import com.netflix.zeno.fastblob.record.schema.FastBlobSchema;
+import com.netflix.zeno.fastblob.record.schema.FastBlobSchema.FieldType;
 import com.netflix.zeno.serializer.NFDeserializationRecord;
 import com.netflix.zeno.serializer.NFSerializationRecord;
 import com.netflix.zeno.serializer.NFTypeSerializer;
@@ -32,15 +36,18 @@ import com.netflix.zeno.serializer.common.StringSerializer;
  * The <code>UserAddressInfoSerializer</code> class is a sub-type of {@link NFTypeSerializer} for the root example model type {@link UserAddressInfo}
  * 
  * @author Regunath B
- * @version 1.0, 29 Feb 2014
+ * @version 1.0, 27 Feb 2014
  */
 public class UserAddressInfoSerializer extends NFTypeSerializer<UserAddressInfo> {
+
+	/** The ObjectMapper to use for JSON (de)serialization of {@link UserAddressInfo#getPreferences()}*/
+	private ObjectMapper objectMapper = new ObjectMapper();
 
 	/**
 	 * Constructor for this class
 	 */
 	public UserAddressInfoSerializer() {
-		super(UserAddressInfo.class.getName());
+		super(UserAddressInfo.class.getName());		
 	}
 
 	/**
@@ -68,7 +75,7 @@ public class UserAddressInfoSerializer extends NFTypeSerializer<UserAddressInfo>
 			field("creation_date",FieldType.STRING),
 			field("last_modified",FieldType.STRING),
 			field("creating_system",FieldType.STRING),
-			field("preferences")
+			mapField("preferences", StringSerializer.NAME, StringSerializer.NAME)
 		);
 	}
 
@@ -76,6 +83,7 @@ public class UserAddressInfoSerializer extends NFTypeSerializer<UserAddressInfo>
 	 * Deserializes a UserAddressInfo instance from the specified NFDeserializationRecord
 	 * @see com.netflix.zeno.serializer.NFTypeSerializer#doDeserialize(com.netflix.zeno.serializer.NFDeserializationRecord)
 	 */
+    @SuppressWarnings("unchecked")
 	protected UserAddressInfo doDeserialize(NFDeserializationRecord record) {
 		String id = deserializePrimitiveString(record, "id");
 	    String account_id = deserializePrimitiveString(record, "account_id"); 
@@ -96,7 +104,9 @@ public class UserAddressInfoSerializer extends NFTypeSerializer<UserAddressInfo>
 	    String creation_date = deserializePrimitiveString(record, "creation_date");
 	    String last_modified = deserializePrimitiveString(record, "last_modified");
 	    String creating_system = deserializePrimitiveString(record, "creating_system");
-	    Map<String,String> preferences = deserializeObject(record, "preferences","preferences");
+	    //Map<String,String> preferences = deserializeObject(record, "preferences");
+	    Map<String,Object> preferences = serializationFramework.getFrameworkDeserializer().
+	    		deserializeMap(record,"preferences",new StringSerializer(),new StringSerializer());
 		return new UserAddressInfo(id,account_id,first_name,last_name,  address_line1,  address_line2,landmark,city,state,state_code,
 				 country,pincode,phone,guest,active,version,creation_date,last_modified,creating_system,preferences);
 	}
@@ -105,10 +115,11 @@ public class UserAddressInfoSerializer extends NFTypeSerializer<UserAddressInfo>
 	 * Serializes the specified UserAddressInfo object into the specified NFSerializationRecord
 	 * @see com.netflix.zeno.serializer.NFTypeSerializer#doSerialize(java.lang.Object, com.netflix.zeno.serializer.NFSerializationRecord)
 	 */
+    @SuppressWarnings("unchecked")
 	public void doSerialize(UserAddressInfo userAddressInfo, NFSerializationRecord record) {
 		serializePrimitive(record, "id", userAddressInfo.getId());		
 		serializePrimitive(record, "account_id", userAddressInfo.getAccount_id());		
-		serializeObject(record, "preferences", "preferences", userAddressInfo.getPreferences());	    
+		serializeObject(record, "preferences", userAddressInfo.getPreferences());	    
 		serializePrimitive(record, "first_name", userAddressInfo.getFirst_name());		
 		serializePrimitive(record, "last_name", userAddressInfo.getLast_name());		
 		serializePrimitive(record, "address_line1", userAddressInfo.getAddress_line1());		
@@ -125,8 +136,22 @@ public class UserAddressInfoSerializer extends NFTypeSerializer<UserAddressInfo>
 		serializePrimitive(record, "version", userAddressInfo.getVersion());		
 		serializePrimitive(record, "creation_date", userAddressInfo.getCreation_date());		
 		serializePrimitive(record, "last_modified", userAddressInfo.getLast_modified());		
-		serializePrimitive(record, "creating_system", userAddressInfo.getCreating_system());	
-		serializeObject(record, "preferences", "preferences", userAddressInfo.getPreferences());
+		serializePrimitive(record, "creating_system", userAddressInfo.getCreating_system());
+		//serializeObject(record, "preferences", userAddressInfo.getPreferences());
+		if (userAddressInfo.getPreferences() != null) {
+			Map<String,String> preferencesAsStringMap = new HashMap<String, String>();	
+			Iterator<String> iterator = userAddressInfo.getPreferences().keySet().iterator();
+			while(iterator.hasNext()) {
+				String key = iterator.next();
+				try {
+					preferencesAsStringMap.put(key, objectMapper.writer().writeValueAsString(userAddressInfo.getPreferences().get(key)));
+				} catch (Exception e) {
+					throw new SerializationFailedException("Serialization failed for userAddressInfo.getPreferences().get(key). Error is : " + e.getMessage(), e);
+				}				
+			}
+			serializationFramework.getFrameworkSerializer().
+				serializeMap(record, "preferences", StringSerializer.NAME, StringSerializer.NAME, preferencesAsStringMap);
+		}
 	}
 
 	/**

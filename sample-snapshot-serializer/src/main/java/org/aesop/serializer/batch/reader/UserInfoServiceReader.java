@@ -22,6 +22,8 @@ import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
+import org.codehaus.jackson.map.DeserializationConfig;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.item.ItemStreamException;
 import org.springframework.batch.item.ParseException;
@@ -29,9 +31,6 @@ import org.springframework.batch.item.UnexpectedInputException;
 import org.trpr.platform.batch.common.BatchException;
 import org.trpr.platform.batch.impl.spring.reader.CompositeItemStreamReader;
 import org.trpr.platform.batch.spi.spring.reader.BatchItemStreamReader;
-
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * The <code>UserInfoServiceReader</code> class is a simple implementation of the {@link BatchItemStreamReader} that returns the sample data item {@link UserInfo} instances
@@ -51,8 +50,16 @@ public class UserInfoServiceReader <T extends UserInfo> implements BatchItemStre
 	
 	/** A set of fictitious phone numbers to perform lookup on*/
 	private static final String[] PHONE_NUMBERS = {
-		"9008955008",
-		
+		"6543217890",
+		"6543217891",
+		"9090912345",
+		"9586545778",
+		"9632828337",
+		"9740417580",
+		"9845452123",
+		"9876543210",
+		"9898989898",
+		"9933551100",
 	};
 	
 	/**
@@ -62,14 +69,14 @@ public class UserInfoServiceReader <T extends UserInfo> implements BatchItemStre
 	 * @see org.trpr.platform.batch.spi.spring.reader.BatchItemStreamReader#batchRead(org.springframework.batch.item.ExecutionContext)
 	 */
 	public UserInfo[] batchRead(ExecutionContext context) throws Exception, UnexpectedInputException, ParseException {
-		objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+		objectMapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		UserInfo[] results = new UserInfo[PHONE_NUMBERS.length];
 		for (int i =0; i < PHONE_NUMBERS.length; i++) {
 			DefaultHttpClient httpclient  =  new DefaultHttpClient();
 			HttpGet executionGet= new HttpGet(SERVICE_URL);
 			URIBuilder uriBuilder = new URIBuilder(executionGet.getURI());
 			uriBuilder.addParameter("primary_phone",PHONE_NUMBERS[i]);
-			uriBuilder.addParameter("require","{\"preferences\":true,\"addresses\":true\"}");
+			uriBuilder.addParameter("require","{\"preferences\":true,\"addresses\":true}");
 			((HttpRequestBase) executionGet).setURI(uriBuilder.build());
 	        HttpResponse httpResponse = httpclient.execute(executionGet);
 			String response = new String(EntityUtils.toByteArray(httpResponse.getEntity()));

@@ -15,6 +15,7 @@
  */
 package org.aesop.serializer.serializers;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -24,8 +25,8 @@ import org.aesop.serializer.model.UserAddressInfo;
 import org.aesop.serializer.model.UserInfo;
 import org.aesop.serializer.model.UserPreferencesInfo;
 
-import com.netflix.zeno.fastblob.record.FastBlobSchema;
-import com.netflix.zeno.fastblob.record.FastBlobSchema.FieldType;
+import com.netflix.zeno.fastblob.record.schema.FastBlobSchema;
+import com.netflix.zeno.fastblob.record.schema.FastBlobSchema.FieldType;
 import com.netflix.zeno.serializer.NFDeserializationRecord;
 import com.netflix.zeno.serializer.NFSerializationRecord;
 import com.netflix.zeno.serializer.NFTypeSerializer;
@@ -38,7 +39,7 @@ import com.netflix.zeno.serializer.common.StringSerializer;
  * The <code>UserInfoSerializer</code> class is a sub-type of {@link NFTypeSerializer} for the root example model type {@link UserInfo}.
  * 
  * @author Regunath B
- * @version 1.0, 28 Feb 2014
+ * @version 1.0, 27 Feb 2014
  */
 
 public class UserInfoSerializer extends NFTypeSerializer<UserInfo> {
@@ -68,9 +69,9 @@ public class UserInfoSerializer extends NFTypeSerializer<UserInfo> {
 				field("active",FieldType.BOOLEAN),
 				field("guest",FieldType.BOOLEAN),
 				field("blacklisted",FieldType.BOOLEAN),
-				field("preferences"),
-				field("addresses"),
-				field("merged_account_ids"),
+				mapField("preferences",StringSerializer.NAME, UserPreferencesInfo.class.getName()),
+				setField("addresses",UserAddressInfo.class.getName()),
+				listField("merged_account_ids", StringSerializer.NAME),
 				field("version",FieldType.INT),
 				field("creation_date",FieldType.STRING),
 				field("last_modified",FieldType.STRING),
@@ -82,6 +83,7 @@ public class UserInfoSerializer extends NFTypeSerializer<UserInfo> {
 	 * Deserializes a UserInfo instance from the specified NFDeserializationRecord
 	 * @see com.netflix.zeno.serializer.NFTypeSerializer#doDeserialize(com.netflix.zeno.serializer.NFDeserializationRecord)
 	 */
+    @SuppressWarnings("unchecked")
 	protected UserInfo doDeserialize(NFDeserializationRecord record) {
 		String id = deserializePrimitiveString(record, "id");
 	    String primary_account_id = deserializePrimitiveString(record, "primary_account_id");
@@ -97,9 +99,15 @@ public class UserInfoSerializer extends NFTypeSerializer<UserInfo> {
 	    boolean guest = deserializeBoolean(record, "guest");
 	    boolean blacklisted = deserializeBoolean(record, "blacklisted");
 		
-	    Map<String,UserPreferencesInfo> preferences = deserializeObject(record, "preferences", "preferences");
-	    Set<UserAddressInfo> addresses = deserializeObject(record, "addresses", "addresses");
-	    List<String> merged_account_ids = deserializeObject(record, "merged_account_ids", "merged_account_ids");
+	    //Map<String,UserPreferencesInfo> preferences = deserializeObject(record, "preferences");
+	    Map<String,UserPreferencesInfo> preferences = serializationFramework.getFrameworkDeserializer().
+	    		deserializeMap(record, "preferences", new StringSerializer(), new UserPreferencesInfoSerializer());
+	    //Set<UserAddressInfo> addresses = deserializeObject(record, "addresses");
+	    Set<UserAddressInfo> addresses = serializationFramework.getFrameworkDeserializer().
+	    		deserializeSet(record, "addresses", new UserAddressInfoSerializer());
+	    //List<String> merged_account_ids = deserializeObject(record, "merged_account_ids");
+	    List<String> merged_account_ids = serializationFramework.getFrameworkDeserializer().
+	    		deserializeList(record, "merged_account_ids", new StringSerializer());
 	    
 	    int version = deserializeInteger(record,"version");
 	    String creation_date = deserializePrimitiveString(record, "creation_date");
@@ -115,6 +123,7 @@ public class UserInfoSerializer extends NFTypeSerializer<UserInfo> {
 	 * Serializes the specified UserInfo object into the specified NFSerializationRecord
 	 * @see com.netflix.zeno.serializer.NFTypeSerializer#doSerialize(java.lang.Object, com.netflix.zeno.serializer.NFSerializationRecord)
 	 */
+    @SuppressWarnings("unchecked")
 	public void doSerialize(UserInfo userInfo, NFSerializationRecord record) {
 		serializePrimitive(record, "id", userInfo.getId());
 		serializePrimitive(record, "primary_account_id", userInfo.getPrimary_account_id());
@@ -129,10 +138,16 @@ public class UserInfoSerializer extends NFTypeSerializer<UserInfo> {
 		serializePrimitive(record, "guest", userInfo.isGuest());
 		serializePrimitive(record, "blacklisted", userInfo.getBlacklisted());
 		
-		serializeObject(record, "preferences", "preferences", userInfo.getPreferences());
-		serializeObject(record, "addresses", "addresses", userInfo.getAddresses());
-		serializeObject(record, "merged_account_ids", "merged_account_ids", userInfo.getMerged_account_ids());
-				
+		//serializeObject(record, "preferences", userInfo.getPreferences());
+		serializationFramework.getFrameworkSerializer().serializeMap(record, "preferences", StringSerializer.NAME, UserPreferencesInfo.class.getName(), userInfo.getPreferences());		
+		//serializeObject(record, "addresses", userInfo.getAddresses());
+		serializationFramework.getFrameworkSerializer().serializeSet(record, "addresses", UserAddressInfo.class.getName(), userInfo.getAddresses());
+		List<List<String>> list = new ArrayList<List<String>>();
+		list.add(userInfo.getMerged_account_ids());
+		serializationFramework.getFrameworkSerializer().serializeList(record, "merged_account_ids", "merged_account_ids", list);
+		//serializeObject(record, "merged_account_ids", userInfo.getMerged_account_ids());
+		
+		serializePrimitive(record, "version", userInfo.getVersion());
 		serializePrimitive(record, "creation_date", userInfo.getCreation_date());
 		serializePrimitive(record, "last_modified", userInfo.getLast_modified());
 		serializePrimitive(record, "creating_system", userInfo.getCreating_system());

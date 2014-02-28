@@ -25,7 +25,7 @@ import java.util.Map;
 public class UserPreferencesInfo {
     private String id;
     private String preferences_name;
-    private Map<String,String> value;
+    private Map<String,Object> value;
     private int version;
     private String last_modified;
     
@@ -34,7 +34,7 @@ public class UserPreferencesInfo {
     
     /** Constructor from all fields*/
     public UserPreferencesInfo(String id, String preferences_name,
-			Map<String, String> value, int version, String last_modified) {
+			Map<String, Object> value, int version, String last_modified) {
 		super();
 		this.id = id;
 		this.preferences_name = preferences_name;
@@ -56,10 +56,10 @@ public class UserPreferencesInfo {
 	public void setPreferences_name(String preferences_name) {
 		this.preferences_name = preferences_name;
 	}
-	public Map<String, String> getValue() {
+	public Map<String, Object> getValue() {
 		return value;
 	}
-	public void setValue(Map<String, String> value) {
+	public void setValue(Map<String, Object> value) {
 		this.value = value;
 	}
 	public int getVersion() {
