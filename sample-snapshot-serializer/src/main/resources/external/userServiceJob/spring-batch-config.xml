@@ -71,8 +71,11 @@
 				<batch:chunk reader="compositeUserServiceDataReader" processor="passThroughProcessor" writer="snapshotWriter" commit-interval="10"/>
 			</batch:tasklet>
 		</batch:step>		
-		<batch:step id="write">
+		<batch:step id="write" next="diff">
 	       <batch:tasklet ref="stateEngineFinalizerStep"/>
+    	</batch:step>
+		<batch:step id="diff">
+	       <batch:tasklet ref="stateEngineDiffStep"/>
     	</batch:step>
 	</batch:job>
 
@@ -86,6 +89,12 @@
 		<property name="serializedDataLocation" value="/Users/regunath.balasubramanian/Documents/junk/zeno" />
 	</bean>
 
+	<bean id="stateEngineDiffStep" class="org.aesop.serializer.batch.StateEngineDiffStep">
+		<property name="stateEngineFrom" ref="stateEngine" />
+		<property name="stateEngineTo" ref="stateEngineTo" />
+		<property name="serializedDataLocation" value="/Users/regunath.balasubramanian/Documents/junk/zeno" />
+	</bean>
+
 	<bean id="compositeUserServiceDataReader" class="org.trpr.platform.batch.impl.spring.reader.CompositeItemStreamReader">
 		<constructor-arg><ref bean="userServiceDataReader"/></constructor-arg>
 	</bean>	
@@ -96,6 +105,11 @@
 	</bean>
 	
 	<bean id="stateEngine" class="com.netflix.zeno.fastblob.FastBlobStateEngine">
+		<constructor-arg>
+			<bean class="org.aesop.serializer.serializers.RootSerializerFactory"/>
+		</constructor-arg>
+	</bean>	
+	<bean id="stateEngineTo" class="com.netflix.zeno.fastblob.FastBlobStateEngine">
 		<constructor-arg>
 			<bean class="org.aesop.serializer.serializers.RootSerializerFactory"/>
 		</constructor-arg>
