@@ -51,6 +51,11 @@
 			  	<artifactId>slf4j-api</artifactId>
 			  	<version>1.6.4</version>
 			</dependency>
+		    <dependency>
+		    	<groupId>commons-lang</groupId>
+		      	<artifactId>commons-lang</artifactId>
+		      	<version>2.4</version>
+		    </dependency>
 	    </dependencies>
 	</dependencyManagement>
 
@@ -69,6 +74,11 @@
 				  <groupId>org.slf4j</groupId>
 				  <artifactId>jcl-over-slf4j</artifactId>
 		        </exclusion>		        
+				<!-- Removing log4j as we use log4j-over-slf4j bridge -->
+			    <exclusion>
+			        <groupId>log4j</groupId>
+			        <artifactId>log4j</artifactId>
+			    </exclusion>
 		    </exclusions>		 
         </dependency>
         <!-- Zeno dependencies -->
