@@ -15,7 +15,12 @@
  */
 package org.aesop.serializer.batch.reader;
 
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
 import org.aesop.serializer.model.UserInfo;
+import org.aesop.serializer.model.UserPreferencesInfo;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpRequestBase;
@@ -43,7 +48,7 @@ import org.trpr.platform.batch.spi.spring.reader.BatchItemStreamReader;
 public class UserInfoServiceReader <T extends UserInfo> implements BatchItemStreamReader<UserInfo> {
 
 	/** The service endpoint URL. Note: This is for testing and very specific to this sample*/
-	private static final String SERVICE_URL = "http://localhost:25151/userservice/v0.1/customer";
+	private static final String SERVICE_URL = "http://w3-user-svc1.stage.ch.flipkart.com:25151/userservice/v0.1/customer";
 	
 	/** The ObjectMapper to use for JSON deserialization*/
 	private ObjectMapper objectMapper = new ObjectMapper();
@@ -82,6 +87,23 @@ public class UserInfoServiceReader <T extends UserInfo> implements BatchItemStre
 			String response = new String(EntityUtils.toByteArray(httpResponse.getEntity()));
 			SearchResult searchResult = objectMapper.readValue(response, SearchResult.class);
 			results[i] = searchResult.results[0]; // we take only the first result
+			if (i == 4) {
+				results[i].setFirst_name("Regu " + i);
+				results[i].setLast_name("B " + i);
+				results[i].setPrimary_email("regunathb@gmail.com" + i);
+				results[i].setPrimary_phone("9886693892" + i);
+				if (results[i].getPreferences() != null && results[i].getPreferences().size() > 0) {
+					Iterator<String> it = results[i].getPreferences().keySet().iterator();
+					while (it.hasNext()) {
+						String key = it.next();
+						UserPreferencesInfo upi = results[i].getPreferences().get(key);
+						Map<String, Object> values= new HashMap<String,Object>();
+						values.put("communication", "email");
+						values.put("address", "home");
+						upi.setValue(values);
+					}
+				}
+			}
 		}
 		return results;
 	}

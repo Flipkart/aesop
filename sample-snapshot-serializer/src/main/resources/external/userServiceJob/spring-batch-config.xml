@@ -68,7 +68,7 @@
     	</batch:step>
 		<batch:step id="fetch" next="write">
 			<batch:tasklet task-executor="userServiceJobTaskExecutor">
-				<batch:chunk reader="compositeUserServiceDataReader" processor="passThroughProcessor" writer="snapshotWriter" commit-interval="10"/>
+				<batch:chunk reader="compositeUserServiceDataReader" processor="passThroughProcessor" writer="stateEngineApenderWriter" commit-interval="10"/>
 			</batch:tasklet>
 		</batch:step>		
 		<batch:step id="write" next="diff">
@@ -100,7 +100,7 @@
 	</bean>	
 	<bean id="userServiceDataReader" class="org.aesop.serializer.batch.reader.UserInfoServiceReader"/>
 	<bean id="passThroughProcessor" class="org.aesop.serializer.batch.processor.PassThroughItemProcessor"/>		
-	<bean id="snapshotWriter" class="org.aesop.serializer.batch.writer.SnapshotWriter">
+	<bean id="stateEngineApenderWriter" class="org.aesop.serializer.batch.writer.StateEngineApenderWriter">
 		<property name="stateEngine" ref="stateEngine" />
 	</bean>
 	
