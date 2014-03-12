@@ -1,0 +1,6 @@
+org.aesop.runtime.producer.avro
+org.aesop.runtime.producer.eventlistener
+org.aesop.runtime.producer.eventprocessors
+org.aesop.runtime.producer.mapper
+org.aesop.runtime.producer.mysql
+org.aesop.runtime.producer.txnprocessor
