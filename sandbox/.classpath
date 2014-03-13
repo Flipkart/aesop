@@ -26,9 +26,9 @@
 	<classpathentry kind="lib" path="lib/databus-bootstrap-server-impl-1.0.jar"/>
 	<classpathentry kind="lib" path="lib/databus-client-api-1.0.jar"/>
 	<classpathentry kind="lib" path="lib/databus-client-common-1.0.jar"/>
-	<classpathentry kind="lib" path="lib/databus-client-http-1.0.jar"/>
+	<classpathentry kind="lib" path="lib/databus-client-http-1.0.jar" sourcepath="/Users/shoury.bharadwaj/gitprojects/databus/build/databus-client-http/libs/databus-client-http-sources.jar"/>
 	<classpathentry kind="lib" path="lib/databus-cluster-manager-impl-1.0.jar"/>
-	<classpathentry kind="lib" path="lib/databus-core-container-1.0.jar"/>
+	<classpathentry kind="lib" path="lib/databus-core-container-1.0.jar" sourcepath="/Users/shoury.bharadwaj/gitprojects/databus/build/databus-core-container/libs/databus-core-container-sources.jar"/>
 	<classpathentry kind="lib" path="lib/databus-core-impl-1.0.jar"/>
 	<classpathentry kind="lib" path="lib/databus-core-schemas-1.0.jar"/>
 	<classpathentry kind="lib" path="lib/databus-group-leader-api-1.0.jar"/>

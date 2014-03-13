@@ -84,6 +84,8 @@
         <module>sample-client-bootstrap-producer</module>
         <module>sample-bootstrap-server</module>
         <module>sample-snapshot-serializer</module>
+        <module>mysql-producer</module>
+        <module>sample-mysql-relay</module>
     </modules>
 
 </project>
