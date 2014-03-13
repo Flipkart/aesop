@@ -73,8 +73,7 @@ public class MysqlAvroEventManager
 	protected final int pSourceId;
 
 	/**constructor for this class*/
-	public MysqlAvroEventManager(int lSourceId, int pSourceId) throws DatabusException
-	{
+	public MysqlAvroEventManager(int lSourceId, int pSourceId) throws DatabusException{
 		this.lSourceId = lSourceId;
 		this.pSourceId = pSourceId;
 	}
@@ -90,10 +89,8 @@ public class MysqlAvroEventManager
 	 * @throws UnsupportedKeyException Thrown when the data type of the "key" field is not a supported type
 	 * @throws DatabusException Generic Databus Exception
 	 */
-	public int createAndAppendEvent(DbChangeEntry changeEntry,
-			DbusEventBufferAppendable eventBuffer,
-			boolean enableTracing,
-			DbusEventsStatisticsCollector dbusEventsStatisticsCollector) throws EventCreationException, UnsupportedKeyException, DatabusException{
+	public int createAndAppendEvent(DbChangeEntry changeEntry,DbusEventBufferAppendable eventBuffer,boolean enableTracing,DbusEventsStatisticsCollector dbusEventsStatisticsCollector)
+			throws EventCreationException, UnsupportedKeyException, DatabusException{
 		LOGGER.debug("Request received for create and append event for " + changeEntry);
 		Object keyObj = obtainKey(changeEntry);
 		/**Construct the Databus Event key, determine the key type and construct the key*/
@@ -144,52 +141,14 @@ public class MysqlAvroEventManager
 				entryList.add(dbChangeEntry);
 				LOGGER.debug("Successfully Processed the Row " + dbChangeEntry);
 			}
-		} catch (NoSuchSchemaException ne)
-		{
-			LOGGER.error("No Such element exception : " + ne.getMessage() + " Cause: " + ne.getCause() );
+		}catch (NoSuchSchemaException ne){
+			LOGGER.error("No Such element exception : " + ne.getMessage() + " Cause: " + ne.getCause());
 			throw new DatabusRuntimeException(ne);
-		} catch (DatabusException de)
-		{
+		}catch (DatabusException de){
 			LOGGER.error("Databus exception : " + de.getMessage() + " Cause: " + de.getCause() );
 			throw new DatabusRuntimeException(de);
 		}
 		return entryList;
-	}
-
-	/**
-	 * Generate Key pairs for the event. Gets primary key information from registered avro schema
-	 * and generates key pairs for the given event details
-	 * @param columns contains columns related to a mutated row
-	 * @param schema schema corresponding to the source to which event belongs to
-	 * @return List<KeyPair> list of key pairs corresponding to the event
-	 * @throws DatabusException generic Databus exception
-	 */
-	private List<KeyPair> generateKeyPair(List<Column> columns , Schema schema)
-			throws DatabusException{
-		Object value = null;
-		Schema.Type schemaType = null;
-		//get primary key fields from schema
-		String pkFieldName = SchemaHelper.getMetaField(schema, "pk");
-		LOGGER.debug("Generate Key Pair is called for columns " + columns );
-		if(pkFieldName == null){
-			LOGGER.error("Primary key not defined for schema " + schema);
-			throw new DatabusException("No primary key specified in the schema");
-		}
-		PrimaryKeySchema pkSchema = new PrimaryKeySchema(pkFieldName);
-		List<Schema.Field> fields = schema.getFields();
-		List<KeyPair> keyPairList = new ArrayList<KeyPair>();
-		int index = 0;
-		for(Schema.Field field : fields){
-			if (pkSchema.isPartOfPrimaryKey(field)){
-				value = columns .get(index).getValue();
-				schemaType = field.schema().getType();
-				KeyPair keyPair = new KeyPair(value, schemaType);
-				keyPairList.add(keyPair);
-			}
-			index++;
-		}
-		LOGGER.debug("Generated keypairs " + keyPairList +"for columns " + columns );
-		return keyPairList;
 	}
 
 	/**
@@ -198,8 +157,7 @@ public class MysqlAvroEventManager
 	 * @return serialized byte array
 	 * @throws EventCreationException Thrown when event creation failed for a databus source
 	 */
-	protected byte[] serializeEvent(GenericRecord record)
-			throws EventCreationException{
+	protected byte[] serializeEvent(GenericRecord record) throws EventCreationException{
 		byte[] serializedValue;
 		ByteArrayOutputStream bos = null;
 		try{
@@ -224,6 +182,41 @@ public class MysqlAvroEventManager
 			}
 		}
 		return serializedValue;
+	}
+
+	/**
+	 * Generate Key pairs for the event. Gets primary key information from registered avro schema
+	 * and generates key pairs for the given event details
+	 * @param columns contains columns related to a mutated row
+	 * @param schema schema corresponding to the source to which event belongs to
+	 * @return List<KeyPair> list of key pairs corresponding to the event
+	 * @throws DatabusException generic Databus exception
+	 */
+	private List<KeyPair> generateKeyPair(List<Column> columns , Schema schema) throws DatabusException{
+		Object value = null;
+		Schema.Type schemaType = null;
+		//get primary key fields from schema
+		String pkFieldName = SchemaHelper.getMetaField(schema, "pk");
+		LOGGER.debug("Generate Key Pair is called for columns " + columns );
+		if(pkFieldName == null){
+			LOGGER.error("Primary key not defined for schema " + schema);
+			throw new DatabusException("No primary key specified in the schema");
+		}
+		PrimaryKeySchema pkSchema = new PrimaryKeySchema(pkFieldName);
+		List<Schema.Field> fields = schema.getFields();
+		List<KeyPair> keyPairList = new ArrayList<KeyPair>();
+		int index = 0;
+		for(Schema.Field field : fields){
+			if (pkSchema.isPartOfPrimaryKey(field)){
+				value = columns .get(index).getValue();
+				schemaType = field.schema().getType();
+				KeyPair keyPair = new KeyPair(value, schemaType);
+				keyPairList.add(keyPair);
+			}
+			index++;
+		}
+		LOGGER.debug("Generated keypairs " + keyPairList +"for columns " + columns );
+		return keyPairList;
 	}
 
 	/**
@@ -309,4 +302,3 @@ public class MysqlAvroEventManager
 		}
 	}
 }
-
