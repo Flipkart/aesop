@@ -35,7 +35,7 @@
 	-->
 	<bean id="userServiceJobCronTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
 		<property name="jobDetail" ref="userServiceJobDetailBean" />
-		<property name="cronExpression" value="0 0/5 * * * ?" />
+		<property name="cronExpression" value="0 0/1 * * * ?" />
 	</bean>
 
 	<!--
@@ -63,36 +63,18 @@
 		Multi-Threaded User service Batch Job configuration
 	-->
 	<batch:job id="userServiceJob" incrementer="incrementer">
-		<batch:step id="init" next="fetch">
-	       <batch:tasklet ref="stateEngineInitializerStep"/>
-    	</batch:step>
 		<batch:step id="fetch" next="write">
 			<batch:tasklet task-executor="userServiceJobTaskExecutor">
 				<batch:chunk reader="compositeUserServiceDataReader" processor="passThroughProcessor" writer="stateEngineApenderWriter" commit-interval="10"/>
 			</batch:tasklet>
 		</batch:step>		
-		<batch:step id="write" next="diff">
+		<batch:step id="write">
 	       <batch:tasklet ref="stateEngineFinalizerStep"/>
-    	</batch:step>
-		<batch:step id="diff">
-	       <batch:tasklet ref="stateEngineDiffStep"/>
     	</batch:step>
 	</batch:job>
 
-	<bean id="stateEngineInitializerStep" class="org.aesop.serializer.batch.step.StateEngineInitializerStep">
-		<property name="stateEngine" ref="stateEngine" />
-		<property name="serializedDataLocation" value="/Users/regunath.balasubramanian/Documents/junk/zeno" />
-	</bean>
-
 	<bean id="stateEngineFinalizerStep" class="org.aesop.serializer.batch.step.StateEngineFinalizerStep">
-		<property name="stateEngine" ref="stateEngine" />
-		<property name="serializedDataLocation" value="/Users/regunath.balasubramanian/Documents/junk/zeno" />
-	</bean>
-
-	<bean id="stateEngineDiffStep" class="org.aesop.serializer.batch.StateEngineDiffStep">
-		<property name="stateEngineFrom" ref="stateEngine" />
-		<property name="stateEngineTo" ref="stateEngineTo" />
-		<property name="serializedDataLocation" value="/Users/regunath.balasubramanian/Documents/junk/zeno" />
+		<property name="stateTransitioner" ref="stateTransitioner" />
 	</bean>
 
 	<bean id="compositeUserServiceDataReader" class="org.trpr.platform.batch.impl.spring.reader.CompositeItemStreamReader">
@@ -101,19 +83,14 @@
 	<bean id="userServiceDataReader" class="org.aesop.serializer.batch.reader.UserInfoServiceReader"/>
 	<bean id="passThroughProcessor" class="org.aesop.serializer.batch.processor.PassThroughItemProcessor"/>		
 	<bean id="stateEngineApenderWriter" class="org.aesop.serializer.batch.writer.StateEngineApenderWriter">
-		<property name="stateEngine" ref="stateEngine" />
+		<property name="stateTransitioner" ref="stateTransitioner" />
 	</bean>
-	
-	<bean id="stateEngine" class="com.netflix.zeno.fastblob.FastBlobStateEngine">
-		<constructor-arg>
+
+	<bean id="stateTransitioner" class="org.aesop.serializer.stateengine.DailyStateTransitioner">
+		<property name="serializerFactory">
 			<bean class="org.aesop.serializer.serializers.RootSerializerFactory"/>
-		</constructor-arg>
+		</property>
+		<property name="serializedDataLocation" value="/Users/regunath.balasubramanian/Documents/junk/zeno" />				
 	</bean>	
-	<bean id="stateEngineTo" class="com.netflix.zeno.fastblob.FastBlobStateEngine">
-		<constructor-arg>
-			<bean class="org.aesop.serializer.serializers.RootSerializerFactory"/>
-		</constructor-arg>
-	</bean>	
-	
 </beans>
 				
