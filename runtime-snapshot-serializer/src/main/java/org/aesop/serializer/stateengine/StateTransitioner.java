@@ -46,6 +46,11 @@ public abstract class StateTransitioner implements InitializingBean {
 	public abstract FastBlobStateEngine getStateEngine();
 	
 	/**
+	 * Saves the state held by the FastBlobStateEngine
+	 */
+	public abstract void saveState();
+	
+	/**
 	 * Interface method implementation. Checks for mandatory dependencies
 	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
 	 */
@@ -61,8 +66,11 @@ public abstract class StateTransitioner implements InitializingBean {
 	}
 	public void setSerializedDataLocation(String serializedDataLocation) {
 		this.serializedDataLocation = serializedDataLocation;
-	}		
-	
+	}			
+	public String getSerializedDataLocation() {
+		return serializedDataLocation;
+	}
+
 	/**
 	 * Initializes the snapshot and delta file directories
 	 */

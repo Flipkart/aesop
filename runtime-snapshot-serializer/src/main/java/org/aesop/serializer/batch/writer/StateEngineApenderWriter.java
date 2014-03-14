@@ -17,6 +17,7 @@ package org.aesop.serializer.batch.writer;
 
 import java.util.List;
 
+import org.aesop.serializer.stateengine.StateTransitioner;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
@@ -30,9 +31,8 @@ import com.netflix.zeno.fastblob.FastBlobStateEngine;
  * to the {@link FastBlobStateEngine} set on this writer.
  * This writer is intended to be used in a batch job definition comprising steps as described below:
  * <pre>
- * 	<step1>Prepare Fast blob state engine for snapshot or delta write</step1>  
- * 	<step2>Use this writer along with a reader, processor to fetch data from source and append to Fast blob state engine</step2>
- * 	<step3>Write out the snapshot or delta to persistent store</step3>
+ * 	<step1>Use this writer along with a reader, processor to fetch data from source and append to Fast blob state engine</step1>
+ * 	<step2>Write out the snapshot or delta to persistent store</step2>
  * </pre>
  * @author Regunath B
  * @version 1.0, 24 Feb 2014
@@ -42,8 +42,8 @@ public class StateEngineApenderWriter<T> implements ItemWriter<T>, InitializingB
 	/** The Logger interface*/
 	private static final Logger LOGGER = LogFactory.getLogger(StateEngineApenderWriter.class);
 	
-	/** The FastBlobStateEngine to append the items to*/
-	private FastBlobStateEngine stateEngine;
+	/** The StateTransitioner for accessing the FastBlobStateEngine used in appending items*/
+	private StateTransitioner stateTransitioner;
 	
 	/**
 	 * Interface method implementation. Adds the items to the FastBlobStateEngine
@@ -51,7 +51,7 @@ public class StateEngineApenderWriter<T> implements ItemWriter<T>, InitializingB
 	 */
 	public void write(List<? extends T> items) throws Exception {
 		for (T item : items) {
-			this.stateEngine.add(item.getClass().getName(), item);
+			this.stateTransitioner.getStateEngine().add(item.getClass().getName(), item);
 		}
 		LOGGER.debug("Appended {} items of type {} to Fast blob state engine", items.size(), items.get(0).getClass().getName());
 	}
@@ -61,15 +61,15 @@ public class StateEngineApenderWriter<T> implements ItemWriter<T>, InitializingB
 	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
 	 */
 	public void afterPropertiesSet() throws Exception {
-		Assert.notNull(this.stateEngine,"'stateEngine' cannot be null. This Snaphot writer will not be initialized");
+		Assert.notNull(this.stateTransitioner,"'stateTransitioner' cannot be null. This State engine appender writer will not be initialized");
 	}
-	
+
 	/** Getter/Setter methods */
-	public FastBlobStateEngine getStateEngine() {
-		return stateEngine;
+	public StateTransitioner getStateTransitioner() {
+		return stateTransitioner;
 	}
-	public void setStateEngine(FastBlobStateEngine stateEngine) {
-		this.stateEngine = stateEngine;
+	public void setStateTransitioner(StateTransitioner stateTransitioner) {
+		this.stateTransitioner = stateTransitioner;
 	}
 
 }

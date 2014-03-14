@@ -16,17 +16,23 @@
 package org.aesop.serializer.stateengine;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 import org.aesop.serializer.SerializerConstants;
 import org.trpr.platform.core.PlatformException;
+import org.trpr.platform.core.impl.logging.LogFactory;
+import org.trpr.platform.core.spi.logging.Logger;
 
 import com.netflix.zeno.fastblob.FastBlobStateEngine;
 import com.netflix.zeno.fastblob.io.FastBlobReader;
+import com.netflix.zeno.fastblob.io.FastBlobWriter;
 
 /**
  * The <code>DailyStateTransitioner</code> class is an implementation of {@link StateTransitioner} that creates or suitably initializes an existing 
@@ -39,7 +45,12 @@ import com.netflix.zeno.fastblob.io.FastBlobReader;
 
 public class DailyStateTransitioner extends StateTransitioner {
 	
-	private SimpleDateFormat DAILY_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
+	/** The Logger interface*/
+	private static final Logger LOGGER = LogFactory.getLogger(DailyStateTransitioner.class);
+	
+	/** The Date format instances for used in naming files and state engine versions*/
+	public SimpleDateFormat DAILY_FORMAT = new SimpleDateFormat("_yyyy-MM-dd");
+	public SimpleDateFormat HOURLY_MINUTE_FORMAT = new SimpleDateFormat("_HH-mm");
 
 	/** The FastBlobStateEngine that this StateTransitioner creates and manages */
 	private FastBlobStateEngine stateEngine;
@@ -50,25 +61,85 @@ public class DailyStateTransitioner extends StateTransitioner {
 	 * @see org.aesop.serializer.stateengine.StateTransitioner#getStateEngine()
 	 */
 	public FastBlobStateEngine getStateEngine() {
-		if (this.stateEngine == null) {
-			this.stateEngine = new FastBlobStateEngine(this.serializerFactory);
-		}		
+		return this.stateEngine;
+	}
+	
+	/**
+	 * Abstract method implementation. Persists state held by the FastBlobStateEngine and prepares it for the next cycle
+	 * @see org.aesop.serializer.stateengine.StateTransitioner#saveState()
+	 */
+	public void saveState() {
+		
+		File serializedDataLocationFile = new File(this.serializedDataLocation);
+		File snapshotsLocationFile = new File(serializedDataLocationFile, SerializerConstants.SNAPSHOT_LOCATION);
+		
+		this.getStateEngine().prepareForWrite();
+	    // Create a writer, which will be responsible for creating snapshot and/or delta blobs.
+	    FastBlobWriter writer = new FastBlobWriter(this.getStateEngine());				
+		DataOutputStream dataOS = null;
+		
+		try {
+			Calendar calendar = Calendar.getInstance();
+			String today = DAILY_FORMAT.format(calendar.getTime());		
+			File snapshotFile = new File (snapshotsLocationFile, SerializerConstants.SNAPSHOT_LOCATION + today);
+			if (!snapshotFile.exists()) { // no snapshot for today, write a snapshot for today and return
+				snapshotFile.createNewFile();
+				dataOS = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(snapshotFile)));
+				writer.writeSnapshot(dataOS);			
+				LOGGER.info("Fast blob state engine data written to snapshot file : " + snapshotFile.getAbsolutePath());	    
+			} else {
+				File deltaLocationFile = new File(serializedDataLocationFile, SerializerConstants.DELTA_LOCATION);	
+				File deltaFile = new File(deltaLocationFile, (SerializerConstants.DELTA_LOCATION + today + HOURLY_MINUTE_FORMAT.format(calendar.getTime())));				
+				deltaFile.createNewFile();
+				dataOS = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(deltaFile)));
+				writer.writeDelta(dataOS);
+				LOGGER.info("Fast blob state engine data written to delta file : " + deltaFile.getAbsolutePath());	    
+			}
+		    dataOS.close();
+			this.getStateEngine().prepareForNextCycle(); // prepare the state engine for next run
+		} catch (Exception e) {
+			throw new PlatformException("Error saving state engine data : " + e.getMessage(), e);
+		}	    
+	}
+	
+	/**
+	 * Overriden super class method. Additionall creates and initializes the FastBlobStateEngine
+	 * @see org.aesop.serializer.stateengine.StateTransitioner#afterPropertiesSet()
+	 */
+	public void afterPropertiesSet() throws Exception {
+		
+		super.afterPropertiesSet();
+		
+		this.stateEngine = new FastBlobStateEngine(this.serializerFactory);
 		File serializedDataLocationFile = new File(this.serializedDataLocation);
 		File snapshotsLocationFile = new File(serializedDataLocationFile, SerializerConstants.SNAPSHOT_LOCATION);
 		
 		Calendar calendar = Calendar.getInstance();
-		calendar.add(Calendar.DATE, -1);
-		String dayMinusOne = DAILY_FORMAT.format(calendar.getTime());
-		File previousSnapshot = new File (snapshotsLocationFile, SerializerConstants.SNAPSHOT_LOCATION + dayMinusOne);
+		String today = DAILY_FORMAT.format(calendar.getTime());		
+		// check if a snapshot exists for today and load it
+		File previousSnapshot = new File (snapshotsLocationFile, SerializerConstants.SNAPSHOT_LOCATION + today);
 		if (previousSnapshot.exists()) {
 			FastBlobReader previousSnapshotReader = new FastBlobReader(this.stateEngine);
 			try {
 				previousSnapshotReader.readSnapshot(new DataInputStream(new BufferedInputStream(new FileInputStream(previousSnapshot))));
 			} catch (Exception e) {
-				throw new PlatformException("Error reading snapshot from file : " + previousSnapshot.getAbsolutePath(), e);
+				throw new PlatformException("Error reading current day snapshot from file : " + previousSnapshot.getAbsolutePath(), e);
 			}
-		}
-		return this.stateEngine;
+			this.stateEngine.setLatestVersion(today);
+		} else { // check if a previous day snapshot exists		
+			calendar.add(Calendar.DATE, -1);
+			String dayMinusOne = DAILY_FORMAT.format(calendar.getTime());
+			previousSnapshot = new File (snapshotsLocationFile, SerializerConstants.SNAPSHOT_LOCATION + dayMinusOne);
+			if (previousSnapshot.exists()) {
+				FastBlobReader previousSnapshotReader = new FastBlobReader(this.stateEngine);
+				try {
+					previousSnapshotReader.readSnapshot(new DataInputStream(new BufferedInputStream(new FileInputStream(previousSnapshot))));
+				} catch (Exception e) {
+					throw new PlatformException("Error reading previous day snapshot from file : " + previousSnapshot.getAbsolutePath(), e);
+				}
+			}
+			this.stateEngine.setLatestVersion(dayMinusOne);
+		}		
 	}
 
 }
