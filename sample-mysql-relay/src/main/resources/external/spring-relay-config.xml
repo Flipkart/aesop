@@ -50,7 +50,7 @@
 			<list>
 				<bean id="logicalSourceConfig" class="com.linkedin.databus2.relay.config.LogicalSourceConfig">
 					<property name="id" value="40"/>
-					<property name="name" value="org.aesop.events.or_test.Person"/>
+					<property name="name" value="org.aesop.events.ortest.Person"/>
 					<property name="uri" value="or_test.person"/>
 					<property name="partitionFunction" value="constant:1"/>					
 				</bean>

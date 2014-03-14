@@ -41,12 +41,6 @@
 			  <version>${com.linkedin.databus.version}</version>
 			  <scope>compile</scope>
 			</dependency>
-			<!-- Bumping up SLF4J to 1.5.6 as new methods are accessed in Hadoop client code of SEP -->	
-			<dependency>
-			  <groupId>org.slf4j</groupId>
-			  <artifactId>slf4j-api</artifactId>
-			  <version>1.5.6</version>
-			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
@@ -62,6 +56,21 @@
         	<groupId>open-replicator</groupId>
         	<artifactId>open-replicator</artifactId>
         	<version>1.0.5</version>
+        	<scope>compile</scope>
+			<exclusions>
+			      <exclusion>
+			    	<groupId>log4j</groupId>
+    				<artifactId>log4j</artifactId>
+			      </exclusion>
+			      <exclusion>
+			          <groupId>org.slf4j</groupId>
+    				  <artifactId>slf4j-api</artifactId>
+			      </exclusion>
+			      <exclusion>
+			          <groupId>org.slf4j</groupId>
+    				  <artifactId>slf4j-log4j12</artifactId>
+			      </exclusion>
+		   </exclusions>
 	 	</dependency>
       </dependencies>
     <build>

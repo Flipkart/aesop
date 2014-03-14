@@ -3,11 +3,11 @@
  * 
  * DO NOT EDIT DIRECTLY
  */
-package org.aesop.events.or_test;  
+package org.aesop.events.ortest;  
 @SuppressWarnings("all")
 @org.apache.avro.specific.AvroGenerated
 public class Person extends org.apache.avro.specific.SpecificRecordBase implements org.apache.avro.specific.SpecificRecord {
-  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"Person\",\"namespace\":\"org.aesop.events.or_test\",\"fields\":[{\"name\":\"key\",\"type\":[\"long\",\"null\"]},{\"name\":\"firstName\",\"type\":[\"string\",\"null\"]},{\"name\":\"lastName\",\"type\":[\"string\",\"null\"]},{\"name\":\"birthDate\",\"type\":[\"long\",\"null\"]},{\"name\":\"deleted\",\"type\":[\"string\",\"null\"]}]}");
+  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"Person\",\"namespace\":\"org.aesop.events.ortest\",\"fields\":[{\"name\":\"key\",\"type\":[\"long\",\"null\"]},{\"name\":\"firstName\",\"type\":[\"string\",\"null\"]},{\"name\":\"lastName\",\"type\":[\"string\",\"null\"]},{\"name\":\"birthDate\",\"type\":[\"long\",\"null\"]},{\"name\":\"deleted\",\"type\":[\"string\",\"null\"]}]}");
   public static org.apache.avro.Schema getClassSchema() { return SCHEMA$; }
   @Deprecated public java.lang.Long key;
   @Deprecated public java.lang.CharSequence firstName;
@@ -134,18 +134,18 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
   }
 
   /** Creates a new Person RecordBuilder */
-  public static org.aesop.events.or_test.Person.Builder newBuilder() {
-    return new org.aesop.events.or_test.Person.Builder();
+  public static org.aesop.events.ortest.Person.Builder newBuilder() {
+    return new org.aesop.events.ortest.Person.Builder();
   }
   
   /** Creates a new Person RecordBuilder by copying an existing Builder */
-  public static org.aesop.events.or_test.Person.Builder newBuilder(org.aesop.events.or_test.Person.Builder other) {
-    return new org.aesop.events.or_test.Person.Builder(other);
+  public static org.aesop.events.ortest.Person.Builder newBuilder(org.aesop.events.ortest.Person.Builder other) {
+    return new org.aesop.events.ortest.Person.Builder(other);
   }
   
   /** Creates a new Person RecordBuilder by copying an existing Person instance */
-  public static org.aesop.events.or_test.Person.Builder newBuilder(org.aesop.events.or_test.Person other) {
-    return new org.aesop.events.or_test.Person.Builder(other);
+  public static org.aesop.events.ortest.Person.Builder newBuilder(org.aesop.events.ortest.Person other) {
+    return new org.aesop.events.ortest.Person.Builder(other);
   }
   
   /**
@@ -162,11 +162,11 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
 
     /** Creates a new Builder */
     private Builder() {
-      super(org.aesop.events.or_test.Person.SCHEMA$);
+      super(org.aesop.events.ortest.Person.SCHEMA$);
     }
     
     /** Creates a Builder by copying an existing Builder */
-    private Builder(org.aesop.events.or_test.Person.Builder other) {
+    private Builder(org.aesop.events.ortest.Person.Builder other) {
       super(other);
       if (isValidValue(fields()[0], other.key)) {
         this.key = data().deepCopy(fields()[0].schema(), other.key);
@@ -191,8 +191,8 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
     }
     
     /** Creates a Builder by copying an existing Person instance */
-    private Builder(org.aesop.events.or_test.Person other) {
-            super(org.aesop.events.or_test.Person.SCHEMA$);
+    private Builder(org.aesop.events.ortest.Person other) {
+            super(org.aesop.events.ortest.Person.SCHEMA$);
       if (isValidValue(fields()[0], other.key)) {
         this.key = data().deepCopy(fields()[0].schema(), other.key);
         fieldSetFlags()[0] = true;
@@ -221,7 +221,7 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
     }
     
     /** Sets the value of the 'key' field */
-    public org.aesop.events.or_test.Person.Builder setKey(java.lang.Long value) {
+    public org.aesop.events.ortest.Person.Builder setKey(java.lang.Long value) {
       validate(fields()[0], value);
       this.key = value;
       fieldSetFlags()[0] = true;
@@ -234,7 +234,7 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
     }
     
     /** Clears the value of the 'key' field */
-    public org.aesop.events.or_test.Person.Builder clearKey() {
+    public org.aesop.events.ortest.Person.Builder clearKey() {
       key = null;
       fieldSetFlags()[0] = false;
       return this;
@@ -246,7 +246,7 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
     }
     
     /** Sets the value of the 'firstName' field */
-    public org.aesop.events.or_test.Person.Builder setFirstName(java.lang.CharSequence value) {
+    public org.aesop.events.ortest.Person.Builder setFirstName(java.lang.CharSequence value) {
       validate(fields()[1], value);
       this.firstName = value;
       fieldSetFlags()[1] = true;
@@ -259,7 +259,7 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
     }
     
     /** Clears the value of the 'firstName' field */
-    public org.aesop.events.or_test.Person.Builder clearFirstName() {
+    public org.aesop.events.ortest.Person.Builder clearFirstName() {
       firstName = null;
       fieldSetFlags()[1] = false;
       return this;
@@ -271,7 +271,7 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
     }
     
     /** Sets the value of the 'lastName' field */
-    public org.aesop.events.or_test.Person.Builder setLastName(java.lang.CharSequence value) {
+    public org.aesop.events.ortest.Person.Builder setLastName(java.lang.CharSequence value) {
       validate(fields()[2], value);
       this.lastName = value;
       fieldSetFlags()[2] = true;
@@ -284,7 +284,7 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
     }
     
     /** Clears the value of the 'lastName' field */
-    public org.aesop.events.or_test.Person.Builder clearLastName() {
+    public org.aesop.events.ortest.Person.Builder clearLastName() {
       lastName = null;
       fieldSetFlags()[2] = false;
       return this;
@@ -296,7 +296,7 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
     }
     
     /** Sets the value of the 'birthDate' field */
-    public org.aesop.events.or_test.Person.Builder setBirthDate(java.lang.Long value) {
+    public org.aesop.events.ortest.Person.Builder setBirthDate(java.lang.Long value) {
       validate(fields()[3], value);
       this.birthDate = value;
       fieldSetFlags()[3] = true;
@@ -309,7 +309,7 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
     }
     
     /** Clears the value of the 'birthDate' field */
-    public org.aesop.events.or_test.Person.Builder clearBirthDate() {
+    public org.aesop.events.ortest.Person.Builder clearBirthDate() {
       birthDate = null;
       fieldSetFlags()[3] = false;
       return this;
@@ -321,7 +321,7 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
     }
     
     /** Sets the value of the 'deleted' field */
-    public org.aesop.events.or_test.Person.Builder setDeleted(java.lang.CharSequence value) {
+    public org.aesop.events.ortest.Person.Builder setDeleted(java.lang.CharSequence value) {
       validate(fields()[4], value);
       this.deleted = value;
       fieldSetFlags()[4] = true;
@@ -334,7 +334,7 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
     }
     
     /** Clears the value of the 'deleted' field */
-    public org.aesop.events.or_test.Person.Builder clearDeleted() {
+    public org.aesop.events.ortest.Person.Builder clearDeleted() {
       deleted = null;
       fieldSetFlags()[4] = false;
       return this;
