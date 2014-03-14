@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.aesop.runtime.impl.jetty;
+package com.flipkart.aesop.runtime.impl.jetty;
 
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.springframework.beans.factory.FactoryBean;

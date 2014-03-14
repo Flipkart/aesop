@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.aesop.runtime.producer.avro;
+package com.flipkart.aesop.runtime.producer.avro;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.aesop.runtime.producer.mapper.BinLogEventMapper;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericDatumWriter;
 import org.apache.avro.generic.GenericRecord;
@@ -30,6 +29,7 @@ import org.apache.avro.io.EncoderFactory;
 import org.trpr.platform.core.impl.logging.LogFactory;
 import org.trpr.platform.core.spi.logging.Logger;
 
+import com.flipkart.aesop.runtime.producer.mapper.BinLogEventMapper;
 import com.google.code.or.binlog.BinlogEventV4Header;
 import com.google.code.or.common.glossary.Column;
 import com.google.code.or.common.glossary.Row;

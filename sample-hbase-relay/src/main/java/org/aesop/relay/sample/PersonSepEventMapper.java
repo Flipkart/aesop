@@ -16,12 +16,12 @@
 package org.aesop.relay.sample;
 
 import org.aesop.events.sample.person.Person;
-import org.aesop.runtime.producer.hbase.SepEventMapper;
 import org.apache.hadoop.hbase.KeyValue;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.trpr.platform.core.impl.logging.LogFactory;
 import org.trpr.platform.core.spi.logging.Logger;
 
+import com.flipkart.aesop.runtime.producer.hbase.SepEventMapper;
 import com.ngdata.sep.SepEvent;
 
 
@@ -39,7 +39,7 @@ public class PersonSepEventMapper implements SepEventMapper<Person> {
 	
 	/**
 	 * Interface method implementation. Returns the name of this type
-	 * @see org.aesop.runtime.producer.hbase.SepEventMapper#getUniqueName()
+	 * @see com.flipkart.aesop.runtime.producer.hbase.SepEventMapper#getUniqueName()
 	 */
 	public String getUniqueName() {
 		return this.getClass().getCanonicalName();
@@ -47,7 +47,7 @@ public class PersonSepEventMapper implements SepEventMapper<Person> {
 
 	/**
 	 * Interface method implementation. Creates {@link Person} instance based on data in {@link KeyValue} contained in {@link SepEvent}
-	 * @see org.aesop.runtime.producer.hbase.SepEventMapper#mapSepEvent(com.ngdata.sep.SepEvent)
+	 * @see com.flipkart.aesop.runtime.producer.hbase.SepEventMapper#mapSepEvent(com.ngdata.sep.SepEvent)
 	 */
 	public Person mapSepEvent(SepEvent sepEvent) {
     	String firstName = null;

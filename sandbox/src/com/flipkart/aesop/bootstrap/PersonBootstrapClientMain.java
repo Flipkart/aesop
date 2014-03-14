@@ -2,10 +2,10 @@
  * WARNING : This is test code. It is a quick hack to try out features using third party libraries like
  * the LinkedIn Databus. 
  */
-package org.aesop.bootstrap;
+package com.flipkart.aesop.bootstrap;
 
-import org.aesop.relay.PersonConsumer;
 
+import com.flipkart.aesop.relay.PersonConsumer;
 import com.linkedin.databus.client.CheckpointMessage;
 import com.linkedin.databus.client.DatabusHttpClientImpl;
 import com.linkedin.databus.client.DatabusSourcesConnection;

@@ -13,15 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.aesop.runtime.producer.eventlistener;
+package com.flipkart.aesop.runtime.producer.eventlistener;
 
 import java.util.Map;
 
-import org.aesop.runtime.producer.eventprocessor.BinLogEventProcessor;
-import org.aesop.runtime.producer.txnprocessor.MysqlTransactionManager;
 import org.trpr.platform.core.impl.logging.LogFactory;
 import org.trpr.platform.core.spi.logging.Logger;
 
+import com.flipkart.aesop.runtime.producer.eventprocessor.BinLogEventProcessor;
+import com.flipkart.aesop.runtime.producer.txnprocessor.MysqlTransactionManager;
 import com.google.code.or.binlog.BinlogEventListener;
 import com.google.code.or.binlog.BinlogEventV4;
 /**

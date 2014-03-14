@@ -13,18 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.aesop.runtime.producer.txnprocessor.impl;
+package com.flipkart.aesop.runtime.producer.txnprocessor.impl;
 
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.aesop.runtime.producer.avro.MysqlAvroEventManager;
-import org.aesop.runtime.producer.mapper.BinLogEventMapper;
-import org.aesop.runtime.producer.txnprocessor.MysqlTransactionManager;
 import org.trpr.platform.core.impl.logging.LogFactory;
 import org.trpr.platform.core.spi.logging.Logger;
 
+import com.flipkart.aesop.runtime.producer.avro.MysqlAvroEventManager;
+import com.flipkart.aesop.runtime.producer.mapper.BinLogEventMapper;
+import com.flipkart.aesop.runtime.producer.txnprocessor.MysqlTransactionManager;
 import com.google.code.or.binlog.BinlogEventV4Header;
 import com.google.code.or.common.glossary.Row;
 import com.linkedin.databus.core.DatabusRuntimeException;
@@ -121,7 +121,7 @@ public class MysqlTransactionManagerImpl implements MysqlTransactionManager{
 	/**
 	 * Persists all the transaction data and ends the current transaction.
 	 * @param eventTimeStamp time when transaction end event was generated
-	 * @see org.aesop.runtime.producer.txnprocessor.TransactionProcessor#endXtion(long)
+	 * @see com.flipkart.aesop.runtime.producer.txnprocessor.TransactionProcessor#endXtion(long)
 	 */
 	@Override
 	public void endXtion(long eventTimeStamp) {

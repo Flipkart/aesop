@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.aesop.runtime.producer.txnprocessor;
+package com.flipkart.aesop.runtime.producer.txnprocessor;
 
 import java.util.List;
 

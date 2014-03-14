@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.aesop.runtime.impl.registry;
+package com.flipkart.aesop.runtime.impl.registry;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,12 +22,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.aesop.runtime.spi.registry.AbstractRuntimeRegistry;
-import org.aesop.runtime.spring.registry.ServerContainerConfigInfo;
 import org.trpr.platform.core.PlatformException;
 import org.trpr.platform.core.impl.logging.LogFactory;
 import org.trpr.platform.core.spi.logging.Logger;
 
+import com.flipkart.aesop.runtime.spi.registry.AbstractRuntimeRegistry;
+import com.flipkart.aesop.runtime.spring.registry.ServerContainerConfigInfo;
 import com.linkedin.databus2.core.container.netty.ServerContainer;
 
 /**
@@ -46,7 +46,7 @@ public class ServerContainerRegistry implements AbstractRuntimeRegistry {
 
 	/**
 	 * Interface method implementation. 
-	 * @see org.aesop.runtime.spi.registry.AbstractRuntimeRegistry#init(java.util.List)
+	 * @see com.flipkart.aesop.runtime.spi.registry.AbstractRuntimeRegistry#init(java.util.List)
 	 */
 	public InitedRuntimeInfo[] init(List<ServerContainerConfigInfo> serverContainerConfigList) throws Exception {
     	List<AbstractRuntimeRegistry.InitedRuntimeInfo> initedRuntimeInfos = new LinkedList<AbstractRuntimeRegistry.InitedRuntimeInfo>();
@@ -70,7 +70,7 @@ public class ServerContainerRegistry implements AbstractRuntimeRegistry {
 
 	/**
 	 * Interface method implementation.
-	 * @see org.aesop.runtime.spi.registry.AbstractRuntimeRegistry#reinitRuntime(java.lang.String)
+	 * @see com.flipkart.aesop.runtime.spi.registry.AbstractRuntimeRegistry#reinitRuntime(java.lang.String)
 	 */
 	public void reinitRuntime(String name) throws Exception {
 		ServerContainer runtime = this.runtimes.get(name);
@@ -87,7 +87,7 @@ public class ServerContainerRegistry implements AbstractRuntimeRegistry {
 
 	/**
 	 * Interface method implementation
-	 * @see org.aesop.runtime.spi.registry.AbstractRuntimeRegistry#shutdown()
+	 * @see com.flipkart.aesop.runtime.spi.registry.AbstractRuntimeRegistry#shutdown()
 	 */
 	public void shutdown() throws Exception {
         for (String name : this.runtimes.keySet()) {
@@ -102,7 +102,7 @@ public class ServerContainerRegistry implements AbstractRuntimeRegistry {
 
 	/**
 	 * Interface method implementation
-	 * @see org.aesop.runtime.spi.registry.AbstractRuntimeRegistry#getRuntimes()
+	 * @see com.flipkart.aesop.runtime.spi.registry.AbstractRuntimeRegistry#getRuntimes()
 	 */
 	public List<ServerContainer> getRuntimes() {
         return new ArrayList<ServerContainer>(this.runtimes.values());
@@ -110,7 +110,7 @@ public class ServerContainerRegistry implements AbstractRuntimeRegistry {
 
 	/**
 	 * Interface method implementation
-	 * @see org.aesop.runtime.spi.registry.AbstractRuntimeRegistry#getRuntime(java.lang.String)
+	 * @see com.flipkart.aesop.runtime.spi.registry.AbstractRuntimeRegistry#getRuntime(java.lang.String)
 	 */
 	public ServerContainer getRuntime(String name) {
 		return this.runtimes.get(name);
@@ -118,7 +118,7 @@ public class ServerContainerRegistry implements AbstractRuntimeRegistry {
 
 	/**
 	 * Interface method implementation
-	 * @see org.aesop.runtime.spi.registry.AbstractRuntimeRegistry#unregisterRuntime(com.linkedin.databus2.core.container.netty.ServerContainer)
+	 * @see com.flipkart.aesop.runtime.spi.registry.AbstractRuntimeRegistry#unregisterRuntime(com.linkedin.databus2.core.container.netty.ServerContainer)
 	 */
 	public void unregisterRuntime(ServerContainer runtime) {
 		this.runtimes.remove(runtime.getComponentAdmin().getComponentName());

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.aesop.relay.hbase;
+package com.flipkart.aesop.relay.hbase;
 
 import java.io.IOException;
 

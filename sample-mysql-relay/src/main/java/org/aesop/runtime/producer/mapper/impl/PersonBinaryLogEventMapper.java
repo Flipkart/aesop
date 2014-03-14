@@ -18,10 +18,10 @@ package org.aesop.runtime.producer.mapper.impl;
 import java.util.List;
 
 import org.aesop.events.ortest.Person;
-import org.aesop.runtime.producer.mapper.BinLogEventMapper;
 import org.trpr.platform.core.impl.logging.LogFactory;
 import org.trpr.platform.core.spi.logging.Logger;
 
+import com.flipkart.aesop.runtime.producer.mapper.BinLogEventMapper;
 import com.google.code.or.binlog.BinlogEventV4Header;
 import com.google.code.or.common.glossary.Column;
 import com.google.code.or.common.glossary.Row;

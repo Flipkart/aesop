@@ -4,12 +4,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.aesop</groupId>
+        <groupId>com.flipkart.aesop</groupId>
         <artifactId>aesop</artifactId>
         <version>1.0.0</version>
     </parent>
 
-    <groupId>org.aesop</groupId>
+    <groupId>com.flipkart.aesop</groupId>
     <artifactId>runtime-bootstrap</artifactId>
     <name>Bootstrap Runtime</name>
     <version>1.0.0</version>
@@ -37,8 +37,8 @@
     </distributionManagement>
 
     <scm>
-        <url>https://github.com/regunathb/aesop</url>
-        <connection>https://github.com/regunathb/aesop.git</connection>
+        <url>https://github.com/Flipkart/aesop</url>
+        <connection>https://github.com/Flipkart/aesop.git</connection>
     </scm>
 
     <developers>
@@ -70,7 +70,7 @@
     <dependencies>
         <!-- aesop dependencies -->
         <dependency>
-            <groupId>org.aesop</groupId>
+            <groupId>com.flipkart.aesop</groupId>
             <artifactId>runtime</artifactId>
             <version>1.0.0</version>
         </dependency>    
@@ -140,7 +140,7 @@
                     <includes>
                         <include>packaged/**/*</include>
                         <include>WEB-INF/**/*</include>
-                        <include>org/**/*</include>
+                        <include>com/**/*</include>
                     </includes>
                 </configuration>
             </plugin>

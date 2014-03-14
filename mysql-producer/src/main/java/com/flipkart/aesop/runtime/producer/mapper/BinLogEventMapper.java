@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.aesop.runtime.producer.mapper;
+package com.flipkart.aesop.runtime.producer.mapper;
 
 import org.apache.avro.generic.GenericRecord;
 import com.google.code.or.binlog.BinlogEventV4Header;

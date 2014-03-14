@@ -3,7 +3,7 @@
  * the LinkedIn Databus. 
  */
 
-package org.aesop.relay;
+package com.flipkart.aesop.relay;
 
 import com.linkedin.databus.client.DatabusHttpClientImpl;
 

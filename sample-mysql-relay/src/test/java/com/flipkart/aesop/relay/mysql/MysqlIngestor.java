@@ -1,4 +1,4 @@
-package org.aesop.relay.mysql;
+package com.flipkart.aesop.relay.mysql;
 
 import java.io.BufferedReader;
 import java.io.File;

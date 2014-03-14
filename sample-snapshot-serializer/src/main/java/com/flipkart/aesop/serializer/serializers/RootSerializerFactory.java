@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.aesop.serializer.serializers;
+package com.flipkart.aesop.serializer.serializers;
 
-import org.aesop.serializer.model.UserInfo;
 
+import com.flipkart.aesop.serializer.model.UserInfo;
 import com.netflix.zeno.serializer.NFTypeSerializer;
 import com.netflix.zeno.serializer.SerializerFactory;
 

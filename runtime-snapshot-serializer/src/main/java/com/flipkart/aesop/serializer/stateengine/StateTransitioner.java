@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.aesop.serializer.stateengine;
+package com.flipkart.aesop.serializer.stateengine;
 
 import java.io.File;
 
-import org.aesop.serializer.SerializerConstants;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
+import com.flipkart.aesop.serializer.SerializerConstants;
 import com.netflix.zeno.fastblob.FastBlobStateEngine;
 import com.netflix.zeno.serializer.SerializerFactory;
 

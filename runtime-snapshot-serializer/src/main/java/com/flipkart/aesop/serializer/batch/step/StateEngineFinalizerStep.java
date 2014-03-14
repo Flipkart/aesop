@@ -13,9 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.aesop.serializer.batch.step;
+package com.flipkart.aesop.serializer.batch.step;
 
-import org.aesop.serializer.stateengine.StateTransitioner;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
@@ -23,6 +22,7 @@ import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
+import com.flipkart.aesop.serializer.stateengine.StateTransitioner;
 import com.netflix.zeno.fastblob.FastBlobStateEngine;
 
 /**

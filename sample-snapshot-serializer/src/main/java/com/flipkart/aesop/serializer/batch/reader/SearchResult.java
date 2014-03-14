@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.aesop.serializer.batch.reader;
+package com.flipkart.aesop.serializer.batch.reader;
 
-import org.aesop.serializer.model.UserInfo;
+import com.flipkart.aesop.serializer.model.UserInfo;
 
 /**
  * User Info service search result object

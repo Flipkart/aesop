@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package org.aesop.runtime.spi.registry;
+package com.flipkart.aesop.runtime.spi.registry;
 
 import java.util.List;
 
-import org.aesop.runtime.spring.registry.ServerContainerConfigInfo;
 
+import com.flipkart.aesop.runtime.spring.registry.ServerContainerConfigInfo;
 import com.linkedin.databus2.core.container.netty.ServerContainer;
 
 /**

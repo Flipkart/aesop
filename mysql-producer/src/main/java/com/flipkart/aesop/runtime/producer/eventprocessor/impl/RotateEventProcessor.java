@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.aesop.runtime.producer.eventprocessor.impl;
+package com.flipkart.aesop.runtime.producer.eventprocessor.impl;
 
-import org.aesop.runtime.producer.eventlistener.OpenReplicationListener;
-import org.aesop.runtime.producer.eventprocessor.BinLogEventProcessor;
-import org.aesop.runtime.producer.txnprocessor.MysqlTransactionManager;
 import org.trpr.platform.core.impl.logging.LogFactory;
 import org.trpr.platform.core.spi.logging.Logger;
 
+import com.flipkart.aesop.runtime.producer.eventlistener.OpenReplicationListener;
+import com.flipkart.aesop.runtime.producer.eventprocessor.BinLogEventProcessor;
+import com.flipkart.aesop.runtime.producer.txnprocessor.MysqlTransactionManager;
 import com.google.code.or.binlog.BinlogEventV4;
 import com.google.code.or.binlog.impl.event.RotateEvent;
 
@@ -38,7 +38,7 @@ public class RotateEventProcessor implements BinLogEventProcessor{
 	private static final Logger LOGGER = LogFactory.getLogger(RotateEventProcessor.class);
 
 	/**
-	 * @see org.aesop.runtime.producer.eventprocessor.BinLogEventProcessor#process(com.google.code.or.binlog.BinlogEventV4, org.aesop.runtime.producer.eventlistener.OpenReplicationListener)
+	 * @see com.flipkart.aesop.runtime.producer.eventprocessor.BinLogEventProcessor#process(com.google.code.or.binlog.BinlogEventV4, com.flipkart.aesop.runtime.producer.eventlistener.OpenReplicationListener)
 	 */
 	@Override
 	public void process(BinlogEventV4 event, OpenReplicationListener listener) throws Exception {

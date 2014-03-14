@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.aesop.runtime.producer.hbase;
+package com.flipkart.aesop.runtime.producer.hbase;
 
 import org.apache.avro.generic.GenericRecord;
 

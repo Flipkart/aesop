@@ -13,18 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.aesop.runtime.relay;
+package com.flipkart.aesop.runtime.relay;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.aesop.runtime.config.ProducerRegistration;
-import org.aesop.runtime.config.RelayConfig;
-import org.aesop.runtime.producer.AbstractEventProducer;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
+import com.flipkart.aesop.runtime.config.ProducerRegistration;
+import com.flipkart.aesop.runtime.config.RelayConfig;
+import com.flipkart.aesop.runtime.producer.AbstractEventProducer;
 import com.linkedin.databus.container.netty.HttpRelay;
 import com.linkedin.databus.core.util.ConfigLoader;
 import com.linkedin.databus2.core.seq.MultiServerSequenceNumberHandler;

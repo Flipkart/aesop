@@ -1,4 +1,4 @@
-package org.aesop.serializer.batch;
+package com.flipkart.aesop.serializer.batch;
 
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
@@ -7,14 +7,14 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.util.Arrays;
 
-import org.aesop.serializer.SerializerConstants;
-import org.aesop.serializer.model.UserInfo;
-import org.aesop.serializer.serializers.RootSerializerFactory;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
 
+import com.flipkart.aesop.serializer.SerializerConstants;
+import com.flipkart.aesop.serializer.model.UserInfo;
+import com.flipkart.aesop.serializer.serializers.RootSerializerFactory;
 import com.netflix.zeno.diff.DiffInstruction;
 import com.netflix.zeno.diff.DiffOperation;
 import com.netflix.zeno.diff.DiffReport;

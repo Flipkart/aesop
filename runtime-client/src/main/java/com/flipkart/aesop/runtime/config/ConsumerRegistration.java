@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package org.aesop.runtime.config;
+package com.flipkart.aesop.runtime.config;
 
-import org.aesop.runtime.client.DefaultClient;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
+import com.flipkart.aesop.runtime.client.DefaultClient;
 import com.linkedin.databus.client.consumer.AbstractDatabusCombinedConsumer;
 
 /**

@@ -13,17 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.aesop.runtime.client;
+package com.flipkart.aesop.runtime.client;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.aesop.runtime.config.ClientConfig;
-import org.aesop.runtime.config.ConsumerRegistration;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
+import com.flipkart.aesop.runtime.config.ClientConfig;
+import com.flipkart.aesop.runtime.config.ConsumerRegistration;
 import com.linkedin.databus.client.DatabusHttpClientImpl;
 import com.linkedin.databus.core.util.ConfigLoader;
 

@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.aesop.runtime.producer.eventprocessor.impl;
+package com.flipkart.aesop.runtime.producer.eventprocessor.impl;
 
-import org.aesop.runtime.producer.eventlistener.OpenReplicationListener;
-import org.aesop.runtime.producer.eventprocessor.BinLogEventProcessor;
 import org.trpr.platform.core.impl.logging.LogFactory;
 import org.trpr.platform.core.spi.logging.Logger;
 
+import com.flipkart.aesop.runtime.producer.eventlistener.OpenReplicationListener;
+import com.flipkart.aesop.runtime.producer.eventprocessor.BinLogEventProcessor;
 import com.google.code.or.binlog.BinlogEventV4;
 import com.google.code.or.binlog.impl.event.DeleteRowsEvent;
 import com.linkedin.databus.core.DbusOpcode;
@@ -34,7 +34,7 @@ public class DeleteEventProcessor implements BinLogEventProcessor{
 	private static final Logger LOGGER = LogFactory.getLogger(DeleteEventProcessor.class);
 	
 	/**
-	 * @see org.aesop.runtime.producer.eventprocessor.BinLogEventProcessor#process(com.google.code.or.binlog.BinlogEventV4, org.aesop.runtime.producer.eventlistener.OpenReplicationListener)
+	 * @see com.flipkart.aesop.runtime.producer.eventprocessor.BinLogEventProcessor#process(com.google.code.or.binlog.BinlogEventV4, com.flipkart.aesop.runtime.producer.eventlistener.OpenReplicationListener)
 	 */
 	@Override
 	public void process(BinlogEventV4 event, OpenReplicationListener listener) throws Exception {

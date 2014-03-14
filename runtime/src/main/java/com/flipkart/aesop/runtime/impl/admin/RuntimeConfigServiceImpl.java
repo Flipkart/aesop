@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.aesop.runtime.impl.admin;
+package com.flipkart.aesop.runtime.impl.admin;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -25,9 +25,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.aesop.runtime.spi.admin.RuntimeConfigService;
-import org.aesop.runtime.spi.registry.AbstractRuntimeRegistry;
-import org.aesop.runtime.spring.RuntimeComponentContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ByteArrayResource;
@@ -35,6 +32,9 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.trpr.platform.core.PlatformException;
 
+import com.flipkart.aesop.runtime.spi.admin.RuntimeConfigService;
+import com.flipkart.aesop.runtime.spi.registry.AbstractRuntimeRegistry;
+import com.flipkart.aesop.runtime.spring.RuntimeComponentContainer;
 import com.linkedin.databus2.core.container.netty.ServerContainer;
 
 /**
@@ -62,7 +62,7 @@ public class RuntimeConfigServiceImpl  implements RuntimeConfigService {
 
     /**
      * Interface method implementation
-     * @see org.aesop.runtime.spi.admin.RuntimeConfigService#addRuntimeRegistry(org.aesop.runtime.spi.registry.AbstractRuntimeRegistry)
+     * @see com.flipkart.aesop.runtime.spi.admin.RuntimeConfigService#addRuntimeRegistry(com.flipkart.aesop.runtime.spi.registry.AbstractRuntimeRegistry)
      */
 	public void addRuntimeRegistry(AbstractRuntimeRegistry registry) {
 		this.registries.add(registry);
@@ -70,7 +70,7 @@ public class RuntimeConfigServiceImpl  implements RuntimeConfigService {
 
 	/**
 	 * Interface method implementation. Returns null if the Resource is not found
-	 * @see org.aesop.runtime.spi.admin.RuntimeConfigService#getRuntimeConfig(java.lang.String)
+	 * @see com.flipkart.aesop.runtime.spi.admin.RuntimeConfigService#getRuntimeConfig(java.lang.String)
 	 */
 	public Resource getRuntimeConfig(String runtimeName) {
         for (URI configFile: this.configURItoRuntimeName.keySet()) {
@@ -85,7 +85,7 @@ public class RuntimeConfigServiceImpl  implements RuntimeConfigService {
 
 	/**
 	 * Interface method implementation.
-	 * @see org.aesop.runtime.spi.admin.RuntimeConfigService#modifyRuntimeConfig(java.lang.String, org.springframework.core.io.ByteArrayResource)
+	 * @see com.flipkart.aesop.runtime.spi.admin.RuntimeConfigService#modifyRuntimeConfig(java.lang.String, org.springframework.core.io.ByteArrayResource)
 	 */
 	public void modifyRuntimeConfig(String runtimeName, ByteArrayResource modifiedRuntimeConfigFile) throws PlatformException {
     	// Check if exists
@@ -143,7 +143,7 @@ public class RuntimeConfigServiceImpl  implements RuntimeConfigService {
 
 	/**
 	 * Interface method implementation
-	 * @see org.aesop.runtime.spi.admin.RuntimeConfigService#addRuntimeConfigPath(java.io.File, com.linkedin.databus2.core.container.netty.ServerContainer)
+	 * @see com.flipkart.aesop.runtime.spi.admin.RuntimeConfigService#addRuntimeConfigPath(java.io.File, com.linkedin.databus2.core.container.netty.ServerContainer)
 	 */
 	public void addRuntimeConfigPath(File runtimeFile, ServerContainer runtime) {
 		if (this.configURItoRuntimeName.get(runtimeFile.toURI()) == null) {
@@ -154,7 +154,7 @@ public class RuntimeConfigServiceImpl  implements RuntimeConfigService {
 
 	/**
 	 * Interface method implementation.
-	 * @see org.aesop.runtime.spi.admin.RuntimeConfigService#reinitRuntime(java.lang.String)
+	 * @see com.flipkart.aesop.runtime.spi.admin.RuntimeConfigService#reinitRuntime(java.lang.String)
 	 */
 	public void reinitRuntime(String runtimeName) throws Exception {
         for (AbstractRuntimeRegistry registry : this.registries) {
@@ -166,7 +166,7 @@ public class RuntimeConfigServiceImpl  implements RuntimeConfigService {
 
 	/**
 	 * Interface method implementation.
-	 * @see org.aesop.runtime.spi.admin.RuntimeConfigService#getAllRuntimes()
+	 * @see com.flipkart.aesop.runtime.spi.admin.RuntimeConfigService#getAllRuntimes()
 	 */
 	public List<ServerContainer> getAllRuntimes() {
         List<ServerContainer> list = new ArrayList<ServerContainer>();

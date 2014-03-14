@@ -2,13 +2,12 @@
  * WARNING : This is test code. It is a quick hack to try out features using third party libraries like
  * the LinkedIn Databus and NGDATA hbase-sep. 
  */
-package org.aesop.relay.hbase;
+package com.flipkart.aesop.relay.hbase;
 
 import java.io.ByteArrayOutputStream;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.aesop.events.example.person.Person;
 import org.apache.avro.generic.GenericDatumWriter;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.avro.io.BinaryEncoder;
@@ -19,6 +18,7 @@ import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.KeyValue;
 import org.apache.hadoop.hbase.util.Bytes;
 
+import com.flipkart.aesop.events.example.person.Person;
 import com.linkedin.databus.core.DbusEventBufferAppendable;
 import com.linkedin.databus.core.DbusEventKey;
 import com.linkedin.databus.core.monitoring.mbean.DbusEventsStatisticsCollector;

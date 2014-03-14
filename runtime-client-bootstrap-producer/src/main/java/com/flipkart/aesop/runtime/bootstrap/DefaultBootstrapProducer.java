@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.aesop.runtime.bootstrap;
+package com.flipkart.aesop.runtime.bootstrap;
 
 import java.io.IOException;
 import java.sql.SQLException;

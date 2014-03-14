@@ -13,12 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.aesop.runtime.producer.hbase;
+package com.flipkart.aesop.runtime.producer.hbase;
 
 import java.net.InetAddress;
 import java.util.List;
 
-import org.aesop.runtime.producer.AbstractEventProducer;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
@@ -29,6 +28,7 @@ import org.trpr.platform.core.PlatformException;
 import org.trpr.platform.core.impl.logging.LogFactory;
 import org.trpr.platform.core.spi.logging.Logger;
 
+import com.flipkart.aesop.runtime.producer.AbstractEventProducer;
 import com.linkedin.databus.core.DbusEventInfo;
 import com.linkedin.databus.core.DbusEventKey;
 import com.linkedin.databus.core.DbusOpcode;

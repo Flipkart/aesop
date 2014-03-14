@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.aesop.runtime.producer.constants;
+package com.flipkart.aesop.runtime.producer.constants;
 /**
  * <code>MySQLConstants</code> defines different bin log event ids supported as per MySQL documentation 
  * @author Shoury B

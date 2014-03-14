@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.aesop.runtime.producer;
+package com.flipkart.aesop.runtime.producer;
 
 import java.io.ByteArrayOutputStream;
 import java.util.concurrent.atomic.AtomicLong;

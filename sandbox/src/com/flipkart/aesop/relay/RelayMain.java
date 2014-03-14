@@ -3,12 +3,12 @@
  * the LinkedIn Databus. 
  */
 
-package org.aesop.relay;
+package com.flipkart.aesop.relay;
 
 import java.io.IOException;
 
-import org.aesop.events.example.person.Person;
 
+import com.flipkart.aesop.events.example.person.Person;
 import com.linkedin.databus.container.netty.HttpRelay;
 import com.linkedin.databus.core.DbusEventBufferAppendable;
 import com.linkedin.databus.core.util.InvalidConfigException;

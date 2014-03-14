@@ -13,17 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.aesop.runtime.relay;
+package com.flipkart.aesop.runtime.relay;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.aesop.runtime.config.ProducerRegistration;
-import org.aesop.runtime.producer.AbstractEventProducer;
 import org.trpr.platform.core.impl.logging.LogFactory;
 import org.trpr.platform.core.spi.logging.Logger;
 
+import com.flipkart.aesop.runtime.config.ProducerRegistration;
+import com.flipkart.aesop.runtime.producer.AbstractEventProducer;
 import com.linkedin.databus.container.netty.HttpRelay;
 import com.linkedin.databus.core.util.InvalidConfigException;
 import com.linkedin.databus2.core.DatabusException;

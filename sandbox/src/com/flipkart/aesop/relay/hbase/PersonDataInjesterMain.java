@@ -2,15 +2,16 @@
  * WARNING : This is test code. It is a quick hack to try out features using third party libraries like
  * the NGDATA hbase-sep. 
  */
-package org.aesop.relay.hbase;
+package com.flipkart.aesop.relay.hbase;
 
-import org.aesop.events.example.person.Person;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.client.Delete;
 import org.apache.hadoop.hbase.client.HTable;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.util.Bytes;
+
+import com.flipkart.aesop.events.example.person.Person;
 
 /**
  * Executes insert/update/delete commands for {@link Person} data objects on the HBase table by name "aesop-person"

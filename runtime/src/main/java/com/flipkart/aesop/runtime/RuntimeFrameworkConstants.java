@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.aesop.runtime;
+package com.flipkart.aesop.runtime;
 
 /**
  * The <code>RuntimeFrameworkConstants</code> class is a placeholder for all runtime framework constants.

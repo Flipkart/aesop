@@ -13,14 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.aesop.serializer.batch.reader;
+package com.flipkart.aesop.serializer.batch.reader;
 
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.aesop.serializer.model.UserInfo;
-import org.aesop.serializer.model.UserPreferencesInfo;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpRequestBase;
@@ -36,6 +34,9 @@ import org.springframework.batch.item.UnexpectedInputException;
 import org.trpr.platform.batch.common.BatchException;
 import org.trpr.platform.batch.impl.spring.reader.CompositeItemStreamReader;
 import org.trpr.platform.batch.spi.spring.reader.BatchItemStreamReader;
+
+import com.flipkart.aesop.serializer.model.UserInfo;
+import com.flipkart.aesop.serializer.model.UserPreferencesInfo;
 
 /**
  * The <code>UserInfoServiceReader</code> class is a simple implementation of the {@link BatchItemStreamReader} that returns the sample data item {@link UserInfo} instances

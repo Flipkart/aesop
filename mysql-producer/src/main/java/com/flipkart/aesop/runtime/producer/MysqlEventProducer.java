@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.aesop.runtime.producer;
+package com.flipkart.aesop.runtime.producer;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -24,19 +24,19 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.aesop.runtime.producer.AbstractEventProducer;
-import org.aesop.runtime.producer.avro.MysqlAvroEventManager;
-import org.aesop.runtime.producer.eventlistener.OpenReplicationListener;
-import org.aesop.runtime.producer.eventprocessor.BinLogEventProcessor;
-import org.aesop.runtime.producer.mapper.BinLogEventMapper;
-import org.aesop.runtime.producer.txnprocessor.MysqlTransactionManager;
-import org.aesop.runtime.producer.txnprocessor.impl.MysqlTransactionManagerImpl;
 import org.apache.avro.generic.GenericRecord;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 import org.trpr.platform.core.impl.logging.LogFactory;
 import org.trpr.platform.core.spi.logging.Logger;
 
+import com.flipkart.aesop.runtime.producer.AbstractEventProducer;
+import com.flipkart.aesop.runtime.producer.avro.MysqlAvroEventManager;
+import com.flipkart.aesop.runtime.producer.eventlistener.OpenReplicationListener;
+import com.flipkart.aesop.runtime.producer.eventprocessor.BinLogEventProcessor;
+import com.flipkart.aesop.runtime.producer.mapper.BinLogEventMapper;
+import com.flipkart.aesop.runtime.producer.txnprocessor.MysqlTransactionManager;
+import com.flipkart.aesop.runtime.producer.txnprocessor.impl.MysqlTransactionManagerImpl;
 import com.google.code.or.OpenReplicator;
 import com.linkedin.databus.core.UnsupportedKeyException;
 import com.linkedin.databus.core.util.InvalidConfigException;

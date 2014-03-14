@@ -13,17 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.aesop.serializer.batch.writer;
+package com.flipkart.aesop.serializer.batch.writer;
 
 import java.util.List;
 
-import org.aesop.serializer.stateengine.StateTransitioner;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 import org.trpr.platform.core.impl.logging.LogFactory;
 import org.trpr.platform.core.spi.logging.Logger;
 
+import com.flipkart.aesop.serializer.stateengine.StateTransitioner;
 import com.netflix.zeno.fastblob.FastBlobStateEngine;
 
 /**

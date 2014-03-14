@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.aesop.runtime.spring;
+package com.flipkart.aesop.runtime.spring;
+
+import com.flipkart.aesop.runtime.spring.RuntimeComponentContainer;
 
 /**
  * The <code>ClientRuntimeComponentContainer</code> class is a concrete subtype of the {@link RuntimeComponentContainer}
@@ -32,7 +34,7 @@ public class ClientRuntimeComponentContainer extends RuntimeComponentContainer {
 
 	/**
 	 * Abstract method implementation.
-	 * @see org.aesop.runtime.spring.RuntimeComponentContainer#getRuntimeConfigFileName()
+	 * @see com.flipkart.aesop.runtime.spring.RuntimeComponentContainer#getRuntimeConfigFileName()
 	 */
 	public String getRuntimeConfigFileName() {
 		return ClientRuntimeComponentContainer.CLIENT_CONFIG_FILE;

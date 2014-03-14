@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.aesop.serializer.stateengine;
+package com.flipkart.aesop.serializer.stateengine;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -25,11 +25,11 @@ import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
-import org.aesop.serializer.SerializerConstants;
 import org.trpr.platform.core.PlatformException;
 import org.trpr.platform.core.impl.logging.LogFactory;
 import org.trpr.platform.core.spi.logging.Logger;
 
+import com.flipkart.aesop.serializer.SerializerConstants;
 import com.netflix.zeno.fastblob.FastBlobStateEngine;
 import com.netflix.zeno.fastblob.io.FastBlobReader;
 import com.netflix.zeno.fastblob.io.FastBlobWriter;
@@ -58,7 +58,7 @@ public class DailyStateTransitioner extends StateTransitioner {
 	/**
 	 * Abstract method implementation. Creates a new FastBlobStateEngine, if required, and 
 	 * loads the last daily snapshot, if one is available
-	 * @see org.aesop.serializer.stateengine.StateTransitioner#getStateEngine()
+	 * @see com.flipkart.aesop.serializer.stateengine.StateTransitioner#getStateEngine()
 	 */
 	public FastBlobStateEngine getStateEngine() {
 		return this.stateEngine;
@@ -66,7 +66,7 @@ public class DailyStateTransitioner extends StateTransitioner {
 	
 	/**
 	 * Abstract method implementation. Persists state held by the FastBlobStateEngine and prepares it for the next cycle
-	 * @see org.aesop.serializer.stateengine.StateTransitioner#saveState()
+	 * @see com.flipkart.aesop.serializer.stateengine.StateTransitioner#saveState()
 	 */
 	public void saveState() {
 		
@@ -104,7 +104,7 @@ public class DailyStateTransitioner extends StateTransitioner {
 	
 	/**
 	 * Overriden super class method. Additionall creates and initializes the FastBlobStateEngine
-	 * @see org.aesop.serializer.stateengine.StateTransitioner#afterPropertiesSet()
+	 * @see com.flipkart.aesop.serializer.stateengine.StateTransitioner#afterPropertiesSet()
 	 */
 	public void afterPropertiesSet() throws Exception {
 		

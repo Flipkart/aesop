@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.aesop.runtime.spring;
+package com.flipkart.aesop.runtime.spring;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -23,11 +23,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.aesop.runtime.RuntimeFrameworkConstants;
-import org.aesop.runtime.impl.admin.RuntimeConfigServiceImpl;
-import org.aesop.runtime.spi.admin.RuntimeConfigService;
-import org.aesop.runtime.spi.registry.AbstractRuntimeRegistry;
-import org.aesop.runtime.spring.registry.ServerContainerConfigInfo;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.core.io.FileSystemResource;
@@ -44,6 +39,11 @@ import org.trpr.platform.runtime.impl.config.FileLocator;
 import org.trpr.platform.runtime.spi.bootstrapext.BootstrapExtension;
 import org.trpr.platform.runtime.spi.component.ComponentContainer;
 
+import com.flipkart.aesop.runtime.RuntimeFrameworkConstants;
+import com.flipkart.aesop.runtime.impl.admin.RuntimeConfigServiceImpl;
+import com.flipkart.aesop.runtime.spi.admin.RuntimeConfigService;
+import com.flipkart.aesop.runtime.spi.registry.AbstractRuntimeRegistry;
+import com.flipkart.aesop.runtime.spring.registry.ServerContainerConfigInfo;
 import com.linkedin.databus2.core.container.netty.ServerContainer;
 
 /**

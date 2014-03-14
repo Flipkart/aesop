@@ -13,16 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.aesop.runtime.bootstrap;
+package com.flipkart.aesop.runtime.bootstrap;
 
 import java.util.Properties;
 
-import org.aesop.runtime.config.BootstrapProducerConfig;
-import org.aesop.runtime.config.ClientConfig;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
+import com.flipkart.aesop.runtime.config.BootstrapProducerConfig;
+import com.flipkart.aesop.runtime.config.ClientConfig;
 import com.linkedin.databus.bootstrap.producer.BootstrapProducerStaticConfig;
 import com.linkedin.databus.core.util.ConfigLoader;
 

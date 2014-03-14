@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package org.aesop.runtime.spring.registry;
+package com.flipkart.aesop.runtime.spring.registry;
 
 import java.io.File;
 
-import org.aesop.runtime.spring.RuntimeComponentContainer;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
+
+import com.flipkart.aesop.runtime.spring.RuntimeComponentContainer;
 
 /**
  * The <code>ServerContainerConfigInfo</code> class is a structure that holds runtime ServerContainer configuration information and ApplicationContext for  

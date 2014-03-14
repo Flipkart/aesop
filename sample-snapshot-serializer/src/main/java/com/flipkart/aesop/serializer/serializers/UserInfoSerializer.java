@@ -13,17 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.aesop.serializer.serializers;
+package com.flipkart.aesop.serializer.serializers;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.aesop.serializer.model.UserAddressInfo;
-import org.aesop.serializer.model.UserInfo;
-import org.aesop.serializer.model.UserPreferencesInfo;
 
+import com.flipkart.aesop.serializer.model.UserAddressInfo;
+import com.flipkart.aesop.serializer.model.UserInfo;
+import com.flipkart.aesop.serializer.model.UserPreferencesInfo;
 import com.netflix.zeno.fastblob.record.schema.FastBlobSchema;
 import com.netflix.zeno.fastblob.record.schema.FastBlobSchema.FieldType;
 import com.netflix.zeno.serializer.NFDeserializationRecord;

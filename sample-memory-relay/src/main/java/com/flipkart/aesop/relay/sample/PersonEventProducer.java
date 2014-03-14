@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.aesop.relay.sample;
+package com.flipkart.aesop.relay.sample;
 
-import org.aesop.events.sample.person.Person;
-import org.aesop.runtime.producer.AbstractEventProducer;
 import org.trpr.platform.core.impl.logging.LogFactory;
 import org.trpr.platform.core.spi.logging.Logger;
 
+import com.flipkart.aesop.events.sample.person.Person;
+import com.flipkart.aesop.runtime.producer.AbstractEventProducer;
 import com.linkedin.databus.core.DbusEventInfo;
 import com.linkedin.databus.core.DbusEventKey;
 import com.linkedin.databus.core.DbusOpcode;
