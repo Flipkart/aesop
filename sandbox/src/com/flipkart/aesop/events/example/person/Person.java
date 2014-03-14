@@ -7,7 +7,7 @@ package com.flipkart.aesop.events.example.person;
 @SuppressWarnings("all")
 @org.apache.avro.specific.AvroGenerated
 public class Person extends org.apache.avro.specific.SpecificRecordBase implements org.apache.avro.specific.SpecificRecord {
-  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"Person\",\"namespace\":\"org.aesop.events.example.person\",\"fields\":[{\"name\":\"key\",\"type\":[\"long\",\"null\"]},{\"name\":\"firstName\",\"type\":[\"string\",\"null\"]},{\"name\":\"lastName\",\"type\":[\"string\",\"null\"]},{\"name\":\"birthDate\",\"type\":[\"long\",\"null\"]},{\"name\":\"deleted\",\"type\":[\"string\",\"null\"]}]}");
+  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"Person\",\"namespace\":\"com.flipkart.aesop.events.example.person\",\"fields\":[{\"name\":\"key\",\"type\":[\"long\",\"null\"]},{\"name\":\"firstName\",\"type\":[\"string\",\"null\"]},{\"name\":\"lastName\",\"type\":[\"string\",\"null\"]},{\"name\":\"birthDate\",\"type\":[\"long\",\"null\"]},{\"name\":\"deleted\",\"type\":[\"string\",\"null\"]}]}");
   public static org.apache.avro.Schema getClassSchema() { return SCHEMA$; }
   @Deprecated public java.lang.Long key;
   @Deprecated public java.lang.CharSequence firstName;

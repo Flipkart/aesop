@@ -6,7 +6,7 @@
         <property name="applicationName" value="Aesop Sample Client Server" />
         <property name="runtimeNature" value="server" />
         <property name="container" ref="containerImpl" />
-        <property name="componentContainerClassName" value="org.aesop.runtime.spring.ClientRuntimeComponentContainer" />
+        <property name="componentContainerClassName" value="com.flipkart.aesop.runtime.spring.ClientRuntimeComponentContainer" />
     </bean>
 
     <bean id="containerImpl" class="org.trpr.platform.runtime.impl.container.spring.SpringContainerImpl">

@@ -73,22 +73,22 @@
     	</batch:step>
 	</batch:job>
 
-	<bean id="stateEngineFinalizerStep" class="org.aesop.serializer.batch.step.StateEngineFinalizerStep">
+	<bean id="stateEngineFinalizerStep" class="com.flipkart.aesop.serializer.batch.step.StateEngineFinalizerStep">
 		<property name="stateTransitioner" ref="stateTransitioner" />
 	</bean>
 
 	<bean id="compositeUserServiceDataReader" class="org.trpr.platform.batch.impl.spring.reader.CompositeItemStreamReader">
 		<constructor-arg><ref bean="userServiceDataReader"/></constructor-arg>
 	</bean>	
-	<bean id="userServiceDataReader" class="org.aesop.serializer.batch.reader.UserInfoServiceReader"/>
-	<bean id="passThroughProcessor" class="org.aesop.serializer.batch.processor.PassThroughItemProcessor"/>		
-	<bean id="stateEngineApenderWriter" class="org.aesop.serializer.batch.writer.StateEngineApenderWriter">
+	<bean id="userServiceDataReader" class="com.flipkart.aesop.serializer.batch.reader.UserInfoServiceReader"/>
+	<bean id="passThroughProcessor" class="com.flipkart.aesop.serializer.batch.processor.PassThroughItemProcessor"/>		
+	<bean id="stateEngineApenderWriter" class="com.flipkart.aesop.serializer.batch.writer.StateEngineApenderWriter">
 		<property name="stateTransitioner" ref="stateTransitioner" />
 	</bean>
 
-	<bean id="stateTransitioner" class="org.aesop.serializer.stateengine.DailyStateTransitioner">
+	<bean id="stateTransitioner" class="com.flipkart.aesop.serializer.stateengine.DailyStateTransitioner">
 		<property name="serializerFactory">
-			<bean class="org.aesop.serializer.serializers.RootSerializerFactory"/>
+			<bean class="com.flipkart.aesop.serializer.serializers.RootSerializerFactory"/>
 		</property>
 		<property name="serializedDataLocation" value="/Users/regunath.balasubramanian/Documents/junk/zeno" />				
 	</bean>	

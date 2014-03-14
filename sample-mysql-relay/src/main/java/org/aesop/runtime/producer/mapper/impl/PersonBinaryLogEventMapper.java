@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.aesop.runtime.producer.mapper.impl;
+package com.flipkart.aesop.runtime.producer.mapper.impl;
 
 import java.util.List;
 
-import org.aesop.events.ortest.Person;
+import com.flipkart.aesop.events.ortest.Person;
 import org.trpr.platform.core.impl.logging.LogFactory;
 import org.trpr.platform.core.spi.logging.Logger;
 
@@ -28,14 +28,14 @@ import com.google.code.or.common.glossary.Row;
 import com.linkedin.databus.core.DbusOpcode;
 
 
-public class PersonBinaryLogEventMapper implements BinLogEventMapper<org.aesop.events.ortest.Person> {
+public class PersonBinaryLogEventMapper implements BinLogEventMapper<com.flipkart.aesop.events.ortest.Person> {
 
 	/** Logger for this class*/
 	protected static final Logger LOGGER = LogFactory.getLogger(PersonBinaryLogEventMapper.class);
 
 	/**
 	 * Interface method implementation. Returns the name of this type
-	 * @see org.aesop.runtime.producer.hbase.SepEventMapper#getUniqueName()
+	 * @see com.flipkart.aesop.runtime.producer.hbase.SepEventMapper#getUniqueName()
 	 */
 	public String getUniqueName() {
 		return this.getClass().getCanonicalName();

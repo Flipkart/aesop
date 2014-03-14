@@ -1,4 +1,4 @@
-package org.aesop.runtime.producer.mapper.impl;
+package com.flipkart.aesop.runtime.producer.mapper.impl;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;

@@ -15,7 +15,7 @@
  */
 package com.flipkart.aesop.relay.hbase;
 
-import org.aesop.events.sample.person.Person;
+import com.flipkart.aesop.events.sample.person.Person;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.client.Delete;

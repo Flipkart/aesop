@@ -12,14 +12,14 @@
     <bean id="applicationEventMulticaster" class="org.trpr.platform.core.impl.event.PlatformEventMulticaster">
         <property name="subscriptions">
             <list>
-                <value>evt://org.aesop.runtime.events.CLIENT_REGISTRATION</value>
+                <value>evt://com.flipkart.aesop.runtime.events.CLIENT_REGISTRATION</value>
             </list>
         </property>
     </bean>
 
-	<bean id="configService" class="org.aesop.runtime.impl.admin.RuntimeConfigServiceImpl">
+	<bean id="configService" class="com.flipkart.aesop.runtime.impl.admin.RuntimeConfigServiceImpl">
 	</bean>
 
-    <bean id="runtimeRegistry" class="org.aesop.runtime.impl.registry.ServerContainerRegistry" />
+    <bean id="runtimeRegistry" class="com.flipkart.aesop.runtime.impl.registry.ServerContainerRegistry" />
 
 </beans>

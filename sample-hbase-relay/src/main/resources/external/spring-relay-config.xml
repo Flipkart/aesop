@@ -4,11 +4,11 @@
 	xsi:schemaLocation="
     http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
-    <bean id="sampleRelay" class="org.aesop.runtime.relay.DefaultRelayFactory">
+    <bean id="sampleRelay" class="com.flipkart.aesop.runtime.relay.DefaultRelayFactory">
     	<property name="relayConfig" ref="relayConfig"/>
     	<property name="producerRegistrationList">
     		<list>
-    			<bean class="org.aesop.runtime.config.ProducerRegistration">
+    			<bean class="com.flipkart.aesop.runtime.config.ProducerRegistration">
     				<property name="eventProducer" ref="hbasePersonProducer"/>
     				<property name="physicalSourceConfig" ref="physicalSourceConfig"/>
     			</bean>
@@ -16,12 +16,12 @@
     	</property>
     </bean>
     
-    <bean id="hbasePersonProducer" class="org.aesop.runtime.producer.hbase.HBaseEventProducer">
+    <bean id="hbasePersonProducer" class="com.flipkart.aesop.runtime.producer.hbase.HBaseEventProducer">
     	<property name="physicalSourceConfig" ref="physicalSourceConfig"/>
     	<property name="zkQuorum" value="localhost"/>
     	<property name="zkPort" value="20000"/>
     	<property name="sepEventMapper">
-    		<bean class="org.aesop.relay.sample.PersonSepEventMapper"/>
+    		<bean class="com.flipkart.aesop.relay.sample.PersonSepEventMapper"/>
     	</property>
     </bean>
 
@@ -33,7 +33,7 @@
 			<list>
 				<bean id="logicalSourceConfig" class="com.linkedin.databus2.relay.config.LogicalSourceConfig">
 					<property name="id" value="101"/>
-					<property name="name" value="org.aesop.events.sample.person.Person"/>
+					<property name="name" value="com.flipkart.aesop.events.sample.person.Person"/>
 					<property name="uri" value="person.Person"/>
 					<property name="partitionFunction" value="constant:1"/>					
 				</bean>
@@ -41,7 +41,7 @@
 		</property>
     </bean>
     
-    <bean id="relayConfig" class="org.aesop.runtime.config.RelayConfig">
+    <bean id="relayConfig" class="com.flipkart.aesop.runtime.config.RelayConfig">
     	<property name="relayProperties">
 			<bean id="relayPropertiesFactory" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
 		    	<property name="singleton" value="true"/>

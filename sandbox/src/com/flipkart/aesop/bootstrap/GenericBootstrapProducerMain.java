@@ -28,7 +28,7 @@ import com.linkedin.databus2.core.container.request.BootstrapDBException;
  * Also preserve relative location of directories like "conf".
  * 
  * <pre>
- * java -cp .:lib/*.jar org.aesop.bootstrap.GenericBootstrapProducerMain -p conf/databus-bst-producer.properties
+ * java -cp .:lib/*.jar com.flipkart.aesop.bootstrap.GenericBootstrapProducerMain -p conf/databus-bst-producer.properties
  * 
  * <pre>
  * 

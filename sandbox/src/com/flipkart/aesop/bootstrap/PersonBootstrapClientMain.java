@@ -21,7 +21,7 @@ import com.linkedin.databus.core.async.LifecycleMessage;
  * Note: Include all jars in "lib" in the classpath before executing this class. 
  * 
  * <pre>
- * java -cp .:lib/*.jar org.aesop.bootstrap.PersonBootstrapClientMain
+ * java -cp .:lib/*.jar com.flipkart.aesop.bootstrap.PersonBootstrapClientMain
  * 
  * <pre>
  * 
@@ -30,7 +30,7 @@ import com.linkedin.databus.core.async.LifecycleMessage;
  */
 public class PersonBootstrapClientMain {
 
-	public static final String PERSON_SOURCE = "org.aesop.events.example.person.Person";
+	public static final String PERSON_SOURCE = "com.flipkart.aesop.events.example.person.Person";
 
 	public static void main(String[] args) throws Exception {
 		
@@ -72,7 +72,7 @@ public class PersonBootstrapClientMain {
 			cp.setConsumptionMode(DbusClientMode.BOOTSTRAP_SNAPSHOT);
 			/*
 			cp.setConsumptionMode(DbusClientMode.BOOTSTRAP_CATCHUP);
-			cp.setCatchupSource("org.aesop.events.example.person.Person");
+			cp.setCatchupSource("com.flipkart.aesop.events.example.person.Person");
 			cp.setWindowOffset(-1L);
 			cp.setSnapshotOffset(-1L);
 			cp.setPrevScn(-1L);

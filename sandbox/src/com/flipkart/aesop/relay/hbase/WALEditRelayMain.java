@@ -21,7 +21,7 @@ import com.linkedin.databus2.relay.config.PhysicalSourceStaticConfig;
  * Also preserve relative location of directories like "conf".
  * 
  * <pre>
- * java -cp .:lib/*.jar org.aesop.relay.hbase.WALEditRelayMain -p conf/relay_person.properties
+ * java -cp .:lib/*.jar com.flipkart.aesop.relay.hbase.WALEditRelayMain -p conf/relay_person.properties
  * 
  * <pre>
  * 

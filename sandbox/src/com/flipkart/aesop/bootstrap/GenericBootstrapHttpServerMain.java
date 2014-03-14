@@ -25,7 +25,7 @@ import com.linkedin.databus2.core.container.netty.ServerContainer;
  * Also preserve relative location of directories like "conf".
  * 
  * <pre>
- * java -cp .:lib/*.jar org.aesop.bootstrap.GenericBootstrapHttpServerMain -p conf/databus-bst-server.properties
+ * java -cp .:lib/*.jar com.flipkart.aesop.bootstrap.GenericBootstrapHttpServerMain -p conf/databus-bst-server.properties
  * 
  * <pre>
  * 

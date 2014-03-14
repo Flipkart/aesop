@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.aesop.relay.sample;
+package com.flipkart.aesop.relay.sample;
 
-import org.aesop.events.sample.person.Person;
+import com.flipkart.aesop.events.sample.person.Person;
 import org.apache.hadoop.hbase.KeyValue;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.trpr.platform.core.impl.logging.LogFactory;

@@ -4,11 +4,11 @@
 	xsi:schemaLocation="
     http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
-    <bean id="sampleBootstrapServer" class="org.aesop.runtime.bootstrap.DefaultBootstrapServerFactory">
+    <bean id="sampleBootstrapServer" class="com.flipkart.aesop.runtime.bootstrap.DefaultBootstrapServerFactory">
     	<property name="bootstrapConfig" ref="bootstrapConfig"/>
     </bean>
 
-    <bean id="bootstrapConfig" class="org.aesop.runtime.config.BootstrapConfig">
+    <bean id="bootstrapConfig" class="com.flipkart.aesop.runtime.config.BootstrapConfig">
     	<property name="bootstrapProperties">
 			<bean id="bootstrapPropertiesFactory" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
 		    	<property name="singleton" value="true"/>
