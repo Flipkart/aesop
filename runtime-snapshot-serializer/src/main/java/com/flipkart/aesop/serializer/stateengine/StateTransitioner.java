@@ -75,17 +75,17 @@ public abstract class StateTransitioner implements InitializingBean {
 	 * Initializes the snapshot and delta file directories
 	 */
 	protected void initializeDirs() {
-		File serializedDataLocationFile = new File(this.serializedDataLocation);
-		if (!serializedDataLocationFile.exists()) {
-			serializedDataLocationFile.mkdirs();
+		File serializedDataLocationDir = new File(this.serializedDataLocation);
+		if (!serializedDataLocationDir.exists()) {
+			serializedDataLocationDir.mkdirs();
 		}
-		File snapshotsLocationFile = new File(serializedDataLocationFile, SerializerConstants.SNAPSHOT_LOCATION);
-		File deltaLocationFile = new File(serializedDataLocationFile, SerializerConstants.DELTA_LOCATION);
-		if (!snapshotsLocationFile.exists()) {
-			snapshotsLocationFile.mkdirs();			
+		File snapshotsLocationDir = new File(serializedDataLocationDir, SerializerConstants.SNAPSHOT_LOCATION);
+		File deltaLocationDir = new File(serializedDataLocationDir, SerializerConstants.DELTA_LOCATION);
+		if (!snapshotsLocationDir.exists()) {
+			snapshotsLocationDir.mkdirs();			
 		}
-		if (!deltaLocationFile.exists()) {
-			deltaLocationFile.mkdirs();
+		if (!deltaLocationDir.exists()) {
+			deltaLocationDir.mkdirs();
 		}		
 	}
 	
