@@ -42,8 +42,8 @@ import com.ngdata.sep.util.zookeeper.ZkUtil;
 import com.ngdata.sep.util.zookeeper.ZooKeeperItf;
 
 /**
- * <code>HBaseEventProducer</code> that listens to HBase WAL edits using the hbase-sep module library classes such as {@link SepConsumer} and {@link EventListener} and in 
- * turn creates change events of {@link GenericRecord} sub-type T.
+ * <code>HBaseEventProducer</code> is a sub-type of {@link AbstractEventProducer} that listens to HBase WAL edits using the hbase-sep module library classes 
+ * such as {@link SepConsumer} and {@link EventListener} and in turn creates change events of {@link GenericRecord} sub-type T.
  *
  * @author Regunath B
  * @version 1.0, 28 Jan 2014
