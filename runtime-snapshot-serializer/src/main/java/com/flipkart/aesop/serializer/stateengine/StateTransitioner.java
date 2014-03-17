@@ -25,7 +25,7 @@ import com.netflix.zeno.fastblob.FastBlobStateEngine;
 import com.netflix.zeno.serializer.SerializerFactory;
 
 /**
- * The <code>StateTransitioner</code> interface creates or suitably initializes an existing {@link FastBlobStateEngine} for producing snapshots or deltas.
+ * The <code>StateTransitioner</code> creates or suitably initializes an existing {@link FastBlobStateEngine} for producing snapshots or deltas.
  * 
  * @author Regunath B
  * @version 1.0, 5 March 2014
