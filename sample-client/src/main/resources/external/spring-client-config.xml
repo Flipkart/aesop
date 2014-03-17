@@ -41,6 +41,7 @@
 		    	<property name="relayLogicalSourceName" value="com.flipkart.aesop.events.sample.person.Person"/>
 	    	</bean>
     	</property>
+    	<!-- 
     	<property name="bootstrapClientConfig">
 	    	<bean class="com.flipkart.aesop.runtime.config.BootstrapClientConfig">
 		    	<property name="bootstrapId" value="101"/>
@@ -49,6 +50,7 @@
 		    	<property name="bootstrapLogicalSourceName" value="com.flipkart.aesop.events.sample.person.Person"/>
 	    	</bean>
     	</property>
+    	 -->
 		<property name="checkpointDirectoryLocation" value="../../../sandbox/client_checkpoint_directory"/> <!-- This is relative to projects root -->
     </bean>
 
