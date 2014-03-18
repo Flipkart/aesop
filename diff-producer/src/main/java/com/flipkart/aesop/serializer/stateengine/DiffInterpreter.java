@@ -46,4 +46,15 @@ public class DiffInterpreter implements InitializingBean {
 		Assert.notNull(this.serializedDataLocation,"'serializedDataLocation' cannot be null. This diff interpreter will not be initialized");
 	}
 
+	/** Getter/Setter methods */
+	public void setSerializerFactory(SerializerFactory serializerFactory) {
+		this.serializerFactory = serializerFactory;
+	}
+	public void setSerializedDataLocation(String serializedDataLocation) {
+		this.serializedDataLocation = serializedDataLocation;
+	}			
+	public String getSerializedDataLocation() {
+		return serializedDataLocation;
+	}
+
 }
