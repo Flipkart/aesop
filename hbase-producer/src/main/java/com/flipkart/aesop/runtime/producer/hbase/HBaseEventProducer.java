@@ -76,14 +76,6 @@ public class HBaseEventProducer<T extends GenericRecord> extends AbstractEventPr
 	protected SepEventMapper<T> sepEventMapper;
 
 	/**
-	 * Interface method implementation. Returns {@link SepEventMapper#getUniqueName()}
-	 * @see com.linkedin.databus2.producers.EventProducer#getName()
-	 */
-	public String getName() {
-		return this.sepEventMapper.getUniqueName();
-	}
-	
-	/**
 	 * Interface method implementation. Checks for mandatory dependencies and creates the SEP consumer
 	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
 	 */
@@ -165,14 +157,6 @@ public class HBaseEventProducer<T extends GenericRecord> extends AbstractEventPr
 	 */
 	public void shutdown() {
 		this.sepConsumer.stop();
-	}
-
-	/**
-	 * Interface method implementation.
-	 * @see com.linkedin.databus2.producers.EventProducer#getSCN()
-	 */
-	public long getSCN() {
-		return this.sinceSCN.get();
 	}
 
 	/**

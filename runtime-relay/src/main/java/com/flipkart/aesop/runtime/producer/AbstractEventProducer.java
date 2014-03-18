@@ -48,6 +48,9 @@ public abstract class AbstractEventProducer implements EventProducer {
 	/** Logger for this class*/
 	private static final Logger LOGGER = LogFactory.getLogger(AbstractEventProducer.class);
 	
+	/** Name of this event producer*/
+	protected String name;
+	
 	/** Source related member variables*/
 	protected PhysicalSourceConfig physicalSourceConfig;
 	protected PhysicalSourceStaticConfig physicalSourceStaticConfig;
@@ -61,7 +64,7 @@ public abstract class AbstractEventProducer implements EventProducer {
 	
 	/** Avro serialization related member variables*/
 	protected EncoderFactory factory = EncoderFactory.get();
-	protected BinaryEncoder cachedAvroEncoder;
+	protected BinaryEncoder cachedAvroEncoder;	
 	
 	/**
 	 * Serializes the specified Avro record into a byte array
@@ -84,6 +87,12 @@ public abstract class AbstractEventProducer implements EventProducer {
 	}
 	
 	/** Getter/Setter methods */	
+	public String getName() {
+		return this.name;
+	}
+	public long getSCN() {
+		return this.sinceSCN.get();
+	}
 	public void setSchemaRegistryService(SchemaRegistryService schemaRegistryService) throws Exception {
 		this.schemaRegistryService = schemaRegistryService;
 		this.physicalSourceStaticConfig = this.physicalSourceConfig.build();
@@ -99,6 +108,7 @@ public abstract class AbstractEventProducer implements EventProducer {
 	}
 	public void setPhysicalSourceConfig(PhysicalSourceConfig physicalSourceConfig) {
 		this.physicalSourceConfig = physicalSourceConfig;		
+		this.name = this.physicalSourceConfig.getName();
 	}
 	public AtomicLong getSinceSCN() {
 		return sinceSCN;

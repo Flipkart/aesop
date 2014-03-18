@@ -21,18 +21,21 @@ import org.springframework.util.Assert;
 import org.trpr.platform.core.impl.logging.LogFactory;
 import org.trpr.platform.core.spi.logging.Logger;
 
+import com.flipkart.aesop.runtime.producer.AbstractCallbackEventProducer;
 import com.flipkart.aesop.runtime.producer.AbstractEventProducer;
 import com.flipkart.aesop.serializer.stateengine.DiffInterpreter;
+import com.linkedin.databus2.producers.EventCreationException;
 import com.netflix.zeno.fastblob.FastBlobStateEngine;
 
 /**
  * <code>DiffEventProducer</code> is a sub-type of {@link AbstractEventProducer} that interprets change events by loading snapshots and deltas onto a 
  * Zeno {@link FastBlobStateEngine} instance and listening in on the state change.
+ * This class 
  *
  * @author Regunath B
  * @version 1.0, 17 March 2014
  */
-public class DiffEventProducer <T extends GenericRecord> extends AbstractEventProducer implements InitializingBean {
+public class DiffEventProducer <T extends GenericRecord> extends AbstractCallbackEventProducer implements InitializingBean {
 
 	/** Logger for this class*/
 	private static final Logger LOGGER = LogFactory.getLogger(DiffEventProducer.class);
@@ -41,14 +44,6 @@ public class DiffEventProducer <T extends GenericRecord> extends AbstractEventPr
 	private DiffInterpreter diffInterpreter;
 	
 	/**
-	 * Interface method implementation. Returns the serialized data location of the DiffInterpreter
-	 * @see com.linkedin.databus2.producers.EventProducer#getName()
-	 */
-	public String getName() {
-		return this.diffInterpreter.getSerializedDataLocation();
-	}
-
-	/**
 	 * Interface method implementation. Checks for mandatory dependencies 
 	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
 	 */
@@ -56,36 +51,6 @@ public class DiffEventProducer <T extends GenericRecord> extends AbstractEventPr
 		Assert.notNull(this.diffInterpreter,"'diffInterpreter' cannot be null. No state engine serialized state diff interpreter found. This Diff Events producer will not be initialized");		
 	}
 	
-	@Override
-	public void start(long arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public long getSCN() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public boolean isPaused() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean isRunning() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public void shutdown() {
-		// TODO Auto-generated method stub
-		
-	}
-
 	/** Start Setter/Getter methods*/
 	public DiffInterpreter getDiffInterpreter() {
 		return diffInterpreter;
@@ -95,10 +60,7 @@ public class DiffEventProducer <T extends GenericRecord> extends AbstractEventPr
 	}
 	/** End Setter/Getter methods*/
 
-	/** Methods that are not supported and therefore throw {@link UnsupportedOperationException}*/
-	public void pause() {throw new UnsupportedOperationException("'pause' is not supported on this event producer");}
-	public void unpause() {throw new UnsupportedOperationException("'unpause' is not supported on this event producer");}
-	public void waitForShutdown() throws InterruptedException,IllegalStateException {throw new UnsupportedOperationException("'waitForShutdown' is not supported on this event producer");}
-	public void waitForShutdown(long time) throws InterruptedException,IllegalStateException {throw new UnsupportedOperationException("'waitForShutdown(long time)' is not supported on this event producer");}
-	
+	protected long readEventsFromAllSources(long sinceSCN) throws EventCreationException {
+		return 0;
+	}
 }
