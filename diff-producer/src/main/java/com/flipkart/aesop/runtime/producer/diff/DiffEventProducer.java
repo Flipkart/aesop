@@ -23,6 +23,7 @@ import org.trpr.platform.core.spi.logging.Logger;
 
 import com.flipkart.aesop.runtime.producer.AbstractCallbackEventProducer;
 import com.flipkart.aesop.runtime.producer.AbstractEventProducer;
+import com.flipkart.aesop.runtime.producer.ReadEventCycleSummary;
 import com.flipkart.aesop.serializer.stateengine.DiffInterpreter;
 import com.linkedin.databus2.producers.EventCreationException;
 import com.netflix.zeno.fastblob.FastBlobStateEngine;
@@ -35,13 +36,10 @@ import com.netflix.zeno.fastblob.FastBlobStateEngine;
  * @author Regunath B
  * @version 1.0, 17 March 2014
  */
-public class DiffEventProducer <T extends GenericRecord> extends AbstractCallbackEventProducer implements InitializingBean {
+public class DiffEventProducer <T, S extends GenericRecord> extends AbstractCallbackEventProducer<S> implements InitializingBean {
 
-	/** Logger for this class*/
-	private static final Logger LOGGER = LogFactory.getLogger(DiffEventProducer.class);
-	
 	/** The DiffInterpreter used for loading state engine snapshots and deltas and listening-in on the engine's state change*/
-	private DiffInterpreter diffInterpreter;
+	private DiffInterpreter<T,S> diffInterpreter;
 	
 	/**
 	 * Interface method implementation. Checks for mandatory dependencies 
@@ -50,17 +48,20 @@ public class DiffEventProducer <T extends GenericRecord> extends AbstractCallbac
 	public void afterPropertiesSet() throws Exception {
 		Assert.notNull(this.diffInterpreter,"'diffInterpreter' cannot be null. No state engine serialized state diff interpreter found. This Diff Events producer will not be initialized");		
 	}
+
+	/**
+	 * Abstract method implementation. Loads serialized snapshots and deltas from the specified SCN and interprets change events by listening in on the state engine
+	 * changes.
+	 * @see com.flipkart.aesop.runtime.producer.AbstractCallbackEventProducer#readEventsFromAllSources(long)
+	 */
+	protected ReadEventCycleSummary<S> readEventsFromAllSources(long sinceSCN) throws EventCreationException {
+		return this.diffInterpreter.getChangeEvents(sinceSCN);
+	}
 	
 	/** Start Setter/Getter methods*/
-	public DiffInterpreter getDiffInterpreter() {
-		return diffInterpreter;
-	}
-	public void setDiffInterpreter(DiffInterpreter diffInterpreter) {
+	public void setDiffInterpreter(DiffInterpreter<T,S> diffInterpreter) {
 		this.diffInterpreter = diffInterpreter;
 	}
 	/** End Setter/Getter methods*/
 
-	protected long readEventsFromAllSources(long sinceSCN) throws EventCreationException {
-		return 0;
-	}
 }

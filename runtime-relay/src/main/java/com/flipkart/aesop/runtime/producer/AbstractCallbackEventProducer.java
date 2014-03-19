@@ -15,6 +15,7 @@
  */
 package com.flipkart.aesop.runtime.producer;
 
+import org.apache.avro.generic.GenericRecord;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 import org.trpr.platform.core.impl.logging.LogFactory;
@@ -32,7 +33,7 @@ import com.linkedin.databus2.producers.EventCreationException;
  * @author Regunath B
  * @version 1.0, 18 March 2014
  */
-public abstract class AbstractCallbackEventProducer extends AbstractEventProducer implements InitializingBean {
+public abstract class AbstractCallbackEventProducer<S extends GenericRecord> extends AbstractEventProducer implements InitializingBean {
 
 	/** Logger for this class*/
 	private static final Logger LOGGER = LogFactory.getLogger(AbstractCallbackEventProducer.class);
@@ -63,6 +64,11 @@ public abstract class AbstractCallbackEventProducer extends AbstractEventProduce
 	 * @see com.linkedin.databus2.producers.EventProducer#start(long)
 	 */
 	public void start (long sinceSCN) {		
+		this.sinceSCN.set(sinceSCN);
+		this.eventThread = new EventProducerThread(name);
+		this.eventThread.setDaemon(true);
+		this.eventThread.start();
+		LOGGER.info("Started callback event producer : {} from SCN ; {}",this.getName(), sinceSCN);
 	}
 	
 	/**
@@ -146,7 +152,7 @@ public abstract class AbstractCallbackEventProducer extends AbstractEventProduce
 	 * @param sinceSCN the SCN reference for producing events
 	 * @throws EventCreationException in case of errors in event creation
 	 */
-	protected abstract long readEventsFromAllSources(long sinceSCN) throws EventCreationException;
+	protected abstract ReadEventCycleSummary<S> readEventsFromAllSources(long sinceSCN) throws EventCreationException;
 	
 	private class EventProducerThread extends Thread {
 		/** Constructor for this class*/
@@ -176,7 +182,7 @@ public abstract class AbstractCallbackEventProducer extends AbstractEventProduce
 	    	            return;
 	    			case ACTIVE:
 	    				try {
-							long endOfWindowScn = readEventsFromAllSources(sinceSCN.get());
+							long endOfWindowScn = readEventsFromAllSources(sinceSCN.get()).getSinceSCN();
 							long newSinceSCN = Math.max(endOfWindowScn, sinceSCN.get());
 							sinceSCN.set(newSinceSCN);
 							if (status.getRetriesNum() > 0) {
