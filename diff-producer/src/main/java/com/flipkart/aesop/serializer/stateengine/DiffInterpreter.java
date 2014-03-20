@@ -117,8 +117,11 @@ public abstract class DiffInterpreter<T, S extends GenericRecord> implements Ini
 	}
 	public void setDiffChangeEventMapper(DiffChangeEventMapper<T, S> diffChangeEventMapper) {
 		this.diffChangeEventMapper = diffChangeEventMapper;
-	}	
-	
+	}		
+	public DiffChangeEventMapper<T, S> getDiffChangeEventMapper() {
+		return diffChangeEventMapper;
+	}
+
 	/**
 	 * Listens into the Type deserialization state as snapshots and deltas are loaded on to the state engine. Keeps tracks of state changes
 	 * that is then used to create change events

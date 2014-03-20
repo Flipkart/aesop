@@ -52,7 +52,23 @@ public class PersonDiffChangeEventMapper implements DiffChangeEventMapper<UserIn
 	public Object getTypeKey(UserInfo userInfo) {
 		return userInfo.getId();
 	}
+	
+	/**
+	 * Interface method implementation. Returns {@link Person#getKey()}
+	 * @see com.flipkart.aesop.serializer.stateengine.DiffChangeEventMapper#getChangeEventKey(org.apache.avro.generic.GenericRecord)
+	 */
+	public Object getChangeEventKey(Person person) {
+		return person.getKey(); // here we are overloading the Person to also act as a change event object for testing
+	}
 
+	/**
+	 * Interface method implementation. Returns {@link System#currentTimeMillis()} for testing
+	 * @see com.flipkart.aesop.serializer.stateengine.DiffChangeEventMapper#getSequenceId(org.apache.avro.generic.GenericRecord)
+	 */
+	public Long getSequenceId(Person changeEvent) {
+		return System.currentTimeMillis();
+	}
+	
 	/**
 	 * Interface method implementation. Returns a List of {@link Person} instances derived from data contained in the specified {@link TypeDiff} containing
 	 * diff information on {@link UserInfo} objects

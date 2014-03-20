@@ -22,6 +22,9 @@ import org.trpr.platform.core.impl.logging.LogFactory;
 import org.trpr.platform.core.spi.logging.Logger;
 
 import com.linkedin.databus.core.DatabusComponentStatus;
+import com.linkedin.databus.core.DbusEventInfo;
+import com.linkedin.databus.core.DbusEventKey;
+import com.linkedin.databus.core.DbusOpcode;
 import com.linkedin.databus2.producers.EventCreationException;
 
 
@@ -154,6 +157,20 @@ public abstract class AbstractCallbackEventProducer<S extends GenericRecord> ext
 	 */
 	protected abstract ReadEventCycleSummary<S> readEventsFromAllSources(long sinceSCN) throws EventCreationException;
 	
+	/**
+	 * Returns a key for the change event created
+	 * @param changeEvent the change event
+	 * @return key for the change event
+	 */
+	protected abstract Object getEventKey(S changeEvent);
+	
+	/**
+	 * Returns a sequence number for the change event
+	 * @param changeEvent the change event
+	 * @return sequence number for the change event
+	 */
+	protected abstract Long getSequenceId(S changeEvent);
+	
 	private class EventProducerThread extends Thread {
 		/** Constructor for this class*/
 	    public EventProducerThread(String producerName) {
@@ -184,15 +201,26 @@ public abstract class AbstractCallbackEventProducer<S extends GenericRecord> ext
 	    				try {
 	    					eventBuffer.startEvents();
 	    					ReadEventCycleSummary<S> readEventCycleSummary = readEventsFromAllSources(sinceSCN.get());
+	    					for (S changeEvent : readEventCycleSummary.getChangeEvents()) {
+	    						byte[] serializedEvent = serializeEvent(changeEvent);
+	    						DbusEventKey eventKey = new DbusEventKey(getEventKey(changeEvent));
+	    						DbusEventInfo eventInfo = new DbusEventInfo(DbusOpcode.UPSERT,getSequenceId(changeEvent),
+	    								(short)physicalSourceStaticConfig.getId(),(short)physicalSourceStaticConfig.getId(),
+	    								System.nanoTime(),(short)physicalSourceStaticConfig.getSources()[0].getId(), // here we use the Logical Source Id
+	    								schemaId,serializedEvent, false, true);
+	    						eventBuffer.appendEvent(eventKey, eventInfo, dbusEventsStatisticsCollector);	    						
+	    					}
 							long endOfWindowScn = readEventCycleSummary.getSinceSCN();
 							long newSinceSCN = Math.max(endOfWindowScn, sinceSCN.get());
 							sinceSCN.set(newSinceSCN);
+				            eventBuffer.endEvents(sinceSCN.get() , dbusEventsStatisticsCollector);
+							maxScnReaderWriter.saveMaxScn(sinceSCN.get());
 							if (status.getRetriesNum() > 0) {
 								status.resume();
 							}
 							status.getRetriesCounter().reset();
 							status.getRetriesCounter().sleep(); // sleep until the next cycle
-						} catch (EventCreationException e) {
+						} catch (Exception e) {
 							LOGGER.error("Event creation exception occurred reading events from : {}. Error is : " + e.getMessage(),getName(),e);
 							status.retryOnError(getName() + " error: " + e.getMessage());
 						}

@@ -38,11 +38,25 @@ public interface DiffChangeEventMapper<T, S extends GenericRecord> {
 	public String getNFTypeName();
 	
 	/**
-	 * Returns the unqiue key identifier for the type instance specified
+	 * Returns the unique key identifier for the type instance specified
 	 * @param object instance of the type stored in the state engine
 	 * @return unique key identifier for the type instance
 	 */
 	public Object getTypeKey(T object);
+	
+	/**
+	 * Returns the unqiue key for the change event specified
+	 * @param changeEvent the change event instance
+	 * @return unique key identifier for the change event
+	 */
+	public Object getChangeEventKey(S changeEvent);
+	
+	/**
+	 * Returns a sequence number for the change event
+	 * @param changeEvent the change event
+	 * @return sequence number for the change event
+	 */	
+	public Long getSequenceId(S changeEvent);
 	
 	/**
 	 * Maps data contained in the specified TypeDiff result into change events.

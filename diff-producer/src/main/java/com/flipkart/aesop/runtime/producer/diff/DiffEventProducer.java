@@ -56,6 +56,22 @@ public class DiffEventProducer <T, S extends GenericRecord> extends AbstractCall
 		return this.diffInterpreter.getChangeEvents(sinceSCN);
 	}
 	
+	/**
+	 * Abstract method implementation. Delegates the call to DiffChangeEventMapper
+	 * @see com.flipkart.aesop.runtime.producer.AbstractCallbackEventProducer#getEventKey(org.apache.avro.generic.GenericRecord)
+	 */
+	protected Object getEventKey(S changeEvent) {
+		return this.diffInterpreter.getDiffChangeEventMapper().getChangeEventKey(changeEvent);
+	}
+	
+	/**
+	 * Abstract method implementation. Delegates the call to DiffChangeEventMapper
+	 * @see com.flipkart.aesop.runtime.producer.AbstractCallbackEventProducer#getSequenceId(org.apache.avro.generic.GenericRecord)
+	 */
+	protected Long getSequenceId(S changeEvent) {
+		return this.diffInterpreter.getDiffChangeEventMapper().getSequenceId(changeEvent);
+	}
+	
 	/** Start Setter/Getter methods*/
 	public void setDiffInterpreter(DiffInterpreter<T,S> diffInterpreter) {
 		this.diffInterpreter = diffInterpreter;
