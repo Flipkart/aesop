@@ -8,9 +8,28 @@
     	<property name="relayConfig" ref="relayConfig"/>
     	<property name="producerRegistrationList">
     		<list>
+    			<bean class="com.flipkart.aesop.runtime.config.ProducerRegistration">
+    				<property name="eventProducer" ref="diffEventProducer"/>
+    				<property name="physicalSourceConfig" ref="physicalSourceConfig"/>
+    			</bean>
     		</list>
     	</property>
     </bean>
+    
+    <bean id="diffEventProducer" class="com.flipkart.aesop.runtime.producer.diff.DiffEventProducer">
+    	<property name="physicalSourceConfig" ref="physicalSourceConfig"/>
+    	<property name="diffInterpreter" ref="diffInterpreter"/>
+    </bean>
+
+    <bean id="diffInterpreter" class="com.flipkart.aesop.serializer.stateengine.DailyDiffInterpreter">
+		<property name="serializedDataLocation" value="/Users/regunath.balasubramanian/Documents/junk/zeno" />    
+		<property name="serializerFactory">
+			<bean class="com.flipkart.aesop.serializer.serializers.RootSerializerFactory"/>
+		</property>
+    	<property name="diffChangeEventMapper" ref="diffChangeEventMapper"/>
+    </bean>
+
+    <bean id="diffChangeEventMapper" class="com.flipkart.aesop.relay.sample.PersonDiffChangeEventMapper"/>
     
     <bean id="physicalSourceConfig" class="com.linkedin.databus2.relay.config.PhysicalSourceConfig">
 		<property name="id" value="100"/>

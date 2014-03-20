@@ -18,14 +18,10 @@ package com.flipkart.aesop.relay.sample;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.util.Assert;
-
 import com.flipkart.aesop.events.sample.person.Person;
 import com.flipkart.aesop.serializer.model.UserInfo;
 import com.flipkart.aesop.serializer.stateengine.DiffChangeEventMapper;
 import com.netflix.zeno.diff.TypeDiff;
-import com.netflix.zeno.serializer.SerializerFactory;
 
 /**
  * The <code>PersonDiffChangeEventMapper</code> is an implementation of the {@link DiffChangeEventMapper} that maps {@link com.flipkart.aesop.serializer.model.UserInfo}
@@ -34,19 +30,8 @@ import com.netflix.zeno.serializer.SerializerFactory;
  * @author Regunath B
  * @version 1.0, 20 March 2014
  */
-public class PersonDiffChangeEventMapper implements DiffChangeEventMapper<UserInfo,Person>, InitializingBean {
+public class PersonDiffChangeEventMapper implements DiffChangeEventMapper<UserInfo,Person> {
 
-	/** The SerializerFactory used for creating the FastBlobStateEngine instance*/
-	private SerializerFactory serializerFactory;
-
-	/**
-	 * Interface method implementation. Checks for mandatory dependencies
-	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
-	 */
-	public void afterPropertiesSet() throws Exception {
-		Assert.notNull(this.serializerFactory,"'serializerFactory' cannot be null. This DiffChangeEventMapper will not be initialized");
-	}
-	
 	/**
 	 * Interface method implementation. Returns the type of {@link com.flipkart.aesop.serializer.model.UserInfo}
 	 * @see com.flipkart.aesop.serializer.stateengine.DiffChangeEventMapper#getNFTypeName()
@@ -64,14 +49,6 @@ public class PersonDiffChangeEventMapper implements DiffChangeEventMapper<UserIn
 	}
 
 	/**
-	 * Interface method implementation. Returns the SerializerFactory instance set on this DiffChangeEventMapper
-	 * @see com.flipkart.aesop.serializer.stateengine.DiffChangeEventMapper#getSerializerFactory()
-	 */
-	public SerializerFactory getSerializerFactory() {
-		return this.serializerFactory;
-	}
-
-	/**
 	 * Interface method implementation. Returns a List of {@link Person} instances derived from data contained in the specified {@link TypeDiff} containing
 	 * diff information on {@link UserInfo} objects
 	 * @see com.flipkart.aesop.serializer.stateengine.DiffChangeEventMapper#getChangeEvents(com.netflix.zeno.diff.TypeDiff)
@@ -81,9 +58,4 @@ public class PersonDiffChangeEventMapper implements DiffChangeEventMapper<UserIn
 		return personsList;
 	}
 
-	/** Getter/Setter methods */
-	public void setSerializerFactory(SerializerFactory serializerFactory) {
-		this.serializerFactory = serializerFactory;
-	}
-	
 }

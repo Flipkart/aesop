@@ -37,6 +37,7 @@ public class SerializerConstants {
 	/** Constant string literals for time related values*/
 	public static final String DAILY_FORMAT_STRING = "yyyyMMdd";
 	public static final String HOURLY_MINUTE_FORMAT_STRING = "HHmm";
+	public static final String ZERO_YYYY_MM_DD = "00000000";
 	public static final String ZERO_HH_MM = "0000";
 	
 	/** The Date format instances for used in naming files and state engine versions*/

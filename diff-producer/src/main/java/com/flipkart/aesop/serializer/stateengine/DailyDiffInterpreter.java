@@ -99,10 +99,10 @@ public class DailyDiffInterpreter<T, S extends GenericRecord> extends DiffInterp
 				LOGGER.info("State engine initialized from deltas and snapshot of snapshot file : " + snapshotFile.getAbsolutePath());
 				break;
 			} catch (Exception e) { // The snapshot read has failed. Proceed with empty state or next available snapshot
-				LOGGER.warn("Error reading snapshot and deltas for file : {}. Error message is : {}",snapshotFile.getAbsolutePath(), e.getMessage());
+				LOGGER.warn("Error reading snapshot and deltas for file : " + snapshotFile.getAbsolutePath() + " .Error message is : " + e.getMessage(), e);
 			}
 		}
-		LOGGER.info(stateEngine.getLatestVersion() != null ? "State engine initialized to version : " + stateEngine.getLatestVersion() : 
+		LOGGER.info(this.getStateEngineVersion(stateEngine) == 0 ? "State engine initialized to version : " + stateEngine.getLatestVersion() : 
 			"State engine not initialized from any existing snapshot");
 	}
 	
@@ -113,7 +113,7 @@ public class DailyDiffInterpreter<T, S extends GenericRecord> extends DiffInterp
 	 * @param previousStateReader the FastBlobReader used to read the deltas
 	 */
 	private void readDeltasForSnapshot(final File snapshotFile, File deltaLocationDir, FastBlobReader previousStateReader, FastBlobStateEngine stateEngine, final boolean limitToSCN) {
-		final long engineVersion = Long.valueOf(stateEngine.getLatestVersion());
+		final long engineVersion = this.getStateEngineVersion(stateEngine);
 		File[] deltaFiles = deltaLocationDir.listFiles(new FilenameFilter() {
 		    public boolean accept(File dir, String name) {
 		    	String snapshotDay = snapshotFile.getName().substring((SerializerConstants.SNAPSHOT_LOCATION + SerializerConstants.DELIM_CHAR).length());		    	
@@ -166,5 +166,13 @@ public class DailyDiffInterpreter<T, S extends GenericRecord> extends DiffInterp
 	private long getStateEngineVersionDay(FastBlobStateEngine stateEngine) {
 		return Long.valueOf(stateEngine.getLatestVersion() == null ? "0" : 
 			stateEngine.getLatestVersion().substring(0, SerializerConstants.DAILY_FORMAT_STRING.length()) + SerializerConstants.ZERO_HH_MM);
+	}
+	
+	/** Helper method to get the engine version. Normalized to the form yyyyMMddHHmm*/
+	private long getStateEngineVersion(FastBlobStateEngine stateEngine) {
+		return Long.valueOf(
+				(stateEngine.getLatestVersion() == null || stateEngine.getLatestVersion().trim().length() == 0) ? 
+						SerializerConstants.ZERO_YYYY_MM_DD + SerializerConstants.ZERO_HH_MM : 
+							stateEngine.getLatestVersion());
 	}
 }

@@ -69,13 +69,13 @@ public abstract class DiffInterpreter<T, S extends GenericRecord> implements Ini
 	 * @return ReadEventCycleSummary containing change events and the new SCN
 	 */
 	public ReadEventCycleSummary<S> getChangeEvents(long sinceSCN) {
-		if (Long.valueOf(this.stateEngine.getLatestVersion()) < sinceSCN) { 
+		if (this.stateEngine.getLatestVersion() == null || Long.valueOf(this.stateEngine.getLatestVersion()) < sinceSCN) { 
 			this.readSnapshotAndDeltasForSCN(this.stateEngine, sinceSCN); // bring up the state engine to the SCN
 		}
 		DiffTypeDeserializationStateListener diffTypeDeserializationStateListener = new DiffTypeDeserializationStateListener();
 		this.stateEngine.setTypeDeserializationStateListener(this.diffChangeEventMapper.getNFTypeName(),diffTypeDeserializationStateListener);
 		this.readSnapshotAndDeltasAfterSCN(this.stateEngine, sinceSCN);
-		DiffSerializationFramework diffSerializationFramework = new DiffSerializationFramework(this.diffChangeEventMapper.getSerializerFactory());
+		DiffSerializationFramework diffSerializationFramework = new DiffSerializationFramework(this.serializerFactory);
 		TypeDiffInstruction<T> diffInstruction = new TypeDiffInstruction<T>() {
             public String getSerializerName() {
                 return diffChangeEventMapper.getNFTypeName();

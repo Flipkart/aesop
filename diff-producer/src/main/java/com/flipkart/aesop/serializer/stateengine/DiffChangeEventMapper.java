@@ -20,7 +20,6 @@ import java.util.List;
 import org.apache.avro.generic.GenericRecord;
 
 import com.netflix.zeno.diff.TypeDiff;
-import com.netflix.zeno.serializer.SerializerFactory;
 
 /**
  * The <code>DiffChangeEventMapper</code> maps information contained in the Zeno {@link TypeDiff} to Databus change events of type {@link GenericRecord}.
@@ -44,12 +43,6 @@ public interface DiffChangeEventMapper<T, S extends GenericRecord> {
 	 */
 	public Object getTypeKey(T object);
 	
-	/**
-	 * Returns the SerializerFactory instance containing relevant NFTypeSerializer instances for the {@link #getNFTypeName()}
-	 * @return
-	 */
-	public SerializerFactory getSerializerFactory();
-		
 	/**
 	 * Maps data contained in the specified TypeDiff result into change events.
 	 * @param typeDiff the TypeDiff to create change events from
