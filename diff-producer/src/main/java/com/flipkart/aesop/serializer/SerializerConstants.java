@@ -29,11 +29,11 @@ public class SerializerConstants {
 	/** Directory names for snapshot and deltas */
 	public static final String SNAPSHOT_LOCATION = "snapshot";
 	public static final String DELTA_LOCATION = "delta";
-
+	
 	/** Delimiter chars used in file name handling*/
 	public static final String DELIM_CHAR = "_";
 	public static final String EMPTY_CHAR = "";
-	
+
 	/** Constant string literals for time related values*/
 	public static final String DAILY_FORMAT_STRING = "yyyyMMdd";
 	public static final String HOURLY_MINUTE_FORMAT_STRING = "HHmm";

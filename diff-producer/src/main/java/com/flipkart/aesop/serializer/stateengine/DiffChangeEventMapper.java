@@ -31,6 +31,12 @@ import com.netflix.zeno.diff.TypeDiff;
 public interface DiffChangeEventMapper<T, S extends GenericRecord> {
 	
 	/**
+	 * Gets the NF Type name of the serialized data root type
+	 * @return the NF Type name
+	 */
+	public String getNFTypeName();
+		
+	/**
 	 * Maps data contained in the specified TypeDiff result into change events.
 	 * @param typeDiff the TypeDiff to create change events from
 	 * @return List of change events

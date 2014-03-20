@@ -18,8 +18,6 @@ package com.flipkart.aesop.runtime.producer.diff;
 import org.apache.avro.generic.GenericRecord;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
-import org.trpr.platform.core.impl.logging.LogFactory;
-import org.trpr.platform.core.spi.logging.Logger;
 
 import com.flipkart.aesop.runtime.producer.AbstractCallbackEventProducer;
 import com.flipkart.aesop.runtime.producer.AbstractEventProducer;

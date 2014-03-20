@@ -22,6 +22,7 @@ import org.springframework.util.Assert;
 import com.flipkart.aesop.runtime.producer.ReadEventCycleSummary;
 import com.netflix.zeno.diff.TypeDiff;
 import com.netflix.zeno.fastblob.FastBlobStateEngine;
+import com.netflix.zeno.fastblob.state.TypeDeserializationStateListener;
 import com.netflix.zeno.serializer.SerializerFactory;
 
 /**
@@ -63,8 +64,10 @@ public abstract class DiffInterpreter<T, S extends GenericRecord> implements Ini
 	 */
 	public ReadEventCycleSummary<S> getChangeEvents(long sinceSCN) {
 		if (Long.valueOf(this.stateEngine.getLatestVersion()) < sinceSCN) { 
-			this.readSnapshotAndDeltasForSinceSCN(stateEngine, sinceSCN); // bring up the state engine to the SCN
+			this.readSnapshotAndDeltasForSCN(this.stateEngine, sinceSCN); // bring up the state engine to the SCN
 		}
+		this.stateEngine.setTypeDeserializationStateListener(this.diffChangeEventMapper.getNFTypeName(),new DiffTypeDeserializationStateListener());
+		this.readSnapshotAndDeltasAfterSCN(this.stateEngine, sinceSCN);
 		TypeDiff<T> typeDiff = null;
 		return new ReadEventCycleSummary<S>(this.diffChangeEventMapper.getChangeEvents(typeDiff), Long.valueOf(this.stateEngine.getLatestVersion()));
 	}
@@ -74,8 +77,15 @@ public abstract class DiffInterpreter<T, S extends GenericRecord> implements Ini
 	 * @param stateEngine the FastBlobStateEngine that is to be initialized with data reflecting the specified SCN 
 	 * @param sinceSCN the last seen SCN
 	 */
-	protected abstract void readSnapshotAndDeltasForSinceSCN(FastBlobStateEngine stateEngine, long sinceSCN);
+	protected abstract void readSnapshotAndDeltasForSCN(FastBlobStateEngine stateEngine, long sinceSCN);
 
+	/**
+	 * Appends snapshots and deltas to the stateEngine for state changes that occurred after specified SCN
+	 * @param stateEngine the FastBlobStateEngine to append snapshots and deltas to 
+	 * @param sinceSCN the last seen SCN
+	 */
+	protected abstract void readSnapshotAndDeltasAfterSCN(FastBlobStateEngine stateEngine, long sinceSCN);
+	
 	/** Getter/Setter methods */
 	public void setSerializerFactory(SerializerFactory serializerFactory) {
 		this.serializerFactory = serializerFactory;
@@ -89,5 +99,18 @@ public abstract class DiffInterpreter<T, S extends GenericRecord> implements Ini
 	public void setDiffChangeEventMapper(DiffChangeEventMapper<T, S> diffChangeEventMapper) {
 		this.diffChangeEventMapper = diffChangeEventMapper;
 	}	
+	
+	private class DiffTypeDeserializationStateListener extends TypeDeserializationStateListener<T> {
+
+		public void addedObject(T object, int ordinal) {
+		}
+
+		public void removedObject(T object, int ordinal) {
+		}
+		
+		public void reassignedObject(T object, int oldOrdinal, int newOrdinal) {
+		}
+
+	}
 
 }
