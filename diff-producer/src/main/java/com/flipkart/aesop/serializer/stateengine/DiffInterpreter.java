@@ -15,12 +15,18 @@
  */
 package com.flipkart.aesop.serializer.stateengine;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.avro.generic.GenericRecord;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
 import com.flipkart.aesop.runtime.producer.ReadEventCycleSummary;
+import com.netflix.zeno.diff.DiffSerializationFramework;
 import com.netflix.zeno.diff.TypeDiff;
+import com.netflix.zeno.diff.TypeDiffInstruction;
+import com.netflix.zeno.diff.TypeDiffOperation;
 import com.netflix.zeno.fastblob.FastBlobStateEngine;
 import com.netflix.zeno.fastblob.state.TypeDeserializationStateListener;
 import com.netflix.zeno.serializer.SerializerFactory;
@@ -66,9 +72,21 @@ public abstract class DiffInterpreter<T, S extends GenericRecord> implements Ini
 		if (Long.valueOf(this.stateEngine.getLatestVersion()) < sinceSCN) { 
 			this.readSnapshotAndDeltasForSCN(this.stateEngine, sinceSCN); // bring up the state engine to the SCN
 		}
-		this.stateEngine.setTypeDeserializationStateListener(this.diffChangeEventMapper.getNFTypeName(),new DiffTypeDeserializationStateListener());
+		DiffTypeDeserializationStateListener diffTypeDeserializationStateListener = new DiffTypeDeserializationStateListener();
+		this.stateEngine.setTypeDeserializationStateListener(this.diffChangeEventMapper.getNFTypeName(),diffTypeDeserializationStateListener);
 		this.readSnapshotAndDeltasAfterSCN(this.stateEngine, sinceSCN);
-		TypeDiff<T> typeDiff = null;
+		DiffSerializationFramework diffSerializationFramework = new DiffSerializationFramework(this.diffChangeEventMapper.getSerializerFactory());
+		TypeDiffInstruction<T> diffInstruction = new TypeDiffInstruction<T>() {
+            public String getSerializerName() {
+                return diffChangeEventMapper.getNFTypeName();
+            }
+            public Object getKey(T object) {
+                return diffChangeEventMapper.getTypeKey(object);
+            }
+        };		
+        TypeDiffOperation<T> diffOperation = new TypeDiffOperation<T>(diffInstruction);
+		TypeDiff<T> typeDiff = diffOperation.performDiff(diffSerializationFramework, 
+				diffTypeDeserializationStateListener.getRemovedObjectsList(), diffTypeDeserializationStateListener.getAddedObjectsList());
 		return new ReadEventCycleSummary<S>(this.diffChangeEventMapper.getChangeEvents(typeDiff), Long.valueOf(this.stateEngine.getLatestVersion()));
 	}
 	
@@ -100,15 +118,28 @@ public abstract class DiffInterpreter<T, S extends GenericRecord> implements Ini
 		this.diffChangeEventMapper = diffChangeEventMapper;
 	}	
 	
+	/**
+	 * Listens into the Type deserialization state as snapshots and deltas are loaded on to the state engine. Keeps tracks of state changes
+	 * that is then used to create change events
+	 */
 	private class DiffTypeDeserializationStateListener extends TypeDeserializationStateListener<T> {
 
-		public void addedObject(T object, int ordinal) {
-		}
-
-		public void removedObject(T object, int ordinal) {
-		}
+		private List<T> addedObjectsList = new ArrayList<T>();
+		private List<T> removedObjectsList = new ArrayList<T>();
 		
+		public void addedObject(T object, int ordinal) {
+			this.addedObjectsList.add(object);
+		}
+		public void removedObject(T object, int ordinal) {
+			this.removedObjectsList.add(object);
+		}		
 		public void reassignedObject(T object, int oldOrdinal, int newOrdinal) {
+		}
+		public List<T> getAddedObjectsList() {
+			return addedObjectsList;
+		}
+		public List<T> getRemovedObjectsList() {
+			return removedObjectsList;
 		}
 
 	}
