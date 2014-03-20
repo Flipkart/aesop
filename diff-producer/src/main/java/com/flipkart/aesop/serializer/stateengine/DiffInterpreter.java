@@ -87,7 +87,8 @@ public abstract class DiffInterpreter<T, S extends GenericRecord> implements Ini
         TypeDiffOperation<T> diffOperation = new TypeDiffOperation<T>(diffInstruction);
 		TypeDiff<T> typeDiff = diffOperation.performDiff(diffSerializationFramework, 
 				diffTypeDeserializationStateListener.getRemovedObjectsList(), diffTypeDeserializationStateListener.getAddedObjectsList());
-		return new ReadEventCycleSummary<S>(this.diffChangeEventMapper.getChangeEvents(typeDiff), Long.valueOf(this.stateEngine.getLatestVersion()));
+		return new ReadEventCycleSummary<S>(this.diffChangeEventMapper.getChangeEvents(typeDiff, this.serializerFactory), 
+				Long.valueOf(this.stateEngine.getLatestVersion()));
 	}
 	
 	/**

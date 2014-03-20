@@ -182,7 +182,9 @@ public abstract class AbstractCallbackEventProducer<S extends GenericRecord> ext
 	    	            return;
 	    			case ACTIVE:
 	    				try {
-							long endOfWindowScn = readEventsFromAllSources(sinceSCN.get()).getSinceSCN();
+	    					eventBuffer.startEvents();
+	    					ReadEventCycleSummary<S> readEventCycleSummary = readEventsFromAllSources(sinceSCN.get());
+							long endOfWindowScn = readEventCycleSummary.getSinceSCN();
 							long newSinceSCN = Math.max(endOfWindowScn, sinceSCN.get());
 							sinceSCN.set(newSinceSCN);
 							if (status.getRetriesNum() > 0) {

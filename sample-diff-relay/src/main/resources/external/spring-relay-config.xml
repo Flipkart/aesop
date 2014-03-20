@@ -53,7 +53,7 @@
 		    	<property name="singleton" value="true"/>
 		    	<property name="properties">
 		    		<props>
-			        	<prop key="databus.relay.container.httpPort">25021</prop>
+			        	<prop key="databus.relay.container.httpPort">25020</prop>
 						<prop key="databus.relay.container.jmx.rmiEnabled">false</prop>
 						<prop key="databus.relay.eventBuffer.allocationPolicy">MMAPPED_MEMORY</prop>
 						<prop key="databus.relay.eventBuffer.queuePolicy">OVERWRITE_ON_WRITE</prop>

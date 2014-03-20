@@ -16,7 +16,6 @@
 package com.flipkart.aesop.runtime.producer.diff;
 
 import org.apache.avro.generic.GenericRecord;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
 import com.flipkart.aesop.runtime.producer.AbstractCallbackEventProducer;
@@ -34,16 +33,17 @@ import com.netflix.zeno.fastblob.FastBlobStateEngine;
  * @author Regunath B
  * @version 1.0, 17 March 2014
  */
-public class DiffEventProducer <T, S extends GenericRecord> extends AbstractCallbackEventProducer<S> implements InitializingBean {
+public class DiffEventProducer <T, S extends GenericRecord> extends AbstractCallbackEventProducer<S> {
 
 	/** The DiffInterpreter used for loading state engine snapshots and deltas and listening-in on the engine's state change*/
 	private DiffInterpreter<T,S> diffInterpreter;
-	
+
 	/**
-	 * Interface method implementation. Checks for mandatory dependencies 
-	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
+	 * Overriden superclass method. Calls {@link AbstractCallbackEventProducer#afterPropertiesSet()} and then checks for mandatory dependencies for this producer
+	 * @see com.flipkart.aesop.runtime.producer.AbstractCallbackEventProducer#afterPropertiesSet()
 	 */
 	public void afterPropertiesSet() throws Exception {
+		super.afterPropertiesSet();
 		Assert.notNull(this.diffInterpreter,"'diffInterpreter' cannot be null. No state engine serialized state diff interpreter found. This Diff Events producer will not be initialized");		
 	}
 

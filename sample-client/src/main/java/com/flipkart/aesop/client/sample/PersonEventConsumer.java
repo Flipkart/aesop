@@ -38,7 +38,7 @@ public class PersonEventConsumer extends AbstractDatabusCombinedConsumer {
 	public static final Logger LOGGER = LogFactory.getLogger(PersonEventConsumer.class);
 	
 	/** The frequency of logging consumed messages*/
-	private static final long FREQUENCY_OF_LOGGING = 100;
+	private static final long FREQUENCY_OF_LOGGING = 1;
 	
 	/** The event count*/
 	private long eventCount = 0;
