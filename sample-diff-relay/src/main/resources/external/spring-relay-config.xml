@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+    <bean id="sampleRelay" class="com.flipkart.aesop.runtime.relay.DefaultRelayFactory">
+    	<property name="relayConfig" ref="relayConfig"/>
+    	<property name="producerRegistrationList">
+    		<list>
+    		</list>
+    	</property>
+    </bean>
+    
+    <bean id="physicalSourceConfig" class="com.linkedin.databus2.relay.config.PhysicalSourceConfig">
+		<property name="id" value="100"/>
+		<property name="name" value="personPhysicalSource"/>
+		<property name="uri" value="jvm://local/diff"/>
+		<property name="sources">
+			<list>
+				<bean id="logicalSourceConfig" class="com.linkedin.databus2.relay.config.LogicalSourceConfig">
+					<property name="id" value="101"/>
+					<property name="name" value="com.flipkart.aesop.events.sample.person.Person"/>
+					<property name="uri" value="person.Person"/>
+					<property name="partitionFunction" value="constant:1"/>					
+				</bean>
+			</list>
+		</property>
+    </bean>
+    
+    <bean id="relayConfig" class="com.flipkart.aesop.runtime.config.RelayConfig">
+    	<property name="relayProperties">
+			<bean id="relayPropertiesFactory" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+		    	<property name="singleton" value="true"/>
+		    	<property name="properties">
+		    		<props>
+			        	<prop key="databus.relay.container.httpPort">25021</prop>
+						<prop key="databus.relay.container.jmx.rmiEnabled">false</prop>
+						<prop key="databus.relay.eventBuffer.allocationPolicy">MMAPPED_MEMORY</prop>
+						<prop key="databus.relay.eventBuffer.queuePolicy">OVERWRITE_ON_WRITE</prop>
+						<prop key="databus.relay.eventLogReader.enabled">false</prop>
+						<prop key="databus.relay.eventLogWriter.enabled">false</prop>
+						<prop key="databus.relay.schemaRegistry.type">FILE_SYSTEM</prop>
+						<prop key="databus.relay.eventBuffer.maxSize">10240000</prop>
+						<prop key="databus.relay.eventBuffer.readBufferSize">10240</prop>
+						<prop key="databus.relay.eventBuffer.scnIndexSize">10240000</prop>
+						<prop key="databus.relay.eventBuffer.restoreMMappedBuffers">true</prop>
+			        </props>
+			    </property>    
+	    	</bean>    	
+    	</property>
+		<property name="schemaRegistryLocation" value="schemas_registry"/>
+		<property name="mmappedDirectoryLocation" value="../../../sandbox/mmapped_directory"/> <!-- This is relative to projects root -->
+		<property name="maxScnDirectoryLocation" value="../../../sandbox/maxscn_directory"/> <!-- This is relative to projects root -->
+    </bean>
+
+</beans>

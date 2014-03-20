@@ -78,7 +78,7 @@
         <dependency>
             <groupId>com.flipkart.aesop</groupId>
             <artifactId>runtime-relay</artifactId>
-            <version>1.0.0</version>
+            <version>${project.version}</version>
         </dependency>    
         <!-- Mysql Open Replication dependencies -->
         <dependency>

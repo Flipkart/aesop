@@ -92,7 +92,7 @@
         <dependency>
             <groupId>com.flipkart.aesop</groupId>
             <artifactId>runtime-client-bootstrap-producer</artifactId>
-            <version>1.0.0</version>
+            <version>${project.version}</version>
         </dependency>    
     </dependencies>
 

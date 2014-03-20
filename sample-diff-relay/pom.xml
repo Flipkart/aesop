@@ -11,10 +11,10 @@
     </parent>
 
     <groupId>com.flipkart.aesop</groupId>
-    <artifactId>sample-mysql-relay</artifactId>
+    <artifactId>sample-diff-relay</artifactId>
     <version>1.0.0</version>
-    <name>Sample Relay with MySQL Producer</name>
-    <description>Sample Relay with MySql Producer</description>
+    <name>Sample Relay with Diff Event Producer</name>
+    <description>Sample Relay with Diff Event Producer</description>
 
     <licenses>
         <license>
@@ -57,7 +57,7 @@
 			<dependency>
 			  <groupId>com.linkedin.databus</groupId>
 			  <artifactId>databus2-event-producer-common</artifactId>
-			  <version>1.0.2</version>
+			  <version>${com.linkedin.databus.version}</version>
 			  <scope>compile</scope>
 			</dependency>			
 			<dependency>
@@ -71,29 +71,19 @@
 			  <artifactId>databus-core-schemas</artifactId>
 			  <version>${com.linkedin.databus.version}</version>
 			  <scope>compile</scope>
-			</dependency>
-			<dependency>
-			  <groupId>org.slf4j</groupId>
-			  <artifactId>slf4j-api</artifactId>
-			  <version>1.7.5</version>
-			</dependency>	
+			</dependency>			
 		</dependencies>
 	</dependencyManagement>
 
     <dependencies>
         <!-- aesop dependencies -->
-         <dependency>
-            <groupId>com.flipkart.aesop</groupId>
-            <artifactId>mysql-producer</artifactId>
-            <version>${project.version}</version>
-        </dependency> 
-        <!-- Third party dependencies -->
         <dependency>
-			<groupId>mysql</groupId>
-			<artifactId>mysql-connector-java</artifactId>
-			<version>5.1.6</version>
-		</dependency>
+            <groupId>com.flipkart.aesop</groupId>
+            <artifactId>diff-producer</artifactId>
+            <version>${project.version}</version>
+        </dependency>    
     </dependencies>
+
     <build>
         <plugins>
             <plugin>
@@ -136,5 +126,6 @@
             </plugin>
         </plugins>
     </build>
+
 
 </project>

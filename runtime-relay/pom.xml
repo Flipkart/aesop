@@ -79,7 +79,7 @@
         <dependency>
             <groupId>com.flipkart.aesop</groupId>
             <artifactId>runtime</artifactId>
-            <version>1.0.0</version>
+            <version>${project.version}</version>
         </dependency>    
         <!-- Databus dependencies -->
         <dependency>

@@ -65,7 +65,7 @@
         <dependency>
             <groupId>com.flipkart.aesop</groupId>
             <artifactId>runtime-snapshot-serializer</artifactId>
-            <version>1.0.0</version>
+            <version>${project.version}</version>
 		    <exclusions>
 	        	<exclusion> <!-- Remove slf4j over log4j -->
 		      	  <groupId>org.slf4j</groupId> 
