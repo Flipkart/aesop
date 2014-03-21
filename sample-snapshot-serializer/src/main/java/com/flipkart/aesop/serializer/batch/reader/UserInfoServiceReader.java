@@ -54,8 +54,6 @@ public class UserInfoServiceReader <T extends UserInfo> implements BatchItemStre
 	/** The ObjectMapper to use for JSON deserialization*/
 	private ObjectMapper objectMapper = new ObjectMapper();
 	
-	private boolean hasRun;
-	
 	/** A set of fictitious phone numbers to perform lookup on*/
 	private static final String[] PHONE_NUMBERS = {
 		"6543217890",
@@ -69,6 +67,10 @@ public class UserInfoServiceReader <T extends UserInfo> implements BatchItemStre
 		"9898989898",
 		"9933551100",
 	};
+
+	/** Member variables useful in simulating data changes*/
+	private boolean hasRun;
+	private int modIndex = PHONE_NUMBERS.length - 1;
 	
 	/**
 	 * Returns a number of {@link UserInfo} instances looked up from a service end-point.
@@ -92,23 +94,26 @@ public class UserInfoServiceReader <T extends UserInfo> implements BatchItemStre
 			results[i] = searchResult.results[0]; // we take only the first result
 		}
 		if (hasRun) {
-			int index = (int)(Math.random() * (PHONE_NUMBERS.length - 1));
-			System.out.println("Modifiying response object at index : " + index);
-			results[index].setFirst_name("Regu " + index);
-			results[index].setLast_name("B " + index);
-			results[index].setPrimary_email("regunathb@gmail.com" + index);
-			results[index].setPrimary_phone("9886693892" + index);
-			if (results[index].getPreferences() != null && results[index].getPreferences().size() > 0) {
-				Iterator<String> it = results[index].getPreferences().keySet().iterator();
+			if (modIndex < 0) {
+				return null;
+			}
+			System.out.println("Modifiying response object at index : " + modIndex);
+			results[modIndex].setFirst_name("Regu " + modIndex);
+			results[modIndex].setLast_name("B " + modIndex);
+			results[modIndex].setPrimary_email("regunathb@gmail.com" + modIndex);
+			results[modIndex].setPrimary_phone("9886693892" + modIndex);
+			if (results[modIndex].getPreferences() != null && results[modIndex].getPreferences().size() > 0) {
+				Iterator<String> it = results[modIndex].getPreferences().keySet().iterator();
 				while (it.hasNext()) {
 					String key = it.next();
-					UserPreferencesInfo upi = results[index].getPreferences().get(key);
+					UserPreferencesInfo upi = results[modIndex].getPreferences().get(key);
 					Map<String, Object> values= new HashMap<String,Object>();
 					values.put("communication", "email");
 					values.put("address", "home");
 					upi.setValue(values);
 				}
 			}
+			modIndex -= 1;
 		} else {
 			hasRun = true;
 		}
