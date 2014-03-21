@@ -199,8 +199,8 @@ public abstract class AbstractCallbackEventProducer<S extends GenericRecord> ext
 	    	            return;
 	    			case ACTIVE:
 	    				try {
-	    					eventBuffer.startEvents();
 	    					ReadEventCycleSummary<S> readEventCycleSummary = readEventsFromAllSources(sinceSCN.get());
+	    					eventBuffer.startEvents();
 	    					for (S changeEvent : readEventCycleSummary.getChangeEvents()) {
 	    						byte[] serializedEvent = serializeEvent(changeEvent);
 	    						DbusEventKey eventKey = new DbusEventKey(getEventKey(changeEvent));

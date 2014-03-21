@@ -136,8 +136,8 @@ public class DailyStateTransitioner extends StateTransitioner {
 		for (File snapshotFile : snapshotFiles) {
 			try {
 				previousStateReader.readSnapshot(new DataInputStream(new BufferedInputStream(new FileInputStream(snapshotFile))));
+				LOGGER.info("State engine initialized from snapshot file : " + snapshotFile.getAbsolutePath());
 				this.readDeltasForSnapshot(snapshotFile, deltaLocationDir, previousStateReader);
-				LOGGER.info("State engine initialized from deltas and snapshot of snapshot file : " + snapshotFile.getAbsolutePath());
 				break;
 			} catch (Exception e) { // The snapshot read has failed. Proceed with empty state or next available snapshot
 				LOGGER.warn("Error reading snapshot and deltas for file : {}. Error message is : {}",snapshotFile.getAbsolutePath(), e.getMessage());

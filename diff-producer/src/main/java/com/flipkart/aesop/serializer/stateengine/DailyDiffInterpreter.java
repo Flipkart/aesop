@@ -94,9 +94,9 @@ public class DailyDiffInterpreter<T, S extends GenericRecord> extends DiffInterp
 			try {
 				if (this.getSnapshotVersion(snapshotFile) > this.getStateEngineVersionDay(stateEngine)) { // we want to load the snapshot data only if the engine is not at this version already
 					previousStateReader.readSnapshot(new DataInputStream(new BufferedInputStream(new FileInputStream(snapshotFile))));
+					LOGGER.info("State engine initialized from snapshot file : " + snapshotFile.getAbsolutePath());
 				}
 				this.readDeltasForSnapshot(snapshotFile, deltaLocationDir, previousStateReader, stateEngine, limitToSCN);
-				LOGGER.info("State engine initialized from deltas and snapshot of snapshot file : " + snapshotFile.getAbsolutePath());
 				break;
 			} catch (Exception e) { // The snapshot read has failed. Proceed with empty state or next available snapshot
 				LOGGER.warn("Error reading snapshot and deltas for file : " + snapshotFile.getAbsolutePath() + " .Error message is : " + e.getMessage(), e);
@@ -140,8 +140,8 @@ public class DailyDiffInterpreter<T, S extends GenericRecord> extends DiffInterp
 			try {
 				if (this.getDeltaVersion(deltaFile) > engineVersion) { // we want to load the delta data only if the engine is not at this version already				
 					previousStateReader.readDelta(new DataInputStream(new BufferedInputStream(new FileInputStream(deltaFile))));
+					LOGGER.info("State engine delta loaded from file : " + deltaFile.getAbsolutePath());
 				}
-				LOGGER.info("State engine delta loaded from file : " + deltaFile.getAbsolutePath());
 			} catch (Exception e) { // Unable to read all of the delta files. Abort it
 				LOGGER.warn("Error reading delta from file : {}. Error is {}",deltaFile.getAbsolutePath(), e.getMessage());
 				throw new PlatformException("Error reading delta from file :" + deltaFile.getAbsolutePath() + " Error is : " +  e.getMessage());
