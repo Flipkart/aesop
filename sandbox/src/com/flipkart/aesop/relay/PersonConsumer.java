@@ -9,7 +9,7 @@ import org.apache.avro.generic.GenericRecord;
 import org.apache.avro.util.Utf8;
 import org.apache.log4j.Logger;
 
-import com.flipkart.aesop.events.example.person.Person;
+import com.flipkart.aesop.events.sample.person.Person;
 import com.linkedin.databus.client.consumer.AbstractDatabusCombinedConsumer;
 import com.linkedin.databus.client.pub.ConsumerCallbackResult;
 import com.linkedin.databus.client.pub.DbusEventDecoder;

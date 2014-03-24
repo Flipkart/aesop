@@ -105,7 +105,7 @@ public class PersonDiffChangeEventMapper implements DiffChangeEventMapper<UserIn
 	            }
 			}
 			if (isDifferent) {
-				personsList.add(new Person(Long.valueOf(objectDiff.getFrom().getPrimary_phone()), firstName, lastName,0L,"false"));
+				personsList.add(new Person(Long.valueOf(objectDiff.getFrom().getPrimary_phone()), firstName, lastName,0L,"false",null));
 			}
 		}
 		return personsList;

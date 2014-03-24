@@ -11,7 +11,7 @@ import org.apache.hadoop.hbase.client.HTable;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.util.Bytes;
 
-import com.flipkart.aesop.events.example.person.Person;
+import com.flipkart.aesop.events.sample.person.Person;
 
 /**
  * Executes insert/update/delete commands for {@link Person} data objects on the HBase table by name "aesop-person"

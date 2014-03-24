@@ -1,4 +1,4 @@
-{ "namespace" : "com.flipkart.aesop.events.example.person",
+{ "namespace" : "com.flipkart.aesop.events.sample.person",
   "type" : "record",
   "name" : "Person",
   "fields" : [ 

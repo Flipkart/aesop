@@ -7,8 +7,7 @@ package com.flipkart.aesop.relay;
 
 import java.io.IOException;
 
-
-import com.flipkart.aesop.events.example.person.Person;
+import com.flipkart.aesop.events.sample.person.Person;
 import com.linkedin.databus.container.netty.HttpRelay;
 import com.linkedin.databus.core.DbusEventBufferAppendable;
 import com.linkedin.databus.core.util.InvalidConfigException;

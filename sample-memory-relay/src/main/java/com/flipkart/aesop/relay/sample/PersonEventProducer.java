@@ -105,7 +105,7 @@ public class PersonEventProducer extends AbstractEventProducer {
 				eventBuffer.startEvents();
 				long endValue = sinceSCN.longValue() + numberOfEventsPerRun;
 				for (long i = sinceSCN.longValue(); i < endValue; i++) {
-					Person person = new Person(i, "Aesop " + i, "Mr. " + i, i,"false");
+					Person person = new Person(i, "Aesop " + i, "Mr. " + i, i,"false",null);
 					byte[] serializedEvent = serializeEvent(person);
 					DbusEventKey eventKey = new DbusEventKey(i);
 					DbusEventInfo eventInfo = new DbusEventInfo(DbusOpcode.UPSERT,i,

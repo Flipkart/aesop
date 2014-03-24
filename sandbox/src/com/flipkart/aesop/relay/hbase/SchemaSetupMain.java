@@ -4,15 +4,15 @@
  */
 package com.flipkart.aesop.relay.hbase;
 
+import java.io.IOException;
+
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.HColumnDescriptor;
 import org.apache.hadoop.hbase.HTableDescriptor;
 import org.apache.hadoop.hbase.client.HBaseAdmin;
 
-import com.flipkart.aesop.events.example.person.Person;
-
-import java.io.IOException;
+import com.flipkart.aesop.events.sample.person.Person;
 
 /**
  * Creates a HBase table to store records of the sample {@link Person} type

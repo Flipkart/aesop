@@ -14,7 +14,7 @@ import org.apache.avro.io.BinaryEncoder;
 import org.apache.avro.io.Encoder;
 import org.apache.avro.io.EncoderFactory;
 
-import com.flipkart.aesop.events.example.person.Person;
+import com.flipkart.aesop.events.sample.person.Person;
 import com.linkedin.databus.core.DbusEventBufferAppendable;
 import com.linkedin.databus.core.DbusEventKey;
 import com.linkedin.databus.core.monitoring.mbean.DbusEventsStatisticsCollector;
