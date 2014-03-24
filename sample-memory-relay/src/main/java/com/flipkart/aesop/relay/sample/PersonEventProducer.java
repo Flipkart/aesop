@@ -15,9 +15,12 @@
  */
 package com.flipkart.aesop.relay.sample;
 
+import java.util.LinkedList;
+
 import org.trpr.platform.core.impl.logging.LogFactory;
 import org.trpr.platform.core.spi.logging.Logger;
 
+import com.flipkart.aesop.events.sample.person.FieldChange;
 import com.flipkart.aesop.events.sample.person.Person;
 import com.flipkart.aesop.runtime.producer.AbstractEventProducer;
 import com.linkedin.databus.core.DbusEventInfo;
@@ -105,7 +108,7 @@ public class PersonEventProducer extends AbstractEventProducer {
 				eventBuffer.startEvents();
 				long endValue = sinceSCN.longValue() + numberOfEventsPerRun;
 				for (long i = sinceSCN.longValue(); i < endValue; i++) {
-					Person person = new Person(i, "Aesop " + i, "Mr. " + i, i,"false",null);
+					Person person = new Person(i, "Aesop " + i, "Mr. " + i, i,"false",new LinkedList<FieldChange>());
 					byte[] serializedEvent = serializeEvent(person);
 					DbusEventKey eventKey = new DbusEventKey(i);
 					DbusEventInfo eventInfo = new DbusEventInfo(DbusOpcode.UPSERT,i,

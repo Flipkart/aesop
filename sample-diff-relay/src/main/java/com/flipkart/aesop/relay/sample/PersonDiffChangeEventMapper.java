@@ -18,6 +18,7 @@ package com.flipkart.aesop.relay.sample;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.flipkart.aesop.events.sample.person.FieldChange;
 import com.flipkart.aesop.events.sample.person.Person;
 import com.flipkart.aesop.serializer.model.UserInfo;
 import com.flipkart.aesop.serializer.stateengine.DiffChangeEventMapper;
@@ -105,7 +106,7 @@ public class PersonDiffChangeEventMapper implements DiffChangeEventMapper<UserIn
 	            }
 			}
 			if (isDifferent) {
-				personsList.add(new Person(Long.valueOf(objectDiff.getFrom().getPrimary_phone()), firstName, lastName,0L,"false",null));
+				personsList.add(new Person(Long.valueOf(objectDiff.getFrom().getPrimary_phone()), firstName, lastName,0L,"false",new LinkedList<FieldChange>()));
 			}
 		}
 		return personsList;

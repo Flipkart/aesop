@@ -15,11 +15,10 @@
  */
 package com.flipkart.aesop.client.sample;
 
-import org.apache.avro.generic.GenericRecord;
-import org.apache.avro.util.Utf8;
 import org.trpr.platform.core.impl.logging.LogFactory;
 import org.trpr.platform.core.spi.logging.Logger;
 
+import com.flipkart.aesop.events.sample.person.Person;
 import com.linkedin.databus.client.consumer.AbstractDatabusCombinedConsumer;
 import com.linkedin.databus.client.pub.ConsumerCallbackResult;
 import com.linkedin.databus.client.pub.DbusEventDecoder;
@@ -66,23 +65,13 @@ public class PersonEventConsumer extends AbstractDatabusCombinedConsumer {
 	 * @return {@link ConsumerCallbackResult#SUCCESS} if successful and {@link ConsumerCallbackResult#ERROR} in case of exceptions/errors
 	 */
 	private ConsumerCallbackResult processEvent(DbusEvent event, DbusEventDecoder eventDecoder) {
-		GenericRecord decodedEvent = eventDecoder.getGenericRecord(event, null);
+		Person person = eventDecoder.getTypedValue(event, null, Person.class);
 		if (eventCount % FREQUENCY_OF_LOGGING == 0) {
-			try {
-				Long key = (Long) decodedEvent.get("key");			
-				Utf8 firstName = (Utf8) decodedEvent.get("firstName");
-				Utf8 lastName = (Utf8) decodedEvent.get("lastName");
-				Long birthDate = (Long) decodedEvent.get("birthDate");
-				Utf8 deleted = (Utf8) decodedEvent.get("deleted");
-	
-				LOGGER.info(" key : " + key + " firstName: "
-						+ firstName.toString() + ", lastName: "
-						+ lastName.toString() + ", birthDate: " + birthDate
-						+ ", deleted: " + deleted.toString());
-			} catch (Exception e) {
-				LOGGER.error("error processing event : " + decodedEvent);
-				return ConsumerCallbackResult.ERROR;
-			}
+			LOGGER.info(" key : " + person.getKey() + " firstName: "
+					+ person.getFirstName() + ", lastName: "
+					+ person.getLastName() + ", birthDate: " + person.getBirthDate()
+					+ ", deleted: " + person.getDeleted()
+					+ ",change fields : " + person.getFieldChanges());
 		}
 		eventCount += 1;
 		return ConsumerCallbackResult.SUCCESS;

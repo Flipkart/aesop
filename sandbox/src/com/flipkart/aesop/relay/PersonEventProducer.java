@@ -6,6 +6,7 @@
 package com.flipkart.aesop.relay;
 
 import java.io.ByteArrayOutputStream;
+import java.util.LinkedList;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.avro.generic.GenericDatumWriter;
@@ -14,6 +15,7 @@ import org.apache.avro.io.BinaryEncoder;
 import org.apache.avro.io.Encoder;
 import org.apache.avro.io.EncoderFactory;
 
+import com.flipkart.aesop.events.sample.person.FieldChange;
 import com.flipkart.aesop.events.sample.person.Person;
 import com.linkedin.databus.core.DbusEventBufferAppendable;
 import com.linkedin.databus.core.DbusEventKey;
@@ -132,7 +134,7 @@ public class PersonEventProducer implements EventProducer {
 			int count = 100;
 			for (long i = sinceSCN.longValue(); i < (sinceSCN.longValue() + count); i++) {
 				Person person = new Person(i, "Aesop " + i, "Mr. " + i, i,
-						"false",null);
+						"false",new LinkedList<FieldChange>());
 				byte[] serializedEvent = serializeEvent(person);
 				DbusEventKey eventKey = new DbusEventKey(i);
 				eventBuffer.appendEvent(eventKey, (short) 1, (short) 1,

@@ -15,6 +15,9 @@
  */
 package com.flipkart.aesop.relay.sample;
 
+import java.util.LinkedList;
+
+import com.flipkart.aesop.events.sample.person.FieldChange;
 import com.flipkart.aesop.events.sample.person.Person;
 import org.apache.hadoop.hbase.KeyValue;
 import org.apache.hadoop.hbase.util.Bytes;
@@ -57,7 +60,7 @@ public class PersonSepEventMapper implements SepEventMapper<Person> {
         for (KeyValue kv : sepEvent.getKeyValues()) {
         	if (kv.isDeleteFamily()) {
                 LOGGER.debug("Returning Delete Person object : " + sepEvent.getRow() + " " + deleted);        
-        		return new Person(Bytes.toLong(sepEvent.getRow()), "","",0L,"true",null);
+        		return new Person(Bytes.toLong(sepEvent.getRow()), "","",0L,"true",new LinkedList<FieldChange>());
         	} else {
 				String columnQualifier = new String(kv.getQualifier());	
 				if (columnQualifier.equalsIgnoreCase("firstName")) {
@@ -70,7 +73,7 @@ public class PersonSepEventMapper implements SepEventMapper<Person> {
         	}
         }
         LOGGER.debug("Returning Person object : " + sepEvent.getRow() + " " + firstName + " " + lastName);        
-        return new Person(Bytes.toLong(sepEvent.getRow()),firstName, lastName, dob, deleted,null);
+        return new Person(Bytes.toLong(sepEvent.getRow()),firstName, lastName, dob, deleted,new LinkedList<FieldChange>());
 	}
 
 }

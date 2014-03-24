@@ -5,6 +5,7 @@
 package com.flipkart.aesop.relay.hbase;
 
 import java.io.ByteArrayOutputStream;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -18,6 +19,7 @@ import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.KeyValue;
 import org.apache.hadoop.hbase.util.Bytes;
 
+import com.flipkart.aesop.events.sample.person.FieldChange;
 import com.flipkart.aesop.events.sample.person.Person;
 import com.linkedin.databus.core.DbusEventBufferAppendable;
 import com.linkedin.databus.core.DbusEventKey;
@@ -110,7 +112,7 @@ public class WALEditPersonEventProducer implements EventProducer {
             	Person person = null;
                 for (KeyValue kv : sepEvent.getKeyValues()) {
                 	if (kv.isDeleteFamily()) {
-                		person = new Person(Bytes.toLong(sepEvent.getRow()), "","",0L,"true",null);
+                		person = new Person(Bytes.toLong(sepEvent.getRow()), "","",0L,"true",new LinkedList<FieldChange>());
                 	} else {
 						String columnQualifier = new String(kv.getQualifier());	
 						if (columnQualifier.equalsIgnoreCase("firstName")) {
@@ -123,7 +125,7 @@ public class WALEditPersonEventProducer implements EventProducer {
                 	}
                 }
                 if (person == null) {
-                	person = new Person(Bytes.toLong(sepEvent.getRow()),firstName, lastName, dob, deleted,null);
+                	person = new Person(Bytes.toLong(sepEvent.getRow()),firstName, lastName, dob, deleted,new LinkedList<FieldChange>());
                 }
 				byte[] serializedEvent = serializeEvent(person);
 				DbusEventKey eventKey = new DbusEventKey(Bytes.toLong(sepEvent.getRow()));
