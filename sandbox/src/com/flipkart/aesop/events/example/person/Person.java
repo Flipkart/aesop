@@ -7,13 +7,14 @@ package com.flipkart.aesop.events.example.person;
 @SuppressWarnings("all")
 @org.apache.avro.specific.AvroGenerated
 public class Person extends org.apache.avro.specific.SpecificRecordBase implements org.apache.avro.specific.SpecificRecord {
-  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"Person\",\"namespace\":\"com.flipkart.aesop.events.example.person\",\"fields\":[{\"name\":\"key\",\"type\":[\"long\",\"null\"]},{\"name\":\"firstName\",\"type\":[\"string\",\"null\"]},{\"name\":\"lastName\",\"type\":[\"string\",\"null\"]},{\"name\":\"birthDate\",\"type\":[\"long\",\"null\"]},{\"name\":\"deleted\",\"type\":[\"string\",\"null\"]}]}");
+  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"Person\",\"namespace\":\"com.flipkart.aesop.events.example.person\",\"fields\":[{\"name\":\"key\",\"type\":[\"long\",\"null\"]},{\"name\":\"firstName\",\"type\":[\"string\",\"null\"]},{\"name\":\"lastName\",\"type\":[\"string\",\"null\"]},{\"name\":\"birthDate\",\"type\":[\"long\",\"null\"]},{\"name\":\"deleted\",\"type\":[\"string\",\"null\"]},{\"name\":\"fieldChanges\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"FieldChange\",\"fields\":[{\"name\":\"name\",\"type\":\"string\"},{\"name\":\"oldValue\",\"type\":\"string\"},{\"name\":\"newValue\",\"type\":\"string\"}]}}}]}");
   public static org.apache.avro.Schema getClassSchema() { return SCHEMA$; }
   @Deprecated public java.lang.Long key;
   @Deprecated public java.lang.CharSequence firstName;
   @Deprecated public java.lang.CharSequence lastName;
   @Deprecated public java.lang.Long birthDate;
   @Deprecated public java.lang.CharSequence deleted;
+  @Deprecated public java.util.List<com.flipkart.aesop.events.example.person.FieldChange> fieldChanges;
 
   /**
    * Default constructor.  Note that this does not initialize fields
@@ -25,12 +26,13 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
   /**
    * All-args constructor.
    */
-  public Person(java.lang.Long key, java.lang.CharSequence firstName, java.lang.CharSequence lastName, java.lang.Long birthDate, java.lang.CharSequence deleted) {
+  public Person(java.lang.Long key, java.lang.CharSequence firstName, java.lang.CharSequence lastName, java.lang.Long birthDate, java.lang.CharSequence deleted, java.util.List<com.flipkart.aesop.events.example.person.FieldChange> fieldChanges) {
     this.key = key;
     this.firstName = firstName;
     this.lastName = lastName;
     this.birthDate = birthDate;
     this.deleted = deleted;
+    this.fieldChanges = fieldChanges;
   }
 
   public org.apache.avro.Schema getSchema() { return SCHEMA$; }
@@ -42,6 +44,7 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
     case 2: return lastName;
     case 3: return birthDate;
     case 4: return deleted;
+    case 5: return fieldChanges;
     default: throw new org.apache.avro.AvroRuntimeException("Bad index");
     }
   }
@@ -54,6 +57,7 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
     case 2: lastName = (java.lang.CharSequence)value$; break;
     case 3: birthDate = (java.lang.Long)value$; break;
     case 4: deleted = (java.lang.CharSequence)value$; break;
+    case 5: fieldChanges = (java.util.List<com.flipkart.aesop.events.example.person.FieldChange>)value$; break;
     default: throw new org.apache.avro.AvroRuntimeException("Bad index");
     }
   }
@@ -133,6 +137,21 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
     this.deleted = value;
   }
 
+  /**
+   * Gets the value of the 'fieldChanges' field.
+   */
+  public java.util.List<com.flipkart.aesop.events.example.person.FieldChange> getFieldChanges() {
+    return fieldChanges;
+  }
+
+  /**
+   * Sets the value of the 'fieldChanges' field.
+   * @param value the value to set.
+   */
+  public void setFieldChanges(java.util.List<com.flipkart.aesop.events.example.person.FieldChange> value) {
+    this.fieldChanges = value;
+  }
+
   /** Creates a new Person RecordBuilder */
   public static com.flipkart.aesop.events.example.person.Person.Builder newBuilder() {
     return new com.flipkart.aesop.events.example.person.Person.Builder();
@@ -159,6 +178,7 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
     private java.lang.CharSequence lastName;
     private java.lang.Long birthDate;
     private java.lang.CharSequence deleted;
+    private java.util.List<com.flipkart.aesop.events.example.person.FieldChange> fieldChanges;
 
     /** Creates a new Builder */
     private Builder() {
@@ -188,6 +208,10 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
         this.deleted = data().deepCopy(fields()[4].schema(), other.deleted);
         fieldSetFlags()[4] = true;
       }
+      if (isValidValue(fields()[5], other.fieldChanges)) {
+        this.fieldChanges = data().deepCopy(fields()[5].schema(), other.fieldChanges);
+        fieldSetFlags()[5] = true;
+      }
     }
     
     /** Creates a Builder by copying an existing Person instance */
@@ -212,6 +236,10 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
       if (isValidValue(fields()[4], other.deleted)) {
         this.deleted = data().deepCopy(fields()[4].schema(), other.deleted);
         fieldSetFlags()[4] = true;
+      }
+      if (isValidValue(fields()[5], other.fieldChanges)) {
+        this.fieldChanges = data().deepCopy(fields()[5].schema(), other.fieldChanges);
+        fieldSetFlags()[5] = true;
       }
     }
 
@@ -340,6 +368,31 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
       return this;
     }
 
+    /** Gets the value of the 'fieldChanges' field */
+    public java.util.List<com.flipkart.aesop.events.example.person.FieldChange> getFieldChanges() {
+      return fieldChanges;
+    }
+    
+    /** Sets the value of the 'fieldChanges' field */
+    public com.flipkart.aesop.events.example.person.Person.Builder setFieldChanges(java.util.List<com.flipkart.aesop.events.example.person.FieldChange> value) {
+      validate(fields()[5], value);
+      this.fieldChanges = value;
+      fieldSetFlags()[5] = true;
+      return this; 
+    }
+    
+    /** Checks whether the 'fieldChanges' field has been set */
+    public boolean hasFieldChanges() {
+      return fieldSetFlags()[5];
+    }
+    
+    /** Clears the value of the 'fieldChanges' field */
+    public com.flipkart.aesop.events.example.person.Person.Builder clearFieldChanges() {
+      fieldChanges = null;
+      fieldSetFlags()[5] = false;
+      return this;
+    }
+
     @Override
     public Person build() {
       try {
@@ -349,6 +402,7 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
         record.lastName = fieldSetFlags()[2] ? this.lastName : (java.lang.CharSequence) defaultValue(fields()[2]);
         record.birthDate = fieldSetFlags()[3] ? this.birthDate : (java.lang.Long) defaultValue(fields()[3]);
         record.deleted = fieldSetFlags()[4] ? this.deleted : (java.lang.CharSequence) defaultValue(fields()[4]);
+        record.fieldChanges = fieldSetFlags()[5] ? this.fieldChanges : (java.util.List<com.flipkart.aesop.events.example.person.FieldChange>) defaultValue(fields()[5]);
         return record;
       } catch (Exception e) {
         throw new org.apache.avro.AvroRuntimeException(e);
