@@ -132,7 +132,7 @@ public class PersonEventProducer implements EventProducer {
 			int count = 100;
 			for (long i = sinceSCN.longValue(); i < (sinceSCN.longValue() + count); i++) {
 				Person person = new Person(i, "Aesop " + i, "Mr. " + i, i,
-						"false");
+						"false",null);
 				byte[] serializedEvent = serializeEvent(person);
 				DbusEventKey eventKey = new DbusEventKey(i);
 				eventBuffer.appendEvent(eventKey, (short) 1, (short) 1,

@@ -110,7 +110,7 @@ public class WALEditPersonEventProducer implements EventProducer {
             	Person person = null;
                 for (KeyValue kv : sepEvent.getKeyValues()) {
                 	if (kv.isDeleteFamily()) {
-                		person = new Person(Bytes.toLong(sepEvent.getRow()), "","",0L,"true");
+                		person = new Person(Bytes.toLong(sepEvent.getRow()), "","",0L,"true",null);
                 	} else {
 						String columnQualifier = new String(kv.getQualifier());	
 						if (columnQualifier.equalsIgnoreCase("firstName")) {
@@ -123,7 +123,7 @@ public class WALEditPersonEventProducer implements EventProducer {
                 	}
                 }
                 if (person == null) {
-                	person = new Person(Bytes.toLong(sepEvent.getRow()),firstName, lastName, dob, deleted);
+                	person = new Person(Bytes.toLong(sepEvent.getRow()),firstName, lastName, dob, deleted,null);
                 }
 				byte[] serializedEvent = serializeEvent(person);
 				DbusEventKey eventKey = new DbusEventKey(Bytes.toLong(sepEvent.getRow()));
