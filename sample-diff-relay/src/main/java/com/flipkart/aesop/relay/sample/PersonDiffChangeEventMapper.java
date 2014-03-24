@@ -18,6 +18,9 @@ package com.flipkart.aesop.relay.sample;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.codehaus.jackson.map.ObjectMapper;
+import org.springframework.core.serializer.support.SerializationFailedException;
+
 import com.flipkart.aesop.events.sample.person.FieldChange;
 import com.flipkart.aesop.events.sample.person.Person;
 import com.flipkart.aesop.serializer.model.UserInfo;
@@ -38,6 +41,9 @@ import com.netflix.zeno.serializer.SerializerFactory;
  */
 public class PersonDiffChangeEventMapper implements DiffChangeEventMapper<UserInfo,Person> {
 
+	/** The ObjectMapper to use for JSON serialization of {@link UserInfo#getPreferences()}, {@link UserInfo#getAddresses()}, {@link UserInfo#getMerged_account_ids()} */
+	private ObjectMapper objectMapper = new ObjectMapper();
+	
 	/**
 	 * Interface method implementation. Returns the type of {@link com.flipkart.aesop.serializer.model.UserInfo}
 	 * @see com.flipkart.aesop.serializer.stateengine.DiffChangeEventMapper#getNFTypeName()
@@ -81,33 +87,41 @@ public class PersonDiffChangeEventMapper implements DiffChangeEventMapper<UserIn
 		for(ObjectDiffScore<UserInfo> objectDiff : typeDiff.getDiffObjects()) {
 			GenericObject fromGenericObject = genericObjectFramework.serialize(objectDiff.getFrom(), this.getNFTypeName());
 			GenericObject toGenericObject = genericObjectFramework.serialize(objectDiff.getTo(), this.getNFTypeName());
-			String firstName = null;
-			String lastName = null;
-			boolean isDifferent = false;
+			List<FieldChange> fieldChanges = new LinkedList<FieldChange>();
 			for(int i=0;i<fromGenericObject.getFields().size();i++) {
 	            Field fromField = fromGenericObject.getFields().get(i);
 	            Field toField = toGenericObject.getFields().get(i);	
-	            // we are interested only in changes to first name and last name.
-	            if (fromField.getFieldName().equals("first_name") || fromField.getFieldName().equals("last_name")) {
-		            if (fromField.getValue() == null && toField.getValue() == null) {
-		            	continue;
-		            }
+	            if (fromField.getValue() == null && toField.getValue() == null) {
+	            	continue;
+	            }
+	            try {
 		            if ((fromField.getValue() == null && toField.getValue() != null) ||
 		               (toField.getValue() == null && fromField.getValue() != null) ||
 		               (!fromField.getValue().equals(toField.getValue()))) {
-		            	isDifferent = true;
+		            	// serialize data as JSON if field names are : preferences, addresses or merged_account_ids
+		            	String fieldFromValue = null;
+		            	String fieldToValue = null;
+		            	if (fromField.getFieldName().equals("preferences")) { 
+		            		fieldFromValue = fromField.getValue() == null ? "null" : objectMapper.writer().writeValueAsString(objectDiff.getFrom().getPreferences());
+		            		fieldToValue = toField.getValue() == null ? "null" :  objectMapper.writer().writeValueAsString(objectDiff.getTo().getPreferences());
+		            	} else if (fromField.getFieldName().equals("addresses")) {
+		            		fieldFromValue = fromField.getValue() == null ? "null" : objectMapper.writer().writeValueAsString(objectDiff.getFrom().getAddresses());
+		            		fieldToValue = toField.getValue() == null ? "null" :  objectMapper.writer().writeValueAsString(objectDiff.getTo().getAddresses());		            		
+		            	} else if (fromField.getFieldName().equals("merged_account_ids")) {
+		            		fieldFromValue = fromField.getValue() == null ? "null" : objectMapper.writer().writeValueAsString(objectDiff.getFrom().getMerged_account_ids());
+		            		fieldToValue = toField.getValue() == null ? "null" :  objectMapper.writer().writeValueAsString(objectDiff.getTo().getMerged_account_ids());		            				            		
+		            	} else {
+		            		fieldFromValue = fromField.getValue() == null ? "null" : fromField.getValue().toString();
+		            		fieldToValue = toField.getValue() == null ? "null" : toField.getValue().toString();
+		            	}
+		            	fieldChanges.add(new FieldChange(fromField.getFieldName(), fieldFromValue, fieldToValue));
 		            }
-		            if (fromField.getFieldName().equals("first_name")) {
-		            	firstName = fromField.getValue() + ":" + toField.getValue(); // concat original and changed name to one string - for testing
-		            }
-		            if (fromField.getFieldName().equals("last_name")) {
-		            	lastName = fromField.getValue() + ":" + toField.getValue(); // concat original and changed name to one string - for testing		            	
-		            }
+	            } catch (Exception e) {
+	            	throw new SerializationFailedException("Error interpreting change from diff : " + e.getMessage(), e);
 	            }
 			}
-			if (isDifferent) {
-				personsList.add(new Person(Long.valueOf(objectDiff.getFrom().getPrimary_phone()), firstName, lastName,0L,"false",new LinkedList<FieldChange>()));
-			}
+			personsList.add(new Person(Long.valueOf(objectDiff.getFrom().getPrimary_phone()), 
+					objectDiff.getFrom().getFirst_name(), objectDiff.getFrom().getLast_name(),0L,"false",fieldChanges));
 		}
 		return personsList;
 	}
