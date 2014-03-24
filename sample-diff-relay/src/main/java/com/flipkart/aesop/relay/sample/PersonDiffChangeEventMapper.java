@@ -102,14 +102,38 @@ public class PersonDiffChangeEventMapper implements DiffChangeEventMapper<UserIn
 		            	String fieldFromValue = null;
 		            	String fieldToValue = null;
 		            	if (fromField.getFieldName().equals("preferences")) { 
-		            		fieldFromValue = fromField.getValue() == null ? "null" : objectMapper.writer().writeValueAsString(objectDiff.getFrom().getPreferences());
-		            		fieldToValue = toField.getValue() == null ? "null" :  objectMapper.writer().writeValueAsString(objectDiff.getTo().getPreferences());
+		            		if (fromField.getValue() != null && toField.getValue() != null) { 
+			            		fieldFromValue = objectMapper.writer().writeValueAsString(objectDiff.getFrom().getPreferences());
+			            		fieldToValue = objectMapper.writer().writeValueAsString(objectDiff.getTo().getPreferences());
+			            		if (fieldFromValue.equals(fieldToValue)) {
+			            			continue;
+			            		}
+		            		} else {
+			            		fieldFromValue = fromField.getValue() == null ? "null" : objectMapper.writer().writeValueAsString(objectDiff.getFrom().getPreferences());
+			            		fieldToValue = toField.getValue() == null ? "null" :  objectMapper.writer().writeValueAsString(objectDiff.getTo().getPreferences());
+		            		}
 		            	} else if (fromField.getFieldName().equals("addresses")) {
-		            		fieldFromValue = fromField.getValue() == null ? "null" : objectMapper.writer().writeValueAsString(objectDiff.getFrom().getAddresses());
-		            		fieldToValue = toField.getValue() == null ? "null" :  objectMapper.writer().writeValueAsString(objectDiff.getTo().getAddresses());		            		
+		            		if (fromField.getValue() != null && toField.getValue() != null) {
+			            		fieldFromValue = objectMapper.writer().writeValueAsString(objectDiff.getFrom().getAddresses());
+			            		fieldToValue = objectMapper.writer().writeValueAsString(objectDiff.getTo().getAddresses());		            			
+			            		if (fieldFromValue.equals(fieldToValue)) {
+			            			continue;
+			            		}
+		            		} else {
+			            		fieldFromValue = fromField.getValue() == null ? "null" : objectMapper.writer().writeValueAsString(objectDiff.getFrom().getAddresses());
+			            		fieldToValue = toField.getValue() == null ? "null" :  objectMapper.writer().writeValueAsString(objectDiff.getTo().getAddresses());
+		            		}
 		            	} else if (fromField.getFieldName().equals("merged_account_ids")) {
-		            		fieldFromValue = fromField.getValue() == null ? "null" : objectMapper.writer().writeValueAsString(objectDiff.getFrom().getMerged_account_ids());
-		            		fieldToValue = toField.getValue() == null ? "null" :  objectMapper.writer().writeValueAsString(objectDiff.getTo().getMerged_account_ids());		            				            		
+		            		if (fromField.getValue() != null && toField.getValue() != null) { 
+			            		fieldFromValue = objectMapper.writer().writeValueAsString(objectDiff.getFrom().getMerged_account_ids());
+			            		fieldToValue = objectMapper.writer().writeValueAsString(objectDiff.getTo().getMerged_account_ids());		            			
+			            		if (fieldFromValue.equals(fieldToValue)) {
+			            			continue;
+			            		}
+		            		} else {
+			            		fieldFromValue = fromField.getValue() == null ? "null" : objectMapper.writer().writeValueAsString(objectDiff.getFrom().getMerged_account_ids());
+			            		fieldToValue = toField.getValue() == null ? "null" :  objectMapper.writer().writeValueAsString(objectDiff.getTo().getMerged_account_ids());
+		            		}
 		            	} else {
 		            		fieldFromValue = fromField.getValue() == null ? "null" : fromField.getValue().toString();
 		            		fieldToValue = toField.getValue() == null ? "null" : toField.getValue().toString();
