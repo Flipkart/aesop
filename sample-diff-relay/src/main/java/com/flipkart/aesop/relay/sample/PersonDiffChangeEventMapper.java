@@ -18,6 +18,7 @@ package com.flipkart.aesop.relay.sample;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.lang.math.NumberUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.core.serializer.support.SerializationFailedException;
 
@@ -144,7 +145,7 @@ public class PersonDiffChangeEventMapper implements DiffChangeEventMapper<UserIn
 	            	throw new SerializationFailedException("Error interpreting change from diff : " + e.getMessage(), e);
 	            }
 			}
-			personsList.add(new Person(Long.valueOf(objectDiff.getFrom().getPrimary_phone()), 
+			personsList.add(new Person(Long.valueOf(!NumberUtils.isNumber(objectDiff.getFrom().getPrimary_phone()) ? "0" : objectDiff.getFrom().getPrimary_phone().trim()), 
 					objectDiff.getFrom().getFirst_name(), objectDiff.getFrom().getLast_name(),0L,"false",fieldChanges));
 		}
 		return personsList;

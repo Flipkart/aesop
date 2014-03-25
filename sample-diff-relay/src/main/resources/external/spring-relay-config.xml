@@ -48,9 +48,9 @@
 		<!-- Configuration to control Event Producer Thread poll frequency, back-off and retry properties -->
 		<property name="retries">
 			<bean id="backoffTimerConfig" class="com.linkedin.databus2.core.BackoffTimerStaticConfigBuilder">
-				<property name="initSleep" value="10000"/>
+				<property name="initSleep" value="1000000"/>
 				<property name="maxRetryNum" value="-1"/>
-				<property name="maxSleep" value="300000"/>				
+				<property name="maxSleep" value="30000000"/>				
 				<property name="sleepIncFactor" value="2.0"/>				
 				<property name="sleepIncDelta" value="0"/>				
 			</bean>

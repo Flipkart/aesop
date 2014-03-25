@@ -143,9 +143,13 @@ public class DailyStateTransitioner extends StateTransitioner {
 				LOGGER.warn("Error reading snapshot and deltas for file : {}. Error message is : {}",snapshotFile.getAbsolutePath(), e.getMessage());
 			}
 		}
-		LOGGER.info(this.stateEngine.getLatestVersion() != null ? "State engine initialized to version : " + this.stateEngine.getLatestVersion() : 
-			"State engine not initialized from any existing snapshot");
-	}
+		if (this.stateEngine.getLatestVersion() != null && stateEngine.getLatestVersion().trim().length() > 0) {
+			this.stateEngine.prepareForNextCycle(); // prepare the state engine for next run
+			LOGGER.info("State engine initialized to version : " + this.stateEngine.getLatestVersion());
+		} else {
+			LOGGER.info("State engine not initialized from any existing snapshot");
+		}
+ 	}
 	
 	/**
 	 * Reads the deltas for the specified snapshot file from the specified delta location directory into the specified fast blob reader

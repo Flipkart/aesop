@@ -35,7 +35,7 @@
 	-->
 	<bean id="userServiceJobCronTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
 		<property name="jobDetail" ref="userServiceJobDetailBean" />
-		<property name="cronExpression" value="0 0/1 * * * ?" />
+		<property name="cronExpression" value="0 0/2 * * * ?" />
 	</bean>
 
 	<!--
@@ -65,7 +65,7 @@
 	<batch:job id="userServiceJob" incrementer="incrementer">
 		<batch:step id="fetch" next="write">
 			<batch:tasklet task-executor="userServiceJobTaskExecutor">
-				<batch:chunk reader="compositeUserServiceDataReader" processor="passThroughProcessor" writer="stateEngineApenderWriter" commit-interval="10"/>
+				<batch:chunk reader="userServiceDataReader" processor="passThroughProcessor" writer="stateEngineApenderWriter" commit-interval="10"/>
 			</batch:tasklet>
 		</batch:step>		
 		<batch:step id="write">
@@ -77,10 +77,7 @@
 		<property name="stateTransitioner" ref="stateTransitioner" />
 	</bean>
 
-	<bean id="compositeUserServiceDataReader" class="org.trpr.platform.batch.impl.spring.reader.CompositeItemStreamReader">
-		<constructor-arg><ref bean="userServiceDataReader"/></constructor-arg>
-	</bean>	
-	<bean id="userServiceDataReader" class="com.flipkart.aesop.serializer.batch.reader.UserInfoServiceReader"/>
+	<bean id="userServiceDataReader" class="com.flipkart.aesop.serializer.batch.reader.UserInfoServiceScanReader"/>
 	<bean id="passThroughProcessor" class="com.flipkart.aesop.serializer.batch.processor.PassThroughItemProcessor"/>		
 	<bean id="stateEngineApenderWriter" class="com.flipkart.aesop.serializer.batch.writer.StateEngineApenderWriter">
 		<property name="stateTransitioner" ref="stateTransitioner" />
