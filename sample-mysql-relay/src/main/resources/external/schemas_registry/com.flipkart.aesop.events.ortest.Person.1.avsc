@@ -1,6 +1,7 @@
 { "namespace" : "com.flipkart.aesop.events.example.person",
   "type" : "record",
   "name" : "Person",
+  "pk"	 : "key",
   "fields" : [ 
   	{ "name" : "key", "type" : [ "long", "null" ]}, 
   	{ "name" : "firstName", "type" : [ "string", "null" ]}, 

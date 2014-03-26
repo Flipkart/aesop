@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.flipkart.aesop</groupId>
     <artifactId>mysql-producer</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
     <name>Mysql event producer</name>
     <description>Mysql event producer</description>
 
