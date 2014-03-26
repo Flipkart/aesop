@@ -5,16 +5,45 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.aesop</groupId>
+        <groupId>com.flipkart.aesop</groupId>
         <artifactId>aesop</artifactId>
         <version>1.0.0</version>
     </parent>
 
-    <groupId>org.aesop</groupId>
+    <groupId>com.flipkart.aesop</groupId>
     <artifactId>sample-client</artifactId>
     <version>1.0.0</version>
     <name>Sample Client</name>
     <description>Sample Client</description>
+
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <distributionManagement>
+        <repository>
+            <id>clojars</id>
+            <name>Clojars repository</name>
+            <url>https://clojars.org/repo</url>
+        </repository>
+    </distributionManagement>
+
+    <scm>
+        <url>https://github.com/Flipkart/aesop</url>
+        <connection>https://github.com/Flipkart/aesop.git</connection>
+    </scm>
+
+    <developers>
+        <developer>
+            <id>regunathb</id>
+            <name>Regunath B</name>
+            <email>regunathb@gmail.com</email>
+        </developer>
+    </developers>
 
 	<dependencyManagement>
 		<!-- All databus dependencies are marked as scope compile as we extend their classes and need them during compile and not just runtime -->
@@ -49,9 +78,9 @@
     <dependencies>
         <!-- aesop dependencies -->
         <dependency>
-            <groupId>org.aesop</groupId>
+            <groupId>com.flipkart.aesop</groupId>
             <artifactId>runtime-client</artifactId>
-            <version>1.0.0</version>
+            <version>${project.version}</version>
         </dependency>    
     </dependencies>
 
@@ -69,7 +98,7 @@
                     </archive>
                     <includes>
                         <include>packaged/**/*</include>
-                        <include>org/**/*</include>
+                        <include>com/**/*</include>
                     </includes>
                 </configuration>
             </plugin>

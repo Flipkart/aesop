@@ -1,0 +1,26 @@
+{ "namespace" : "com.flipkart.aesop.events.example.person",
+  "type" : "record",
+  "name" : "Person",
+  "pk"	 : "key",
+  "fields" : [ 
+  	{ "name" : "key", "type" : [ "long", "null" ]}, 
+  	{ "name" : "firstName", "type" : [ "string", "null" ]}, 
+  	{ "name" : "lastName", "type" : [ "string", "null" ]}, 
+  	{ "name" : "birthDate", "type" : [ "long", "null" ]}, 
+  	{ "name" : "deleted", "type" : [ "string", "null" ]}, 
+  	{"name": "fieldChanges", 
+		"type": { 
+        	"type": "array", 
+        	"items": { 
+                "name": "FieldChange", 
+                "type": "record", 
+                "fields" : [ 
+                        {"name": "name", "type": "string"}, 
+                        {"name": "oldValue", "type": "string"}, 
+                        {"name": "newValue", "type": "string"} 
+                ] 
+        	}   		
+  		}
+  	}	
+  ]
+}

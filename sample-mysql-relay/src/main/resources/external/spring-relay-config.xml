@@ -6,11 +6,11 @@
     http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
     http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd">
 
-    <bean id="sampleRelay" class="org.aesop.runtime.relay.DefaultRelayFactory">
+    <bean id="sampleRelay" class="com.flipkart.aesop.runtime.relay.DefaultRelayFactory">
     	<property name="relayConfig" ref="relayConfig"/>
     	<property name="producerRegistrationList">
     		<list>
-    			<bean class="org.aesop.runtime.config.ProducerRegistration">
+    			<bean class="com.flipkart.aesop.runtime.config.ProducerRegistration">
     				<property name="eventProducer" ref="mysqlPersonProducer"/>
     				<property name="physicalSourceConfig" ref="physicalSourceConfig"/>
     			</bean>
@@ -18,32 +18,32 @@
     	</property>
     </bean>
     
-    <bean id="mysqlPersonProducer" class="org.aesop.runtime.producer.MysqlEventProducer">
+    <bean id="mysqlPersonProducer" class="com.flipkart.aesop.runtime.producer.MysqlEventProducer">
     	<property name="physicalSourceConfig" ref="physicalSourceConfig"/>
     	<property name="eventsMap" ref="eventsMapRef"/>
    		<property name="binLogEventMapper">
-    		<bean class="org.aesop.runtime.producer.mapper.impl.PersonBinaryLogEventMapper">
+    		<bean class="com.flipkart.aesop.runtime.producer.mapper.impl.PersonBinaryLogEventMapper">
     		    <property name="orToAvroMapper" ref="orToAvroMapper"/>
     		</bean>
     	</property>
     </bean>
-    <bean id="orToAvroMapper" class="org.aesop.runtime.producer.mapper.impl.ORToAvroMapper"/>
-    <util:map id="eventsMapRef" key-type="java.lang.Integer" value-type="org.aesop.runtime.producer.eventprocessor.BinLogEventProcessor">
-    	<entry key="#{T(org.aesop.runtime.producer.constants.MySQLConstants).QUERY_EVENT}" value-ref="mutatingQueryEventProcessor"/>
-    	<entry key="#{T(org.aesop.runtime.producer.constants.MySQLConstants).ROTATE_EVENT}" value-ref="rotateEventProcessor"/>
-    	<entry key="#{T(org.aesop.runtime.producer.constants.MySQLConstants).XID_EVENT}" value-ref="commitEventProcessor"/>
-    	<entry key="#{T(org.aesop.runtime.producer.constants.MySQLConstants).TABLE_MAP_EVENT}" value-ref="tableMapEventProcessor"/>
-    	<entry key="#{T(org.aesop.runtime.producer.constants.MySQLConstants).WRITE_ROWS_EVENT}" value-ref="insertEventProcessor"/>
-    	<entry key="#{T(org.aesop.runtime.producer.constants.MySQLConstants).UPDATE_ROWS_EVENT}" value-ref="updateEventProcessor"/>
-    	<entry key="#{T(org.aesop.runtime.producer.constants.MySQLConstants).DELETE_ROWS_EVENT}" value-ref="deleteEventProcessor"/> 
+    <bean id="orToAvroMapper" class="com.flipkart.aesop.runtime.producer.mapper.impl.ORToAvroMapper"/>
+    <util:map id="eventsMapRef" key-type="java.lang.Integer" value-type="com.flipkart.aesop.runtime.producer.eventprocessor.BinLogEventProcessor">
+    	<entry key="#{T(com.flipkart.aesop.runtime.producer.constants.MySQLConstants).QUERY_EVENT}" value-ref="mutatingQueryEventProcessor"/>
+    	<entry key="#{T(com.flipkart.aesop.runtime.producer.constants.MySQLConstants).ROTATE_EVENT}" value-ref="rotateEventProcessor"/>
+    	<entry key="#{T(com.flipkart.aesop.runtime.producer.constants.MySQLConstants).XID_EVENT}" value-ref="commitEventProcessor"/>
+    	<entry key="#{T(com.flipkart.aesop.runtime.producer.constants.MySQLConstants).TABLE_MAP_EVENT}" value-ref="tableMapEventProcessor"/>
+    	<entry key="#{T(com.flipkart.aesop.runtime.producer.constants.MySQLConstants).WRITE_ROWS_EVENT}" value-ref="insertEventProcessor"/>
+    	<entry key="#{T(com.flipkart.aesop.runtime.producer.constants.MySQLConstants).UPDATE_ROWS_EVENT}" value-ref="updateEventProcessor"/>
+    	<entry key="#{T(com.flipkart.aesop.runtime.producer.constants.MySQLConstants).DELETE_ROWS_EVENT}" value-ref="deleteEventProcessor"/> 
   	</util:map>
-  	<bean id="mutatingQueryEventProcessor" class="org.aesop.runtime.producer.eventprocessor.impl.MutatingQueryEventProcessor"/>
-  	<bean id="rotateEventProcessor" class="org.aesop.runtime.producer.eventprocessor.impl.RotateEventProcessor"/>
-  	<bean id="commitEventProcessor" class="org.aesop.runtime.producer.eventprocessor.impl.CommitEventProcessor"/>
-  	<bean id="tableMapEventProcessor" class="org.aesop.runtime.producer.eventprocessor.impl.TableMapEventProcessor"/>
-  	<bean id="insertEventProcessor" class="org.aesop.runtime.producer.eventprocessor.impl.InsertEventProcessor"/>
-  	<bean id="updateEventProcessor" class="org.aesop.runtime.producer.eventprocessor.impl.UpdateEventProcessor"/>
-  	<bean id="deleteEventProcessor" class="org.aesop.runtime.producer.eventprocessor.impl.DeleteEventProcessor"/>
+  	<bean id="mutatingQueryEventProcessor" class="com.flipkart.aesop.runtime.producer.eventprocessor.impl.MutatingQueryEventProcessor"/>
+  	<bean id="rotateEventProcessor" class="com.flipkart.aesop.runtime.producer.eventprocessor.impl.RotateEventProcessor"/>
+  	<bean id="commitEventProcessor" class="com.flipkart.aesop.runtime.producer.eventprocessor.impl.CommitEventProcessor"/>
+  	<bean id="tableMapEventProcessor" class="com.flipkart.aesop.runtime.producer.eventprocessor.impl.TableMapEventProcessor"/>
+  	<bean id="insertEventProcessor" class="com.flipkart.aesop.runtime.producer.eventprocessor.impl.InsertEventProcessor"/>
+  	<bean id="updateEventProcessor" class="com.flipkart.aesop.runtime.producer.eventprocessor.impl.UpdateEventProcessor"/>
+  	<bean id="deleteEventProcessor" class="com.flipkart.aesop.runtime.producer.eventprocessor.impl.DeleteEventProcessor"/>
   	
     <bean id="physicalSourceConfig" class="com.linkedin.databus2.relay.config.PhysicalSourceConfig">
 		<property name="id" value="1"/>
@@ -53,7 +53,7 @@
 			<list>
 				<bean id="logicalSourceConfig" class="com.linkedin.databus2.relay.config.LogicalSourceConfig">
 					<property name="id" value="40"/>
-					<property name="name" value="org.aesop.events.ortest.Person"/>
+					<property name="name" value="com.flipkart.aesop.events.ortest.Person"/>
 					<property name="uri" value="or_test.person"/>
 					<property name="partitionFunction" value="constant:1"/>					
 				</bean>
@@ -61,7 +61,7 @@
 		</property>
     </bean>
     
-    <bean id="relayConfig" class="org.aesop.runtime.config.RelayConfig">
+    <bean id="relayConfig" class="com.flipkart.aesop.runtime.config.RelayConfig">
     	<property name="relayProperties">
 			<bean id="relayPropertiesFactory" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
 		    	<property name="singleton" value="true"/>

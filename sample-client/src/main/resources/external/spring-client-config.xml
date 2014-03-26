@@ -4,13 +4,13 @@
 	xsi:schemaLocation="
     http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
-    <bean id="sampleClient" class="org.aesop.runtime.client.DefaultClientFactory">
+    <bean id="sampleClient" class="com.flipkart.aesop.runtime.client.DefaultClientFactory">
     	<property name="clientConfig" ref="clientConfig"/>
     	<property name="consumerRegistrationList">
     		<list>
-    			<bean class="org.aesop.runtime.config.ConsumerRegistration">
+    			<bean class="com.flipkart.aesop.runtime.config.ConsumerRegistration">
     				<property name="eventConsumer">
-    					<bean class="org.aesop.client.sample.PersonEventConsumer"/>
+    					<bean class="com.flipkart.aesop.client.sample.PersonEventConsumer"/>
     				</property>
     				<property name="clientConfig" ref="clientConfig"/>
     			</bean>
@@ -18,7 +18,7 @@
     	</property>
     </bean>
 
-    <bean id="clientConfig" class="org.aesop.runtime.config.ClientConfig">
+    <bean id="clientConfig" class="com.flipkart.aesop.runtime.config.ClientConfig">
     	<property name="clientProperties">
 			<bean id="clientPropertiesFactory" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
 		    	<property name="singleton" value="true"/>
@@ -34,21 +34,23 @@
 	    	</bean>    	
     	</property>
     	<property name="relayClientConfig">
-	    	<bean class="org.aesop.runtime.config.RelayClientConfig">
+	    	<bean class="com.flipkart.aesop.runtime.config.RelayClientConfig">
 		    	<property name="relayId" value="100"/>
 		    	<property name="relayHost" value="localhost"/>
 		    	<property name="relayPort" value="25020"/>
-		    	<property name="relayLogicalSourceName" value="org.aesop.events.sample.person.Person"/>
+		    	<property name="relayLogicalSourceName" value="com.flipkart.aesop.events.sample.person.Person"/>
 	    	</bean>
     	</property>
+    	<!-- 
     	<property name="bootstrapClientConfig">
-	    	<bean class="org.aesop.runtime.config.BootstrapClientConfig">
+	    	<bean class="com.flipkart.aesop.runtime.config.BootstrapClientConfig">
 		    	<property name="bootstrapId" value="101"/>
 		    	<property name="bootstrapHost" value="localhost"/>
 		    	<property name="bootstrapPort" value="11145"/>
-		    	<property name="bootstrapLogicalSourceName" value="org.aesop.events.sample.person.Person"/>
+		    	<property name="bootstrapLogicalSourceName" value="com.flipkart.aesop.events.sample.person.Person"/>
 	    	</bean>
     	</property>
+    	 -->
 		<property name="checkpointDirectoryLocation" value="../../../sandbox/client_checkpoint_directory"/> <!-- This is relative to projects root -->
     </bean>
 

@@ -30,7 +30,7 @@
                               class="org.eclipse.jetty.server.handler.ContextHandlerCollection">
                             <property name="handlers">
                                 <list>
-                                    <bean class="org.aesop.runtime.impl.jetty.JettyWebAppContextFactory">
+                                    <bean class="com.flipkart.aesop.runtime.impl.jetty.JettyWebAppContextFactory">
 										<property name="contextName" value="/runtime"/>
 										<property name="contextPath" value="WEB-INF"/>	
 										<property name="maxFormContentSize" value="${runtime.core.jetty.maxFormContentSize}"/>                                    	

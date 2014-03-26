@@ -3,7 +3,7 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.aesop</groupId>
+    <groupId>com.flipkart.aesop</groupId>
     <artifactId>aesop</artifactId>
     <name>Aesop Full Build</name>
     <packaging>pom</packaging>
@@ -25,6 +25,19 @@
         </repository>
     </distributionManagement>
 
+    <scm>
+        <url>https://github.com/Flipkart/aesop</url>
+        <connection>https://github.com/Flipkart/aesop.git</connection>
+    </scm>
+
+    <developers>
+        <developer>
+            <id>regunathb</id>
+            <name>Regunath B</name>
+            <email>regunathb@gmail.com</email>
+        </developer>
+    </developers>
+
     <!-- Additional repositories for Trooper, Databus and SEP dependencies -->
     <repositories>
     	<repository>
@@ -45,20 +58,6 @@
 		</repository>
 	</repositories>    
     
-
-    <scm>
-        <url>https://github.com/regunathb/aesop</url>
-        <connection>https://github.com/regunathb/aesop.git</connection>
-    </scm>
-
-    <developers>
-        <developer>
-            <id>regunathb</id>
-            <name>Regunath B</name>
-            <email>regunathb@gmail.com</email>
-        </developer>
-    </developers>
-
     <properties>
         <org.trpr.version>1.3.2-SNAPSHOT</org.trpr.version>
         <org.springframework.version>3.2.5.RELEASE</org.springframework.version>
@@ -78,13 +77,14 @@
         <module>runtime-bootstrap</module>
         <module>runtime-snapshot-serializer</module>
         <module>hbase-producer</module>
+        <module>mysql-producer</module>
+        <module>diff-producer</module>
         <module>sample-memory-relay</module>
         <module>sample-hbase-relay</module>
         <module>sample-client</module>
         <module>sample-client-bootstrap-producer</module>
         <module>sample-bootstrap-server</module>
         <module>sample-snapshot-serializer</module>
-        <module>mysql-producer</module>
         <module>sample-mysql-relay</module>
     </modules>
 

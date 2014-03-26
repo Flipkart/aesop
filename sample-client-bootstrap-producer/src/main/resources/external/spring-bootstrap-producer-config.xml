@@ -4,12 +4,12 @@
 	xsi:schemaLocation="
     http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
-    <bean id="sampleBootstrapClient" class="org.aesop.runtime.bootstrap.DefaultBootstrapProducerFactory">
+    <bean id="sampleBootstrapClient" class="com.flipkart.aesop.runtime.bootstrap.DefaultBootstrapProducerFactory">
     	<property name="bootstrapProducerConfig" ref="bootstrapProducerConfig"/>
     	<property name="clientConfig" ref="clientConfig"/>
     </bean>
 
-    <bean id="bootstrapProducerConfig" class="org.aesop.runtime.config.BootstrapProducerConfig">
+    <bean id="bootstrapProducerConfig" class="com.flipkart.aesop.runtime.config.BootstrapProducerConfig">
     	<property name="relayClientBootstrapProperties">
 			<bean id="relayClientBootstrapPropertiesFactory" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
 		    	<property name="singleton" value="true"/>
@@ -24,7 +24,7 @@
 	    	</bean>    	
     	</property>
     </bean>
-    <bean id="clientConfig" class="org.aesop.runtime.config.ClientConfig">
+    <bean id="clientConfig" class="com.flipkart.aesop.runtime.config.ClientConfig">
     	<property name="clientPropertiesPrefix" value="databus.bootstrap.client."/>
     	<property name="clientProperties">
 			<bean id="clientPropertiesFactory" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
@@ -48,11 +48,11 @@
 	    	</bean>    	
     	</property>
     	<property name="relayClientConfig">
-	    	<bean class="org.aesop.runtime.config.RelayClientConfig">
+	    	<bean class="com.flipkart.aesop.runtime.config.RelayClientConfig">
 		    	<property name="relayId" value="100"/>
 		    	<property name="relayHost" value="localhost"/>
 		    	<property name="relayPort" value="25020"/>
-		    	<property name="relayLogicalSourceName" value="org.aesop.events.sample.person.Person"/>
+		    	<property name="relayLogicalSourceName" value="com.flipkart.aesop.events.sample.person.Person"/>
 	    	</bean>
     	</property>
 		<property name="checkpointDirectoryLocation" value="../../../sandbox/bootstrap_producer_checkpoint_directory"/> <!-- This is relative to projects root -->
