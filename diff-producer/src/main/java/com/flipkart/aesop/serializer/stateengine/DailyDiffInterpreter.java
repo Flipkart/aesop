@@ -68,7 +68,7 @@ public class DailyDiffInterpreter<T, S extends GenericRecord> extends DiffInterp
 		File serializedDataLocationFile = new File(this.serializedDataLocation);
 		File snapshotsLocationDir = new File(serializedDataLocationFile, SerializerConstants.SNAPSHOT_LOCATION);
 		File deltaLocationDir = new File(serializedDataLocationFile, SerializerConstants.DELTA_LOCATION);		
-		final long oldestState = Math.min(this.getStateEngineVersionDay(stateEngine), sinceSCN); // be conservative and take earliest state in order to not miss any updates
+		final long oldestState = this.getOldestAvailableState(stateEngine, sinceSCN);
 		File[] snapshotFiles = snapshotsLocationDir.listFiles(new FilenameFilter() {
 		    public boolean accept(File dir, String name) {
 		    	if (name.toLowerCase().startsWith(SerializerConstants.SNAPSHOT_LOCATION)) {
@@ -102,8 +102,37 @@ public class DailyDiffInterpreter<T, S extends GenericRecord> extends DiffInterp
 				LOGGER.warn("Error reading snapshot and deltas for file : " + snapshotFile.getAbsolutePath() + " .Error message is : " + e.getMessage(), e);
 			}
 		}
-		LOGGER.info(this.getStateEngineVersion(stateEngine) == 0 ? "State engine initialized to version : " + stateEngine.getLatestVersion() : 
+		LOGGER.info(this.getStateEngineVersion(stateEngine) != 0 ? "State engine initialized to version : " + stateEngine.getLatestVersion() : 
 			"State engine not initialized from any existing snapshot");
+	}
+
+	/**
+	 * Gets the oldest available state that the state engine may be initialized to, if not already.
+	 * @param stateEngine the state engine
+	 * @param sinceSCN the last generated change event SCN 
+	 * @return the oldest available state to initialize the state engine to
+	 */
+	private long getOldestAvailableState(FastBlobStateEngine stateEngine, long sinceSCN) {
+		long oldestState = Math.min(this.getStateEngineVersionDay(stateEngine), sinceSCN); // be conservative and take earliest state in order to not miss any updates
+		if (oldestState == 0) { // the state engine has never been initialized
+			File serializedDataLocationFile = new File(this.serializedDataLocation);
+			File snapshotsLocationDir = new File(serializedDataLocationFile, SerializerConstants.SNAPSHOT_LOCATION);
+			File[] snapshotFiles = snapshotsLocationDir.listFiles(new FilenameFilter() {
+			    public boolean accept(File dir, String name) {
+			    	return name.toLowerCase().startsWith(SerializerConstants.SNAPSHOT_LOCATION);
+			    }
+			});
+			if (snapshotFiles.length == 0) {
+				return oldestState;
+			}
+			Arrays.sort(snapshotFiles, new Comparator<File>() { // sort ascending
+				public int compare(File file1, File file2) {
+					return (int)(file1.lastModified() - file2.lastModified()); 
+				}			
+			});
+			oldestState = this.getSnapshotVersion(snapshotFiles[0]); // set oldest state to earliest available snapshot. The state engine will get initialized to this snapshot
+		}
+		return oldestState;
 	}
 	
 	/**
