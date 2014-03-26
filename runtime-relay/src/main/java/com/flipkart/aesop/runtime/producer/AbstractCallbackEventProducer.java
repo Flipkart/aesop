@@ -200,21 +200,24 @@ public abstract class AbstractCallbackEventProducer<S extends GenericRecord> ext
 	    			case ACTIVE:
 	    				try {
 	    					ReadEventCycleSummary<S> readEventCycleSummary = readEventsFromAllSources(sinceSCN.get());
-	    					eventBuffer.startEvents();
-	    					for (S changeEvent : readEventCycleSummary.getChangeEvents()) {
-	    						byte[] serializedEvent = serializeEvent(changeEvent);
-	    						DbusEventKey eventKey = new DbusEventKey(getEventKey(changeEvent));
-	    						DbusEventInfo eventInfo = new DbusEventInfo(DbusOpcode.UPSERT,getSequenceId(changeEvent),
-	    								(short)physicalSourceStaticConfig.getId(),(short)physicalSourceStaticConfig.getId(),
-	    								System.nanoTime(),(short)physicalSourceStaticConfig.getSources()[0].getId(), // here we use the Logical Source Id
-	    								schemaId,serializedEvent, false, true);
-	    						eventBuffer.appendEvent(eventKey, eventInfo, dbusEventsStatisticsCollector);	    						
+	    					if (readEventCycleSummary.getChangeEvents().size() > 0) {
+		    					eventBuffer.startEvents();
+		    					for (S changeEvent : readEventCycleSummary.getChangeEvents()) {
+		    						byte[] serializedEvent = serializeEvent(changeEvent);
+		    						DbusEventKey eventKey = new DbusEventKey(getEventKey(changeEvent));
+		    						DbusEventInfo eventInfo = new DbusEventInfo(DbusOpcode.UPSERT,getSequenceId(changeEvent),
+		    								(short)physicalSourceStaticConfig.getId(),(short)physicalSourceStaticConfig.getId(),
+		    								System.nanoTime(),(short)physicalSourceStaticConfig.getSources()[0].getId(), // here we use the Logical Source Id
+		    								schemaId,serializedEvent, false, true);
+		    						eventBuffer.appendEvent(eventKey, eventInfo, dbusEventsStatisticsCollector);	    						
+		    					}
+								long endOfWindowScn = readEventCycleSummary.getSinceSCN();
+								long newSinceSCN = Math.max(endOfWindowScn, sinceSCN.get());
+								sinceSCN.set(newSinceSCN);
+					            eventBuffer.endEvents(sinceSCN.get() , dbusEventsStatisticsCollector);
+								maxScnReaderWriter.saveMaxScn(sinceSCN.get());
+								LOGGER.info("Added {} change events to event buffer for : {} . New SCN is : " + newSinceSCN, readEventCycleSummary.getChangeEvents().size(), getName());
 	    					}
-							long endOfWindowScn = readEventCycleSummary.getSinceSCN();
-							long newSinceSCN = Math.max(endOfWindowScn, sinceSCN.get());
-							sinceSCN.set(newSinceSCN);
-				            eventBuffer.endEvents(sinceSCN.get() , dbusEventsStatisticsCollector);
-							maxScnReaderWriter.saveMaxScn(sinceSCN.get());
 							if (status.getRetriesNum() > 0) {
 								status.resume();
 							}
