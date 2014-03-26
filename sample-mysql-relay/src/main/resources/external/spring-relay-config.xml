@@ -22,9 +22,12 @@
     	<property name="physicalSourceConfig" ref="physicalSourceConfig"/>
     	<property name="eventsMap" ref="eventsMapRef"/>
    		<property name="binLogEventMapper">
-    		<bean class="org.aesop.runtime.producer.mapper.impl.PersonBinaryLogEventMapper"/>
+    		<bean class="org.aesop.runtime.producer.mapper.impl.PersonBinaryLogEventMapper">
+    		    <property name="orToAvroMapper" ref="orToAvroMapper"/>
+    		</bean>
     	</property>
     </bean>
+    <bean id="orToAvroMapper" class="org.aesop.runtime.producer.mapper.impl.ORToAvroMapper"/>
     <util:map id="eventsMapRef" key-type="java.lang.Integer" value-type="org.aesop.runtime.producer.eventprocessor.BinLogEventProcessor">
     	<entry key="#{T(org.aesop.runtime.producer.constants.MySQLConstants).QUERY_EVENT}" value-ref="mutatingQueryEventProcessor"/>
     	<entry key="#{T(org.aesop.runtime.producer.constants.MySQLConstants).ROTATE_EVENT}" value-ref="rotateEventProcessor"/>
