@@ -17,6 +17,7 @@ package com.flipkart.aesop.serializer.batch.reader;
 
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.Semaphore;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -49,7 +50,7 @@ public class UserInfoServiceScanReader <T extends UserInfo> implements ItemStrea
 	private static final Logger LOGGER = LogFactory.getLogger(UserInfoServiceScanReader.class);
 	
 	/** The max results count*/
-	private static final int MAX_RESULTS = 10000;	
+	private static final int MAX_RESULTS = Integer.MAX_VALUE;	
 	
 	/** The service endpoint URL. Note: This is for testing and very specific to this sample*/
 	private static final String BATCH_SERVICE_URL = "http://localhost:25151/userservice/v0.1/customer/batch";
@@ -61,7 +62,10 @@ public class UserInfoServiceScanReader <T extends UserInfo> implements ItemStrea
 	private ObjectMapper objectMapper = new ObjectMapper();
 	
 	/** The result counter*/
-	private int resultCount = 0;
+	private int resultCount = (0 - BATCH_SIZE);
+	
+	/** The Semaphore to control concurrency */
+	private Semaphore parallelFetch = new Semaphore(5);
 	
 	/** The local list containing data items*/
 	private Queue<UserInfo> localQueue = new ConcurrentLinkedQueue<UserInfo>(); 	
@@ -81,27 +85,28 @@ public class UserInfoServiceScanReader <T extends UserInfo> implements ItemStrea
 				return this.localQueue.poll();
 			}		
 		}
-		synchronized(this) { // include the check for empty and add in one synchronized block to avoid race conditions
-			if (this.resultCount < MAX_RESULTS && this.localQueue.isEmpty()) { // double-check to fetch only if the local queue is empty and max count has not been reached
-				DefaultHttpClient httpclient  =  new DefaultHttpClient();
-				HttpGet executionGet= new HttpGet(BATCH_SERVICE_URL);
-				URIBuilder uriBuilder = new URIBuilder(executionGet.getURI());
-				uriBuilder.addParameter("start",String.valueOf(resultCount));
-				uriBuilder.addParameter("count",String.valueOf(BATCH_SIZE));
-				((HttpRequestBase) executionGet).setURI(uriBuilder.build());
-		        HttpResponse httpResponse = httpclient.execute(executionGet);
-				String response = new String(EntityUtils.toByteArray(httpResponse.getEntity()));
-				ScanResult scanResult = objectMapper.readValue(response, ScanResult.class);
-				if (scanResult.getCount() <= 0 || this.resultCount > MAX_RESULTS) {					
-					return null;
-				}
-				LOGGER.info("Fetched User Info objects in range - Start : {}. Count : {}", this.resultCount, scanResult.getCount());
-				resultCount += scanResult.getCount();
-				for (UserInfo userInfo : scanResult.getResponse()) {
-					this.localQueue.add(userInfo);
-				}
+		parallelFetch.acquire();
+		resultCount += BATCH_SIZE;
+		if (this.resultCount < MAX_RESULTS) { 
+			DefaultHttpClient httpclient  =  new DefaultHttpClient();
+			HttpGet executionGet= new HttpGet(BATCH_SERVICE_URL);
+			URIBuilder uriBuilder = new URIBuilder(executionGet.getURI());
+			uriBuilder.addParameter("start",String.valueOf(resultCount));
+			uriBuilder.addParameter("count",String.valueOf(BATCH_SIZE));
+			((HttpRequestBase) executionGet).setURI(uriBuilder.build());
+	        HttpResponse httpResponse = httpclient.execute(executionGet);
+			String response = new String(EntityUtils.toByteArray(httpResponse.getEntity()));
+			ScanResult scanResult = objectMapper.readValue(response, ScanResult.class);
+			if (scanResult.getCount() <= 0 || this.resultCount > MAX_RESULTS) {	
+				parallelFetch.release();
+				return null;
 			}
-		}		
+			LOGGER.info("Fetched User Info objects in range - Start : {}. Count : {}", this.resultCount, scanResult.getCount());
+			for (UserInfo userInfo : scanResult.getResponse()) {
+				this.localQueue.add(userInfo);
+			}
+			parallelFetch.release();
+		}
 		return this.localQueue.poll();
 	}
 
