@@ -15,6 +15,7 @@
  */
 package com.flipkart.aesop.serializer.stateengine;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,6 +24,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
 import com.flipkart.aesop.runtime.producer.ReadEventCycleSummary;
+import com.flipkart.aesop.serializer.SerializerConstants;
 import com.netflix.zeno.diff.DiffSerializationFramework;
 import com.netflix.zeno.diff.TypeDiff;
 import com.netflix.zeno.diff.TypeDiffInstruction;
@@ -46,6 +48,11 @@ public abstract class DiffInterpreter<T, S extends GenericRecord> implements Ini
 	/** The file location for reading snapshots and deltas */
 	protected String serializedDataLocation;
 	
+	/** Directory locations derived from serialized data location */
+	protected File serializedDataLocationDir;
+	protected File snapshotsLocationDir;
+	protected File deltaLocationDir;					
+	
 	/** The DiffChangeEventMapper instance for mapping state engine changes to change events*/
 	protected DiffChangeEventMapper<T,S> diffChangeEventMapper;
 	
@@ -61,6 +68,9 @@ public abstract class DiffInterpreter<T, S extends GenericRecord> implements Ini
 		Assert.notNull(this.serializedDataLocation,"'serializedDataLocation' cannot be null. This diff interpreter will not be initialized");
 		Assert.notNull(this.diffChangeEventMapper,"'diffChangeEventMapper' cannot be null. This diff interpreter will not be initialized");
 		this.stateEngine = new FastBlobStateEngine(this.serializerFactory);		
+		this.serializedDataLocationDir = new File(this.serializedDataLocation);
+		this.snapshotsLocationDir = new File(this.serializedDataLocationDir, SerializerConstants.SNAPSHOT_LOCATION);
+		this.deltaLocationDir = new File(this.serializedDataLocationDir, SerializerConstants.DELTA_LOCATION);				
 	}
 	
 	/**

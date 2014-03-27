@@ -65,11 +65,8 @@ public class DailyDiffInterpreter<T, S extends GenericRecord> extends DiffInterp
 	 * @param limitToSCN boolean true if the read should stop at the snapshot and related deltas or proceed to all available later state changes
 	 */
 	private void readSnapshotAndDeltas(FastBlobStateEngine stateEngine, long sinceSCN, final boolean limitToSCN) {
-		File serializedDataLocationFile = new File(this.serializedDataLocation);
-		File snapshotsLocationDir = new File(serializedDataLocationFile, SerializerConstants.SNAPSHOT_LOCATION);
-		File deltaLocationDir = new File(serializedDataLocationFile, SerializerConstants.DELTA_LOCATION);		
 		final long oldestState = this.getOldestAvailableState(sinceSCN);
-		File[] snapshotFiles = snapshotsLocationDir.listFiles(new FilenameFilter() {
+		File[] snapshotFiles = this.snapshotsLocationDir.listFiles(new FilenameFilter() {
 		    public boolean accept(File dir, String name) {
 		    	if (name.toLowerCase().startsWith(SerializerConstants.SNAPSHOT_LOCATION)) {
 		    		if (limitToSCN) {
@@ -114,9 +111,7 @@ public class DailyDiffInterpreter<T, S extends GenericRecord> extends DiffInterp
 	private long getOldestAvailableState(long sinceSCN) {
 		long oldestState = sinceSCN; 
 		if (oldestState == 0) { // the state engine has never been initialized
-			File serializedDataLocationFile = new File(this.serializedDataLocation);
-			File snapshotsLocationDir = new File(serializedDataLocationFile, SerializerConstants.SNAPSHOT_LOCATION);
-			File[] snapshotFiles = snapshotsLocationDir.listFiles(new FilenameFilter() {
+			File[] snapshotFiles = this.snapshotsLocationDir.listFiles(new FilenameFilter() {
 			    public boolean accept(File dir, String name) {
 			    	return name.toLowerCase().startsWith(SerializerConstants.SNAPSHOT_LOCATION);
 			    }
