@@ -39,6 +39,11 @@ public abstract class StateTransitioner implements InitializingBean {
 	/** The file location for storing snapshots and deltas */
 	protected String serializedDataLocation;
 	
+	/** Directory locations derived from serialized data location */
+	protected File serializedDataLocationDir;
+	protected File snapshotsLocationDir;
+	protected File deltaLocationDir;				
+	
 	/**
 	 * Returns a newly created or suitably initialized FastBlobStateEngine 
 	 * @return FastBlobStateEngine instance
@@ -57,7 +62,10 @@ public abstract class StateTransitioner implements InitializingBean {
 	public void afterPropertiesSet() throws Exception {
 		Assert.notNull(this.serializerFactory,"'serializerFactory' cannot be null. This state transitioner will not be initialized");
 		Assert.notNull(this.serializedDataLocation,"'serializedDataLocation' cannot be null. This state transitioner will not be initialized");
-		this.initializeDirs();
+		this.initializeDirs();		
+		this.serializedDataLocationDir = new File(this.serializedDataLocation);
+		this.snapshotsLocationDir = new File(this.serializedDataLocationDir, SerializerConstants.SNAPSHOT_LOCATION);
+		this.deltaLocationDir = new File(this.serializedDataLocationDir, SerializerConstants.DELTA_LOCATION);		
 	}
 
 	/** Getter/Setter methods */
@@ -86,7 +94,7 @@ public abstract class StateTransitioner implements InitializingBean {
 		}
 		if (!deltaLocationDir.exists()) {
 			deltaLocationDir.mkdirs();
-		}		
+		}	
 	}
 	
 }

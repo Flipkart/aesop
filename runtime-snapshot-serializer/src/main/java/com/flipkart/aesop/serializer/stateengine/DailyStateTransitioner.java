@@ -67,28 +67,22 @@ public class DailyStateTransitioner extends StateTransitioner {
 	 * Abstract method implementation. Persists state held by the FastBlobStateEngine and prepares it for the next cycle
 	 * @see com.flipkart.aesop.serializer.stateengine.StateTransitioner#saveState()
 	 */
-	public void saveState() {
-		
-		File serializedDataLocationFile = new File(this.serializedDataLocation);
-		File snapshotsLocationFile = new File(serializedDataLocationFile, SerializerConstants.SNAPSHOT_LOCATION);
-		
+	public void saveState() {		
 		this.getStateEngine().prepareForWrite();
 	    // Create a writer, which will be responsible for creating snapshot and/or delta blobs.
 	    FastBlobWriter writer = new FastBlobWriter(this.getStateEngine());				
-		DataOutputStream dataOS = null;
-		
+		DataOutputStream dataOS = null;		
 		try {
 			Calendar calendar = Calendar.getInstance();
 			String today = SerializerConstants.DAILY_FORMAT.format(calendar.getTime());		
-			File snapshotFile = new File (snapshotsLocationFile, SerializerConstants.SNAPSHOT_LOCATION + SerializerConstants.DELIM_CHAR + today);
+			File snapshotFile = new File (this.snapshotsLocationDir, SerializerConstants.SNAPSHOT_LOCATION + SerializerConstants.DELIM_CHAR + today);
 			if (!snapshotFile.exists()) { // no snapshot for today, write a snapshot for today and return
 				snapshotFile.createNewFile();
 				dataOS = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(snapshotFile)));
 				writer.writeSnapshot(dataOS);			
 				LOGGER.info("Fast blob state engine data written to snapshot file : " + snapshotFile.getAbsolutePath());	    
 			} else { // write delta
-				File deltaLocationDir = new File(serializedDataLocationFile, SerializerConstants.DELTA_LOCATION);	
-				File deltaFile = new File(deltaLocationDir, (SerializerConstants.DELTA_LOCATION + SerializerConstants.DELIM_CHAR +  today 
+				File deltaFile = new File(this.deltaLocationDir, (SerializerConstants.DELTA_LOCATION + SerializerConstants.DELIM_CHAR +  today 
 						+ SerializerConstants.DELIM_CHAR +  SerializerConstants.HOURLY_MINUTE_FORMAT.format(calendar.getTime())));				
 				deltaFile.createNewFile();
 				dataOS = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(deltaFile)));
@@ -116,10 +110,7 @@ public class DailyStateTransitioner extends StateTransitioner {
 	 * Reads the latest daily snapshot and its deltas
 	 */
 	private void readLatestSnapshotAndDeltas() {
-		File serializedDataLocationFile = new File(this.serializedDataLocation);
-		File snapshotsLocationDir = new File(serializedDataLocationFile, SerializerConstants.SNAPSHOT_LOCATION);
-		File deltaLocationDir = new File(serializedDataLocationFile, SerializerConstants.DELTA_LOCATION);			
-		File[] snapshotFiles = snapshotsLocationDir.listFiles(new FilenameFilter() {
+		File[] snapshotFiles = this.snapshotsLocationDir.listFiles(new FilenameFilter() {
 		    public boolean accept(File dir, String name) {
 		        return name.toLowerCase().startsWith(SerializerConstants.SNAPSHOT_LOCATION);
 		    }
@@ -137,7 +128,7 @@ public class DailyStateTransitioner extends StateTransitioner {
 			try {
 				previousStateReader.readSnapshot(new DataInputStream(new BufferedInputStream(new FileInputStream(snapshotFile))));
 				LOGGER.info("State engine initialized from snapshot file : " + snapshotFile.getAbsolutePath());
-				this.readDeltasForSnapshot(snapshotFile, deltaLocationDir, previousStateReader);
+				this.readDeltasForSnapshot(snapshotFile, this.deltaLocationDir, previousStateReader);
 				break;
 			} catch (Exception e) { // The snapshot read has failed. Proceed with empty state or next available snapshot
 				LOGGER.warn("Error reading snapshot and deltas for file : {}. Error message is : {}",snapshotFile.getAbsolutePath(), e.getMessage());
