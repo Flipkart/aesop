@@ -68,7 +68,7 @@ public class DailyDiffInterpreter<T, S extends GenericRecord> extends DiffInterp
 		File serializedDataLocationFile = new File(this.serializedDataLocation);
 		File snapshotsLocationDir = new File(serializedDataLocationFile, SerializerConstants.SNAPSHOT_LOCATION);
 		File deltaLocationDir = new File(serializedDataLocationFile, SerializerConstants.DELTA_LOCATION);		
-		final long oldestState = this.getOldestAvailableState(stateEngine, sinceSCN);
+		final long oldestState = this.getOldestAvailableState(sinceSCN);
 		File[] snapshotFiles = snapshotsLocationDir.listFiles(new FilenameFilter() {
 		    public boolean accept(File dir, String name) {
 		    	if (name.toLowerCase().startsWith(SerializerConstants.SNAPSHOT_LOCATION)) {
@@ -102,18 +102,17 @@ public class DailyDiffInterpreter<T, S extends GenericRecord> extends DiffInterp
 				LOGGER.warn("Error reading snapshot and deltas for file : " + snapshotFile.getAbsolutePath() + " .Error message is : " + e.getMessage(), e);
 			}
 		}
-		LOGGER.info(this.getStateEngineVersion(stateEngine) != 0 ? "State engine initialized to version : " + stateEngine.getLatestVersion() : 
+		LOGGER.debug(this.getStateEngineVersion(stateEngine) != 0 ? "State engine is set to version : " + stateEngine.getLatestVersion() : 
 			"State engine not initialized from any existing snapshot");
 	}
 
 	/**
 	 * Gets the oldest available state that the state engine may be initialized to, if not already.
-	 * @param stateEngine the state engine
 	 * @param sinceSCN the last generated change event SCN 
 	 * @return the oldest available state to initialize the state engine to
 	 */
-	private long getOldestAvailableState(FastBlobStateEngine stateEngine, long sinceSCN) {
-		long oldestState = Math.min(this.getStateEngineVersionDay(stateEngine), sinceSCN); // be conservative and take earliest state in order to not miss any updates
+	private long getOldestAvailableState(long sinceSCN) {
+		long oldestState = sinceSCN; 
 		if (oldestState == 0) { // the state engine has never been initialized
 			File serializedDataLocationFile = new File(this.serializedDataLocation);
 			File snapshotsLocationDir = new File(serializedDataLocationFile, SerializerConstants.SNAPSHOT_LOCATION);
