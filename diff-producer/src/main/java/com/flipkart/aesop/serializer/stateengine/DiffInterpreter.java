@@ -95,7 +95,7 @@ public abstract class DiffInterpreter<T, S extends GenericRecord> implements Ini
             }
         };		
         TypeDiffOperation<T> diffOperation = new TypeDiffOperation<T>(diffInstruction);
-        LOGGER.info("Sizes of removed and added objects post diff : " + diffTypeDeserializationStateListener.getRemovedObjectsList().size() + "," 
+        LOGGER.debug("Sizes of removed and added objects post diff : " + diffTypeDeserializationStateListener.getRemovedObjectsList().size() + "," 
         		+ diffTypeDeserializationStateListener.getAddedObjectsList().size());
 		TypeDiff<T> typeDiff = diffOperation.performDiff(diffSerializationFramework, 
 				diffTypeDeserializationStateListener.getRemovedObjectsList(), diffTypeDeserializationStateListener.getAddedObjectsList());
