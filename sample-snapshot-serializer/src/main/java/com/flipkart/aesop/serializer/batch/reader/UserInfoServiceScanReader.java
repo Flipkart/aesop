@@ -50,7 +50,7 @@ public class UserInfoServiceScanReader <T extends UserInfo> implements ItemStrea
 	private static final Logger LOGGER = LogFactory.getLogger(UserInfoServiceScanReader.class);
 	
 	/** The max results count*/
-	private static final int MAX_RESULTS = Integer.MAX_VALUE;	
+	private static final int MAX_RESULTS = 10000;	
 	
 	/** The service endpoint URL. Note: This is for testing and very specific to this sample*/
 	private static final String BATCH_SERVICE_URL = "http://localhost:25151/userservice/v0.1/customer/batch";
@@ -86,27 +86,30 @@ public class UserInfoServiceScanReader <T extends UserInfo> implements ItemStrea
 			}		
 		}
 		parallelFetch.acquire();
-		resultCount += BATCH_SIZE;
+		int startIndex = 0;
+		synchronized(this) {
+			startIndex = resultCount += BATCH_SIZE;
+		}
 		if (this.resultCount < MAX_RESULTS) { 
 			DefaultHttpClient httpclient  =  new DefaultHttpClient();
 			HttpGet executionGet= new HttpGet(BATCH_SERVICE_URL);
 			URIBuilder uriBuilder = new URIBuilder(executionGet.getURI());
-			uriBuilder.addParameter("start",String.valueOf(resultCount));
+			uriBuilder.addParameter("start",String.valueOf(startIndex));
 			uriBuilder.addParameter("count",String.valueOf(BATCH_SIZE));
 			((HttpRequestBase) executionGet).setURI(uriBuilder.build());
 	        HttpResponse httpResponse = httpclient.execute(executionGet);
 			String response = new String(EntityUtils.toByteArray(httpResponse.getEntity()));
 			ScanResult scanResult = objectMapper.readValue(response, ScanResult.class);
-			if (scanResult.getCount() <= 0 || this.resultCount > MAX_RESULTS) {	
+			if (scanResult.getCount() <= 0) {	
 				parallelFetch.release();
 				return null;
 			}
-			LOGGER.info("Fetched User Info objects in range - Start : {}. Count : {}", this.resultCount, scanResult.getCount());
+			LOGGER.info("Fetched User Info objects in range - Start : {}. Count : {}", startIndex, scanResult.getCount());
 			for (UserInfo userInfo : scanResult.getResponse()) {
 				this.localQueue.add(userInfo);
 			}
-			parallelFetch.release();
 		}
+		parallelFetch.release();
 		return this.localQueue.poll();
 	}
 
@@ -115,7 +118,7 @@ public class UserInfoServiceScanReader <T extends UserInfo> implements ItemStrea
 	 * @see org.springframework.batch.item.ItemStream#open(org.springframework.batch.item.ExecutionContext)
 	 */
 	public void open(ExecutionContext context) throws ItemStreamException {
-		this.resultCount = 0;
+		this.resultCount = (0 - BATCH_SIZE);
 	}
 
 	/**

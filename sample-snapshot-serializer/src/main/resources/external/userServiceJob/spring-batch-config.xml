@@ -35,7 +35,7 @@
 	-->
 	<bean id="userServiceJobCronTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
 		<property name="jobDetail" ref="userServiceJobDetailBean" />
-		<property name="cronExpression" value="0 25/30 * * * ?" />
+		<property name="cronExpression" value="0 12/5 * * * ?" />
 	</bean>
 
 	<!--
@@ -86,6 +86,9 @@
 	<bean id="stateTransitioner" class="com.flipkart.aesop.serializer.stateengine.DailyStateTransitioner">
 		<property name="serializerFactory">
 			<bean class="com.flipkart.aesop.serializer.serializers.RootSerializerFactory"/>
+		</property>
+		<property name="rootNFTypeSerializer">
+			<bean class="com.flipkart.aesop.serializer.serializers.UserInfoSerializer"/>
 		</property>
 		<property name="serializedDataLocation" value="/Users/regunath.balasubramanian/Documents/junk/zeno" />				
 	</bean>	

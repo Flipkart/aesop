@@ -15,18 +15,11 @@
  */
 package com.flipkart.aesop.serializer.stateengine;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FilenameFilter;
-import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
 
 import org.trpr.platform.core.PlatformException;
 import org.trpr.platform.core.impl.logging.LogFactory;
@@ -34,7 +27,6 @@ import org.trpr.platform.core.spi.logging.Logger;
 
 import com.flipkart.aesop.serializer.SerializerConstants;
 import com.netflix.zeno.fastblob.FastBlobStateEngine;
-import com.netflix.zeno.fastblob.io.FastBlobReader;
 import com.netflix.zeno.fastblob.io.FastBlobWriter;
 
 /**
@@ -46,7 +38,7 @@ import com.netflix.zeno.fastblob.io.FastBlobWriter;
  * @version 1.0, 5 March 2014
  */
 
-public class DailyStateTransitioner extends StateTransitioner {
+public class DailyStateTransitioner<T> extends StateTransitioner<T> {
 	
 	/** The Logger interface*/
 	private static final Logger LOGGER = LogFactory.getLogger(DailyStateTransitioner.class);
@@ -74,22 +66,27 @@ public class DailyStateTransitioner extends StateTransitioner {
 		DataOutputStream dataOS = null;		
 		try {
 			Calendar calendar = Calendar.getInstance();
-			String today = SerializerConstants.DAILY_FORMAT.format(calendar.getTime());		
-			File snapshotFile = new File (this.snapshotsLocationDir, SerializerConstants.SNAPSHOT_LOCATION + SerializerConstants.DELIM_CHAR + today);
-			if (!snapshotFile.exists()) { // no snapshot for today, write a snapshot for today and return
+			File dayDir = new File (this.serializedDataLocationDir, SerializerConstants.DAILY_DIR_FORMAT.format(calendar.getTime()));
+			if (!dayDir.exists() || this.stateEngine.getLatestVersion() == null || this.stateEngine.getLatestVersion().trim().length() == 0) { 
+				// no snapshot for today or state engine contents has not been written out before, write a snapshot for today and return
+				dayDir.mkdir();
+				File snapshotFile = new File (dayDir, SerializerConstants.DAILY_FILE_FORMAT.format(calendar.getTime()) + SerializerConstants.DELIM_CHAR
+						+ SerializerConstants.SNAPSHOT_FILE);
 				snapshotFile.createNewFile();
 				dataOS = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(snapshotFile)));
 				writer.writeSnapshot(dataOS);			
 				LOGGER.info("Fast blob state engine data written to snapshot file : " + snapshotFile.getAbsolutePath());	    
 			} else { // write delta
-				File deltaFile = new File(this.deltaLocationDir, (SerializerConstants.DELTA_LOCATION + SerializerConstants.DELIM_CHAR +  today 
-						+ SerializerConstants.DELIM_CHAR +  SerializerConstants.HOURLY_MINUTE_FORMAT.format(calendar.getTime())));				
+				File deltaFile = new File (dayDir, SerializerConstants.DAILY_FILE_FORMAT.format(calendar.getTime()) + SerializerConstants.DELIM_CHAR
+						+ SerializerConstants.DELTA_FILE);				
 				deltaFile.createNewFile();
 				dataOS = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(deltaFile)));
 				writer.writeDelta(dataOS);
 				LOGGER.info("Fast blob state engine data written to delta file : " + deltaFile.getAbsolutePath());	    
 			}
 		    dataOS.close();
+			// set the state engine version to the snapshot or delta file that was written
+			this.stateEngine.setLatestVersion(SerializerConstants.DAILY_FILE_FORMAT.format(calendar.getTime()));
 			this.getStateEngine().prepareForNextCycle(); // prepare the state engine for next run
 		} catch (Exception e) {
 			throw new PlatformException("Error saving state engine data : " + e.getMessage(), e);
@@ -103,90 +100,6 @@ public class DailyStateTransitioner extends StateTransitioner {
 	public void afterPropertiesSet() throws Exception {		
 		super.afterPropertiesSet();		
 		this.stateEngine = new FastBlobStateEngine(this.serializerFactory);
-		this.readLatestSnapshotAndDeltas();
-	}
-	
-	/**
-	 * Reads the latest daily snapshot and its deltas
-	 */
-	private void readLatestSnapshotAndDeltas() {
-		File[] snapshotFiles = this.snapshotsLocationDir.listFiles(new FilenameFilter() {
-		    public boolean accept(File dir, String name) {
-		        return name.toLowerCase().startsWith(SerializerConstants.SNAPSHOT_LOCATION);
-		    }
-		});
-		if (snapshotFiles.length == 0) {
-			return;
-		}
-		Arrays.sort(snapshotFiles, Collections.reverseOrder(new Comparator<File>() { // sort descending
-			public int compare(File file1, File file2) {
-				return (int)(file1.lastModified() - file2.lastModified()); 
-			}			
-		}));
-		FastBlobReader previousStateReader = new FastBlobReader(this.stateEngine);
-		for (File snapshotFile : snapshotFiles) {
-			try {
-				previousStateReader.readSnapshot(new DataInputStream(new BufferedInputStream(new FileInputStream(snapshotFile))));
-				LOGGER.info("State engine initialized from snapshot file : " + snapshotFile.getAbsolutePath());
-				this.readDeltasForSnapshot(snapshotFile, this.deltaLocationDir, previousStateReader);
-				break;
-			} catch (Exception e) { // The snapshot read has failed. Proceed with empty state or next available snapshot
-				LOGGER.warn("Error reading snapshot and deltas for file : {}. Error message is : {}",snapshotFile.getAbsolutePath(), e.getMessage());
-			}
-		}
-		if (this.stateEngine.getLatestVersion() != null && stateEngine.getLatestVersion().trim().length() > 0) {
-			this.stateEngine.prepareForNextCycle(); // prepare the state engine for next run
-			LOGGER.info("State engine initialized to version : " + this.stateEngine.getLatestVersion());
-		} else {
-			LOGGER.info("State engine not initialized from any existing snapshot");
-		}
- 	}
-	
-	/**
-	 * Reads the deltas for the specified snapshot file from the specified delta location directory into the specified fast blob reader
-	 * @param snapshotFile the snapshot file to read deltas for
-	 * @param deltaLocationDir the delta files location dir
-	 * @param previousStateReader the FastBlobReader used to read the deltas
-	 */
-	private void readDeltasForSnapshot(final File snapshotFile, File deltaLocationDir, FastBlobReader previousStateReader) {
-		File[] deltaFiles = deltaLocationDir.listFiles(new FilenameFilter() {
-		    public boolean accept(File dir, String name) {
-		    	String snapshotDay = snapshotFile.getName().substring((SerializerConstants.SNAPSHOT_LOCATION + SerializerConstants.DELIM_CHAR).length());
-		        return name.toLowerCase().startsWith((SerializerConstants.DELTA_LOCATION + SerializerConstants.DELIM_CHAR +  snapshotDay));
-		    }
-		});
-		if (deltaFiles.length == 0) {
-			this.stateEngine.setLatestVersion(this.getSnapshotVersion(snapshotFile)); //set the state engine version to snapshot suffix			
-			return;
-		}
-		Arrays.sort(deltaFiles,new Comparator<File>() { // sort ascending
-			public int compare(File file1, File file2) {
-				return (int)(file1.lastModified() - file2.lastModified()); 
-			}			
-		});		
-		for (File deltaFile : deltaFiles) {
-			try {
-				previousStateReader.readDelta(new DataInputStream(new BufferedInputStream(new FileInputStream(deltaFile))));
-				LOGGER.info("State engine delta loaded from file : " + deltaFile.getAbsolutePath());
-			} catch (Exception e) { // Unable to read all of the delta files. Abort it
-				LOGGER.warn("Error reading delta from file : {}. Error is {}",deltaFile.getAbsolutePath(), e.getMessage());
-				throw new PlatformException("Error reading delta from file :" + deltaFile.getAbsolutePath() + " Error is : " +  e.getMessage());
-			}
-		}
-		this.stateEngine.setLatestVersion(this.getDeltaVersion(deltaFiles[deltaFiles.length - 1])); // set the state engine version to the last read delta file	suffix	
-	}
-	
-	/** Helper method to get state engine version from snapshot file. Normalized to the form yyyyMMddHHmm*/
-	private String getSnapshotVersion(File snapshotFile) {
-		return snapshotFile.getName().substring(
-				(SerializerConstants.SNAPSHOT_LOCATION + SerializerConstants.DELIM_CHAR).length()).replace(
-						SerializerConstants.DELIM_CHAR, SerializerConstants.EMPTY_CHAR) + SerializerConstants.ZERO_HH_MM;
-	}	
-	/** Helper method to get state engine version from delta file. Normalized to the form yyyyMMddHHmm*/
-	private String getDeltaVersion(File deltaFile) {
-		return deltaFile.getName().substring(
-				(SerializerConstants.DELTA_LOCATION + SerializerConstants.DELIM_CHAR).length()).replace(
-						SerializerConstants.DELIM_CHAR, SerializerConstants.EMPTY_CHAR);
 	}
 	
 }

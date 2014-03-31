@@ -39,10 +39,10 @@ import com.netflix.zeno.fastblob.FastBlobStateEngine;
  * @version 1.0, 24 Feb 2014
  */
 
-public class StateEngineFinalizerStep implements Tasklet, InitializingBean {
+public class StateEngineFinalizerStep<T> implements Tasklet, InitializingBean {
 	
 	/** The StateTransitioner for accessing the FastBlobStateEngine used in appending items*/
-	private StateTransitioner stateTransitioner;
+	private StateTransitioner<T> stateTransitioner;
 	
 	/**
 	 * Interface method implementation. Writes out contents of the Zeno {@link FastBlobStateEngine}
@@ -62,10 +62,10 @@ public class StateEngineFinalizerStep implements Tasklet, InitializingBean {
 	}
 	
 	/** Getter/Setter methods */
-	public StateTransitioner getStateTransitioner() {
+	public StateTransitioner<T> getStateTransitioner() {
 		return stateTransitioner;
 	}
-	public void setStateTransitioner(StateTransitioner stateTransitioner) {
+	public void setStateTransitioner(StateTransitioner<T> stateTransitioner) {
 		this.stateTransitioner = stateTransitioner;
 	}
 	

@@ -26,22 +26,19 @@ import java.text.SimpleDateFormat;
  */
 public class SerializerConstants {
 
-	/** Directory names for snapshot and deltas */
-	public static final String SNAPSHOT_LOCATION = "snapshot";
-	public static final String DELTA_LOCATION = "delta";
+	/** Constant string literals for time related values*/
+	public static final String DAILY_DIR_FORMAT_STRING = "yyyyMMdd";
+	public static final String DAILY_FILE_FORMAT_STRING = "yyyyMMddHHmmss";
+	
+	/** File name suffices for snapshot and deltas */
+	public static final String SNAPSHOT_FILE = "snapshot";
+	public static final String DELTA_FILE = "delta";	
 
 	/** Delimiter chars used in file name handling*/
 	public static final String DELIM_CHAR = "_";
-	public static final String EMPTY_CHAR = "";
-	
-	/** Constant string literals for time related values*/
-	public static final String DAILY_FORMAT_STRING = "yyyyMMdd";
-	public static final String HOURLY_MINUTE_FORMAT_STRING = "HHmm";
-	public static final String ZERO_YYYY_MM_DD = "00000000";
-	public static final String ZERO_HH_MM = "0000";
-	
+
 	/** The Date format instances for used in naming files and state engine versions*/
-	public static SimpleDateFormat DAILY_FORMAT = new SimpleDateFormat(DAILY_FORMAT_STRING);
-	public static SimpleDateFormat HOURLY_MINUTE_FORMAT = new SimpleDateFormat(HOURLY_MINUTE_FORMAT_STRING);
+	public static SimpleDateFormat DAILY_DIR_FORMAT = new SimpleDateFormat(DAILY_DIR_FORMAT_STRING);
+	public static SimpleDateFormat DAILY_FILE_FORMAT = new SimpleDateFormat(DAILY_FILE_FORMAT_STRING);
 		
 }

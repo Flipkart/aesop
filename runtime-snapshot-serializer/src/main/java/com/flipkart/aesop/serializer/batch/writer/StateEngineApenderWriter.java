@@ -43,7 +43,7 @@ public class StateEngineApenderWriter<T> implements ItemWriter<T>, InitializingB
 	private static final Logger LOGGER = LogFactory.getLogger(StateEngineApenderWriter.class);
 	
 	/** The StateTransitioner for accessing the FastBlobStateEngine used in appending items*/
-	private StateTransitioner stateTransitioner;
+	private StateTransitioner<T> stateTransitioner;
 	
 	/**
 	 * Interface method implementation. Adds the items to the FastBlobStateEngine
@@ -65,10 +65,10 @@ public class StateEngineApenderWriter<T> implements ItemWriter<T>, InitializingB
 	}
 
 	/** Getter/Setter methods */
-	public StateTransitioner getStateTransitioner() {
+	public StateTransitioner<T> getStateTransitioner() {
 		return stateTransitioner;
 	}
-	public void setStateTransitioner(StateTransitioner stateTransitioner) {
+	public void setStateTransitioner(StateTransitioner<T> stateTransitioner) {
 		this.stateTransitioner = stateTransitioner;
 	}
 

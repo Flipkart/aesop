@@ -22,9 +22,10 @@ import java.util.List;
 import org.apache.avro.generic.GenericRecord;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
+import org.trpr.platform.core.impl.logging.LogFactory;
+import org.trpr.platform.core.spi.logging.Logger;
 
 import com.flipkart.aesop.runtime.producer.ReadEventCycleSummary;
-import com.flipkart.aesop.serializer.SerializerConstants;
 import com.netflix.zeno.diff.DiffSerializationFramework;
 import com.netflix.zeno.diff.TypeDiff;
 import com.netflix.zeno.diff.TypeDiffInstruction;
@@ -42,16 +43,17 @@ import com.netflix.zeno.serializer.SerializerFactory;
  */
 public abstract class DiffInterpreter<T, S extends GenericRecord> implements InitializingBean {
 	
+	/** The Logger interface*/
+	private static final Logger LOGGER = LogFactory.getLogger(DiffInterpreter.class);
+	
 	/** The StateTransitioner instance */
 	protected SerializerFactory serializerFactory;
 	
 	/** The file location for reading snapshots and deltas */
 	protected String serializedDataLocation;
 	
-	/** Directory locations derived from serialized data location */
+	/** Directory location derived from serialized data location */
 	protected File serializedDataLocationDir;
-	protected File snapshotsLocationDir;
-	protected File deltaLocationDir;					
 	
 	/** The DiffChangeEventMapper instance for mapping state engine changes to change events*/
 	protected DiffChangeEventMapper<T,S> diffChangeEventMapper;
@@ -69,8 +71,6 @@ public abstract class DiffInterpreter<T, S extends GenericRecord> implements Ini
 		Assert.notNull(this.diffChangeEventMapper,"'diffChangeEventMapper' cannot be null. This diff interpreter will not be initialized");
 		this.stateEngine = new FastBlobStateEngine(this.serializerFactory);		
 		this.serializedDataLocationDir = new File(this.serializedDataLocation);
-		this.snapshotsLocationDir = new File(this.serializedDataLocationDir, SerializerConstants.SNAPSHOT_LOCATION);
-		this.deltaLocationDir = new File(this.serializedDataLocationDir, SerializerConstants.DELTA_LOCATION);				
 	}
 	
 	/**
@@ -95,6 +95,8 @@ public abstract class DiffInterpreter<T, S extends GenericRecord> implements Ini
             }
         };		
         TypeDiffOperation<T> diffOperation = new TypeDiffOperation<T>(diffInstruction);
+        LOGGER.info("Sizes of removed and added objects post diff : " + diffTypeDeserializationStateListener.getRemovedObjectsList().size() + "," 
+        		+ diffTypeDeserializationStateListener.getAddedObjectsList().size());
 		TypeDiff<T> typeDiff = diffOperation.performDiff(diffSerializationFramework, 
 				diffTypeDeserializationStateListener.getRemovedObjectsList(), diffTypeDeserializationStateListener.getAddedObjectsList());
 		return new ReadEventCycleSummary<S>(this.diffChangeEventMapper.getChangeEvents(typeDiff, this.serializerFactory), 
@@ -137,25 +139,37 @@ public abstract class DiffInterpreter<T, S extends GenericRecord> implements Ini
 	 * that is then used to create change events
 	 */
 	private class DiffTypeDeserializationStateListener extends TypeDeserializationStateListener<T> {
-
+		/** Collections holding added and removed objects during de-serialization*/
 		private List<T> addedObjectsList = new ArrayList<T>();
-		private List<T> removedObjectsList = new ArrayList<T>();
-		
+		private List<T> removedObjectsList = new ArrayList<T>();		
+		/**
+		 * Interface call-back method implementation. Adds the object to the added objects collection
+		 * @see com.netflix.zeno.fastblob.state.TypeDeserializationStateListener#addedObject(java.lang.Object, int)
+		 */
 		public void addedObject(T object, int ordinal) {
 			this.addedObjectsList.add(object);
 		}
+		/**
+		 * Interface call-back method implementation. Adds the object to the removed objects collection
+		 * @see com.netflix.zeno.fastblob.state.TypeDeserializationStateListener#removedObject(java.lang.Object, int)
+		 */
 		public void removedObject(T object, int ordinal) {
 			this.removedObjectsList.add(object);
 		}		
+		/**
+		 * Interface call-back method implementation. Does nothing
+		 * @see com.netflix.zeno.fastblob.state.TypeDeserializationStateListener#reassignedObject(java.lang.Object, int, int)
+		 */
 		public void reassignedObject(T object, int oldOrdinal, int newOrdinal) {
-		}
+			// no op
+		}		
+		/** Getter methods for the added, removed object collections*/
 		public List<T> getAddedObjectsList() {
 			return addedObjectsList;
 		}
 		public List<T> getRemovedObjectsList() {
 			return removedObjectsList;
 		}
-
 	}
 
 }

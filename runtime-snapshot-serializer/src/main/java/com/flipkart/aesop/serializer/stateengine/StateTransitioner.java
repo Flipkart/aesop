@@ -20,8 +20,8 @@ import java.io.File;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
-import com.flipkart.aesop.serializer.SerializerConstants;
 import com.netflix.zeno.fastblob.FastBlobStateEngine;
+import com.netflix.zeno.serializer.NFTypeSerializer;
 import com.netflix.zeno.serializer.SerializerFactory;
 
 /**
@@ -31,18 +31,19 @@ import com.netflix.zeno.serializer.SerializerFactory;
  * @version 1.0, 5 March 2014
  */
 
-public abstract class StateTransitioner implements InitializingBean {
+public abstract class StateTransitioner<T> implements InitializingBean {
 	
 	/** The SerializerFactory used for creating the FastBlobStateEngine instance*/
 	protected SerializerFactory serializerFactory;
 	
+	/** The root type NFTypeSerializer*/
+	protected NFTypeSerializer<T> rootNFTypeSerializer;
+	
 	/** The file location for storing snapshots and deltas */
 	protected String serializedDataLocation;
 	
-	/** Directory locations derived from serialized data location */
+	/** Directory location derived from serialized data location */
 	protected File serializedDataLocationDir;
-	protected File snapshotsLocationDir;
-	protected File deltaLocationDir;				
 	
 	/**
 	 * Returns a newly created or suitably initialized FastBlobStateEngine 
@@ -61,16 +62,20 @@ public abstract class StateTransitioner implements InitializingBean {
 	 */
 	public void afterPropertiesSet() throws Exception {
 		Assert.notNull(this.serializerFactory,"'serializerFactory' cannot be null. This state transitioner will not be initialized");
+		Assert.notNull(this.rootNFTypeSerializer,"'rootNFTypeSerializer' cannot be null. This state transitioner will not be initialized");
 		Assert.notNull(this.serializedDataLocation,"'serializedDataLocation' cannot be null. This state transitioner will not be initialized");
-		this.initializeDirs();		
 		this.serializedDataLocationDir = new File(this.serializedDataLocation);
-		this.snapshotsLocationDir = new File(this.serializedDataLocationDir, SerializerConstants.SNAPSHOT_LOCATION);
-		this.deltaLocationDir = new File(this.serializedDataLocationDir, SerializerConstants.DELTA_LOCATION);		
+		if (!this.serializedDataLocationDir.exists()) {
+			this.serializedDataLocationDir.mkdirs();
+		}
 	}
 
 	/** Getter/Setter methods */
 	public void setSerializerFactory(SerializerFactory serializerFactory) {
 		this.serializerFactory = serializerFactory;
+	}	
+	public void setRootNFTypeSerializer(NFTypeSerializer<T> rootNFTypeSerializer) {
+		this.rootNFTypeSerializer = rootNFTypeSerializer;
 	}
 	public void setSerializedDataLocation(String serializedDataLocation) {
 		this.serializedDataLocation = serializedDataLocation;
@@ -79,22 +84,4 @@ public abstract class StateTransitioner implements InitializingBean {
 		return serializedDataLocation;
 	}
 
-	/**
-	 * Initializes the snapshot and delta file directories
-	 */
-	protected void initializeDirs() {
-		File serializedDataLocationDir = new File(this.serializedDataLocation);
-		if (!serializedDataLocationDir.exists()) {
-			serializedDataLocationDir.mkdirs();
-		}
-		File snapshotsLocationDir = new File(serializedDataLocationDir, SerializerConstants.SNAPSHOT_LOCATION);
-		File deltaLocationDir = new File(serializedDataLocationDir, SerializerConstants.DELTA_LOCATION);
-		if (!snapshotsLocationDir.exists()) {
-			snapshotsLocationDir.mkdirs();			
-		}
-		if (!deltaLocationDir.exists()) {
-			deltaLocationDir.mkdirs();
-		}	
-	}
-	
 }

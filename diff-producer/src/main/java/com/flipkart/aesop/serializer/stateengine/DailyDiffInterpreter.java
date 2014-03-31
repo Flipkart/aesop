@@ -25,7 +25,6 @@ import java.util.Collections;
 import java.util.Comparator;
 
 import org.apache.avro.generic.GenericRecord;
-import org.trpr.platform.core.PlatformException;
 import org.trpr.platform.core.impl.logging.LogFactory;
 import org.trpr.platform.core.spi.logging.Logger;
 
@@ -64,138 +63,74 @@ public class DailyDiffInterpreter<T, S extends GenericRecord> extends DiffInterp
 	 * @param sinceSCN the SCN for identifying snapshots and deltas
 	 * @param limitToSCN boolean true if the read should stop at the snapshot and related deltas or proceed to all available later state changes
 	 */
-	private void readSnapshotAndDeltas(FastBlobStateEngine stateEngine, long sinceSCN, final boolean limitToSCN) {
-		final long oldestState = this.getOldestAvailableState(sinceSCN);
-		File[] snapshotFiles = this.snapshotsLocationDir.listFiles(new FilenameFilter() {
+	private void readSnapshotAndDeltas(FastBlobStateEngine stateEngine, final long sinceSCN, final boolean limitToSCN) {
+		File[] stateDirs = this.serializedDataLocationDir.listFiles(new FilenameFilter() {
 		    public boolean accept(File dir, String name) {
-		    	if (name.toLowerCase().startsWith(SerializerConstants.SNAPSHOT_LOCATION)) {
+		    	if (new File(dir,name).isDirectory()) {
 		    		if (limitToSCN) {
-		    			return getSnapshotVersion(new File(name)) <= oldestState; // we are interested only in files that are older than SCN/state engine version
+		    			return Long.valueOf(name) <= getSCNDay(sinceSCN); // we are interested only in directories that are older than SCN/state engine version
 		    		} else {
-		    			return getSnapshotVersion(new File(name)) >= oldestState; // we are interested only in files that are newer than SCN/state engine version
+		    			return Long.valueOf(name) >= getSCNDay(sinceSCN); // we are interested only in directories that are newer than SCN/state engine version
 		    		}
 		    	}
-		        return false;
+		    	return false;
 		    }
 		});
-		if (snapshotFiles.length == 0) {
+		if (stateDirs.length == 0) { // no state files found and this is an initialization load
 			return;
 		}
-		Arrays.sort(snapshotFiles, Collections.reverseOrder(new Comparator<File>() { // sort descending
+		Arrays.sort(stateDirs, Collections.reverseOrder(new Comparator<File>() { // sort descending to get latest available state
 			public int compare(File file1, File file2) {
 				return (int)(file1.lastModified() - file2.lastModified()); 
 			}			
 		}));
 		FastBlobReader previousStateReader = new FastBlobReader(stateEngine);
-		for (File snapshotFile : snapshotFiles) {
-			try {
-				if (this.getSnapshotVersion(snapshotFile) > this.getStateEngineVersionDay(stateEngine)) { // we want to load the snapshot data only if the engine is not at this version already
-					previousStateReader.readSnapshot(new DataInputStream(new BufferedInputStream(new FileInputStream(snapshotFile))));
-					LOGGER.info("State engine initialized from snapshot file : " + snapshotFile.getAbsolutePath());
+		for (File stateDir : stateDirs) {
+			File[] stateFiles = stateDir.listFiles(new FilenameFilter() {
+			    public boolean accept(File dir, String name) {
+			    	if (name.endsWith(SerializerConstants.SNAPSHOT_FILE) || name.endsWith(SerializerConstants.DELTA_FILE)) {
+			    		if (limitToSCN) {
+			    			return getStateFileVersion(new File(dir,name)) <= getSCNDay(sinceSCN); // we are interested only in directories that are older than SCN/state engine version
+			    		} else {
+			    			return getStateFileVersion(new File(dir,name)) >= getSCNDay(sinceSCN); // we are interested only in directories that are newer than SCN/state engine version
+			    		}
+			    	}
+			    	return false;
+			    }
+			});
+			for (File stateFile : stateFiles) {
+				try {
+					if (this.getStateFileVersion(stateFile) > this.getStateEngineVersion(stateEngine)) { // we want to load the state data only if the engine is not at this version already
+						if (stateFile.getName().endsWith(SerializerConstants.SNAPSHOT_FILE)) {
+							previousStateReader.readSnapshot(new DataInputStream(new BufferedInputStream(new FileInputStream(stateFile))));
+						} else {
+							previousStateReader.readDelta(new DataInputStream(new BufferedInputStream(new FileInputStream(stateFile))));
+						}
+						stateEngine.setLatestVersion(String.valueOf(this.getStateFileVersion(stateFile)));
+						LOGGER.info("State engine initialized from state file : " + stateFile.getAbsolutePath());
+						break; // break here as we have loaded one changed state. Will continue with more in the subsequent runs.
+					}
+				} catch (Exception e) { // The state data read has failed. Proceed with empty state or next available set of state files
+					LOGGER.warn("Error reading state file : " + stateFile.getAbsolutePath() + " Proceeding with next file. Error message is : " + e.getMessage(), e);
 				}
-				this.readDeltasForSnapshot(snapshotFile, deltaLocationDir, previousStateReader, stateEngine, limitToSCN);
-				break;
-			} catch (Exception e) { // The snapshot read has failed. Proceed with empty state or next available snapshot
-				LOGGER.warn("Error reading snapshot and deltas for file : " + snapshotFile.getAbsolutePath() + " .Error message is : " + e.getMessage(), e);
 			}
 		}
 		LOGGER.debug(this.getStateEngineVersion(stateEngine) != 0 ? "State engine is set to version : " + stateEngine.getLatestVersion() : 
-			"State engine not initialized from any existing snapshot");
-	}
-
-	/**
-	 * Gets the oldest available state that the state engine may be initialized to, if not already.
-	 * @param sinceSCN the last generated change event SCN 
-	 * @return the oldest available state to initialize the state engine to
-	 */
-	private long getOldestAvailableState(long sinceSCN) {
-		long oldestState = sinceSCN; 
-		if (oldestState == 0) { // the state engine has never been initialized
-			File[] snapshotFiles = this.snapshotsLocationDir.listFiles(new FilenameFilter() {
-			    public boolean accept(File dir, String name) {
-			    	return name.toLowerCase().startsWith(SerializerConstants.SNAPSHOT_LOCATION);
-			    }
-			});
-			if (snapshotFiles.length == 0) {
-				return oldestState;
-			}
-			Arrays.sort(snapshotFiles, new Comparator<File>() { // sort ascending
-				public int compare(File file1, File file2) {
-					return (int)(file1.lastModified() - file2.lastModified()); 
-				}			
-			});
-			oldestState = this.getSnapshotVersion(snapshotFiles[0]); // set oldest state to earliest available snapshot. The state engine will get initialized to this snapshot
-		}
-		return oldestState;
+				"State engine not initialized from any existing snapshot");
 	}
 	
-	/**
-	 * Reads the deltas for the specified snapshot file from the specified delta location directory into the specified fast blob reader
-	 * @param snapshotFile the snapshot file to read deltas for
-	 * @param deltaLocationDir the delta files location dir
-	 * @param previousStateReader the FastBlobReader used to read the deltas
-	 */
-	private void readDeltasForSnapshot(final File snapshotFile, File deltaLocationDir, FastBlobReader previousStateReader, FastBlobStateEngine stateEngine, final boolean limitToSCN) {
-		final long engineVersion = this.getStateEngineVersion(stateEngine);
-		File[] deltaFiles = deltaLocationDir.listFiles(new FilenameFilter() {
-		    public boolean accept(File dir, String name) {
-		    	String snapshotDay = snapshotFile.getName().substring((SerializerConstants.SNAPSHOT_LOCATION + SerializerConstants.DELIM_CHAR).length());		    	
-		    	if (name.toLowerCase().startsWith((SerializerConstants.DELTA_LOCATION + SerializerConstants.DELIM_CHAR + snapshotDay))) {
-		    		if (limitToSCN) {
-		    			return getDeltaVersion(new File(name)) <= engineVersion; // we are interested only in files that are older than SCN/state engine version
-		    		} else {
-		    			return getDeltaVersion(new File(name)) >= engineVersion; // we are interested only in files that are newer to SCN/state engine version
-		    		}
-		    	}
-		        return false;
-		    }
-		});
-		if (deltaFiles.length == 0) {
-			stateEngine.setLatestVersion(String.valueOf(this.getSnapshotVersion(snapshotFile))); //set the state engine version to snapshot suffix			
-			return;
-		}
-		Arrays.sort(deltaFiles,new Comparator<File>() { // sort ascending
-			public int compare(File file1, File file2) {
-				return (int)(file1.lastModified() - file2.lastModified()); 
-			}			
-		});		
-		for (File deltaFile : deltaFiles) {
-			try {
-				if (this.getDeltaVersion(deltaFile) > engineVersion) { // we want to load the delta data only if the engine is not at this version already				
-					previousStateReader.readDelta(new DataInputStream(new BufferedInputStream(new FileInputStream(deltaFile))));
-					LOGGER.info("State engine delta loaded from file : " + deltaFile.getAbsolutePath());
-				}
-			} catch (Exception e) { // Unable to read all of the delta files. Abort it
-				LOGGER.warn("Error reading delta from file : {}. Error is {}",deltaFile.getAbsolutePath(), e.getMessage());
-				throw new PlatformException("Error reading delta from file :" + deltaFile.getAbsolutePath() + " Error is : " +  e.getMessage());
-			}
-		}
-		stateEngine.setLatestVersion(String.valueOf(this.getDeltaVersion(deltaFiles[deltaFiles.length - 1]))); // set the state engine version to the last read delta file	suffix	
-	}
-	
-	/** Helper method to get state engine version from snapshot file. Normalized to the form yyyyMMddHHmm*/
-	private long getSnapshotVersion(File snapshotFile) {
-		return Long.valueOf(snapshotFile.getName().substring(
-				(SerializerConstants.SNAPSHOT_LOCATION + SerializerConstants.DELIM_CHAR).length()).replace(
-						SerializerConstants.DELIM_CHAR, SerializerConstants.EMPTY_CHAR) + SerializerConstants.ZERO_HH_MM);
+	/** Helper method to get state file version of the form yyyyMMdd*/
+	private long getStateFileVersion(File stateFile) {
+		return Long.valueOf(stateFile.getName().substring(0, SerializerConstants.DAILY_FILE_FORMAT_STRING.length()));
 	}	
-	/** Helper method to get state engine version from delta file. Normalized to the form yyyyMMddHHmm*/
-	private long getDeltaVersion(File deltaFile) {
-		return Long.valueOf(deltaFile.getName().substring(
-				(SerializerConstants.DELTA_LOCATION + SerializerConstants.DELIM_CHAR).length()).replace(
-						SerializerConstants.DELIM_CHAR, SerializerConstants.EMPTY_CHAR));
-	}
-	/** Helper method to get only the day portion of the engine version. Normalized to the form yyyyMMddHHmm*/
-	private long getStateEngineVersionDay(FastBlobStateEngine stateEngine) {
-		return Long.valueOf(stateEngine.getLatestVersion() == null ? "0" : 
-			stateEngine.getLatestVersion().substring(0, SerializerConstants.DAILY_FORMAT_STRING.length()) + SerializerConstants.ZERO_HH_MM);
-	}
-	
-	/** Helper method to get the engine version. Normalized to the form yyyyMMddHHmm*/
+	/** Helper method to get only the day portion of the SCN of the form yyyyMMdd*/
+	private long getSCNDay(long sinceSCN) {
+		return sinceSCN == 0L ? sinceSCN : 
+			Long.valueOf(String.valueOf(sinceSCN).substring(0, SerializerConstants.DAILY_DIR_FORMAT_STRING.length()));
+	}	
+	/** Helper method to get the engine version*/
 	private long getStateEngineVersion(FastBlobStateEngine stateEngine) {
-		return Long.valueOf(
-				(stateEngine.getLatestVersion() == null || stateEngine.getLatestVersion().trim().length() == 0) ? 
-						SerializerConstants.ZERO_YYYY_MM_DD + SerializerConstants.ZERO_HH_MM : 
-							stateEngine.getLatestVersion());
+		return Long.valueOf(((stateEngine.getLatestVersion() == null || stateEngine.getLatestVersion().trim().length() == 0) ? 
+						"0" : stateEngine.getLatestVersion()));
 	}
 }
