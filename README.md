@@ -8,7 +8,7 @@ building Eventually Consistent data sources and systems.
 
 | Release | Date | Description |
 |:------------|:----------------|:------------|
-| Beta Release    | March 2014      |    No release binaries
+| Beta Release    | March 2014      |    No release binaries. First version of HBase, MySQL and Pull-based event producers, Relay, Bootstrap and Consumer
 
 ## Introduction
 
