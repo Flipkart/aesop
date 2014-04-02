@@ -31,7 +31,7 @@ implementation is based off [Netflix Zeno](https://github.com/Netflix/zeno).
 
 Change propagation using both "Push" and "Pull" producers looks like:
 
-
+```
 Pull Producer                        Streaming Client 1       Slow/Catchup client1
 (Zeno based)    \                   /                        /
                  \_____ Relay _____/___ Bootstrap __________/
@@ -40,5 +40,6 @@ Pull Producer                        Streaming Client 1       Slow/Catchup clien
 Push Producer                        Streaming Client 2       Slow/Catchup client 2  
 (e.g. HBase WAL edits listener,
  e.g. MySQL Replication listener)
+```
 
 
