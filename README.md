@@ -29,13 +29,13 @@ data stores - for e.g. between an RDBMS and a Document database. aesop addresses
 uses an application-provided "Iterator" API to periodically scan the entire datastore and detect changes between scan cycles. This
 implementation is based off [Netflix Zeno](https://github.com/Netflix/zeno).
 
-Change propagation using both "Push" and "Pull" producers looks like:
+Change propagation employing both "Push" and "Pull" producers:
 
 ```
 Pull Producer                        Streaming Client 1       Slow/Catchup client1
 (Zeno based)    \                   /                        /
                  \_____ Relay _____/___ Bootstrap __________/
-                 /   (Databus)     \    (Databus)           \
+                 /    (Databus)    \    (Databus)           \
                 /                   \                        \
 Push Producer                        Streaming Client 2       Slow/Catchup client 2  
 (e.g. HBase WAL edits listener,
