@@ -84,15 +84,16 @@ public class DailyDiffInterpreter<T, S extends GenericRecord> extends DiffInterp
 				return (int)(file1.lastModified() - file2.lastModified()); 
 			}			
 		}));
-		FastBlobReader previousStateReader = new FastBlobReader(stateEngine);
+		FastBlobReader stateReader = new FastBlobReader(stateEngine);
 		for (File stateDir : stateDirs) {
 			File[] stateFiles = stateDir.listFiles(new FilenameFilter() {
 			    public boolean accept(File dir, String name) {
 			    	if (name.endsWith(SerializerConstants.SNAPSHOT_FILE) || name.endsWith(SerializerConstants.DELTA_FILE)) {
+			    		LOGGER.debug("State file version : SCN [" + getStateFileVersion(new File(dir,name)) + " : " +sinceSCN + "]");
 			    		if (limitToSCN) {
-			    			return getStateFileVersion(new File(dir,name)) <= getSCNDay(sinceSCN); // we are interested only in directories that are older than SCN/state engine version
+			    			return getStateFileVersion(new File(dir,name)) <= sinceSCN; // we are interested only in files that are older than SCN/state engine version
 			    		} else {
-			    			return getStateFileVersion(new File(dir,name)) >= getSCNDay(sinceSCN); // we are interested only in directories that are newer than SCN/state engine version
+			    			return getStateFileVersion(new File(dir,name)) >= sinceSCN; // we are interested only in files that are newer than SCN/state engine version
 			    		}
 			    	}
 			    	return false;
@@ -100,11 +101,13 @@ public class DailyDiffInterpreter<T, S extends GenericRecord> extends DiffInterp
 			});
 			for (File stateFile : stateFiles) {
 				try {
+					LOGGER.debug("State file version : engine version [" + this.getStateFileVersion(stateFile) + " : " + this.getStateEngineVersion(stateEngine) + 
+							"] State file is " + stateFile.getAbsolutePath());
 					if (this.getStateFileVersion(stateFile) > this.getStateEngineVersion(stateEngine)) { // we want to load the state data only if the engine is not at this version already
 						if (stateFile.getName().endsWith(SerializerConstants.SNAPSHOT_FILE)) {
-							previousStateReader.readSnapshot(new DataInputStream(new BufferedInputStream(new FileInputStream(stateFile))));
+							stateReader.readSnapshot(new DataInputStream(new BufferedInputStream(new FileInputStream(stateFile))));
 						} else {
-							previousStateReader.readDelta(new DataInputStream(new BufferedInputStream(new FileInputStream(stateFile))));
+							stateReader.readDelta(new DataInputStream(new BufferedInputStream(new FileInputStream(stateFile))));
 						}
 						stateEngine.setLatestVersion(String.valueOf(this.getStateFileVersion(stateFile)));
 						LOGGER.info("State engine initialized from state file : " + stateFile.getAbsolutePath());
