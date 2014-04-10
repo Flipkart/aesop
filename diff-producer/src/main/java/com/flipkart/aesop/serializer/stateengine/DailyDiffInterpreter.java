@@ -111,7 +111,6 @@ public class DailyDiffInterpreter<T, S extends GenericRecord> extends DiffInterp
 						}
 						stateEngine.setLatestVersion(String.valueOf(this.getStateFileVersion(stateFile)));
 						LOGGER.info("State engine initialized from state file : " + stateFile.getAbsolutePath());
-						break; // break here as we have loaded one changed state. Will continue with more in the subsequent runs.
 					}
 				} catch (Exception e) { // The state data read has failed. Proceed with empty state or next available set of state files
 					LOGGER.warn("Error reading state file : " + stateFile.getAbsolutePath() + " Proceeding with next file. Error message is : " + e.getMessage(), e);
