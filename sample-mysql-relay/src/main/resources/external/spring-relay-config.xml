@@ -28,6 +28,7 @@
     	</property>
     </bean>
     <bean id="orToAvroMapper" class="com.flipkart.aesop.runtime.producer.mapper.impl.ORToAvroMapper"/>
+    
     <util:map id="eventsMapRef" key-type="java.lang.Integer" value-type="com.flipkart.aesop.runtime.producer.eventprocessor.BinLogEventProcessor">
     	<entry key="#{T(com.flipkart.aesop.runtime.producer.constants.MySQLConstants).QUERY_EVENT}" value-ref="mutatingQueryEventProcessor"/>
     	<entry key="#{T(com.flipkart.aesop.runtime.producer.constants.MySQLConstants).ROTATE_EVENT}" value-ref="rotateEventProcessor"/>
@@ -36,7 +37,11 @@
     	<entry key="#{T(com.flipkart.aesop.runtime.producer.constants.MySQLConstants).WRITE_ROWS_EVENT}" value-ref="insertEventProcessor"/>
     	<entry key="#{T(com.flipkart.aesop.runtime.producer.constants.MySQLConstants).UPDATE_ROWS_EVENT}" value-ref="updateEventProcessor"/>
     	<entry key="#{T(com.flipkart.aesop.runtime.producer.constants.MySQLConstants).DELETE_ROWS_EVENT}" value-ref="deleteEventProcessor"/> 
+    	<entry key="#{T(com.flipkart.aesop.runtime.producer.constants.MySQLConstants).WRITE_ROWS_EVENT_V2}" value-ref="insertEventV2Processor"/>
+    	<entry key="#{T(com.flipkart.aesop.runtime.producer.constants.MySQLConstants).UPDATE_ROWS_EVENT_V2}" value-ref="updateEventV2Processor"/>
+    	<entry key="#{T(com.flipkart.aesop.runtime.producer.constants.MySQLConstants).DELETE_ROWS_EVENT_V2}" value-ref="deleteEventV2Processor"/> 
   	</util:map>
+  	
   	<bean id="mutatingQueryEventProcessor" class="com.flipkart.aesop.runtime.producer.eventprocessor.impl.MutatingQueryEventProcessor"/>
   	<bean id="rotateEventProcessor" class="com.flipkart.aesop.runtime.producer.eventprocessor.impl.RotateEventProcessor"/>
   	<bean id="commitEventProcessor" class="com.flipkart.aesop.runtime.producer.eventprocessor.impl.CommitEventProcessor"/>
@@ -44,6 +49,9 @@
   	<bean id="insertEventProcessor" class="com.flipkart.aesop.runtime.producer.eventprocessor.impl.InsertEventProcessor"/>
   	<bean id="updateEventProcessor" class="com.flipkart.aesop.runtime.producer.eventprocessor.impl.UpdateEventProcessor"/>
   	<bean id="deleteEventProcessor" class="com.flipkart.aesop.runtime.producer.eventprocessor.impl.DeleteEventProcessor"/>
+  	<bean id="insertEventV2Processor" class="com.flipkart.aesop.runtime.producer.eventprocessor.impl.InsertEventV2Processor"/>
+  	<bean id="updateEventV2Processor" class="com.flipkart.aesop.runtime.producer.eventprocessor.impl.UpdateEventV2Processor"/>
+  	<bean id="deleteEventV2Processor" class="com.flipkart.aesop.runtime.producer.eventprocessor.impl.DeleteEventV2Processor"/>
   	
     <bean id="physicalSourceConfig" class="com.linkedin.databus2.relay.config.PhysicalSourceConfig">
 		<property name="id" value="1"/>

@@ -11,10 +11,10 @@
     </parent>
 
     <groupId>com.flipkart.aesop</groupId>
-    <artifactId>sample-client</artifactId>
+    <artifactId>sample-client-mysql-relay</artifactId>
     <version>1.0.0</version>
-    <name>Sample Client</name>
-    <description>Sample Client</description>
+    <name>Sample Client for MYSQL Relay</name>
+    <description>Sample Client for MYSQL Relay</description>
 
     <licenses>
         <license>
@@ -36,14 +36,6 @@
         <url>https://github.com/Flipkart/aesop</url>
         <connection>https://github.com/Flipkart/aesop.git</connection>
     </scm>
-
-    <developers>
-        <developer>
-            <id>regunathb</id>
-            <name>Regunath B</name>
-            <email>regunathb@gmail.com</email>
-        </developer>
-    </developers>
 
     <dependencies>
 		<dependency>

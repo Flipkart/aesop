@@ -44,6 +44,11 @@
     </developers>
 
     <dependencies>
+		<dependency>
+			<groupId>org.apache.avro</groupId>
+			<artifactId>avro</artifactId>
+			<version>1.7.5</version>
+		</dependency>
 		<!-- All databus dependencies are marked as scope compile as we extend their classes and need them during compile and not just runtime -->
 		<dependency>
 		  <groupId>com.linkedin.databus</groupId>
@@ -54,7 +59,7 @@
 		<dependency>
 		  <groupId>com.linkedin.databus</groupId>
 		  <artifactId>databus2-event-producer-common</artifactId>
-		  <version>1.0.2</version>
+		  <version>${com.linkedin.databus.version}</version>
 		  <scope>compile</scope>
 		</dependency>			
 		<dependency>
