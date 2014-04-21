@@ -61,6 +61,10 @@
 		  		<groupId>javax.servlet</groupId>
 		  	</exclusion>
 		  	<exclusion>
+		  		<artifactId>javax.servlet</artifactId>
+		  		<groupId>servlet-api</groupId>
+		  	</exclusion>
+		  	<exclusion>
 		  		<artifactId>slf4j-log4j12</artifactId>
 		  		<groupId>org.slf4j</groupId>
 		  	</exclusion>
