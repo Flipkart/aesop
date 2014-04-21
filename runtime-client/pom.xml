@@ -50,21 +50,53 @@
 		  <groupId>com.linkedin.databus</groupId>
 		  <artifactId>databus-core-impl</artifactId>
 		  <version>${com.linkedin.databus.version}</version>
+		  <exclusions>
+		  	<exclusion>
+		  		<artifactId>slf4j-log4j12</artifactId>
+		  		<groupId>org.slf4j</groupId>
+		  	</exclusion>
+		  	<exclusion>
+		  		<artifactId>servlet-api</artifactId>
+		  		<groupId>org.mortbay.jetty</groupId>
+		  	</exclusion>
+		  	<exclusion>
+		  		<artifactId>servlet-api</artifactId>
+		  		<groupId>javax.servlet</groupId>
+		  	</exclusion>
+		  </exclusions>
 		</dependency>
 		<dependency>
 		  <groupId>com.linkedin.databus</groupId>
 		  <artifactId>databus-client-common</artifactId>
 		  <version>${com.linkedin.databus.version}</version>
+		  <exclusions>
+		  	<exclusion>
+		  		<artifactId>slf4j-log4j12</artifactId>
+		  		<groupId>org.slf4j</groupId>
+		  	</exclusion>
+		  </exclusions>
 		</dependency>
 		<dependency>
 		  <groupId>com.linkedin.databus</groupId>
 		  <artifactId>databus-client-http</artifactId>
 		  <version>${com.linkedin.databus.version}</version>
+		  <exclusions>
+		  	<exclusion>
+		  		<artifactId>slf4j-log4j12</artifactId>
+		  		<groupId>org.slf4j</groupId>
+		  	</exclusion>
+		  </exclusions>
 		</dependency>
 		<dependency>
 		  <groupId>com.linkedin.databus</groupId>
 		  <artifactId>databus-client-api</artifactId>
 		  <version>${com.linkedin.databus.version}</version>
+		  <exclusions>
+		  	<exclusion>
+		  		<artifactId>slf4j-log4j12</artifactId>
+		  		<groupId>org.slf4j</groupId>
+		  	</exclusion>
+		  </exclusions>
 		</dependency>
         <!-- aesop dependencies -->
         <dependency>

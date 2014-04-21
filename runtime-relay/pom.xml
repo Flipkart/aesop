@@ -60,22 +60,44 @@
 		  		<artifactId>servlet-api</artifactId>
 		  		<groupId>javax.servlet</groupId>
 		  	</exclusion>
+		  	<exclusion>
+		  		<artifactId>slf4j-log4j12</artifactId>
+		  		<groupId>org.slf4j</groupId>
+		  	</exclusion>
 		  </exclusions>
 		</dependency>
 		<dependency>
 		  <groupId>com.linkedin.databus</groupId>
 		  <artifactId>databus2-event-producer-common</artifactId>
 		  <version>${com.linkedin.databus.version}</version>
+		  <exclusions>
+		  	<exclusion>
+		  		<artifactId>slf4j-log4j12</artifactId>
+		  		<groupId>org.slf4j</groupId>
+		  	</exclusion>
+		  </exclusions>
 		</dependency>			
 		<dependency>
 		  <groupId>com.linkedin.databus</groupId>
 		  <artifactId>databus-core-impl</artifactId>
 		  <version>${com.linkedin.databus.version}</version>
+		  <exclusions>
+		  	<exclusion>
+		  		<artifactId>slf4j-log4j12</artifactId>
+		  		<groupId>org.slf4j</groupId>
+		  	</exclusion>
+		  </exclusions>
 		</dependency>			
 		<dependency>
 		  <groupId>com.linkedin.databus</groupId>
 		  <artifactId>databus-core-schemas</artifactId>
 		  <version>${com.linkedin.databus.version}</version>
+		  <exclusions>
+		  	<exclusion>
+		  		<artifactId>slf4j-log4j12</artifactId>
+		  		<groupId>org.slf4j</groupId>
+		  	</exclusion>
+		  </exclusions>
 		</dependency>			
         <!-- aesop dependencies -->
         <dependency>
