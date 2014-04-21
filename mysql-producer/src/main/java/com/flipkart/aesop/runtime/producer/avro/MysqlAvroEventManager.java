@@ -162,7 +162,7 @@ public class MysqlAvroEventManager
 		ByteArrayOutputStream bos = null;
 		try{
 			bos = new ByteArrayOutputStream();
-			Encoder encoder = EncoderFactory.get().binaryEncoder(bos, null);
+			Encoder encoder = EncoderFactory.get().directBinaryEncoder(bos, null);
 			GenericDatumWriter<GenericRecord> writer = new GenericDatumWriter<GenericRecord>(record.getSchema());
 			writer.write(record, encoder);
 			serializedValue = bos.toByteArray();
