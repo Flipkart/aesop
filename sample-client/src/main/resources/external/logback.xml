@@ -7,7 +7,7 @@
   	</appender>
   	
 	<appender name="FILE" class="ch.qos.logback.core.FileAppender">
-    	<file>/Users/regunath.balasubramanian/Documents/junk/aesop-client.log</file>
+    	<file>/tmp/junk/aesop-client.log</file>
     		<append>true</append>
 	    <encoder>
     	  <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
@@ -17,7 +17,7 @@
    	<!-- Set some of the 3rd party libraries to log only at INFO or higher levels -->
 	<logger name="org.springframework" level="info"/>
 
-	<root level="debug">
+	<root level="info">
     	<appender-ref ref="STDOUT" />
  	</root>
   

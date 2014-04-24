@@ -9,7 +9,7 @@
    	<!-- Set some of the 3rd party libraries to log only at INFO or higher levels -->
 	<logger name="org.springframework" level="info"/>
 
-	<root level="debug">
+	<root level="info">
     	<appender-ref ref="STDOUT" />
  	</root>
   
