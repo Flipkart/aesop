@@ -37,17 +37,19 @@
 			    </property>    
 	    	</bean>    	
     	</property>
-    	<property name="relayClientConfig">
-	    	<bean class="com.flipkart.aesop.runtime.config.RelayClientConfig">
-		    	<property name="relayId" value="1"/>
-		    	<property name="relayHost" value="localhost"/>
-			    	<property name="relayPort" value="25021"/>
-					<property name="relayLogicalSourceNames">
-						<list value-type="java.lang.String">
-							<value>com.flipkart.aesop.events.ortest.Person</value>
-						</list>
-					</property>
-	    	</bean>
+    	<property name="relayClientConfigs">
+	    	<list>
+	    		<bean class="com.flipkart.aesop.runtime.config.RelayClientConfig">
+			    	<property name="relayId" value="1"/>
+			    	<property name="relayHost" value="localhost"/>
+				    	<property name="relayPort" value="25021"/>
+						<property name="relayLogicalSourceNames">
+							<list value-type="java.lang.String">
+								<value>com.flipkart.aesop.events.ortest.Person</value>
+							</list>
+						</property>
+		    	</bean>
+	    	</list>
     	</property>
 		<property name="checkpointDirectoryLocation" value="../../../sandbox/client_checkpoint_directory"/> <!-- This is relative to projects root -->
     </bean>
