@@ -17,6 +17,7 @@
 package com.flipkart.aesop.runtime.config;
 
 import java.io.File;
+import java.util.List;
 import java.util.Properties;
 
 import org.apache.commons.lang.StringUtils;
@@ -65,18 +66,18 @@ public class ClientConfig implements InitializingBean {
 	/** The client checkpoint directory location*/
 	private String checkpointDirectoryLocation;
 	
-	/** The Relay Client config instance*/
-	private RelayClientConfig relayClientConfig;
+	/** List of Relay Client config instances*/
+	private List<RelayClientConfig> relayClientConfigs;
 
-	/** The Bootstrap Client config instance*/
-	private BootstrapClientConfig bootstrapClientConfig;
+	/** List of Bootstrap Client config instances*/
+	private List<BootstrapClientConfig> bootstrapClientConfigs;
 	
 	/**
 	 * Interface method implementation. Ensures that all property names start with {@link ClientConfig#getPropertiesPrefix()}
 	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
 	 */
 	public void afterPropertiesSet() throws Exception {
-		Assert.notNull(this.relayClientConfig,"'relayClientConfig' cannot be null. This Databus Client will not be initialized");		
+		Assert.notNull(this.relayClientConfigs,"'relayClientConfig' cannot be null. This Databus Client will not be initialized");		
 		Assert.notNull(this.checkpointDirectoryLocation,"'checkpointDirectoryLocation' cannot be null. This Databus Client will not be initialized");		
 		for (Object key : this.clientProperties.keySet()) {
 			if (!((String)key).startsWith(getClientPropertiesPrefix())) {
@@ -108,45 +109,51 @@ public class ClientConfig implements InitializingBean {
 		this.getClientProperties().put(getClientPropertiesPrefix() + CHECKPOINT_DIR_PROPERTY, 
 				new File(RuntimeVariables.getProjectsRoot() + File.separator  + this.checkpointDirectoryLocation).getAbsolutePath());				
 	}	
-	public RelayClientConfig getRelayClientConfig() {
-		return relayClientConfig;
+	public List<RelayClientConfig> getRelayClientConfig() {
+		return relayClientConfigs;
 	}
-	public void setRelayClientConfig(RelayClientConfig relayClientConfig) {
-		this.relayClientConfig = relayClientConfig;
-		// add the relay host to the properties specified for the Relay Client. 
-		this.getClientProperties().put(getClientPropertiesPrefix() + this.getRelayProperty() + RELAY_HOST, this.relayClientConfig.getRelayHost());
-		// add the relay port to the properties specified for the Relay Client. 
-		this.getClientProperties().put(getClientPropertiesPrefix() + this.getRelayProperty() + RELAY_PORT, this.relayClientConfig.getRelayPort());
-		// add the relay logical source name to the properties specified for the Relay Client. 
-		String commaSeparedLogicalSources = StringUtils.join(this.relayClientConfig.getRelayLogicalSourceNames(), ",");
-		this.getClientProperties().put(getClientPropertiesPrefix() + this.getRelayProperty() + RELAY_LOGICAL_SOURCES, commaSeparedLogicalSources);
+	public void setRelayClientConfigs(List<RelayClientConfig> relayClientConfigs) {
+		this.relayClientConfigs = relayClientConfigs;
+		for(RelayClientConfig relayClientConfig : this.relayClientConfigs)
+		{
+			// add the relay host to the properties specified for the Relay Client. 
+			this.getClientProperties().put(getClientPropertiesPrefix() + this.getRelayProperty(relayClientConfig) + RELAY_HOST, relayClientConfig.getRelayHost());
+			// add the relay port to the properties specified for the Relay Client. 
+			this.getClientProperties().put(getClientPropertiesPrefix() + this.getRelayProperty(relayClientConfig) + RELAY_PORT, relayClientConfig.getRelayPort());
+			// add the relay logical source name to the properties specified for the Relay Client.
+			String commaSeparedLogicalSources = StringUtils.join(relayClientConfig.getRelayLogicalSourceNames(), ",");
+			this.getClientProperties().put(getClientPropertiesPrefix() + this.getRelayProperty(relayClientConfig) + RELAY_LOGICAL_SOURCES, commaSeparedLogicalSources);
+		}
 	}	
-	public BootstrapClientConfig getBootstrapClientConfig() {
-		return bootstrapClientConfig;
+	public List<BootstrapClientConfig> getBootstrapClientConfig() {
+		return bootstrapClientConfigs;
 	}
-	public void setBootstrapClientConfig(BootstrapClientConfig bootstrapClientConfig) {
-		this.bootstrapClientConfig = bootstrapClientConfig;
-		// add the bootstrap host to the properties specified for the Bootstrap Client. 
-		this.getClientProperties().put(getClientPropertiesPrefix() + this.getBootstrapProperty() + BOOTSTRAP_HOST, this.bootstrapClientConfig.getBootstrapHost());
-		// add the bootstrap port to the properties specified for the Bootstrap Client. 
-		this.getClientProperties().put(getClientPropertiesPrefix() + this.getBootstrapProperty() + BOOTSTRAP_PORT, this.bootstrapClientConfig.getBootstrapPort());
-		// add the bootstrap logical source name to the properties specified for the Bootstrap Client.
-		String commaSeparedLogicalSources = StringUtils.join(this.bootstrapClientConfig.getBootstrapLogicalSourceNames(), ",");
-		this.getClientProperties().put(getClientPropertiesPrefix() + this.getBootstrapProperty() + BOOTSTRAP_LOGICAL_SOURCES, commaSeparedLogicalSources);
-		// add property to indicate that Bootstrapping is enabled for the client
-		this.getClientProperties().put(getClientPropertiesPrefix() + BOOTSTRAP_ENABLED, true);
+	public void setBootstrapClientConfig(List<BootstrapClientConfig> bootstrapClientConfigs) {
+		this.bootstrapClientConfigs = bootstrapClientConfigs;
+		for(BootstrapClientConfig bootstrapClientConfig : bootstrapClientConfigs)
+		{
+			// add the bootstrap host to the properties specified for the Bootstrap Client. 
+			this.getClientProperties().put(getClientPropertiesPrefix() + this.getBootstrapProperty(bootstrapClientConfig) + BOOTSTRAP_HOST, bootstrapClientConfig.getBootstrapHost());
+			// add the bootstrap port to the properties specified for the Bootstrap Client. 
+			this.getClientProperties().put(getClientPropertiesPrefix() + this.getBootstrapProperty(bootstrapClientConfig) + BOOTSTRAP_PORT, bootstrapClientConfig.getBootstrapPort());
+			// add the bootstrap logical source name to the properties specified for the Bootstrap Client.
+			String commaSeparedLogicalSources = StringUtils.join(bootstrapClientConfig.getBootstrapLogicalSourceNames(), ",");
+			this.getClientProperties().put(getClientPropertiesPrefix() + this.getBootstrapProperty(bootstrapClientConfig) + BOOTSTRAP_LOGICAL_SOURCES, commaSeparedLogicalSources);
+			// add property to indicate that Bootstrapping is enabled for the client
+			this.getClientProperties().put(getClientPropertiesPrefix() + BOOTSTRAP_ENABLED, true);
+		}
 	}
 
 	/**
 	 * Helper method to get the Relay property appended with the relay ID
 	 */
-	private String getRelayProperty() {
-		return RELAY + "(" + this.relayClientConfig.getRelayId() + ")";
+	private String getRelayProperty(RelayClientConfig relayClientConfig) {
+		return RELAY + "(" + relayClientConfig.getRelayId() + ")";
 	}
 	/**
 	 * Helper method to get the Bootstrap property appended with the bootstrap ID
 	 */
-	private String getBootstrapProperty() {
-		return BOOTSTRAP + "(" + this.bootstrapClientConfig.getBootstrapId() + ")";
+	private String getBootstrapProperty(BootstrapClientConfig bootstrapClientConfig) {
+		return BOOTSTRAP + "(" + bootstrapClientConfig.getBootstrapId() + ")";
 	}
 }

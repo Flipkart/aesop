@@ -38,33 +38,37 @@
 			    </property>    
 	    	</bean>    	
     	</property>
-    	<property name="relayClientConfig">
-	    	<bean class="com.flipkart.aesop.runtime.config.RelayClientConfig">
-		    	<property name="relayId" value="100"/>
-		    	<property name="relayHost" value="localhost"/>
-		    	<property name="relayPort" value="25020"/>
-				<property name="relayLogicalSourceNames">
-					<list value-type="java.lang.String">
-						<value>com.flipkart.aesop.events.sample.person.Person</value>
-					</list>
-				</property>
-	    	</bean>
-    	</property>
-    	<!-- 
-    	<property name="bootstrapClientConfig">
-	    	<bean class="com.flipkart.aesop.runtime.config.BootstrapClientConfig">
-		    	<property name="bootstrapId" value="101"/>
-		    	<property name="bootstrapHost" value="localhost"/>
-		    	<property name="bootstrapPort" value="11145"/>
-				<property name="bootstrapLogicalSourceNames">
-					<list value-type="java.lang.String">
-						<value>com.flipkart.aesop.events.sample.person.Person</value>
-					</list>
-				</property>
-	    	</bean>
-    	</property>
-    	 -->
-		<property name="checkpointDirectoryLocation" value="../../../sandbox/client_checkpoint_directory"/> <!-- This is relative to projects root -->
+		<property name="relayClientConfigs">
+			<list>
+				<bean class="com.flipkart.aesop.runtime.config.RelayClientConfig">
+					<property name="relayId" value="100" />
+					<property name="relayHost" value="localhost" />
+					<property name="relayPort" value="25020" />
+					<property name="relayLogicalSourceNames">
+						<list value-type="java.lang.String">
+							<value>com.flipkart.aesop.events.sample.person.Person</value>
+						</list>
+					</property>
+				</bean>
+			</list>
+		</property>
+<!-- 	
+		<property name="bootstrapClientConfigs">
+			<list>
+				<bean class="com.flipkart.aesop.runtime.config.BootstrapClientConfig">
+					<property name="bootstrapId" value="101" />
+					<property name="bootstrapHost" value="localhost" />
+					<property name="bootstrapPort" value="11145" />
+					<property name="bootstrapLogicalSourceNames">
+						<list value-type="java.lang.String">
+							<value>com.flipkart.aesop.events.sample.person.Person</value>
+						</list>
+					</property>
+				</bean>
+			</list>
+		</property>
+ -->		
+ 	<property name="checkpointDirectoryLocation" value="../../../sandbox/client_checkpoint_directory"/> <!-- This is relative to projects root -->
     </bean>
 
 </beans>
