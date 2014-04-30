@@ -15,6 +15,8 @@
  */
 package com.flipkart.aesop.runtime.config;
 
+import java.util.List;
+
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
@@ -22,7 +24,7 @@ import org.springframework.util.Assert;
  * <code>BootstrapClientConfig</code> holds Databus configuration properties for a Bootstrap Client instance. This config treats the
  * properties as opaque and is intended for use as a holder of the information.
  *
- * @author Regunath B
+ * @author Regunath B, Jagadeesh Huliyar
  * @version 1.0, 13 Jan 2014
  */
 
@@ -37,9 +39,9 @@ public class BootstrapClientConfig implements InitializingBean {
 	/** The Bootstrap port number*/
 	private Integer bootstrapPort;
 	
-	/** The Logical Source name in the Bootstrap that the Bootstrap Client will consume change events from */
-	private String bootstrapLogicalSourceName;
-	
+	/** List of Logical Source names in the Bootstrap that the Bootstrap Client will consume change events from */
+	private List<String> bootstrapLogicalSourceNames;
+		
 	/**
 	 * Interface method implementation. Ensures that all mandatory properties are set
 	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
@@ -48,7 +50,7 @@ public class BootstrapClientConfig implements InitializingBean {
 		Assert.notNull(this.bootstrapId,"'bootstrapId' cannot be null. The Bootstrap Client will not be initialized");		
 		Assert.notNull(this.bootstrapHost,"'bootstrapHost' cannot be null. The Bootstrap Client will not be initialized");		
 		Assert.notNull(this.bootstrapPort,"'bootstrapPort' cannot be null. The Bootstrap Client will not be initialized");		
-		Assert.notNull(this.bootstrapLogicalSourceName,"'bootstrapLogicalSourceName' cannot be null. The Bootstrap Client will not be initialized");		
+		Assert.notNull(this.bootstrapLogicalSourceNames,"'bootstrapLogicalSourceNames' cannot be null. The Bootstrap Client will not be initialized");		
 	}
 
 	/** Getter/Setter properties*/		
@@ -70,11 +72,10 @@ public class BootstrapClientConfig implements InitializingBean {
 	public void setBootstrapPort(Integer bootstrapPort) {
 		this.bootstrapPort = bootstrapPort;
 	}
-	public String getBootstrapLogicalSourceName() {
-		return bootstrapLogicalSourceName;
+	public List<String> getBootstrapLogicalSourceNames() {
+		return bootstrapLogicalSourceNames;
 	}
-	public void setBootstrapLogicalSourceName(String bootstrapLogicalSourceName) {
-		this.bootstrapLogicalSourceName = bootstrapLogicalSourceName;
+	public void setBootstrapLogicalSourceNames(List<String> bootstrapLogicalSourceName) {
+		this.bootstrapLogicalSourceNames = bootstrapLogicalSourceName;
 	}
-		
 }

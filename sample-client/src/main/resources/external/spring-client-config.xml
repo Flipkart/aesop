@@ -12,7 +12,12 @@
     				<property name="eventConsumer">
     					<bean class="com.flipkart.aesop.client.sample.PersonEventConsumer"/>
     				</property>
-    				<property name="clientConfig" ref="clientConfig"/>
+    				<property name="logicalSources">
+						<list value-type="java.lang.String">
+							<value>com.flipkart.aesop.events.sample.person.Person</value>
+						</list>
+    				</property>
+    				
     			</bean>
     		</list>
     	</property>
@@ -38,7 +43,11 @@
 		    	<property name="relayId" value="100"/>
 		    	<property name="relayHost" value="localhost"/>
 		    	<property name="relayPort" value="25020"/>
-		    	<property name="relayLogicalSourceName" value="com.flipkart.aesop.events.sample.person.Person"/>
+				<property name="relayLogicalSourceNames">
+					<list value-type="java.lang.String">
+						<value>com.flipkart.aesop.events.sample.person.Person</value>
+					</list>
+				</property>
 	    	</bean>
     	</property>
     	<!-- 
@@ -47,7 +56,11 @@
 		    	<property name="bootstrapId" value="101"/>
 		    	<property name="bootstrapHost" value="localhost"/>
 		    	<property name="bootstrapPort" value="11145"/>
-		    	<property name="bootstrapLogicalSourceName" value="com.flipkart.aesop.events.sample.person.Person"/>
+				<property name="bootstrapLogicalSourceNames">
+					<list value-type="java.lang.String">
+						<value>com.flipkart.aesop.events.sample.person.Person</value>
+					</list>
+				</property>
 	    	</bean>
     	</property>
     	 -->
