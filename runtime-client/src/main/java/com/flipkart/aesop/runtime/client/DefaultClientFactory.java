@@ -53,11 +53,11 @@ public class DefaultClientFactory implements FactoryBean<DefaultClient>, Initial
 		// register all Event Consumers with the Relay Client
 		for (ConsumerRegistration consumerRegistration : this.consumerRegistrationList) {
 			defaultClient.registerDatabusStreamListener(consumerRegistration.getEventConsumer(), null, 
-					consumerRegistration.getClientConfig().getRelayClientConfig().getRelayLogicalSourceName());
+					consumerRegistration.getLogicalSources().toArray(new String[0]));
 			// add the bootstrap consumer only if a bootstrap config as been set
-			if (consumerRegistration.getClientConfig().getBootstrapClientConfig() != null) {
+			if (consumerRegistration.isReadFromBootstrap()) {
 				defaultClient.registerDatabusBootstrapListener(consumerRegistration.getEventConsumer(), null, 
-						consumerRegistration.getClientConfig().getBootstrapClientConfig().getBootstrapLogicalSourceName());
+						consumerRegistration.getLogicalSources().toArray(new String[0]));
 			}
 		}
 	    return defaultClient;	

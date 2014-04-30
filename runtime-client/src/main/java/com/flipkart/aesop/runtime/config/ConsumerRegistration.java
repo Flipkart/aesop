@@ -16,6 +16,8 @@
 
 package com.flipkart.aesop.runtime.config;
 
+import java.util.List;
+
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
@@ -26,7 +28,7 @@ import com.linkedin.databus.client.consumer.AbstractDatabusCombinedConsumer;
  * <code>ConsumerRegistration</code> holds information for registering a Databus {@link AbstractDatabusCombinedConsumer} with the
  * {@link DefaultClient} against a Relay Logical Source name
  *
- * @author Regunath B
+ * @author Regunath B, Jagadeesh Huliyar
  * @version 1.0, 24 Jan 2014
  */
 public class ConsumerRegistration implements InitializingBean {
@@ -34,8 +36,10 @@ public class ConsumerRegistration implements InitializingBean {
 	/** The AbstractDatabusCombinedConsumer to be registered*/
 	private AbstractDatabusCombinedConsumer eventConsumer;
 	
-	/** The Client Config */
-	private ClientConfig clientConfig;
+	/** The Logical Sources */
+	private List<String> logicalSources;
+	
+	private boolean readFromBootstrap;
 
 	/**
 	 * Interface method implementation. Ensures that a AbstractDatabusCombinedConsumer and Relay Logical Source name is set
@@ -43,7 +47,7 @@ public class ConsumerRegistration implements InitializingBean {
 	 */
 	public void afterPropertiesSet() throws Exception {
 		Assert.notNull(this.eventConsumer,"'eventConsumer' cannot be null. An AbstractDatabusCombinedConsumer must be specified");
-		Assert.notNull(this.clientConfig,"'clientConfig' cannot be null. A Client configuration pointing to a relay logical source must be specified");
+		Assert.notNull(this.logicalSources,"'logicalSources' cannot be null. Logical sources must be specified");
 	}
 
 	/** Getter/Setter methods*/	
@@ -53,11 +57,24 @@ public class ConsumerRegistration implements InitializingBean {
 	public void setEventConsumer(AbstractDatabusCombinedConsumer eventConsumer) {
 		this.eventConsumer = eventConsumer;
 	}
-	public ClientConfig getClientConfig() {
-		return clientConfig;
-	}
-	public void setClientConfig(ClientConfig clientConfig) {
-		this.clientConfig = clientConfig;
+
+	public List<String> getLogicalSources()
+	{
+		return logicalSources;
 	}
 
+	public void setLogicalSources(List<String> logicalSources)
+	{
+		this.logicalSources = logicalSources;
+	}
+
+	public boolean isReadFromBootstrap()
+	{
+		return readFromBootstrap;
+	}
+
+	public void setReadFromBootstrap(boolean readFromBootstrap)
+	{
+		this.readFromBootstrap = readFromBootstrap;
+	}
 }

@@ -15,6 +15,8 @@
  */
 package com.flipkart.aesop.runtime.config;
 
+import java.util.List;
+
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
@@ -37,8 +39,8 @@ public class RelayClientConfig implements InitializingBean {
 	/** The Relay port number*/
 	private Integer relayPort;
 	
-	/** The Logical Source name in the Relay that the Relay Client will consume change events from */
-	private String relayLogicalSourceName;
+	/** List of Logical Source names in the Relay that the Relay Client will consume change events from */
+	private List<String> relayLogicalSourceNames;
 	
 	/**
 	 * Interface method implementation. Ensures that all mandatory properties are set
@@ -48,7 +50,7 @@ public class RelayClientConfig implements InitializingBean {
 		Assert.notNull(this.relayId,"'relayId' cannot be null. The Relay Client will not be initialized");		
 		Assert.notNull(this.relayHost,"'relayHost' cannot be null. The Relay Client will not be initialized");		
 		Assert.notNull(this.relayPort,"'relayPort' cannot be null. The Relay Client will not be initialized");		
-		Assert.notNull(this.relayLogicalSourceName,"'relayLogicalSourceName' cannot be null. The Relay Client will not be initialized");		
+		Assert.notNull(this.relayLogicalSourceNames,"'relayLogicalSourceName' cannot be null. The Relay Client will not be initialized");		
 	}
 	
 	/** Getter/Setter properties*/		
@@ -70,11 +72,11 @@ public class RelayClientConfig implements InitializingBean {
 	public void setRelayId(String relayId) {
 		this.relayId = relayId;
 	}
-	public String getRelayLogicalSourceName() {
-		return relayLogicalSourceName;
+	public List<String> getRelayLogicalSourceNames() {
+		return relayLogicalSourceNames;
 	}
-	public void setRelayLogicalSourceName(String relayLogicalSourceName) {
-		this.relayLogicalSourceName = relayLogicalSourceName;
+	public void setRelayLogicalSourceNames(List<String> relayLogicalSourceNames) {
+		this.relayLogicalSourceNames = relayLogicalSourceNames;
 	}	
 	
 }

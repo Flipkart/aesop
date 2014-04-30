@@ -19,6 +19,7 @@ package com.flipkart.aesop.runtime.config;
 import java.io.File;
 import java.util.Properties;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 import org.trpr.platform.core.PlatformException;
@@ -117,7 +118,8 @@ public class ClientConfig implements InitializingBean {
 		// add the relay port to the properties specified for the Relay Client. 
 		this.getClientProperties().put(getClientPropertiesPrefix() + this.getRelayProperty() + RELAY_PORT, this.relayClientConfig.getRelayPort());
 		// add the relay logical source name to the properties specified for the Relay Client. 
-		this.getClientProperties().put(getClientPropertiesPrefix() + this.getRelayProperty() + RELAY_LOGICAL_SOURCES, this.relayClientConfig.getRelayLogicalSourceName());
+		String commaSeparedLogicalSources = StringUtils.join(this.relayClientConfig.getRelayLogicalSourceNames(), ",");
+		this.getClientProperties().put(getClientPropertiesPrefix() + this.getRelayProperty() + RELAY_LOGICAL_SOURCES, commaSeparedLogicalSources);
 	}	
 	public BootstrapClientConfig getBootstrapClientConfig() {
 		return bootstrapClientConfig;
@@ -128,8 +130,9 @@ public class ClientConfig implements InitializingBean {
 		this.getClientProperties().put(getClientPropertiesPrefix() + this.getBootstrapProperty() + BOOTSTRAP_HOST, this.bootstrapClientConfig.getBootstrapHost());
 		// add the bootstrap port to the properties specified for the Bootstrap Client. 
 		this.getClientProperties().put(getClientPropertiesPrefix() + this.getBootstrapProperty() + BOOTSTRAP_PORT, this.bootstrapClientConfig.getBootstrapPort());
-		// add the bootstrap logical source name to the properties specified for the Bootstrap Client. 
-		this.getClientProperties().put(getClientPropertiesPrefix() + this.getBootstrapProperty() + BOOTSTRAP_LOGICAL_SOURCES, this.bootstrapClientConfig.getBootstrapLogicalSourceName());
+		// add the bootstrap logical source name to the properties specified for the Bootstrap Client.
+		String commaSeparedLogicalSources = StringUtils.join(this.bootstrapClientConfig.getBootstrapLogicalSourceNames(), ",");
+		this.getClientProperties().put(getClientPropertiesPrefix() + this.getBootstrapProperty() + BOOTSTRAP_LOGICAL_SOURCES, commaSeparedLogicalSources);
 		// add property to indicate that Bootstrapping is enabled for the client
 		this.getClientProperties().put(getClientPropertiesPrefix() + BOOTSTRAP_ENABLED, true);
 	}
@@ -146,5 +149,4 @@ public class ClientConfig implements InitializingBean {
 	private String getBootstrapProperty() {
 		return BOOTSTRAP + "(" + this.bootstrapClientConfig.getBootstrapId() + ")";
 	}
-	
 }
