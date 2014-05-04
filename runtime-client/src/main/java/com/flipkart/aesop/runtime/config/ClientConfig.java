@@ -37,7 +37,7 @@ import org.trpr.platform.runtime.common.RuntimeVariables;
 public class ClientConfig implements InitializingBean {
 
 	/** The property name prefix for all Databus client properties*/
-	private static final String CLIENT_PROPERTIES_PREFIX = "databus.client.";
+	protected static final String CLIENT_PROPERTIES_PREFIX = "databus.client.";
 	
 	/** Property names for referencing the Relay*/
 	private static final String RELAY="runtime.relay";
