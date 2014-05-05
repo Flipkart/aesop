@@ -1,12 +1,9 @@
 /*
  * Copyright 2012-2015, the original author or authors.
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -47,51 +44,57 @@ import com.linkedin.databus2.schemas.VersionedSchema;
  * @author Shoury B
  * @version 1.0, 07 Mar 2014
  */
-@SuppressWarnings("rawtypes")
-public class MysqlTransactionManagerImpl implements MysqlTransactionManager{
-	/** Logger for this class*/
+@SuppressWarnings ("rawtypes")
+public class MysqlTransactionManagerImpl implements MysqlTransactionManager
+{
+	/** Logger for this class */
 	private static final Logger LOGGER = LogFactory.getLogger(MysqlTransactionManagerImpl.class);
-	/** Databus Event Buffer to which all the events are appended*/
+	/** Databus Event Buffer to which all the events are appended */
 	private final DbusEventBufferAppendable eventBuffer;
-	/** Max SCN Reader Writter to persist max SCN*/
+	/** Max SCN Reader Writter to persist max SCN */
 	private final MaxSCNReaderWriter maxSCNReaderWriter;
-	/** Databus events statistics collector*/
+	/** Databus events statistics collector */
 	private final DbusEventsStatisticsCollector dbusEventsStatisticsCollector;
-	/** Event Manager map containing mapping of source to avro event Manager*/
+	/** Event Manager map containing mapping of source to avro event Manager */
 	private final Map<Integer, MysqlAvroEventManager> eventManagerMap;
-	/** SCN tracker*/
+	/** SCN tracker */
 	private final AtomicLong sinceSCN;
-	/**table name to source id mapping*/
+	/** table name to source id mapping */
 	private final Map<String, Short> tableUriToSrcIdMap;
-	/**table name to source name mapping*/
+	/** table name to source name mapping */
 	private final Map<String, String> tableUriToSrcNameMap;
-	/** Current table name of events being handled*/
+	/** Current table name of events being handled */
 	private String currTableName = "";
-	/**Current active transaction */
+	/** Current active transaction */
 	private Transaction transaction = null;
-	/** Current table id of events being handled*/
+	/** Current table id of events being handled */
 	private long currTableId = -1;
-	/** Persource transaction*/
+	/** Persource transaction */
 	private PerSourceTransaction perSourceTransaction = null;
-	/** Tracks begin of a transaction*/
+	/** Tracks begin of a transaction */
 	private boolean beginTxnSeen = false;
-	/** Size of current transaction*/
+	/** Size of current transaction */
 	private long currTxnSizeInBytes = 0;
-	/** Current Transaction timestamp*/
+	/** Current Transaction timestamp */
 	private long currTxnTimestamp = 0;
-	/** Current Transaction timestamp*/
+	/** Current Transaction timestamp */
 	private long currTxnStartReadTimestamp = 0;
-	/** Current bin log file number*/
+	/** Current bin log file number */
 	private int currFileNum;
-	/** Bin log event mapper for mapping individual bin log events*/
-	private BinLogEventMapper binLogEventMapper;
-	/** Schema registry service which maintains currently active schemas*/
+	/** Bin log event mappers for mapping individual bin log events */
+	private Map<Integer, BinLogEventMapper> binLogEventMappers;
+	/** Schema registry service which maintains currently active schemas */
 	private SchemaRegistryService schemaRegistryService;
 
-	/**Constructor for the class*/
-	public MysqlTransactionManagerImpl(final DbusEventBufferAppendable eventBuffer ,final MaxSCNReaderWriter maxSCNReaderWriter,final DbusEventsStatisticsCollector dbusEventsStatisticsCollector,final Map<Integer,
-			MysqlAvroEventManager> eventManagerMap, final int currFileNum, final Map<String, Short> tableUriToSrcIdMap,final Map<String, String> tableUriToSrcNameMap, final SchemaRegistryService schemaRegistryService, 
-			final AtomicLong sinceSCN,final BinLogEventMapper binLogEventMapper) {
+	/** Constructor for the class */
+	public MysqlTransactionManagerImpl(final DbusEventBufferAppendable eventBuffer,
+	        final MaxSCNReaderWriter maxSCNReaderWriter,
+	        final DbusEventsStatisticsCollector dbusEventsStatisticsCollector,
+	        final Map<Integer, MysqlAvroEventManager> eventManagerMap, final int currFileNum,
+	        final Map<String, Short> tableUriToSrcIdMap, final Map<String, String> tableUriToSrcNameMap,
+	        final SchemaRegistryService schemaRegistryService, final AtomicLong sinceSCN,
+	        Map<Integer, BinLogEventMapper> binLogEventMappers)
+	{
 		this.eventBuffer = eventBuffer;
 		this.maxSCNReaderWriter = maxSCNReaderWriter;
 		this.dbusEventsStatisticsCollector = dbusEventsStatisticsCollector;
@@ -101,18 +104,22 @@ public class MysqlTransactionManagerImpl implements MysqlTransactionManager{
 		this.tableUriToSrcNameMap = tableUriToSrcNameMap;
 		this.schemaRegistryService = schemaRegistryService;
 		this.sinceSCN = sinceSCN;
-		this.binLogEventMapper = binLogEventMapper;
+		this.binLogEventMappers = binLogEventMappers;
 	}
 
 	/**
 	 * Creates new transaction
 	 */
 	@Override
-	public void startXtion(){
+	public void startXtion()
+	{
 		currTxnStartReadTimestamp = System.nanoTime();
-		if (transaction == null){
+		if (transaction == null)
+		{
 			transaction = new Transaction();
-		}else{
+		}
+		else
+		{
 			LOGGER.warn("Illegal Start Transaction State");
 			throw new DatabusRuntimeException("Got startXtion without an endXtion for previous transaction");
 		}
@@ -124,22 +131,30 @@ public class MysqlTransactionManagerImpl implements MysqlTransactionManager{
 	 * @see com.flipkart.aesop.runtime.producer.txnprocessor.TransactionProcessor#endXtion(long)
 	 */
 	@Override
-	public void endXtion(long eventTimeStamp) {
+	public void endXtion(long eventTimeStamp)
+	{
 		currTxnTimestamp = eventTimeStamp * 1000000L;
 		long txnReadLatency = System.nanoTime() - currTxnStartReadTimestamp;
-		try{
-			if(transaction.getScn() != -1){
+		try
+		{
+			if (transaction.getScn() != -1)
+			{
 				transaction.setSizeInBytes(currTxnSizeInBytes);
 				transaction.setTxnNanoTimestamp(currTxnTimestamp);
 				transaction.setTxnReadLatencyNanos(txnReadLatency);
-				try{
+				try
+				{
 					onEndTransaction(transaction);
-				}catch (DatabusException e3){
-					LOGGER.error("Got exception in the transaction handler ",e3);
+				}
+				catch (DatabusException e3)
+				{
+					LOGGER.error("Got exception in the transaction handler ", e3);
 					throw new DatabusRuntimeException(e3);
 				}
 			}
-		}finally{
+		}
+		finally
+		{
 			resetTxn();
 		}
 	}
@@ -148,7 +163,8 @@ public class MysqlTransactionManagerImpl implements MysqlTransactionManager{
 	 * Resets the transaction in case of rollback. Resets the transaction state.
 	 */
 	@Override
-	public void resetTxn(){
+	public void resetTxn()
+	{
 		currTableName = "";
 		currTableId = -1;
 		perSourceTransaction = null;
@@ -157,23 +173,29 @@ public class MysqlTransactionManagerImpl implements MysqlTransactionManager{
 	}
 
 	/**
-	 * Identifies the source from which change events are being received. This method would be invoked when the table map event is received. 
+	 * Identifies the source from which change events are being received. This method would be invoked when the table
+	 * map event is received.
 	 * @param newTableName table name from which event is being received
 	 * @param newTableId table id from which event is being received
 	 */
 	@Override
-	public void startSource(String newTableName, long newTableId){
+	public void startSource(String newTableName, long newTableId)
+	{
 		currTableName = newTableName;
 		currTableId = newTableId;
-		if (perSourceTransaction == null || transaction == null){
+		if (perSourceTransaction == null || transaction == null)
+		{
 			Short srcId = tableUriToSrcIdMap.get(currTableName);
-			if (null == srcId){
-				LOGGER.warn("Could not find a matching logical source for table Uri (" + currTableName + ")" );
+			if (null == srcId)
+			{
+				LOGGER.warn("Could not find a matching logical source for table Uri (" + currTableName + ")");
 				return;
 			}
 			perSourceTransaction = new PerSourceTransaction(srcId);
 			transaction.mergePerSourceTransaction(perSourceTransaction);
-		}else{
+		}
+		else
+		{
 			String errorMessage = "Seems like a startSource has been received without an endSource for previous source";
 			LOGGER.error(errorMessage);
 			throw new DatabusRuntimeException(errorMessage);
@@ -184,10 +206,14 @@ public class MysqlTransactionManagerImpl implements MysqlTransactionManager{
 	 * Handles change of source event. Say whenever table name changes.
 	 */
 	@Override
-	public void endSource(){
-		if (perSourceTransaction != null){
+	public void endSource()
+	{
+		if (perSourceTransaction != null)
+		{
 			perSourceTransaction = null;
-		}else{
+		}
+		else
+		{
 			String errorMessage = "perSourceTransaction should not be null in endSource()";
 			LOGGER.error(errorMessage);
 			throw new DatabusRuntimeException(errorMessage);
@@ -201,195 +227,264 @@ public class MysqlTransactionManagerImpl implements MysqlTransactionManager{
 	 * @param databusOpcode operation code indicating nature of change such as insertion,deletion or updation.
 	 */
 	@Override
-	public void performChanges(BinlogEventV4Header eventHeader, List<Row> rowList, final DbusOpcode databusOpcode){
-		try{
-			VersionedSchema schema = schemaRegistryService.fetchLatestVersionedSchemaBySourceName(tableUriToSrcNameMap.get(currTableName));
+	public void performChanges(BinlogEventV4Header eventHeader, List<Row> rowList, final DbusOpcode databusOpcode)
+	{
+		try
+		{
+			VersionedSchema schema =
+			        schemaRegistryService.fetchLatestVersionedSchemaBySourceName(tableUriToSrcNameMap
+			                .get(currTableName));
 			LOGGER.debug("Schema obtained for table " + currTableName + " = " + schema);
-			if(schema != null){
-				List<DbChangeEntry> entries = eventManagerMap.get(Integer.valueOf(tableUriToSrcIdMap.get(currTableName))).frameAvroRecord(eventHeader,rowList,databusOpcode, binLogEventMapper,schema.getSchema(),frameSCN(currFileNum, (int)eventHeader.getPosition())) ;
-				for(DbChangeEntry entry: entries){
+			if (schema != null)
+			{
+				List<DbChangeEntry> entries =
+				        eventManagerMap.get(Integer.valueOf(tableUriToSrcIdMap.get(currTableName))).frameAvroRecord(
+				                eventHeader, rowList, databusOpcode, binLogEventMappers, schema.getSchema(),
+				                frameSCN(currFileNum, (int) eventHeader.getPosition()));
+				for (DbChangeEntry entry : entries)
+				{
 					perSourceTransaction.mergeDbChangeEntrySet(entry);
 				}
-			}else{
+			}
+			else
+			{
 				LOGGER.info("Events recieved from uninterested sources " + currTableName);
 			}
-		}catch (Exception e){
+		}
+		catch (Exception e)
+		{
 			e.printStackTrace();
 			LOGGER.error("Exception occurred while persisting changes to transaction " + e.getMessage());
 		}
 	}
-	
 
-	/** Getters/Setters for the members*/
+	/** Getters/Setters for the members */
 	@Override
-	public String getCurrTableName() {
+	public String getCurrTableName()
+	{
 		return currTableName;
 	}
 
 	@Override
-	public void setCurrFileNum(int currFileNum) {
+	public void setCurrFileNum(int currFileNum)
+	{
 		this.currFileNum = currFileNum;
 	}
-	
+
 	@Override
-	public long getCurrTableId() {
+	public long getCurrTableId()
+	{
 		return currTableId;
 	}
-	public void setCurrTableName(String currTableName) {
+
+	public void setCurrTableName(String currTableName)
+	{
 		this.currTableName = currTableName;
 	}
 
-	public Transaction getTransaction() {
+	public Transaction getTransaction()
+	{
 		return transaction;
 	}
 
-	public void setTransaction(Transaction transaction) {
+	public void setTransaction(Transaction transaction)
+	{
 		this.transaction = transaction;
 	}
 
-	public void setCurrTableId(long currTableId) {
+	public void setCurrTableId(long currTableId)
+	{
 		this.currTableId = currTableId;
 	}
 
-	public PerSourceTransaction getPerSourceTransaction() {
+	public PerSourceTransaction getPerSourceTransaction()
+	{
 		return perSourceTransaction;
 	}
 
-	public void setPerSourceTransaction(PerSourceTransaction perSourceTransaction) {
+	public void setPerSourceTransaction(PerSourceTransaction perSourceTransaction)
+	{
 		this.perSourceTransaction = perSourceTransaction;
 	}
 
-	public boolean isBeginTxnSeen() {
+	public boolean isBeginTxnSeen()
+	{
 		return beginTxnSeen;
 	}
 
-	public void setBeginTxnSeen(boolean beginTxnSeen) {
+	public void setBeginTxnSeen(boolean beginTxnSeen)
+	{
 		this.beginTxnSeen = beginTxnSeen;
 	}
 
-	public long getCurrTxnSizeInBytes() {
+	public long getCurrTxnSizeInBytes()
+	{
 		return currTxnSizeInBytes;
 	}
 
-	public void setCurrTxnSizeInBytes(long currTxnSizeInBytes) {
+	public void setCurrTxnSizeInBytes(long currTxnSizeInBytes)
+	{
 		this.currTxnSizeInBytes = currTxnSizeInBytes;
 	}
 
-	public long getCurrTxnTimestamp() {
+	public long getCurrTxnTimestamp()
+	{
 		return currTxnTimestamp;
 	}
 
-	public void setCurrTxnTimestamp(long currTxnTimestamp) {
+	public void setCurrTxnTimestamp(long currTxnTimestamp)
+	{
 		this.currTxnTimestamp = currTxnTimestamp;
 	}
 
-	public long getCurrTxnStartReadTimestamp() {
+	public long getCurrTxnStartReadTimestamp()
+	{
 		return currTxnStartReadTimestamp;
 	}
 
-	public void setCurrTxnStartReadTimestamp(long currTxnStartReadTimestamp) {
+	public void setCurrTxnStartReadTimestamp(long currTxnStartReadTimestamp)
+	{
 		this.currTxnStartReadTimestamp = currTxnStartReadTimestamp;
 	}
 
-	public int getCurrFileNum() {
+	public int getCurrFileNum()
+	{
 		return currFileNum;
 	}
 
-	public BinLogEventMapper getBinLogEventMapper() {
-		return binLogEventMapper;
+	public Map<Integer, BinLogEventMapper> getBinLogEventMappers()
+	{
+		return binLogEventMappers;
 	}
 
-	public void setBinLogEventMapper(BinLogEventMapper binLogEventMapper) {
-		this.binLogEventMapper = binLogEventMapper;
+	public void setBinLogEventMappers(Map<Integer, BinLogEventMapper> binLogEventMapper)
+	{
+		this.binLogEventMappers = binLogEventMapper;
 	}
 
-	public SchemaRegistryService getSchemaRegistryService() {
+	public SchemaRegistryService getSchemaRegistryService()
+	{
 		return schemaRegistryService;
 	}
 
-	public void setSchemaRegistryService(SchemaRegistryService schemaRegistryService) {
+	public void setSchemaRegistryService(SchemaRegistryService schemaRegistryService)
+	{
 		this.schemaRegistryService = schemaRegistryService;
 	}
 
-	public DbusEventBufferAppendable getEventBuffer() {
+	public DbusEventBufferAppendable getEventBuffer()
+	{
 		return eventBuffer;
 	}
 
-	public MaxSCNReaderWriter getMaxSCNReaderWriter() {
+	public MaxSCNReaderWriter getMaxSCNReaderWriter()
+	{
 		return maxSCNReaderWriter;
 	}
 
-	public DbusEventsStatisticsCollector getDbusEventsStatisticsCollector() {
+	public DbusEventsStatisticsCollector getDbusEventsStatisticsCollector()
+	{
 		return dbusEventsStatisticsCollector;
 	}
 
-	public Map<Integer, MysqlAvroEventManager> getEventFactoryMap() {
+	public Map<Integer, MysqlAvroEventManager> getEventFactoryMap()
+	{
 		return eventManagerMap;
 	}
 
-	public AtomicLong getSinceSCN() {
+	public AtomicLong getSinceSCN()
+	{
 		return sinceSCN;
 	}
 
-	public Map<String, Short> getTableUriToSrcIdMap() {
+	public Map<String, Short> getTableUriToSrcIdMap()
+	{
 		return tableUriToSrcIdMap;
 	}
 
-	public Map<String, String> getTableUriToSrcNameMap() {
+	public Map<String, String> getTableUriToSrcNameMap()
+	{
 		return tableUriToSrcNameMap;
 	}
-	
-	/**Frames SCN from logid and offset. Lower 32 bits are offset and higher 32 bits are logid
+
+	/**
+	 * Frames SCN from logid and offset. Lower 32 bits are offset and higher 32 bits are logid
 	 * @param logId bin log file number
 	 * @param offset position in bin log file to start retrieval from
 	 * @return scn system change number
 	 */
-	private long frameSCN(int logId, int offset){
+	private long frameSCN(int logId, int offset)
+	{
 		long scn = logId;
 		scn <<= 32;
 		scn |= offset;
 		return scn;
 	}
 
-	/**Invoked by {@link MysqlTransactionManagerImpl#endXtion(long)}.Adds events to event buffer and saves the maximum SCN.
+	/**
+	 * Invoked by {@link MysqlTransactionManagerImpl#endXtion(long)}.Adds events to event buffer and saves the maximum
+	 * SCN.
 	 * @param txn transaction to end
 	 */
-	private void onEndTransaction(Transaction txn) throws DatabusException {
-		try{
+	private void onEndTransaction(Transaction txn) throws DatabusException
+	{
+		try
+		{
 			addTxnToBuffer(txn);
 			maxSCNReaderWriter.saveMaxScn(txn.getScn());
-		}catch (UnsupportedKeyException e){
+		}
+		catch (UnsupportedKeyException e)
+		{
 			LOGGER.error("Got UnsupportedKeyException exception while adding txn (" + txn + ") to the buffer", e);
 			throw new DatabusException(e);
-		}catch (EventCreationException e){
+		}
+		catch (EventCreationException e)
+		{
 			LOGGER.error("Got EventCreationException exception while adding txn (" + txn + ") to the buffer", e);
 			throw new DatabusException(e);
 		}
 	}
 
-	/**Invoked by {@link MysqlTransactionManagerImpl#onEndTransaction(Transaction)}.Adds events to event buffer.
+	/**
+	 * Invoked by {@link MysqlTransactionManagerImpl#onEndTransaction(Transaction)}.Adds events to event buffer.
 	 * @param txn transaction to be persisted
 	 */
-	private void addTxnToBuffer(Transaction txn) throws DatabusException, UnsupportedKeyException, EventCreationException{
+	private void addTxnToBuffer(Transaction txn) throws DatabusException, UnsupportedKeyException,
+	        EventCreationException
+	{
 		eventBuffer.startEvents();
 		long scn = txn.getScn();
-		for (PerSourceTransaction t: txn.getOrderedPerSourceTransactions() ){
-			for (DbChangeEntry changeEntry : t.getDbChangeEntrySet()){
+		for (PerSourceTransaction t : txn.getOrderedPerSourceTransactions())
+		{
+			for (DbChangeEntry changeEntry : t.getDbChangeEntrySet())
+			{
 				int length = 0;
-				try{
-					length = eventManagerMap.get(t.getSrcId()).createAndAppendEvent(changeEntry,eventBuffer,false,dbusEventsStatisticsCollector);
-					if ( length < 0){
-						LOGGER.error("Unable to append DBChangeEntry (" + changeEntry + ") to event buffer !! EVB State : " + eventBuffer);
-						throw new DatabusException("Unable to append DBChangeEntry (" + changeEntry + ") to event buffer !!");
+				try
+				{
+					length =
+					        eventManagerMap.get(t.getSrcId()).createAndAppendEvent(changeEntry, eventBuffer, false,
+					                dbusEventsStatisticsCollector);
+					if (length < 0)
+					{
+						LOGGER.error("Unable to append DBChangeEntry (" + changeEntry
+						        + ") to event buffer !! EVB State : " + eventBuffer);
+						throw new DatabusException("Unable to append DBChangeEntry (" + changeEntry
+						        + ") to event buffer !!");
 					}
 					LOGGER.debug("Added entry " + changeEntry + " successfully to event buffer");
-				}catch (DatabusException e){
+				}
+				catch (DatabusException e)
+				{
 					LOGGER.error("Got databus exception :", e);
 					throw e;
-				}catch (UnsupportedKeyException e){
+				}
+				catch (UnsupportedKeyException e)
+				{
 					LOGGER.error("Got UnsupportedKeyException :", e);
 					throw e;
-				}catch (EventCreationException e){
+				}
+				catch (EventCreationException e)
+				{
 					LOGGER.error("Got EventCreationException :", e);
 					throw e;
 				}
@@ -397,6 +492,5 @@ public class MysqlTransactionManagerImpl implements MysqlTransactionManager{
 		}
 		eventBuffer.endEvents(scn, dbusEventsStatisticsCollector);
 	}
-
 
 }

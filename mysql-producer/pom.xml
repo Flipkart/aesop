@@ -68,6 +68,10 @@
 		  		<artifactId>log4j</artifactId>
 		  		<groupId>log4j</groupId>
 		  	</exclusion>
+		  	<exclusion>
+		  		<artifactId>open-replicator</artifactId>
+		  		<groupId>com.google</groupId>
+		  	</exclusion>
 		  </exclusions>
 		</dependency>
 		<dependency>
@@ -116,7 +120,7 @@
         <dependency>
         	<groupId>open-replicator</groupId>
         	<artifactId>open-replicator</artifactId>
-        	<version>1.0.5</version>
+        	<version>1.0.6</version>
         	<scope>compile</scope>
 			<exclusions>
 			      <exclusion>

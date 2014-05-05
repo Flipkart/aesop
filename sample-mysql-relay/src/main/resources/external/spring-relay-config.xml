@@ -21,11 +21,7 @@
     <bean id="mysqlPersonProducer" class="com.flipkart.aesop.runtime.producer.MysqlEventProducer">
     	<property name="physicalSourceConfig" ref="physicalSourceConfig"/>
     	<property name="eventsMap" ref="eventsMapRef"/>
-   		<property name="binLogEventMapper">
-    		<bean class="com.flipkart.aesop.runtime.producer.mapper.impl.PersonBinaryLogEventMapper">
-    		    <property name="orToAvroMapper" ref="orToAvroMapper"/>
-    		</bean>
-    	</property>
+   		<property name="binLogEventMappers" ref="binLogEventMappersRef"/>
     </bean>
     <bean id="orToAvroMapper" class="com.flipkart.aesop.runtime.producer.mapper.impl.ORToAvroMapper"/>
     
@@ -53,13 +49,24 @@
   	<bean id="updateEventV2Processor" class="com.flipkart.aesop.runtime.producer.eventprocessor.impl.UpdateEventV2Processor"/>
   	<bean id="deleteEventV2Processor" class="com.flipkart.aesop.runtime.producer.eventprocessor.impl.DeleteEventV2Processor"/>
   	
+  	<util:map id="binLogEventMappersRef" key-type="java.lang.Integer" value-type="com.flipkart.aesop.runtime.producer.mapper.BinLogEventMapper">
+    	<!--<entry key="40" value-ref="personBinaryLogEventMapper"/> -->
+    	<entry key="40" value-ref="defaultBinLogEventMapper"/>
+    </util:map>
+  	<bean id="personBinaryLogEventMapper" class="com.flipkart.aesop.runtime.producer.mapper.impl.PersonBinaryLogEventMapper">
+    	<property name="orToAvroMapper" ref="orToAvroMapper"/>
+    </bean>
+    <bean id="defaultBinLogEventMapper" class="com.flipkart.aesop.runtime.producer.mapper.impl.DefaultBinLogEventMapper">
+    	<property name="orToAvroMapper" ref="orToAvroMapper"/>
+    </bean>
+    
     <bean id="physicalSourceConfig" class="com.linkedin.databus2.relay.config.PhysicalSourceConfig">
 		<property name="id" value="1"/>
 		<property name="name" value="personPhysicalSource"/>
 		<property name="uri" value="mysql://or_test%2For_test@localhost:3306/3306/mysql-bin"/>
 		<property name="sources">
 			<list>
-				<bean id="logicalSourceConfig" class="com.linkedin.databus2.relay.config.LogicalSourceConfig">
+				<bean id="logicalSourceConfig1" class="com.linkedin.databus2.relay.config.LogicalSourceConfig">
 					<property name="id" value="40"/>
 					<property name="name" value="com.flipkart.aesop.events.ortest.Person"/>
 					<property name="uri" value="or_test.person"/>

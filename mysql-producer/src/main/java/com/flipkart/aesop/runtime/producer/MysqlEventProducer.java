@@ -1,12 +1,9 @@
 /*
  * Copyright 2012-2015, the original author or authors.
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -30,7 +27,6 @@ import org.springframework.util.Assert;
 import org.trpr.platform.core.impl.logging.LogFactory;
 import org.trpr.platform.core.spi.logging.Logger;
 
-import com.flipkart.aesop.runtime.producer.AbstractEventProducer;
 import com.flipkart.aesop.runtime.producer.avro.MysqlAvroEventManager;
 import com.flipkart.aesop.runtime.producer.eventlistener.OpenReplicationListener;
 import com.flipkart.aesop.runtime.producer.eventprocessor.BinLogEventProcessor;
@@ -44,17 +40,19 @@ import com.linkedin.databus2.core.DatabusException;
 import com.linkedin.databus2.producers.EventCreationException;
 import com.linkedin.databus2.relay.config.LogicalSourceStaticConfig;
 import com.linkedin.databus2.relay.config.PhysicalSourceStaticConfig;
+
 /**
- * <code>MysqlEventProducer</code> kick starts bin log event listener to listen to Mysql events using open replicator library and in 
- * turn creates change events of {@link GenericRecord} sub-type T.
- *
+ * <code>MysqlEventProducer</code> kick starts bin log event listener to listen to Mysql events using open replicator
+ * library and in
+ * turn creates change events of {@link GenericRecord}
  * @author Shoury B
  * @version 1.0, 07 Mar 2014
  */
-public class MysqlEventProducer<T extends GenericRecord> extends AbstractEventProducer implements InitializingBean {
-	/** Logger for this class*/
+public class MysqlEventProducer extends AbstractEventProducer implements InitializingBean
+{
+	/** Logger for this class */
 	private static final Logger LOGGER = LogFactory.getLogger(MysqlEventProducer.class);
-	/** Default Mysql port*/
+	/** Default Mysql port */
 	private static final Integer DEFAULT_MYSQL_PORT = 3306;
 	/** Pattern for extracting /3306/mysql-bin out of mysql://or_test%2For_test@localhost:3306/3306/mysql-bin */
 	private static final Pattern PATH_PATTERN = Pattern.compile("/([0-9]+)/[a-z|A-Z|-]+");
@@ -63,70 +61,86 @@ public class MysqlEventProducer<T extends GenericRecord> extends AbstractEventPr
 	/** Index of bin log prefix in pattern match group */
 	private static final int BIN_LOG_PREFIX = 2;
 	/** Event mapper which maps bin log events to one of schemas registered */
-	protected BinLogEventMapper<T> binLogEventMapper;
-	/** Open Replicator which listens and parses bin log events from Mysql*/
+	protected Map<Integer, BinLogEventMapper> binLogEventMappers;
+	/** Open Replicator which listens and parses bin log events from Mysql */
 	protected OpenReplicator openReplicator;
-	/** Mysql transaction manager*/
+	/** Mysql transaction manager */
 	protected MysqlTransactionManager mysqlTxnManager;
-	/** Event Id to Event Processor map*/
-	protected Map<Integer,BinLogEventProcessor> eventsMap;
-	
+	/** Event Id to Event Processor map */
+	protected Map<Integer, BinLogEventProcessor> eventsMap;
 
 	/**
 	 * Interface method implementation. Checks for mandatory dependencies and creates the Open Replicator
 	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
 	 */
 	@Override
-	public void afterPropertiesSet() throws Exception {
-		Assert.notNull(this.binLogEventMapper,"'binLogEventMapper' cannot be null. No bin log event mapper found. This Mysql Events producer will not be initialized");
-		Assert.notNull(this.eventsMap,"'eventsMap' cannot be null. eventsMap is not initialized properly.This Mysql Events producer will not be initialized");
+	public void afterPropertiesSet() throws Exception
+	{
+		Assert.notNull(this.binLogEventMappers,
+		        "'binLogEventMapper' cannot be null. No bin log event mapper found. This Mysql Events producer will not be initialized");
+		Assert.notNull(this.eventsMap,
+		        "'eventsMap' cannot be null. eventsMap is not initialized properly.This Mysql Events producer will not be initialized");
 	}
-	
+
 	/**
 	 * Starting point for this event producer. Starts Open Replicator listener
 	 * @param sinceSCN starting SCN
 	 * @see com.linkedin.databus2.producers.EventProducer#start(long)
 	 */
-	public void start (long sinceSCN) {
+	public void start(long sinceSCN)
+	{
 		this.sinceSCN.set(sinceSCN);
 		openReplicator = new OpenReplicator();
 		String binlogFile;
-		try{
-			String binlogFilePrefix =  processUri(new URI(physicalSourceStaticConfig.getUri()));
+		try
+		{
+			String binlogFilePrefix = processUri(new URI(physicalSourceStaticConfig.getUri()));
 			int offset = offset(sinceSCN);
 			int logid = logid(sinceSCN);
 			LOGGER.debug("SCN : " + sinceSCN + " logid : " + logid);
 			binlogFile = String.format("%s.%06d", binlogFilePrefix, logid);
 			LOGGER.debug("Bin Log File Name : " + binlogFile);
-			Map<String,Short> tableUriToSrcIdMap = new HashMap<String, Short>();
-			Map<String,String> tableUriToSrcNameMap = new HashMap<String, String>();
-			Map<Integer,MysqlAvroEventManager> eventManagersMap = new HashMap<Integer, MysqlAvroEventManager>();
-			for(LogicalSourceStaticConfig sourceConfig : physicalSourceStaticConfig.getSources()){
+			Map<String, Short> tableUriToSrcIdMap = new HashMap<String, Short>();
+			Map<String, String> tableUriToSrcNameMap = new HashMap<String, String>();
+			Map<Integer, MysqlAvroEventManager> eventManagersMap = new HashMap<Integer, MysqlAvroEventManager>();
+			for (LogicalSourceStaticConfig sourceConfig : physicalSourceStaticConfig.getSources())
+			{
 				tableUriToSrcIdMap.put(sourceConfig.getUri().toLowerCase(), sourceConfig.getId());
 				tableUriToSrcNameMap.put(sourceConfig.getUri().toLowerCase(), sourceConfig.getName());
 				MysqlAvroEventManager manager = null;
-				try{
+				try
+				{
 					manager = buildEventManagers(sourceConfig, physicalSourceStaticConfig);
-				}catch (Exception ex){
+				}
+				catch (Exception ex)
+				{
 					LOGGER.error("Got exception while building monitored sources for config :" + sourceConfig, ex);
 					throw new InvalidConfigException(ex);
 				}
-				eventManagersMap.put(Integer.valueOf(sourceConfig.getId()),manager);
+				eventManagersMap.put(Integer.valueOf(sourceConfig.getId()), manager);
 			}
-			mysqlTxnManager = new MysqlTransactionManagerImpl(eventBuffer, maxScnReaderWriter, dbusEventsStatisticsCollector, eventManagersMap,
-					logid,tableUriToSrcIdMap , tableUriToSrcNameMap,schemaRegistryService,this.sinceSCN,binLogEventMapper);
-			OpenReplicationListener orl = new OpenReplicationListener(mysqlTxnManager,eventsMap,binlogFilePrefix);
+			mysqlTxnManager =
+			        new MysqlTransactionManagerImpl(eventBuffer, maxScnReaderWriter, dbusEventsStatisticsCollector,
+			                eventManagersMap, logid, tableUriToSrcIdMap, tableUriToSrcNameMap, schemaRegistryService,
+			                this.sinceSCN, binLogEventMappers);
+			OpenReplicationListener orl = new OpenReplicationListener(mysqlTxnManager, eventsMap, binlogFilePrefix);
 			openReplicator.setBinlogFileName(binlogFile);
 			openReplicator.setBinlogPosition(offset);
 			openReplicator.setBinlogEventListener(orl);
 			openReplicator.start();
-		}catch (URISyntaxException u){
+		}
+		catch (URISyntaxException u)
+		{
 			LOGGER.error("Exception occurred while processing uri : " + u);
 			return;
-		}catch (InvalidConfigException e){
+		}
+		catch (InvalidConfigException e)
+		{
 			LOGGER.error("Exception occurred while processing uri : " + e);
 			return;
-		}catch (Exception e){
+		}
+		catch (Exception e)
+		{
 			LOGGER.error("Error occurred while starting open replication.." + e);
 			return;
 		}
@@ -143,35 +157,41 @@ public class MysqlEventProducer<T extends GenericRecord> extends AbstractEventPr
 	 * @throws UnsupportedKeyException Thrown when the data type of the "key" field is not a supported type
 	 * @throws InvalidConfigException Throws when invalid source config is present in configuration provided
 	 */
-	public MysqlAvroEventManager buildEventManagers(LogicalSourceStaticConfig sourceConfig,PhysicalSourceStaticConfig pConfig) throws DatabusException, EventCreationException, UnsupportedKeyException,InvalidConfigException{
-		MysqlAvroEventManager manager = new MysqlAvroEventManager(sourceConfig.getId(),(short)pConfig.getId());
+	public MysqlAvroEventManager buildEventManagers(LogicalSourceStaticConfig sourceConfig,
+	        PhysicalSourceStaticConfig pConfig) throws DatabusException, EventCreationException,
+	        UnsupportedKeyException, InvalidConfigException
+	{
+		MysqlAvroEventManager manager = new MysqlAvroEventManager(sourceConfig.getId(), (short) pConfig.getId());
 		return manager;
 	}
 
-
 	/**
-	 * Returns the logid ( upper 32 bits  of the SCN )
+	 * Returns the logid ( upper 32 bits of the SCN )
 	 * For e.g., mysql-bin.000001 is said to have an id 000001
 	 * @param scn system change number
 	 * @return logid
 	 */
-	public static int logid(long scn){
-		if (scn == -1 || scn == 0){
+	public static int logid(long scn)
+	{
+		if (scn == -1 || scn == 0)
+		{
 			return 1;
 		}
-		return (int)((scn >> 32) & 0xFFFFFFFF);
+		return (int) ((scn >> 32) & 0xFFFFFFFF);
 	}
 
 	/**
-	 * Returns the binlogoffset ( lower 32 bits  of the SCN )
+	 * Returns the binlogoffset ( lower 32 bits of the SCN )
 	 * @param scn system change number
 	 * @return binlogoffset
 	 */
-	public static int offset(long scn){
-		if (scn == -1 || scn == 0){
+	public static int offset(long scn)
+	{
+		if (scn == -1 || scn == 0)
+		{
 			return 4;
 		}
-		return (int)(scn & 0xFFFFFFFF);
+		return (int) (scn & 0xFFFFFFFF);
 	}
 
 	/**
@@ -179,16 +199,18 @@ public class MysqlEventProducer<T extends GenericRecord> extends AbstractEventPr
 	 * @see com.linkedin.databus2.producers.EventProducer#getName()
 	 */
 	@Override
-	public String getName() {
+	public String getName()
+	{
 		// TODO Auto-generated method stub
-		return this.binLogEventMapper.getUniqueName();
+		return this.getClass().getName();
 	}
 
 	/**
 	 * Interface method implementation.
 	 * @see com.linkedin.databus2.producers.EventProducer#getSCN()
 	 */
-	public long getSCN() {
+	public long getSCN()
+	{
 		return this.sinceSCN.get();
 	}
 
@@ -197,7 +219,8 @@ public class MysqlEventProducer<T extends GenericRecord> extends AbstractEventPr
 	 * @see com.linkedin.databus2.producers.EventProducer#isPaused()
 	 */
 	@Override
-	public boolean isPaused() {
+	public boolean isPaused()
+	{
 		return !this.openReplicator.isRunning();
 	}
 
@@ -206,7 +229,8 @@ public class MysqlEventProducer<T extends GenericRecord> extends AbstractEventPr
 	 * @see com.linkedin.databus2.producers.EventProducer#isRunning()
 	 */
 	@Override
-	public boolean isRunning() {
+	public boolean isRunning()
+	{
 		return this.openReplicator.isRunning();
 	}
 
@@ -215,57 +239,92 @@ public class MysqlEventProducer<T extends GenericRecord> extends AbstractEventPr
 	 * @see com.linkedin.databus2.producers.EventProducer#shutdown()
 	 */
 	@Override
-	public void shutdown() {
-		try {
+	public void shutdown()
+	{
+		try
+		{
 			this.openReplicator.stop(10, TimeUnit.SECONDS);
-		} catch (Exception e) {
+		}
+		catch (Exception e)
+		{
 			LOGGER.error("Error while stopping open replicator");
 		}
 	}
-	
-	/** Methods that are not supported and therefore throw {@link UnsupportedOperationException}*/
-	public void pause() {throw new UnsupportedOperationException("'pause' is not supported on this event producer");}
-	public void unpause() {throw new UnsupportedOperationException("'unpause' is not supported on this event producer");}
-	public void waitForShutdown() throws InterruptedException,IllegalStateException {throw new UnsupportedOperationException("'waitForShutdown' is not supported on this event producer");}
-	public void waitForShutdown(long time) throws InterruptedException,IllegalStateException {throw new UnsupportedOperationException("'waitForShutdown(long time)' is not supported on this event producer");}
 
-	/**Getters and Setters for this class*/
-	public BinLogEventMapper<T> getBinLogEventMapper() {
-		return binLogEventMapper;
-	}
-	public void setBinLogEventMapper(BinLogEventMapper<T> binLogEventMapper) {
-		this.binLogEventMapper = binLogEventMapper;
+	/** Methods that are not supported and therefore throw {@link UnsupportedOperationException} */
+	public void pause()
+	{
+		throw new UnsupportedOperationException("'pause' is not supported on this event producer");
 	}
 
-	public MysqlTransactionManager getMysqlTxnManager() {
+	public void unpause()
+	{
+		throw new UnsupportedOperationException("'unpause' is not supported on this event producer");
+	}
+
+	public void waitForShutdown() throws InterruptedException, IllegalStateException
+	{
+		throw new UnsupportedOperationException("'waitForShutdown' is not supported on this event producer");
+	}
+
+	public void waitForShutdown(long time) throws InterruptedException, IllegalStateException
+	{
+		throw new UnsupportedOperationException("'waitForShutdown(long time)' is not supported on this event producer");
+	}
+
+	/** Getters and Setters for this class */
+	public Map<Integer, BinLogEventMapper> getBinLogEventMappers()
+	{
+		return binLogEventMappers;
+	}
+
+	public void setBinLogEventMappers(Map<Integer, BinLogEventMapper> binLogEventMapper)
+	{
+		this.binLogEventMappers = binLogEventMapper;
+	}
+
+	public MysqlTransactionManager getMysqlTxnManager()
+	{
 		return mysqlTxnManager;
 	}
-	public void setMysqlTxnManager(MysqlTransactionManager mysqlTxnManager) {
+
+	public void setMysqlTxnManager(MysqlTransactionManager mysqlTxnManager)
+	{
 		this.mysqlTxnManager = mysqlTxnManager;
 	}
-	public Map<Integer, BinLogEventProcessor> getEventsMap() {
+
+	public Map<Integer, BinLogEventProcessor> getEventsMap()
+	{
 		return eventsMap;
 	}
-	public void setEventsMap(Map<Integer, BinLogEventProcessor> eventsMap) {
+
+	public void setEventsMap(Map<Integer, BinLogEventProcessor> eventsMap)
+	{
 		this.eventsMap = eventsMap;
 	}
-	
-	
-	/** Extracts individual attributes such as username, password, hostname, port ,server id etc from the uri of the format mysql://or_test%2For_test@localhost:3306/3306/mysql-bin
+
+	/**
+	 * Extracts individual attributes such as username, password, hostname, port ,server id etc from the uri of the
+	 * format mysql://or_test%2For_test@localhost:3306/3306/mysql-bin
 	 * @param uri uri of the format mysql://or_test%2For_test@localhost:3306/3306/mysql-bin
 	 * @return returns bin log prefix
-	 * */
-	protected String processUri(URI uri) throws InvalidConfigException{
+	 */
+	protected String processUri(URI uri) throws InvalidConfigException
+	{
 		String userInfo = uri.getUserInfo();
-		if (null == userInfo){
+		if (null == userInfo)
+		{
 			String errorMessage = "missing user info in: " + uri;
 			LOGGER.error(errorMessage);
 			throw new InvalidConfigException(errorMessage);
 		}
 		int slashPos = userInfo.indexOf('/');
-		if (slashPos < 0 ){
+		if (slashPos < 0)
+		{
 			slashPos = userInfo.length();
-		}else if (0 == slashPos){
+		}
+		else if (0 == slashPos)
+		{
 			String errorMessage = "missing user name in user info: " + userInfo;
 			LOGGER.error(errorMessage);
 			throw new InvalidConfigException(errorMessage);
@@ -275,22 +334,26 @@ public class MysqlEventProducer<T extends GenericRecord> extends AbstractEventPr
 		String hostName = uri.getHost();
 
 		int port = uri.getPort();
-		if (port < 0) port = DEFAULT_MYSQL_PORT;
+		if (port < 0)
+			port = DEFAULT_MYSQL_PORT;
 
 		String path = uri.getPath();
-		if (null == path){
+		if (null == path)
+		{
 			String errorMessage = "missing path: " + uri;
 			LOGGER.error(errorMessage);
 			throw new InvalidConfigException(errorMessage);
 		}
 		Matcher matcher = PATH_PATTERN.matcher(path);
-		if (!matcher.matches()){
+		if (!matcher.matches())
+		{
 			String errorMessage = "invalid path:" + path;
 			LOGGER.error(errorMessage);
 			throw new InvalidConfigException(errorMessage);
 		}
 		String[] group = matcher.group().split("/");
-		if (group.length != 3){
+		if (group.length != 3)
+		{
 			String errorMessage = "Invalid format " + Arrays.toString(group);
 			LOGGER.error(errorMessage);
 			throw new InvalidConfigException(errorMessage);
@@ -298,18 +361,23 @@ public class MysqlEventProducer<T extends GenericRecord> extends AbstractEventPr
 		String serverIdStr = group[SERVER_ID];
 
 		int serverId = -1;
-		try{
+		try
+		{
 			serverId = Integer.parseInt(serverIdStr);
-		}catch (NumberFormatException e){
+		}
+		catch (NumberFormatException e)
+		{
 			String errorMessage = "incorrect mysql serverid:" + serverId;
 			LOGGER.error(errorMessage);
 			throw new InvalidConfigException(errorMessage);
 		}
 
-		/**Assign them to incoming variables*/
-		if (null != openReplicator){
+		/** Assign them to incoming variables */
+		if (null != openReplicator)
+		{
 			openReplicator.setUser(userName);
-			if (null != userPass){
+			if (null != userPass)
+			{
 				openReplicator.setPassword(userPass);
 			}
 			openReplicator.setHost(hostName);
