@@ -129,8 +129,8 @@
 								<copy todir="distribution/sample-client-cluster/resources/external" overwrite="true">
 									<fileset dir="target/classes/external" />
 								</copy>
-								<copy todir="distribution/sample-client-cluster/bin" overwrite="true">
-									<fileset dir="target/classes/bin" />
+								<copy todir="distribution/sample-client-cluster/scripts" overwrite="true">
+									<fileset dir="target/classes/scripts" />
 								</copy>
 								<copy file="target/sample-client-cluster-1.0.0.jar"
 									toDir="distribution/sample-client-cluster/lib" overwrite="true" />
