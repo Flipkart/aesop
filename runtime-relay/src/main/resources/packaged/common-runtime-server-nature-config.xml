@@ -31,7 +31,7 @@
                             <property name="handlers">
                                 <list>
                                     <bean class="com.flipkart.aesop.runtime.jetty.JettyWebAppContextFactory">
-										<property name="contextName" value="/runtime-relay"/>
+										<property name="contextName" value="/"/>
 										<property name="contextPath" value="WEB-INF"/>	
 										<property name="maxFormContentSize" value="${runtime.relay.jetty.maxFormContentSize}"/>                                    	
                                     </bean>
