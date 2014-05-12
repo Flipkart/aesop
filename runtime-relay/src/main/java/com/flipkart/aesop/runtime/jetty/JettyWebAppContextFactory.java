@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.flipkart.aesop.runtime.impl.jetty;
+package com.flipkart.aesop.runtime.jetty;
 
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.springframework.beans.factory.FactoryBean;
@@ -69,12 +69,12 @@ public class JettyWebAppContextFactory  implements FactoryBean<WebAppContext> {
 			String fileToString = file.toString();
 			if (fileToString.contains(".jar!") && fileToString.startsWith("file:/")) {
 				fileToString = fileToString.replace("file:/","jar:file:/");
-				if (fileToString.contains("runtime-")) {
+				if (fileToString.contains("runtime-relay-")) {
 					path = fileToString;
 					break;
 				}
 			} else {
-				if (fileToString.contains("runtime")) {
+				if (fileToString.contains("runtime-relay")) {
 					path = fileToString;
 					break;
 				}
