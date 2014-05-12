@@ -8,8 +8,9 @@
 
 	<context:annotation-config />
 	<bean class="com.flipkart.aesop.runtime.spring.web.RelayController">
+		<property name="runtimeRegistry" ref="runtimeRegistry"></property>
+        <property name="configService" ref="configService" />
 	</bean>
-
 
 	<util:properties id="defaultResources"
 		location="classpath:/WEB-INF/pages/properties/html-resources.properties" />

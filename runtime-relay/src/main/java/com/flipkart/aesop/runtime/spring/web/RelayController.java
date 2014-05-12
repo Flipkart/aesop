@@ -15,12 +15,21 @@
  */
 package com.flipkart.aesop.runtime.spring.web;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+
+import com.flipkart.aesop.runtime.config.ProducerRegistration;
+import com.flipkart.aesop.runtime.impl.registry.ServerContainerRegistry;
+import com.flipkart.aesop.runtime.relay.DefaultRelay;
+import com.flipkart.aesop.runtime.spi.admin.RuntimeConfigService;
+import com.linkedin.databus2.core.container.netty.ServerContainer;
 
 /**
  * The <code>RelayController</code> class is a Spring MVC Controller that displays Relay Metrics. Also provides
@@ -32,17 +41,56 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 @Controller
 public class RelayController {
+	
+	/** The ServerContainerRegsitry instance for accessing all deployed Relay instances*/
+	private ServerContainerRegistry runtimeRegistry;
+	
+	/** The RuntimeConfigService instance for administration actions on individual deployed Relay instances*/
+	private RuntimeConfigService configService;
 
     /**
      * Controller for relays page
      */
     @RequestMapping(value = {"/relays","/"}, method = RequestMethod.GET)
     public String relays(ModelMap model, HttpServletRequest request) {
-        model.addAttribute("relayInfo","");
+    	List<RelayInfo> relayInfos = new LinkedList<RelayInfo>();
+    	for (ServerContainer serverContainer : this.runtimeRegistry.getRuntimes()) {
+    		if (DefaultRelay.class.isAssignableFrom(serverContainer.getClass())) {
+    			DefaultRelay relay = (DefaultRelay)serverContainer;
+    			for (ProducerRegistration producerRegistration : relay.getProducerRegistrationList()){
+    				RelayInfo relayInfo = new RelayInfo(producerRegistration.getPhysicalSourceConfig().getId(), 
+    						producerRegistration.getPhysicalSourceConfig().getName(), producerRegistration.getPhysicalSourceConfig().getUri());
+    				if (producerRegistration.getPhysicalSourceConfig().getSources().size() > 0) {
+    					// take only the first logical source that the producer will be registered with
+    					relayInfo.setlSourceId(producerRegistration.getPhysicalSourceConfig().getSources().get(0).getId());
+    					relayInfo.setlSourceName(producerRegistration.getPhysicalSourceConfig().getSources().get(0).getName());
+    					relayInfo.setlSourceURI(producerRegistration.getPhysicalSourceConfig().getSources().get(0).getUri());
+    				}
+    				relayInfo.setProducerName(producerRegistration.getEventProducer().getName());
+    				relayInfo.setProducerSinceSCN(String.valueOf(producerRegistration.getEventProducer().getSCN()));
+    				relayInfos.add(relayInfo);
+    			}
+    		}
+    	}
+        model.addAttribute("relayInfos",relayInfos.toArray(new RelayInfo[0]));
         if(request.getServletPath().endsWith(".json")) {
             return "relays-json";
         }
         return "relays";
     }
+
+    /** Getter Setter methods */
+	public ServerContainerRegistry getRuntimeRegistry() {
+		return runtimeRegistry;
+	}
+	public void setRuntimeRegistry(ServerContainerRegistry runtimeRegistry) {
+		this.runtimeRegistry = runtimeRegistry;
+	}
+	public RuntimeConfigService getConfigService() {
+		return configService;
+	}
+	public void setConfigService(RuntimeConfigService configService) {
+		this.configService = configService;
+	}
 
 }

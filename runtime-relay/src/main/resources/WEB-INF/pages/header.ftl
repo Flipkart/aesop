@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<title>Trooper Services Admin</title>
+<title>Aesop Relay Admin</title>
 <link rel="stylesheet" href="/resources/styles/main.css" type="text/css"></link>
 <link rel="stylesheet" href="/resources/styles/colors.css" type="text/css"></link>
 <link rel="stylesheet" href="/resources/styles/local.css" type="text/css"></link>
@@ -42,7 +42,7 @@ Some icons from Silk icon set 1.3 by Mark James, http://www.famfamfam.com/lab/ic
 		<div id="primary-navigation">
 			<div id="primary-left">
 				<ul>
-                    <li><a href="/services">Relays</a></li>
+                    <li><a href="/relays">Relays</a></li>
 				</ul>
 			</div>
 			<div id="primary-right">
