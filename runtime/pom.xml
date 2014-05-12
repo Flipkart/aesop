@@ -15,11 +15,6 @@
     <version>1.0.0</version>
     <description>Runtime</description>
 
-    <properties>
-        <jetty.version>8.1.5.v20120716</jetty.version>
-        <jetty.jsp.version>8.1.4.v20120524</jetty.jsp.version>
-    </properties>
-
     <licenses>
         <license>
             <name>The Apache Software License, Version 2.0</name>
@@ -92,31 +87,6 @@
 			</exclusions>            
         </dependency>        
         <!-- Third party dependencies -->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-web</artifactId>
-            <version>${org.springframework.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-webmvc</artifactId>
-            <version>${org.springframework.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.freemarker</groupId>
-            <artifactId>freemarker</artifactId>
-            <version>2.3.14</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-server</artifactId>
-            <version>${jetty.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-webapp</artifactId>
-            <version>${jetty.version}</version>
-        </dependency>
 		<dependency>
 			<groupId>org.apache.avro</groupId>
 		    <artifactId>avro</artifactId>
@@ -154,7 +124,6 @@
                     </archive>
                     <includes>
                         <include>packaged/**/*</include>
-                        <include>WEB-INF/**/*</include>
                         <include>com/**/*</include>
                     </includes>
                 </configuration>
