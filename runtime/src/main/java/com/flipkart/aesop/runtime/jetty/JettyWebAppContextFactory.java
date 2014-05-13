@@ -66,6 +66,7 @@ public class JettyWebAppContextFactory implements FactoryBean<WebAppContext> {
 	 */
 	public WebAppContext getObject() throws Exception {
 		String path = null;
+		// get the module name from RuntimeVariables. This would be set by the RuntimeComponentContainer instance's init() method
 		String moduleName = RuntimeVariables.getVariable(RuntimeComponentContainer.RUNTIME_MODULE_VAR);
 		File[] files = FileLocator.findDirectories(this.getContextPath(), null);
 		for (File file : files) {
