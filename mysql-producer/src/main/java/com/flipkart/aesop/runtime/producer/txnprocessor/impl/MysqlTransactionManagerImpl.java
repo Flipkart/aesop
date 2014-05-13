@@ -12,6 +12,7 @@
  */
 package com.flipkart.aesop.runtime.producer.txnprocessor.impl;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
@@ -85,6 +86,8 @@ public class MysqlTransactionManagerImpl implements MysqlTransactionManager
 	private Map<Integer, BinLogEventMapper> binLogEventMappers;
 	/** Schema registry service which maintains currently active schemas */
 	private SchemaRegistryService schemaRegistryService;
+	/** mysqlTableId to tableName mapping */
+	private Map<Long, String> mysqlTableIdToTableNameMap;
 
 	/** Constructor for the class */
 	public MysqlTransactionManagerImpl(final DbusEventBufferAppendable eventBuffer,
@@ -105,6 +108,7 @@ public class MysqlTransactionManagerImpl implements MysqlTransactionManager
 		this.schemaRegistryService = schemaRegistryService;
 		this.sinceSCN = sinceSCN;
 		this.binLogEventMappers = binLogEventMappers;
+		this.mysqlTableIdToTableNameMap = new HashMap<Long, String>();
 	}
 
 	/**
@@ -188,6 +192,7 @@ public class MysqlTransactionManagerImpl implements MysqlTransactionManager
 			Short srcId = tableUriToSrcIdMap.get(currTableName);
 			if (null == srcId)
 			{
+				/* Only case when perSourceTransaction will be null in the end source call */
 				LOGGER.warn("Could not find a matching logical source for table Uri (" + currTableName + ")");
 				return;
 			}
@@ -208,16 +213,34 @@ public class MysqlTransactionManagerImpl implements MysqlTransactionManager
 	@Override
 	public void endSource()
 	{
-		if (perSourceTransaction != null)
+		perSourceTransaction = null;
+	}
+
+	public void setSource(long newTableId)
+	{
+		String newTableName = mysqlTableIdToTableNameMap.get(newTableId);
+		if (this.currTableName.isEmpty() && (this.currTableId == -1))
 		{
-			perSourceTransaction = null;
+			/** First changeEvent for the transaction. */
+			startSource(newTableName, newTableId);
+		}
+		else if (!this.currTableName.equals(newTableName) || this.currTableId != newTableId)
+		{
+			LOGGER.debug("Table name changed from " + this.currTableName + " to " + newTableName);
+			endSource();
+			startSource(newTableName, newTableId);
 		}
 		else
 		{
-			String errorMessage = "perSourceTransaction should not be null in endSource()";
-			LOGGER.error(errorMessage);
-			throw new DatabusRuntimeException(errorMessage);
+			/** change event from the current source */
 		}
+
+	}
+
+	@Override
+	public Map<Long, String> getMysqlTableIdToTableNameMap()
+	{
+		return this.mysqlTableIdToTableNameMap;
 	}
 
 	/**

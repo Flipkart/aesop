@@ -53,6 +53,7 @@ public class UpdateEventProcessor implements BinLogEventProcessor{
 		}
 		LOGGER.debug("Update Event Received : " + event);
 		UpdateRowsEvent updateRowsEvent = (UpdateRowsEvent)event;
+		manager.setSource(updateRowsEvent.getTableId());
 		List<Pair<Row>> listOfPairs = updateRowsEvent.getRows();
 		List<Row> rowList =  new ArrayList<Row>(listOfPairs.size());
 		for (Pair<Row> pair: listOfPairs){

@@ -44,6 +44,7 @@ public class InsertEventProcessor implements BinLogEventProcessor{
 		}
 		LOGGER.debug("Insert Event Received : " + event);
 		WriteRowsEvent wre = (WriteRowsEvent)event;
+		listener.getMysqlTransactionManager().setSource(wre.getTableId());
 		listener.getMysqlTransactionManager().performChanges(wre.getHeader(), wre.getRows(), DbusOpcode.UPSERT);	
 		LOGGER.debug("Insertion Successful for  " + event.getHeader().getEventLength() + " . Data inserted : " + wre.getRows());
 	}

@@ -84,7 +84,7 @@ public class DefaultBinLogEventMapper implements BinLogEventMapper<GenericRecord
 				record.put(field.name(), column == null ? null : orToAvroMapper.orToAvroType(column));
 				cnt++;
 			}
-			LOGGER.info("Mapped GenricRecord : " + record.toString());
+			LOGGER.info("Mapped GenricRecord for schema " + schema.getName() + " : " + record.toString());
 			return record;
 		}
 		catch (Exception e)

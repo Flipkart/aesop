@@ -16,6 +16,7 @@
 package com.flipkart.aesop.runtime.producer.txnprocessor;
 
 import java.util.List;
+import java.util.Map;
 
 import com.google.code.or.binlog.BinlogEventV4Header;
 import com.google.code.or.common.glossary.Row;
@@ -30,4 +31,6 @@ public interface MysqlTransactionManager extends TransactionProcessor,SourceProc
 	void performChanges(BinlogEventV4Header eventHeader, List<Row> rowList, final DbusOpcode doc);
 	/** Set the current bin log file number*/
 	void setCurrFileNum(int currFileNum) ;
+	/** Get the map of mysqlTableId to tableName mapping */
+	Map<Long,String> getMysqlTableIdToTableNameMap();
 }

@@ -45,6 +45,7 @@ public class DeleteEventProcessor implements BinLogEventProcessor{
 		}
 		LOGGER.debug("Delete Event Received : " + event);
 		DeleteRowsEvent deleteRowsEvent = (DeleteRowsEvent)event;
+		listener.getMysqlTransactionManager().setSource(deleteRowsEvent.getTableId());
 		listener.getMysqlTransactionManager().performChanges(deleteRowsEvent.getHeader(), deleteRowsEvent.getRows(), DbusOpcode.DELETE);
 		LOGGER.debug("Delete Successful for  " + event.getHeader().getEventLength() + " . Data deleted : " + deleteRowsEvent.getRows());
 	}

@@ -26,6 +26,8 @@ public interface SourceProcessor {
 	void startSource(String newTableName, long newTableId);
 	/**End current source*/
 	void endSource();
+	/** Set the source for the current set of changes */
+	void setSource(long newTableId);
 	/**Get current table name*/
 	String getCurrTableName();
 	/**Get current table id*/
