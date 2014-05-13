@@ -33,11 +33,24 @@ public class BootstrapRuntimeComponentContainer extends RuntimeComponentContaine
 	public static final String BOOTSTRAP_CONFIG_FILE = "spring-bootstrap-config.xml";
 
 	/**
+	 * The runtime module name
+	 */
+	public static final String RUNTIME_MODULE_NAME = "runtime-bootstrap";
+
+	/**
 	 * Abstract method implementation.
 	 * @see com.flipkart.aesop.runtime.spring.RuntimeComponentContainer#getRuntimeConfigFileName()
 	 */
 	public String getRuntimeConfigFileName() {
 		return BootstrapRuntimeComponentContainer.BOOTSTRAP_CONFIG_FILE;
+	}
+
+	/**
+	 * Abstract method implementation.
+	 * @see com.flipkart.aesop.runtime.spring.RuntimeComponentContainer#getRuntimeModuleName()
+	 */
+	public String getRuntimeModuleName() {
+		return BootstrapRuntimeComponentContainer.RUNTIME_MODULE_NAME;
 	}
 
 }

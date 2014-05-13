@@ -206,6 +206,7 @@
                     </archive>
                     <includes>
                         <include>packaged/**/*</include>
+                        <include>WEB-INF/**/*</include>
                         <include>com/**/*</include>
                     </includes>
                 </configuration>

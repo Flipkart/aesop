@@ -58,6 +58,11 @@ import com.linkedin.databus2.core.container.netty.ServerContainer;
  */
 public abstract class RuntimeComponentContainer implements ComponentContainer {
 
+	/**
+	 * The Runtime variable that holds the sub-type specific module name 
+	 */
+	public static final String RUNTIME_MODULE_VAR = "com.flipkart.aesop.runtime.module.name";
+
 	/** Logger for this class*/
 	private static final Logger LOGGER = LogFactory.getLogger(RuntimeComponentContainer.class);
 	
@@ -65,7 +70,7 @@ public abstract class RuntimeComponentContainer implements ComponentContainer {
 	 * The default Event producer bean name
 	 */
 	private static final String DEFAULT_EVENT_PRODUCER = "platformEventProducer";
-
+	
 	/** The bean names of the runtime framework classes initialized by this container */
 	private static final String CONFIG_SERVICE_BEAN = "configService";
 	
@@ -86,7 +91,7 @@ public abstract class RuntimeComponentContainer implements ComponentContainer {
 	
 	/** The configService instance */
 	private RuntimeConfigService configService;
-    
+	
 	/**
 	 * Returns the common Runtime Spring beans application context that is intended as parent of all Runtime application contexts 
 	 * WARN : this method can return null if this ComponentContainer is not suitably initialized via a call to {@link #init()}
@@ -95,7 +100,7 @@ public abstract class RuntimeComponentContainer implements ComponentContainer {
 	public static AbstractApplicationContext getCommonRuntimeBeansContext() {
 		return RuntimeComponentContainer.commonRuntimeBeansContext;
 	}
-
+	
 	/**
 	 * Interface method implementation. Returns the fully qualified class name of this class
 	 * @see org.trpr.platform.runtime.spi.component.ComponentContainer#getName()
@@ -120,6 +125,9 @@ public abstract class RuntimeComponentContainer implements ComponentContainer {
 		// store the thread's context class loader for later use in on the fly loading of runtime app contexts
 		this.tccl = Thread.currentThread().getContextClassLoader();
 
+		// populate the instance specific module name into runtime variables for use by other classes loaded by this component container
+		RuntimeVariables.getInstance().setVariable(RuntimeComponentContainer.RUNTIME_MODULE_VAR, this.getRuntimeModuleName());
+		
 		// The common runtime beans context is loaded first using the Platform common beans context as parent
 		// load this from classpath as it is packaged with the binaries
 		ApplicationContextFactory defaultCtxFactory = null;
@@ -285,9 +293,15 @@ public abstract class RuntimeComponentContainer implements ComponentContainer {
 	
 	/**
 	 * Returns the config file name that defines bean instances of type {@link ServerContainer}
-	 * @return Spring beans file name containing bean deifnitions of type {@link ServerContainer}
+	 * @return Spring beans file name containing bean definitions of type {@link ServerContainer}
 	 */
 	public abstract String getRuntimeConfigFileName();
+	
+	/** 
+	 * Returns the runtime module name for this component container. Useful in resolving paths relative to the module
+	 * @return the module name containing this component container
+	 */
+	public abstract String getRuntimeModuleName();
 
 	/**
 	 * Loads the runtime context from path specified in the ServerContainerConfigInfo. Looks for file by name {@link RuntimeComponentContainer#getRuntimeConfigFileName()}.
