@@ -38,7 +38,7 @@
 						<td style="border-right: 1px solid #b8c885">
 						</td>
 						<td style="border-right: 1px solid #b8c885">
-							Name : ${clientInfo.getClientName()}
+							Host : ${clientInfo.getClientName()}
 							<br>Last SCN : ${clientInfo.getClientSinceSCN()}
 						</td>
 					</tr>		
