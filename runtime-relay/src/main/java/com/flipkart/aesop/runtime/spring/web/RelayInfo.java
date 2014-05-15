@@ -37,6 +37,8 @@ public class RelayInfo {
 	private String producerName;
 	private String producerSinceSCN;
 	
+	private RelayInfo.ClientInfo[] clientInfos;
+	
 	/** Constructor with only physical source attributes*/
 	public RelayInfo(int pSourceId, String pSourceName, String pSourceURI) {
 		super();
@@ -84,6 +86,33 @@ public class RelayInfo {
 	}
 	public String getpSourceURI() {
 		return pSourceURI;
-	} 	
+	}
+	public RelayInfo.ClientInfo[] getClientInfos() {
+		return clientInfos;
+	}
+	public void setClientInfos(RelayInfo.ClientInfo[] clientInfos) {
+		this.clientInfos = clientInfos;
+	}
+	/** End Getter/Setter methods*/
+
+	public static class ClientInfo {
+		private String clientName;
+		private String clientSinceSCN;
+		/** Constructor with only client name */
+		public ClientInfo(String clientName) {
+			this.clientName = clientName;
+		}				
+		/** Getter/Setter methods*/
+		public String getClientName() {
+			return clientName;
+		}		
+		public void setClientSinceSCN(String clientSinceSCN) {
+			this.clientSinceSCN = clientSinceSCN;
+		}
+		public String getClientSinceSCN() {
+			return clientSinceSCN;
+		}		
+		/** End Getter/Setter methods*/
+	}
 	
 }

@@ -7,6 +7,7 @@
 			<th style="border-right: 1px solid #b8c885" rowspan="1">Physical Source</th>
 			<th style="border-right: 1px solid #b8c885" rowspan="1">Logical Source</th>
 			<th style="border-right: 1px solid #b8c885" rowspan="1">Producer</th>
+			<th style="border-right: 1px solid #b8c885" rowspan="1">Consumers</th>
 		</tr>		
 		<#list relayInfos as relay>
 			<tr>
@@ -24,6 +25,24 @@
 					Name : ${relay.getProducerName()}
 					<br>Last SCN : ${relay.getProducerSinceSCN()}
 				</td>
+				<td style="border-right: 1px solid #b8c885">
+					No. of registered consumers : ${relay.clientInfos?size}
+				</td>
+				</tr>
+				<#list relay.clientInfos as clientInfo>
+					<tr>
+						<td style="border-right: 1px solid #b8c885">
+						</td>
+						<td style="border-right: 1px solid #b8c885">
+						</td>
+						<td style="border-right: 1px solid #b8c885">
+						</td>
+						<td style="border-right: 1px solid #b8c885">
+							Name : ${clientInfo.getClientName()}
+							<br>Last SCN : ${clientInfo.getClientSinceSCN()}
+						</td>
+					</tr>		
+				</#list>
 			</tr>		
 		</#list>		
 	</table>

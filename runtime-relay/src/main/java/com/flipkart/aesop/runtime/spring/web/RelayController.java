@@ -67,7 +67,16 @@ public class RelayController {
     					relayInfo.setlSourceURI(producerRegistration.getPhysicalSourceConfig().getSources().get(0).getUri());
     				}
     				relayInfo.setProducerName(producerRegistration.getEventProducer().getName());
-    				relayInfo.setProducerSinceSCN(String.valueOf(producerRegistration.getEventProducer().getSCN()));
+    				relayInfo.setProducerSinceSCN(String.valueOf(producerRegistration.getEventProducer().getSCN()));    				
+    				// now add connected clients details
+    				List<String> peers = relay.getHttpStatisticsCollector().getPeers();
+    				RelayInfo.ClientInfo[] clientInfos = new RelayInfo.ClientInfo[peers.size()];
+    				for (int i=0; i<clientInfos.length;i++) {
+    					clientInfos[i] = new RelayInfo.ClientInfo(peers.get(i));
+    					clientInfos[i].setClientSinceSCN(String.valueOf(relay.getHttpStatisticsCollector().getPeerStats(
+    							peers.get(i)).getMaxStreamWinScn())); 
+    				}
+    				relayInfo.setClientInfos(clientInfos);
     				relayInfos.add(relayInfo);
     			}
     		}
