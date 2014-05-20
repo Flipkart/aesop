@@ -85,6 +85,7 @@
 			    	<artifactId>servlet-api</artifactId>
 			    	<groupId>javax.servlet</groupId>
 			    </exclusion>
+			    <!-- Removing slf4j-log4j12 as we use log4j-over-slf4j bridge -->
 			    <exclusion>
 			    	<artifactId>slf4j-log4j12</artifactId>
 			    	<groupId>org.slf4j</groupId>
