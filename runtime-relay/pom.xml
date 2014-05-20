@@ -51,6 +51,7 @@
 		  <artifactId>databus2-relay-impl</artifactId>
 		  <version>${com.linkedin.databus.version}</version>
 		  <exclusions>
+		  	<!-- Removing older version servlet API jars -->
 		  	<exclusion>
 		  		<artifactId>servlet-api</artifactId>
 		  		<groupId>javax.servlet</groupId>
@@ -59,6 +60,7 @@
 		  		<artifactId>javax.servlet</artifactId>
 		  		<groupId>servlet-api</groupId>
 		  	</exclusion>
+		  	<!-- Removing slf4j-log4j12 as we use log4j-over-slf4j bridge -->
 		  	<exclusion>
 		  		<artifactId>slf4j-log4j12</artifactId>
 		  		<groupId>org.slf4j</groupId>
@@ -85,6 +87,7 @@
 		  <artifactId>databus2-event-producer-common</artifactId>
 		  <version>${com.linkedin.databus.version}</version>
 		  <exclusions>
+		  	<!-- Removing slf4j-log4j12 as we use log4j-over-slf4j bridge -->
 		  	<exclusion>
 		  		<artifactId>slf4j-log4j12</artifactId>
 		  		<groupId>org.slf4j</groupId>
@@ -101,6 +104,7 @@
 		  <artifactId>databus-core-impl</artifactId>
 		  <version>${com.linkedin.databus.version}</version>
 		  <exclusions>
+		  	<!-- Removing slf4j-log4j12 as we use log4j-over-slf4j bridge -->
 		  	<exclusion>
 		  		<artifactId>slf4j-log4j12</artifactId>
 		  		<groupId>org.slf4j</groupId>
@@ -117,6 +121,7 @@
 		  <artifactId>databus-core-schemas</artifactId>
 		  <version>${com.linkedin.databus.version}</version>
 		  <exclusions>
+		  	<!-- Removing slf4j-log4j12 as we use log4j-over-slf4j bridge -->
 		  	<exclusion>
 		  		<artifactId>slf4j-log4j12</artifactId>
 		  		<groupId>org.slf4j</groupId>

@@ -45,62 +45,6 @@
     </developers>
 
     <dependencies>   
-		<!-- All databus dependencies are marked as scope compile as we extend their classes and need them during compile and not just runtime -->
-		<dependency>
-		  <groupId>com.linkedin.databus</groupId>
-		  <artifactId>databus-core-impl</artifactId>
-		  <version>${com.linkedin.databus.version}</version>
-		  <exclusions>
-		  	<exclusion>
-		  		<artifactId>slf4j-log4j12</artifactId>
-		  		<groupId>org.slf4j</groupId>
-		  	</exclusion>
-		  	<exclusion>
-		  		<artifactId>servlet-api</artifactId>
-		  		<groupId>org.mortbay.jetty</groupId>
-		  	</exclusion>
-		  	<exclusion>
-		  		<artifactId>servlet-api</artifactId>
-		  		<groupId>javax.servlet</groupId>
-		  	</exclusion>
-		  	<exclusion>
-		  		<artifactId>log4j</artifactId>
-		  		<groupId>log4j</groupId>
-		  	</exclusion>
-		  </exclusions>
-		</dependency>
-		<dependency>
-		  <groupId>com.linkedin.databus</groupId>
-		  <artifactId>databus-client-common</artifactId>
-		  <version>${com.linkedin.databus.version}</version>
-		  <exclusions>
-		  	<exclusion>
-		  		<artifactId>slf4j-log4j12</artifactId>
-		  		<groupId>org.slf4j</groupId>
-		  	</exclusion>
-		  </exclusions>
-		</dependency>
-		<dependency>
-		  <groupId>com.linkedin.databus</groupId>
-		  <artifactId>databus-client-api</artifactId>
-		  <version>${com.linkedin.databus.version}</version>
-		  <exclusions>
-		  	<exclusion>
-		  		<artifactId>slf4j-log4j12</artifactId>
-		  		<groupId>org.slf4j</groupId>
-		  	</exclusion>
-		  	<exclusion>
-		  		<artifactId>log4j</artifactId>
-		  		<groupId>log4j</groupId>
-		  	</exclusion>
-		  </exclusions>
-		</dependency>
-        <!-- aesop dependencies -->
-        <dependency>
-            <groupId>com.flipkart.aesop</groupId>
-            <artifactId>runtime</artifactId>
-            <version>${project.version}</version>
-        </dependency>    
         <!-- Databus dependencies -->
         <dependency>
             <groupId>com.linkedin.databus</groupId>
@@ -121,12 +65,28 @@
 			        <groupId>log4j</groupId>
 			        <artifactId>log4j</artifactId>
 			    </exclusion>
+			    <!-- Removing slf4j-log4j12 as we use log4j-over-slf4j bridge -->			    
 				<exclusion>
 					<artifactId>slf4j-log4j12</artifactId>
 					<groupId>org.slf4j</groupId>
 				</exclusion>
+				<!-- Removing older version servlet API jars -->
+			  	<exclusion>
+			  		<artifactId>servlet-api</artifactId>
+			  		<groupId>org.mortbay.jetty</groupId>
+			  	</exclusion>
+			  	<exclusion>
+			  		<artifactId>servlet-api</artifactId>
+			  		<groupId>javax.servlet</groupId>
+			  	</exclusion>				
 			</exclusions>            
-		</dependency>       
+		</dependency>   
+        <!-- aesop dependencies -->
+        <dependency>
+            <groupId>com.flipkart.aesop</groupId>
+            <artifactId>runtime</artifactId>
+            <version>${project.version}</version>
+        </dependency>    		    
     </dependencies>
 
     <build>
