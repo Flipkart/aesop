@@ -96,6 +96,8 @@
         <module>sample-bootstrap-server</module>
         <module>sample-snapshot-serializer</module>
         <module>sample-mysql-relay</module>
+        <module>sample-client-mysql-relay</module>
+        <module>avro-schema-generator</module>
     </modules>
 
 </project>
