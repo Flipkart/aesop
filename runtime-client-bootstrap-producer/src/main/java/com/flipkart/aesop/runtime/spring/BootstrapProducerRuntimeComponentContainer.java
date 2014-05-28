@@ -31,6 +31,11 @@ public class BootstrapProducerRuntimeComponentContainer extends RuntimeComponent
 	 * The file name containing Http Client beans
 	 */
 	public static final String BOOTSTRAP_PRODUCER_CONFIG_FILE = "spring-bootstrap-producer-config.xml";
+	
+	/**
+	 * The runtime module name
+	 */
+	public static final String RUNTIME_MODULE_NAME = "runtime-client-bootstrap-producer";
 
 	/**
 	 * Abstract method implementation.
@@ -38,6 +43,14 @@ public class BootstrapProducerRuntimeComponentContainer extends RuntimeComponent
 	 */
 	public String getRuntimeConfigFileName() {
 		return BootstrapProducerRuntimeComponentContainer.BOOTSTRAP_PRODUCER_CONFIG_FILE;
+	}
+	
+	/**
+	 * Abstract method implementation.
+	 * @see com.flipkart.aesop.runtime.spring.RuntimeComponentContainer#getRuntimeModuleName()
+	 */
+	public String getRuntimeModuleName() {
+		return BootstrapProducerRuntimeComponentContainer.RUNTIME_MODULE_NAME;
 	}
 
 }

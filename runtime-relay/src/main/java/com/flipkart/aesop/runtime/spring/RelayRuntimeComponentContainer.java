@@ -33,11 +33,24 @@ public class RelayRuntimeComponentContainer extends RuntimeComponentContainer {
 	public static final String RELAY_CONFIG_FILE = "spring-relay-config.xml";
 
 	/**
+	 * The runtime module name
+	 */
+	public static final String RUNTIME_MODULE_NAME = "runtime-relay";
+	
+	/**
 	 * Abstract method implementation.
 	 * @see com.flipkart.aesop.runtime.spring.RuntimeComponentContainer#getRuntimeConfigFileName()
 	 */
 	public String getRuntimeConfigFileName() {
 		return RelayRuntimeComponentContainer.RELAY_CONFIG_FILE;
+	}
+
+	/**
+	 * Abstract method implementation.
+	 * @see com.flipkart.aesop.runtime.spring.RuntimeComponentContainer#getRuntimeModuleName()
+	 */
+	public String getRuntimeModuleName() {
+		return RelayRuntimeComponentContainer.RUNTIME_MODULE_NAME;
 	}
 
 }

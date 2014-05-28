@@ -85,6 +85,7 @@
 			    	<artifactId>servlet-api</artifactId>
 			    	<groupId>javax.servlet</groupId>
 			    </exclusion>
+			    <!-- Removing slf4j-log4j12 as we use log4j-over-slf4j bridge -->
 			    <exclusion>
 			    	<artifactId>slf4j-log4j12</artifactId>
 			    	<groupId>org.slf4j</groupId>
@@ -92,6 +93,12 @@
 			</exclusions>            
         </dependency>        
         <!-- Third party dependencies -->
+		<dependency>
+			<groupId>org.apache.avro</groupId>
+		    <artifactId>avro</artifactId>
+		    <version>1.7.5</version>
+		</dependency>        
+		<!-- Servlet container and MVC dependencies -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-web</artifactId>
@@ -116,12 +123,7 @@
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-webapp</artifactId>
             <version>${jetty.version}</version>
-        </dependency>
-		<dependency>
-			<groupId>org.apache.avro</groupId>
-		    <artifactId>avro</artifactId>
-		    <version>1.7.5</version>
-		</dependency>        
+        </dependency>							
         <!-- Add the log4j over slf4j bridge to support logging in Databus libraries -->
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -154,7 +156,6 @@
                     </archive>
                     <includes>
                         <include>packaged/**/*</include>
-                        <include>WEB-INF/**/*</include>
                         <include>com/**/*</include>
                     </includes>
                 </configuration>

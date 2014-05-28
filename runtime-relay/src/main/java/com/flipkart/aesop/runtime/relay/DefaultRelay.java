@@ -24,6 +24,7 @@ import org.trpr.platform.core.spi.logging.Logger;
 
 import com.flipkart.aesop.runtime.config.ProducerRegistration;
 import com.flipkart.aesop.runtime.producer.AbstractEventProducer;
+import com.flipkart.aesop.runtime.relay.netty.HttpRelayPipelineFactory;
 import com.linkedin.databus.container.netty.HttpRelay;
 import com.linkedin.databus.core.util.InvalidConfigException;
 import com.linkedin.databus2.core.DatabusException;
@@ -95,8 +96,17 @@ public class DefaultRelay extends HttpRelay {
     	for (ProducerRegistration producerRegistration : this.producerRegistrationList) {
     		producerRegistration.getEventProducer().shutdown();
     	}    	
-    }    
+    }  
     
+    /**
+     * Overriden superclass method. Creates and uses the Aesop {@link HttpRelayPipelineFactory} instead of the Databus 
+     * {@link com.linkedin.databus.container.netty.HttpRelayPipelineFactory}
+     * @see com.linkedin.databus.container.netty.HttpRelay#initializeRelayNetworking()
+     */
+    protected void initializeRelayNetworking() throws IOException, DatabusException {
+      _httpBootstrap.setPipelineFactory(new HttpRelayPipelineFactory(this, _httpBootstrap.getPipelineFactory()));
+    }
+        
     /**
      * Overriden superclass method. Starts up the registered Producers after calling super.doStart()
      * @see com.linkedin.databus.container.netty.HttpRelay#doStart()

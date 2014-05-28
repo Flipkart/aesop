@@ -45,73 +45,28 @@
     </developers>
 
     <dependencies>   
-		<!-- All databus dependencies are marked as scope compile as we extend their classes and need them during compile and not just runtime -->
-		<dependency>
-			<groupId>com.linkedin.databus</groupId>
-			<artifactId>databus-core-impl</artifactId>
-			<version>${com.linkedin.databus.version}</version>
-			<scope>compile</scope>
-			<exclusions>
-				<exclusion>
-					<artifactId>slf4j-log4j12</artifactId>
-					<groupId>org.slf4j</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>servlet-api</artifactId>
-					<groupId>org.mortbay.jetty</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>servlet-api</artifactId>
-					<groupId>javax.servlet</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>com.linkedin.databus</groupId>
-			<artifactId>databus-client-common</artifactId>
-			<version>${com.linkedin.databus.version}</version>
-			<scope>compile</scope>
-			<exclusions>
-				<exclusion>
-					<artifactId>slf4j-log4j12</artifactId>
-					<groupId>org.slf4j</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>com.linkedin.databus</groupId>
-			<artifactId>databus-client-http</artifactId>
-			<version>${com.linkedin.databus.version}</version>
-			<scope>compile</scope>
-			<exclusions>
-				<exclusion>
-					<artifactId>slf4j-log4j12</artifactId>
-					<groupId>org.slf4j</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>com.linkedin.databus</groupId>
-			<artifactId>databus-client-api</artifactId>
-			<version>${com.linkedin.databus.version}</version>
-			<scope>compile</scope>
-			<exclusions>
-				<exclusion>
-					<artifactId>slf4j-log4j12</artifactId>
-					<groupId>org.slf4j</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
+    	<!-- Databus dependencies -->
 		<dependency>
 			<groupId>com.linkedin.databus</groupId>
 			<artifactId>databus-bootstrap-producer-impl</artifactId>
 			<version>${com.linkedin.databus.version}</version>
 			<scope>compile</scope>
 			<exclusions>
+				<!-- Removing older version of Avro -->
+			    <exclusion>
+					<groupId>org.apache.avro</groupId>
+				    <artifactId>avro</artifactId>			    
+			    </exclusion>
+			    <!-- Removing slf4j-log4j12 as we use log4j-over-slf4j bridge -->		    		    		  			  			  					
 				<exclusion>
 					<artifactId>slf4j-log4j12</artifactId>
 					<groupId>org.slf4j</groupId>
 				</exclusion>
+				<!-- Removing commons-logging as it brings older version of servlet API -->
+			  	<exclusion>
+			  		<artifactId>commons-logging</artifactId>
+			  		<groupId>commons-logging</groupId>
+			  	</exclusion>				
 			</exclusions>
 		</dependency>			
 		<dependency>
@@ -120,6 +75,12 @@
 			<version>${com.linkedin.databus.version}</version>
 			<scope>compile</scope>
 			<exclusions>
+				<!-- Removing older version of Avro -->
+			    <exclusion>
+					<groupId>org.apache.avro</groupId>
+				    <artifactId>avro</artifactId>			    
+			    </exclusion>
+			    <!-- Removing slf4j-log4j12 as we use log4j-over-slf4j bridge -->		    		    		  			  			  					
 				<exclusion>
 					<artifactId>slf4j-log4j12</artifactId>
 					<groupId>org.slf4j</groupId>
@@ -132,54 +93,6 @@
             <artifactId>runtime-client</artifactId>
             <version>${project.version}</version>
         </dependency>    
-        <!-- Databus dependencies -->
-        <dependency>
-            <groupId>com.linkedin.databus</groupId>
-            <artifactId>databus-client-http</artifactId>
-            <version>${com.linkedin.databus.version}</version>
-			<exclusions>
-				<!-- Removing these dependencies from log4j:1.2.15 that is no longer included-->
-			    <exclusion>
-			        <groupId>com.sun.jmx</groupId>
-			        <artifactId>jmxri</artifactId>
-			    </exclusion>
-			    <exclusion>
-			        <groupId>com.sun.jdmk</groupId>
-			        <artifactId>jmxtools</artifactId>
-			    </exclusion>
-				<!-- Removing log4j as we use log4j-over-slf4j bridge -->
-			    <exclusion>
-			        <groupId>log4j</groupId>
-			        <artifactId>log4j</artifactId>
-			    </exclusion>			    
-			</exclusions>            
-		</dependency>       
-        <dependency>
-            <groupId>com.linkedin.databus</groupId>
-            <artifactId>databus-bootstrap-producer-impl</artifactId>
-            <version>${com.linkedin.databus.version}</version>
-			<exclusions>
-				<!-- Removing Oracle OJDBC dependency -->
-			    <exclusion>
-			        <groupId>com.oracle</groupId>
-			        <artifactId>ojdbc6</artifactId>
-			    </exclusion>
-				<!-- Removing these dependencies from log4j:1.2.15 that is no longer included-->
-			    <exclusion>
-			        <groupId>com.sun.jmx</groupId>
-			        <artifactId>jmxri</artifactId>
-			    </exclusion>
-			    <exclusion>
-			        <groupId>com.sun.jdmk</groupId>
-			        <artifactId>jmxtools</artifactId>
-			    </exclusion>
-				<!-- Removing log4j as we use log4j-over-slf4j bridge -->
-			    <exclusion>
-			        <groupId>log4j</groupId>
-			        <artifactId>log4j</artifactId>
-			    </exclusion>			    
-			</exclusions>            
-        </dependency>
     </dependencies>
 
     <build>
@@ -206,6 +119,7 @@
                     </archive>
                     <includes>
                         <include>packaged/**/*</include>
+                        <include>WEB-INF/**/*</include>
                         <include>com/**/*</include>
                     </includes>
                 </configuration>

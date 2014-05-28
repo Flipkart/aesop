@@ -33,11 +33,24 @@ public class ClientRuntimeComponentContainer extends RuntimeComponentContainer {
 	public static final String CLIENT_CONFIG_FILE = "spring-client-config.xml";
 
 	/**
+	 * The runtime module name
+	 */
+	public static final String RUNTIME_MODULE_NAME = "runtime-client";
+	
+	/**
 	 * Abstract method implementation.
 	 * @see com.flipkart.aesop.runtime.spring.RuntimeComponentContainer#getRuntimeConfigFileName()
 	 */
 	public String getRuntimeConfigFileName() {
 		return ClientRuntimeComponentContainer.CLIENT_CONFIG_FILE;
+	}
+
+	/**
+	 * Abstract method implementation.
+	 * @see com.flipkart.aesop.runtime.spring.RuntimeComponentContainer#getRuntimeModuleName()
+	 */
+	public String getRuntimeModuleName() {
+		return ClientRuntimeComponentContainer.RUNTIME_MODULE_NAME;
 	}
 
 }
