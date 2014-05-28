@@ -33,6 +33,7 @@ import com.linkedin.databus.core.DbusEventInfo;
 import com.linkedin.databus.core.DbusEventKey;
 import com.linkedin.databus.core.DbusOpcode;
 import com.linkedin.databus2.core.DatabusException;
+import com.linkedin.databus2.schemas.utils.SchemaHelper;
 import com.ngdata.sep.EventListener;
 import com.ngdata.sep.SepEvent;
 import com.ngdata.sep.SepModel;
@@ -126,7 +127,8 @@ public class HBaseEventProducer<T extends GenericRecord> extends AbstractEventPr
 			eventBuffer.startEvents();
             for (SepEvent sepEvent : sepEvents) {
             	T changeEvent = sepEventMapper.mapSepEvent(sepEvent);
-            	byte[] serializedEvent = serializeEvent(changeEvent);
+            	byte[] schemaId=SchemaHelper.getSchemaId(changeEvent.getSchema().toString());
+               	byte[] serializedEvent = serializeEvent(changeEvent);
             	// we find the last processed timestamp and are conservative to take the earliest
             	long latestTimestamp = 0;
             	for (KeyValue kv : sepEvent.getKeyValues()) {

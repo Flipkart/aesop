@@ -22,6 +22,9 @@
     	<property name="physicalSourceConfig" ref="physicalSourceConfig"/>
     	<property name="eventsMap" ref="eventsMapRef"/>
    		<property name="binLogEventMappers" ref="binLogEventMappersRef"/>
+   		<property name="schemaChangeEventProcessor">
+			<bean class="com.flipkart.aesop.runtime.producer.schema.eventprocessor.impl.NopSchemaChangeEventProcessor" />
+		</property>
     </bean>
     <bean id="orToAvroMapper" class="com.flipkart.aesop.runtime.producer.mapper.impl.ORToAvroMapper"/>
     
@@ -50,8 +53,8 @@
   	<bean id="deleteEventV2Processor" class="com.flipkart.aesop.runtime.producer.eventprocessor.impl.DeleteEventV2Processor"/>
   	
   	<util:map id="binLogEventMappersRef" key-type="java.lang.Integer" value-type="com.flipkart.aesop.runtime.producer.mapper.BinLogEventMapper">
-    	<!--<entry key="40" value-ref="personBinaryLogEventMapper"/> -->
-    	<entry key="40" value-ref="defaultBinLogEventMapper"/>
+    	<entry key="40" value-ref="personBinaryLogEventMapper"/> 
+   		<!-- <entry key="40" value-ref="defaultBinLogEventMapper"/> -->
     </util:map>
   	<bean id="personBinaryLogEventMapper" class="com.flipkart.aesop.runtime.producer.mapper.impl.PersonBinaryLogEventMapper">
     	<property name="orToAvroMapper" ref="orToAvroMapper"/>

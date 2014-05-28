@@ -51,7 +51,7 @@
             <groupId>com.flipkart.aesop</groupId>
             <artifactId>mysql-producer</artifactId>
             <version>${project.version}</version>
-        </dependency> 
+         </dependency> 
         <!-- Third party dependencies -->
         <dependency>
 			<groupId>mysql</groupId>

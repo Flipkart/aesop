@@ -28,7 +28,7 @@ import com.linkedin.databus.core.DbusOpcode;
  */
 public interface MysqlTransactionManager extends TransactionProcessor,SourceProcessor{
 	/** Persists change events in event buffer */
-	void performChanges(BinlogEventV4Header eventHeader, List<Row> rowList, final DbusOpcode doc);
+	void performChanges(long tableId,BinlogEventV4Header eventHeader, List<Row> rowList, final DbusOpcode doc);
 	/** Set the current bin log file number*/
 	void setCurrFileNum(int currFileNum) ;
 	/** Get the map of mysqlTableId to tableName mapping */

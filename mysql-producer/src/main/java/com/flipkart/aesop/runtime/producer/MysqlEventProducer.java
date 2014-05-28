@@ -31,6 +31,7 @@ import com.flipkart.aesop.runtime.producer.avro.MysqlAvroEventManager;
 import com.flipkart.aesop.runtime.producer.eventlistener.OpenReplicationListener;
 import com.flipkart.aesop.runtime.producer.eventprocessor.BinLogEventProcessor;
 import com.flipkart.aesop.runtime.producer.mapper.BinLogEventMapper;
+import com.flipkart.aesop.runtime.producer.schema.eventprocessor.SchemaChangeEventProcessor;
 import com.flipkart.aesop.runtime.producer.txnprocessor.MysqlTransactionManager;
 import com.flipkart.aesop.runtime.producer.txnprocessor.impl.MysqlTransactionManagerImpl;
 import com.google.code.or.OpenReplicator;
@@ -68,6 +69,8 @@ public class MysqlEventProducer extends AbstractEventProducer implements Initial
 	protected MysqlTransactionManager mysqlTxnManager;
 	/** Event Id to Event Processor map */
 	protected Map<Integer, BinLogEventProcessor> eventsMap;
+	/** Schema Change Event Processor */
+	protected SchemaChangeEventProcessor schemaChangeEventProcessor;
 
 	/**
 	 * Interface method implementation. Checks for mandatory dependencies and creates the Open Replicator
@@ -119,11 +122,23 @@ public class MysqlEventProducer extends AbstractEventProducer implements Initial
 				}
 				eventManagersMap.put(Integer.valueOf(sourceConfig.getId()), manager);
 			}
+			schemaChangeEventProcessor.setSchemaRegistryService(schemaRegistryService);
+			schemaChangeEventProcessor.setTableUriToSrcNameMap(tableUriToSrcNameMap);
+
+			/** updating schemas for registered logical sources */
+			for (LogicalSourceStaticConfig sourceConfig : physicalSourceStaticConfig.getSources())
+			{
+				String[] parts = sourceConfig.getUri().split("\\.");
+				schemaChangeEventProcessor.process(parts[0], parts[1]);
+			}
+
 			mysqlTxnManager =
 			        new MysqlTransactionManagerImpl(eventBuffer, maxScnReaderWriter, dbusEventsStatisticsCollector,
 			                eventManagersMap, logid, tableUriToSrcIdMap, tableUriToSrcNameMap, schemaRegistryService,
 			                this.sinceSCN, binLogEventMappers);
-			OpenReplicationListener orl = new OpenReplicationListener(mysqlTxnManager, eventsMap, binlogFilePrefix);
+			OpenReplicationListener orl =
+			        new OpenReplicationListener(mysqlTxnManager, eventsMap, schemaChangeEventProcessor,
+			                binlogFilePrefix);
 			openReplicator.setBinlogFileName(binlogFile);
 			openReplicator.setBinlogPosition(offset);
 			openReplicator.setBinlogEventListener(orl);
@@ -301,6 +316,16 @@ public class MysqlEventProducer extends AbstractEventProducer implements Initial
 	public void setEventsMap(Map<Integer, BinLogEventProcessor> eventsMap)
 	{
 		this.eventsMap = eventsMap;
+	}
+
+	public SchemaChangeEventProcessor getSchemaChangeEventProcessor()
+	{
+		return schemaChangeEventProcessor;
+	}
+
+	public void setSchemaChangeEventProcessor(SchemaChangeEventProcessor schemaChangeEventProcessor)
+	{
+		this.schemaChangeEventProcessor = schemaChangeEventProcessor;
 	}
 
 	/**

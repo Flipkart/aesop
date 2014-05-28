@@ -27,6 +27,7 @@ import com.linkedin.databus.core.DbusEventInfo;
 import com.linkedin.databus.core.DbusEventKey;
 import com.linkedin.databus.core.DbusOpcode;
 import com.linkedin.databus2.core.DatabusException;
+import com.linkedin.databus2.schemas.utils.SchemaHelper;
 
 /**
  * <code>PersonEventProducer</code> is a sub-type of {@link AbstractEventProducer}} that creates a specified number 
@@ -110,6 +111,7 @@ public class PersonEventProducer extends AbstractEventProducer {
 				for (long i = sinceSCN.longValue(); i < endValue; i++) {
 					Person person = new Person(i, "Aesop " + i, "Mr. " + i, i,"false",new LinkedList<FieldChange>());
 					byte[] serializedEvent = serializeEvent(person);
+					byte[] schemaId=SchemaHelper.getSchemaId(person.getSchema().toString());
 					DbusEventKey eventKey = new DbusEventKey(i);
 					DbusEventInfo eventInfo = new DbusEventInfo(DbusOpcode.UPSERT,i,
 							(short)physicalSourceStaticConfig.getId(),(short)physicalSourceStaticConfig.getId(),

@@ -26,6 +26,7 @@ import com.linkedin.databus.core.DbusEventInfo;
 import com.linkedin.databus.core.DbusEventKey;
 import com.linkedin.databus.core.DbusOpcode;
 import com.linkedin.databus2.producers.EventCreationException;
+import com.linkedin.databus2.schemas.utils.SchemaHelper;
 
 
 /**
@@ -203,6 +204,7 @@ public abstract class AbstractCallbackEventProducer<S extends GenericRecord> ext
 	    					if (readEventCycleSummary.getChangeEvents().size() > 0) {
 		    					eventBuffer.startEvents();
 		    					for (S changeEvent : readEventCycleSummary.getChangeEvents()) {
+		    						byte[] schemaId=SchemaHelper.getSchemaId(changeEvent.getSchema().toString());
 		    						byte[] serializedEvent = serializeEvent(changeEvent);
 		    						DbusEventKey eventKey = new DbusEventKey(getEventKey(changeEvent));
 		    						DbusEventInfo eventInfo = new DbusEventInfo(DbusOpcode.UPSERT,getSequenceId(changeEvent),

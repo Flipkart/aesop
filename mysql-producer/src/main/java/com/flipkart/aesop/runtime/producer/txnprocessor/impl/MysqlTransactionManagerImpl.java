@@ -177,13 +177,12 @@ public class MysqlTransactionManagerImpl implements MysqlTransactionManager
 	}
 
 	/**
-	 * Identifies the source from which change events are being received. This method would be invoked when the table
-	 * map event is received.
+	 * starts new source
 	 * @param newTableName table name from which event is being received
 	 * @param newTableId table id from which event is being received
 	 */
-	@Override
-	public void startSource(String newTableName, long newTableId)
+
+	private void startSource(String newTableName, long newTableId)
 	{
 		currTableName = newTableName;
 		currTableId = newTableId;
@@ -192,7 +191,7 @@ public class MysqlTransactionManagerImpl implements MysqlTransactionManager
 			Short srcId = tableUriToSrcIdMap.get(currTableName);
 			if (null == srcId)
 			{
-				/* Only case when perSourceTransaction will be null in the end source call */
+				/** Only case when perSourceTransaction will be null in the end source call */
 				LOGGER.warn("Could not find a matching logical source for table Uri (" + currTableName + ")");
 				return;
 			}
@@ -208,18 +207,27 @@ public class MysqlTransactionManagerImpl implements MysqlTransactionManager
 	}
 
 	/**
-	 * Handles change of source event. Say whenever table name changes.
+	 * ends the current source
 	 */
-	@Override
-	public void endSource()
+	private void endSource()
 	{
 		perSourceTransaction = null;
 	}
 
+	/**
+	 * Identifies if source has changed and if changed starts new source.
+	 * @param newTableId
+	 */
+	@Override
 	public void setSource(long newTableId)
 	{
 		String newTableName = mysqlTableIdToTableNameMap.get(newTableId);
-		if (this.currTableName.isEmpty() && (this.currTableId == -1))
+		if (null == newTableName)
+		{
+			LOGGER.error("TableMap Event not received for the change event tableId: " + newTableId);
+			throw new DatabusRuntimeException("TableMap Event not received for the change event tableId: " + newTableId);
+		}
+		else if (this.currTableName.isEmpty() && (this.currTableId == -1))
 		{
 			/** First changeEvent for the transaction. */
 			startSource(newTableName, newTableId);
@@ -250,10 +258,12 @@ public class MysqlTransactionManagerImpl implements MysqlTransactionManager
 	 * @param databusOpcode operation code indicating nature of change such as insertion,deletion or updation.
 	 */
 	@Override
-	public void performChanges(BinlogEventV4Header eventHeader, List<Row> rowList, final DbusOpcode databusOpcode)
+	public void performChanges(long tableId, BinlogEventV4Header eventHeader, List<Row> rowList,
+	        final DbusOpcode databusOpcode)
 	{
 		try
 		{
+			setSource(tableId);
 			VersionedSchema schema =
 			        schemaRegistryService.fetchLatestVersionedSchemaBySourceName(tableUriToSrcNameMap
 			                .get(currTableName));

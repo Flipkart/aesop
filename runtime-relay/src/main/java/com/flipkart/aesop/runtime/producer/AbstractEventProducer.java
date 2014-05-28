@@ -54,8 +54,7 @@ public abstract class AbstractEventProducer implements EventProducer {
 	/** Source related member variables*/
 	protected PhysicalSourceConfig physicalSourceConfig;
 	protected PhysicalSourceStaticConfig physicalSourceStaticConfig;
-	protected byte[] schemaId;	
-        protected SchemaRegistryService schemaRegistryService; 	
+    protected SchemaRegistryService schemaRegistryService; 	
 	/** Event-handling related member variables*/
 	protected AtomicLong sinceSCN = new AtomicLong(-1);
 	protected DbusEventBufferAppendable eventBuffer;
@@ -96,9 +95,6 @@ public abstract class AbstractEventProducer implements EventProducer {
 	public void setSchemaRegistryService(SchemaRegistryService schemaRegistryService) throws Exception {
 		this.schemaRegistryService = schemaRegistryService;
 		this.physicalSourceStaticConfig = this.physicalSourceConfig.build();
-		LogicalSourceStaticConfig sourceConfig = physicalSourceStaticConfig.getSources()[0]; // here we assume that all logical sources share the same schema
-		String schema = schemaRegistryService.fetchLatestSchemaBySourceName(sourceConfig.getName());
-		this.schemaId =  SchemaHelper.getSchemaId(schema);
 	}		
 	public void setDbusEventsStatisticsCollector(DbusEventsStatisticsCollector dbusEventsStatisticsCollector) {
 		this.dbusEventsStatisticsCollector = dbusEventsStatisticsCollector;

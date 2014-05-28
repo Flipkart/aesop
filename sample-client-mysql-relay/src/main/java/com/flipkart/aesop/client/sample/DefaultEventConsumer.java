@@ -1,38 +1,23 @@
-/*
- * Copyright 2012-2015, the original author or authors.
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package com.flipkart.aesop.client.sample;
 
 import org.trpr.platform.core.impl.logging.LogFactory;
 import org.trpr.platform.core.spi.logging.Logger;
 
-import com.flipkart.aesop.events.ortest.Person;
+import com.flipkart.aesop.events.ortest.DefaultBinLogEvent;
 import com.linkedin.databus.client.consumer.AbstractDatabusCombinedConsumer;
 import com.linkedin.databus.client.pub.ConsumerCallbackResult;
 import com.linkedin.databus.client.pub.DbusEventDecoder;
 import com.linkedin.databus.core.DbusEvent;
+import com.linkedin.databus2.core.DatabusException;
 
 /**
- * <code>PersonEventConsumer</code> is a sub-type of {@link AbstractDatabusCombinedConsumer} that simply prints the
- * attributes of the sample
- * Person change event type.
- * @author Regunath B
- * @version 1.0, 24 Jan 2014
+ * yogesh.dahiya
  */
-public class PersonEventConsumer extends AbstractDatabusCombinedConsumer
-{
 
+public class DefaultEventConsumer extends AbstractDatabusCombinedConsumer
+{
 	/** Logger for this class */
-	public static final Logger LOGGER = LogFactory.getLogger(PersonEventConsumer.class);
+	public static final Logger LOGGER = LogFactory.getLogger(DefaultEventConsumer.class);
 
 	/** The frequency of logging consumed messages */
 	private static final long FREQUENCY_OF_LOGGING = 1;
@@ -42,7 +27,7 @@ public class PersonEventConsumer extends AbstractDatabusCombinedConsumer
 
 	/**
 	 * Overriden superclass method. Returns the result of calling
-	 * {@link PersonEventConsumer#processEvent(DbusEvent, DbusEventDecoder)}
+	 * {@link DefaultEventConsumer#processEvent(DbusEvent, DbusEventDecoder)}
 	 * @see com.linkedin.databus.client.consumer.AbstractDatabusCombinedConsumer#onDataEvent(com.linkedin.databus.core.DbusEvent,
 	 *      com.linkedin.databus.client.pub.DbusEventDecoder)
 	 */
@@ -53,7 +38,7 @@ public class PersonEventConsumer extends AbstractDatabusCombinedConsumer
 
 	/**
 	 * Overriden superclass method. Returns the result of calling
-	 * {@link PersonEventConsumer#processEvent(DbusEvent, DbusEventDecoder)}
+	 * {@link DefaultEventConsumer#processEvent(DbusEvent, DbusEventDecoder)}
 	 * @see com.linkedin.databus.client.consumer.AbstractDatabusCombinedConsumer#onBootstrapEvent(com.linkedin.databus.core.DbusEvent,
 	 *      com.linkedin.databus.client.pub.DbusEventDecoder)
 	 */
@@ -63,7 +48,7 @@ public class PersonEventConsumer extends AbstractDatabusCombinedConsumer
 	}
 
 	/**
-	 * Helper method that prints out the attributes of the Person change event.
+	 * Helper method that prints out the attributes of the change event.
 	 * @param event the Databus change event
 	 * @param eventDecoder the Event decoder
 	 * @return {@link ConsumerCallbackResult#SUCCESS} if successful and {@link ConsumerCallbackResult#ERROR} in case of
@@ -73,15 +58,18 @@ public class PersonEventConsumer extends AbstractDatabusCombinedConsumer
 	{
 
 		LOGGER.info("Source Id is " + event.getSourceId());
-		Person person = eventDecoder.getTypedValue(event, null, Person.class);
-		if (eventCount % FREQUENCY_OF_LOGGING == 0)
+		try
 		{
-			LOGGER.info(" key : " + person.getKey() + " firstName: " + person.getFirstName() + ", lastName: "
-			        + person.getLastName() + ", birthDate: " + person.getBirthDate() + ", deleted: "
-			        + person.getDeleted());
+			DefaultBinLogEvent genericBinLogEvent = new DefaultBinLogEvent(event, eventDecoder);
+			LOGGER.info(genericBinLogEvent.getKeyValuePair().toString());
+			LOGGER.info(genericBinLogEvent.getPrimaryKeyList().toString());
 		}
-		eventCount += 1;
+		catch (DatabusException ex)
+		{
+			LOGGER.error("error in consuming events", ex);
+			return ConsumerCallbackResult.ERROR;
+		}
+		eventCount++;
 		return ConsumerCallbackResult.SUCCESS;
 	}
-
 }
