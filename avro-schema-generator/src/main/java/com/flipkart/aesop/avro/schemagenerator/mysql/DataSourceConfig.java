@@ -1,4 +1,4 @@
-package com.flipkart.avro.schemagenerator.mysql;
+package com.flipkart.aesop.avro.schemagenerator.mysql;
 
 /**
  * <code> DBConfig </code> is the configuration object for the dataSource initialization

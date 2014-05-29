@@ -1,4 +1,4 @@
-package com.flipkart.avro.schemagenerator.main;
+package com.flipkart.aesop.avro.schemagenerator.main;
 
 import java.beans.PropertyVetoException;
 import java.io.IOException;
@@ -7,9 +7,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
-import com.flipkart.avro.schemagenerator.main.common.JLineHelper;
-import com.flipkart.avro.schemagenerator.mysql.DataSourceConfig;
-import com.flipkart.avro.schemagenerator.mysql.common.MysqlUtils;
+import com.flipkart.aesop.avro.schemagenerator.main.common.JLineHelper;
+import com.flipkart.aesop.avro.schemagenerator.mysql.DataSourceConfig;
+import com.flipkart.aesop.avro.schemagenerator.mysql.MysqlUtils;
 
 /**
  * The Class InteractiveSchemaGenerator.

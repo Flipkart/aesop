@@ -1,4 +1,4 @@
-package com.flipkart.avro.schemagenerator.data;
+package com.flipkart.aesop.avro.schemagenerator.data;
 
 import java.util.List;
 

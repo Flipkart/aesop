@@ -1,4 +1,4 @@
-package com.flipkart.avro.schemagenerator.main;
+package com.flipkart.aesop.avro.schemagenerator.test.main;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -9,7 +9,8 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.flipkart.avro.schemagenerator.mysql.DataSourceConfig;
+import com.flipkart.aesop.avro.schemagenerator.main.SchemaGenerator;
+import com.flipkart.aesop.avro.schemagenerator.mysql.DataSourceConfig;
 
 /**
  * <code>SchemaGeneratorTest</code> test for SchemaGenerator class.

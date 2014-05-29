@@ -1,4 +1,4 @@
-package com.flipkart.avro.schemagenerator.mysql.common;
+package com.flipkart.aesop.avro.schemagenerator.mysql;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -8,8 +8,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.flipkart.avro.schemagenerator.data.TableRecord;
-import com.flipkart.avro.schemagenerator.mysql.MysqlConnectionProvider;
+import com.flipkart.aesop.avro.schemagenerator.data.TableRecord;
 
 /**
  * <code> MysqlUtils </code> utils to fetch info from mysql database

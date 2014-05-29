@@ -1,4 +1,4 @@
-package com.flipkart.avro.schemagenerator.data;
+package com.flipkart.aesop.avro.schemagenerator.data;
 
 /**
  * <code> MysqlToAvroMapper </code> maps Mysql data type to Avro data types.

@@ -1,4 +1,4 @@
-package com.flipkart.avro.schemagenerator.mysql;
+package com.flipkart.aesop.avro.schemagenerator.mysql;
 
 import java.beans.PropertyVetoException;
 import java.sql.Connection;

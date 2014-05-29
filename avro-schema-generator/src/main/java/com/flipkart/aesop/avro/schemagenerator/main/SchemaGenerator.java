@@ -1,4 +1,4 @@
-package com.flipkart.avro.schemagenerator.main;
+package com.flipkart.aesop.avro.schemagenerator.main;
 
 import java.beans.PropertyVetoException;
 import java.io.IOException;
@@ -15,10 +15,10 @@ import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.InitializingBean;
 
-import com.flipkart.avro.schemagenerator.data.TableRecord;
-import com.flipkart.avro.schemagenerator.mysql.DataSourceConfig;
-import com.flipkart.avro.schemagenerator.mysql.MysqlConnectionProvider;
-import com.flipkart.avro.schemagenerator.mysql.common.MysqlUtils;
+import com.flipkart.aesop.avro.schemagenerator.data.TableRecord;
+import com.flipkart.aesop.avro.schemagenerator.mysql.DataSourceConfig;
+import com.flipkart.aesop.avro.schemagenerator.mysql.MysqlConnectionProvider;
+import com.flipkart.aesop.avro.schemagenerator.mysql.MysqlUtils;
 
 /**
  * <code>SchemaGenerator</code> generates avro schema.

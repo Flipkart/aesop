@@ -11,8 +11,8 @@ import org.apache.avro.Schema;
 import org.trpr.platform.core.impl.logging.LogFactory;
 import org.trpr.platform.core.spi.logging.Logger;
 
+import com.flipkart.aesop.avro.schemagenerator.main.SchemaGenerator;
 import com.flipkart.aesop.runtime.producer.schema.eventprocessor.SchemaChangeEventProcessor;
-import com.flipkart.avro.schemagenerator.main.SchemaGenerator;
 import com.google.code.or.binlog.impl.event.QueryEvent;
 import com.linkedin.databus2.schemas.FileSystemSchemaRegistryService;
 import com.linkedin.databus2.schemas.SchemaRegistryService;

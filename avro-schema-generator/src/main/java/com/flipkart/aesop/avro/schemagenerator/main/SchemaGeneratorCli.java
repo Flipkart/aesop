@@ -1,4 +1,4 @@
-package com.flipkart.avro.schemagenerator.main;
+package com.flipkart.aesop.avro.schemagenerator.main;
 
 import java.io.OutputStream;
 import java.io.PrintWriter;
@@ -16,7 +16,7 @@ import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.lang.StringUtils;
 
-import com.flipkart.avro.schemagenerator.mysql.DataSourceConfig;
+import com.flipkart.aesop.avro.schemagenerator.mysql.DataSourceConfig;
 
 /**
  * <code>SchemaGeneratorCli</code> command line interface for the schema generator
@@ -56,16 +56,15 @@ public class SchemaGeneratorCli
 
 			dataSourceConfigs.add(dataSourceConfig);
 			List<String> dbInclusionTableList =
-			        commandLine.hasOption("i") ? Arrays.asList(commandLine.getOptionValues("i"))
-			                : new ArrayList<String>();
+			        commandLine.hasOption("i") ? Arrays.asList(commandLine.getOptionValues("i")) : null;
 			List<String> dbExclusionTableList =
-			        commandLine.hasOption("e") ? Arrays.asList(commandLine.getOptionValues("e"))
-			                : new ArrayList<String>();
+			        commandLine.hasOption("e") ? Arrays.asList(commandLine.getOptionValues("e")) : null;
 			tablesInclusionListMap.put(commandLine.getOptionValue("d"), dbInclusionTableList);
 			tablesExclusionListMap.put(commandLine.getOptionValue("d"), dbExclusionTableList);
 
 			SchemaGenerator schemaGenerator =
 			        new SchemaGenerator(dataSourceConfigs, tablesInclusionListMap, tablesExclusionListMap);
+			System.out.println("Generating Schema ...\n");
 			if (commandLine.hasOption("t"))
 			{
 				String schema =
