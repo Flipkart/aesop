@@ -6,11 +6,11 @@
     <parent>
         <groupId>com.flipkart.aesop</groupId>
         <artifactId>aesop</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.1</version>
     </parent>
     <groupId>com.flipkart.aesop</groupId>
     <artifactId>mysql-producer</artifactId>
-    <version>1.0.0</version>
+    <version>${project.parent.version}</version>
     <name>Mysql event producer</name>
     <description>Mysql event producer</description>
 
@@ -22,13 +22,13 @@
         </license>
     </licenses>
 
-    <distributionManagement>
-        <repository>
-            <id>clojars</id>
-            <name>Clojars repository</name>
-            <url>https://clojars.org/repo</url>
-        </repository>
-    </distributionManagement>
+   <distributionManagement>
+    <repository>
+      <id>ops-build-2</id>
+      <name>ops-build-2-releases</name>
+      <url>http://artifactory.nm.flipkart.com:8081/artifactory/libs-release-local</url>
+    </repository>
+</distributionManagement>
 
     <scm>
         <url>https://github.com/Flipkart/aesop</url>
@@ -120,7 +120,7 @@
         <dependency>
 			<groupId>com.flipkart.aesop</groupId>
 			<artifactId>avro-schema-generator</artifactId>
-			<version>1.0.0</version>
+			<version>${project.version}</version>
 			<exclusions>
 			  	<exclusion>
 			  		<groupId>org.mortbay.jetty</groupId>

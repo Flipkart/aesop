@@ -56,7 +56,7 @@ public class MysqlEventProducer extends AbstractEventProducer implements Initial
 	/** Default Mysql port */
 	private static final Integer DEFAULT_MYSQL_PORT = 3306;
 	/** Pattern for extracting /3306/mysql-bin out of mysql://or_test%2For_test@localhost:3306/3306/mysql-bin */
-	private static final Pattern PATH_PATTERN = Pattern.compile("/([0-9]+)/[a-z|A-Z|-]+");
+	private static final Pattern PATH_PATTERN = Pattern.compile("/([0-9]+)/[a-z|A-Z|0-9|-]+");
 	/** Index of server id in pattern match group */
 	private static final int SERVER_ID = 1;
 	/** Index of bin log prefix in pattern match group */

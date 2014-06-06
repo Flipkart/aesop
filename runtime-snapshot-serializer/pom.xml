@@ -6,13 +6,13 @@
     <parent>
         <groupId>com.flipkart.aesop</groupId>
         <artifactId>aesop</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.1</version>
     </parent>
 
     <groupId>com.flipkart.aesop</groupId>
     <artifactId>runtime-snapshot-serializer</artifactId>
     <name>Snapshot Serializer Runtime</name>
-    <version>1.0.0</version>
+    <version>${project.parent.version}</version>
     <description>Snapshot Serializer Runtime</description>
 
     <licenses>
@@ -23,13 +23,13 @@
         </license>
     </licenses>
 
-    <distributionManagement>
-        <repository>
-            <id>clojars</id>
-            <name>Clojars repository</name>
-            <url>https://clojars.org/repo</url>
-        </repository>
-    </distributionManagement>
+  	<distributionManagement>
+	    <repository>
+	      <id>ops-build-2</id>
+	      <name>ops-build-2-releases</name>
+	      <url>http://artifactory.nm.flipkart.com:8081/artifactory/libs-release-local</url>
+	    </repository>
+	</distributionManagement>
 
     <scm>
         <url>https://github.com/Flipkart/aesop</url>

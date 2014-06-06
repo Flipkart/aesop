@@ -6,13 +6,13 @@
     <parent>
         <groupId>com.flipkart.aesop</groupId>
         <artifactId>aesop</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.1</version>
     </parent>
 
     <groupId>com.flipkart.aesop</groupId>
     <artifactId>runtime-relay</artifactId>
     <name>Relay Runtime</name>
-    <version>1.0.0</version>
+    <version>${project.parent.version}</version>
     <description>Relay Runtime</description>
 
     <licenses>
@@ -22,14 +22,13 @@
             <distribution>repo</distribution>
         </license>
     </licenses>
-
-    <distributionManagement>
-        <repository>
-            <id>clojars</id>
-            <name>Clojars repository</name>
-            <url>https://clojars.org/repo</url>
-        </repository>
-    </distributionManagement>
+	<distributionManagement>
+	    <repository>
+	      <id>ops-build-2</id>
+	      <name>ops-build-2-releases</name>
+	      <url>http://artifactory.nm.flipkart.com:8081/artifactory/libs-release-local</url>
+	    </repository>
+	</distributionManagement>
 
     <scm>
         <url>https://github.com/Flipkart/aesop</url>

@@ -6,13 +6,13 @@
     <parent>
         <groupId>com.flipkart.aesop</groupId>
         <artifactId>aesop</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.1</version>
     </parent>
 
     <groupId>com.flipkart.aesop</groupId>
     <artifactId>runtime-client-bootstrap-producer</artifactId>
     <name>Client Bootstrap Producer Runtime</name>
-    <version>1.0.0</version>
+    <version>${project.parent.version}</version>
     <description>Client Bootstrap Producer Runtime</description>
 
     <licenses>
@@ -24,12 +24,12 @@
     </licenses>
 
     <distributionManagement>
-        <repository>
-            <id>clojars</id>
-            <name>Clojars repository</name>
-            <url>https://clojars.org/repo</url>
-        </repository>
-    </distributionManagement>
+	    <repository>
+	      <id>ops-build-2</id>
+	      <name>ops-build-2-releases</name>
+	      <url>http://artifactory.nm.flipkart.com:8081/artifactory/libs-release-local</url>
+	    </repository>
+	</distributionManagement>
 
     <scm>
         <url>https://github.com/Flipkart/aesop</url>
