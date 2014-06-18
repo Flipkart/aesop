@@ -16,6 +16,8 @@
 package com.flipkart.aesop.relay.sample;
 
 import java.util.LinkedList;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.trpr.platform.core.impl.logging.LogFactory;
 import org.trpr.platform.core.spi.logging.Logger;
@@ -46,6 +48,8 @@ public class PersonEventProducer extends AbstractEventProducer {
 	
 	/** Member variables related to events production an handling*/
 	private int numberOfEventsPerRun = NUM_EVENTS;
+	
+	private volatile AtomicBoolean shutdownRequested = new AtomicBoolean(false);
 
 	/**
 	 * Interface method implementation
@@ -59,7 +63,9 @@ public class PersonEventProducer extends AbstractEventProducer {
 	 * Interface method implementation. Starts up the event producer thread
 	 * @see com.linkedin.databus2.producers.EventProducer#start(long)
 	 */
-	public void start (long sinceSCN) {
+	public void start (long sinceSCN) 
+	{
+		shutdownRequested.set(false);
 		this.sinceSCN.set(sinceSCN);
 		EventProducerThread thread = new EventProducerThread();
 		thread.start();
@@ -91,7 +97,15 @@ public class PersonEventProducer extends AbstractEventProducer {
 
 	/** No Op methods*/
 	public void pause() {}
-	public void shutdown() {}
+	
+	public void shutdown() 
+	{
+		LOGGER.info("Shutdown has been requested. PersonEventProducer shutttng down");
+		shutdownRequested.set(true);
+		super.shutdown();
+		LOGGER.info("PersonEventProducer shutdown completed");
+	}
+	
 	public void unpause() {}
 	public void waitForShutdown() throws InterruptedException,IllegalStateException {}
 	public void waitForShutdown(long time) throws InterruptedException,IllegalStateException {}
@@ -102,10 +116,13 @@ public class PersonEventProducer extends AbstractEventProducer {
 	}
 	
 	/** Thread that creates a specified number of Person instances from in-memory data*/
-	private class EventProducerThread extends Thread {
+	private class EventProducerThread extends Thread 
+	{
 		int count = 0;
-		public void run() {
-			while (count < 2) {
+		public void run() 
+		{
+			while (count < 2 && !shutdownRequested.get()) 
+			{
 				eventBuffer.startEvents();
 				long endValue = sinceSCN.longValue() + numberOfEventsPerRun;
 				for (long i = sinceSCN.longValue(); i < endValue; i++) {

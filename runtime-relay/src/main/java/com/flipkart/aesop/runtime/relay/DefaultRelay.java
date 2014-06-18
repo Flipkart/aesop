@@ -126,18 +126,29 @@ public class DefaultRelay extends HttpRelay {
     		}
     		producer.start(startScn);
     	}
+    	this.registerShutdownHook();
     }
     
+	public void shutdown()
+	{
+		super.shutdown();
+	}
+
     /**
      * Overriden superclass method. Stops the registered Producers after calling super.doShutdown()
      * @see com.linkedin.databus.container.netty.HttpRelay#doShutdown()
      */
-    protected void doShutdown() {
-    	super.doShutdown();
-    	for (ProducerRegistration producerRegistration : this.producerRegistrationList) {
-    		producerRegistration.getEventProducer().shutdown();
-    	}
-    }
+	protected void doShutdown()
+	{
+		LOGGER.info("Shutting down Relay");
+		for (ProducerRegistration producerRegistration : this.producerRegistrationList)
+		{
+			producerRegistration.getEventProducer().shutdown();
+		}
+		LOGGER.info("All producers shutdown completed");
+		super.doShutdown();
+		LOGGER.info("Relay shutdown completed");
+	}
     
 	/** Getter/Setter methods to override default implementations of various components used by this Relay*/
 	public MultiServerSequenceNumberHandler getMaxScnReaderWriters() {

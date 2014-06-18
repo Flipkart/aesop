@@ -15,6 +15,7 @@ package com.flipkart.aesop.runtime.producer.txnprocessor.impl;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.trpr.platform.core.impl.logging.LogFactory;
@@ -88,6 +89,8 @@ public class MysqlTransactionManagerImpl implements MysqlTransactionManager
 	private SchemaRegistryService schemaRegistryService;
 	/** mysqlTableId to tableName mapping */
 	private Map<Long, String> mysqlTableIdToTableNameMap;
+	
+	private volatile AtomicBoolean shutdownRequested = new AtomicBoolean(false);
 
 	/** Constructor for the class */
 	public MysqlTransactionManagerImpl(final DbusEventBufferAppendable eventBuffer,
@@ -137,29 +140,36 @@ public class MysqlTransactionManagerImpl implements MysqlTransactionManager
 	@Override
 	public void endXtion(long eventTimeStamp)
 	{
-		currTxnTimestamp = eventTimeStamp * 1000000L;
-		long txnReadLatency = System.nanoTime() - currTxnStartReadTimestamp;
-		try
+		if(!shutdownRequested.get())
 		{
-			if (transaction.getScn() != -1)
+			currTxnTimestamp = eventTimeStamp * 1000000L;
+			long txnReadLatency = System.nanoTime() - currTxnStartReadTimestamp;
+			try
 			{
-				transaction.setSizeInBytes(currTxnSizeInBytes);
-				transaction.setTxnNanoTimestamp(currTxnTimestamp);
-				transaction.setTxnReadLatencyNanos(txnReadLatency);
-				try
+				if (transaction.getScn() != -1)
 				{
-					onEndTransaction(transaction);
-				}
-				catch (DatabusException e3)
-				{
-					LOGGER.error("Got exception in the transaction handler ", e3);
-					throw new DatabusRuntimeException(e3);
+					transaction.setSizeInBytes(currTxnSizeInBytes);
+					transaction.setTxnNanoTimestamp(currTxnTimestamp);
+					transaction.setTxnReadLatencyNanos(txnReadLatency);
+					try
+					{
+						onEndTransaction(transaction);
+					}
+					catch (DatabusException e3)
+					{
+						LOGGER.error("Got exception in the transaction handler ", e3);
+						throw new DatabusRuntimeException(e3);
+					}
 				}
 			}
+			finally
+			{
+				resetTxn();
+			}
 		}
-		finally
+		else
 		{
-			resetTxn();
+			LOGGER.info("Not writing event to buffer as shutdown has been requested");
 		}
 	}
 
@@ -525,5 +535,11 @@ public class MysqlTransactionManagerImpl implements MysqlTransactionManager
 		}
 		eventBuffer.endEvents(scn, dbusEventsStatisticsCollector);
 	}
+
+	@Override
+    public void setShutdownRequested(boolean shutdownRequested)
+    {
+		this.shutdownRequested.set(shutdownRequested);
+    }
 
 }

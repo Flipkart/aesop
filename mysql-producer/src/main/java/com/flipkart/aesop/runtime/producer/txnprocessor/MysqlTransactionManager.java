@@ -33,4 +33,6 @@ public interface MysqlTransactionManager extends TransactionProcessor,SourceProc
 	void setCurrFileNum(int currFileNum) ;
 	/** Get the map of mysqlTableId to tableName mapping */
 	Map<Long,String> getMysqlTableIdToTableNameMap();
+	
+	public void setShutdownRequested(boolean shutdownRequested);
 }

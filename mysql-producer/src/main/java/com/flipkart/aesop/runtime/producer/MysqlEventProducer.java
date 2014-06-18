@@ -136,6 +136,7 @@ public class MysqlEventProducer extends AbstractEventProducer implements Initial
 			        new MysqlTransactionManagerImpl(eventBuffer, maxScnReaderWriter, dbusEventsStatisticsCollector,
 			                eventManagersMap, logid, tableUriToSrcIdMap, tableUriToSrcNameMap, schemaRegistryService,
 			                this.sinceSCN, binLogEventMappers);
+			mysqlTxnManager.setShutdownRequested(false);
 			OpenReplicationListener orl =
 			        new OpenReplicationListener(mysqlTxnManager, eventsMap, schemaChangeEventProcessor,
 			                binlogFilePrefix);
@@ -216,7 +217,6 @@ public class MysqlEventProducer extends AbstractEventProducer implements Initial
 	@Override
 	public String getName()
 	{
-		// TODO Auto-generated method stub
 		return this.getClass().getName();
 	}
 
@@ -256,14 +256,20 @@ public class MysqlEventProducer extends AbstractEventProducer implements Initial
 	@Override
 	public void shutdown()
 	{
+		LOGGER.info("Shutdown has been requested. MYSQLEventProducer shutttng down");
 		try
 		{
+			mysqlTxnManager.setShutdownRequested(true);
+			LOGGER.info("Open Replicator Shutting down");
 			this.openReplicator.stop(10, TimeUnit.SECONDS);
+			LOGGER.info("Open Replicator shutdown complete");
+			super.shutdown();
 		}
 		catch (Exception e)
 		{
-			LOGGER.error("Error while stopping open replicator");
+			LOGGER.error("Error while stopping open replicator", e);
 		}
+		LOGGER.info("MYSQLEventProducer shutdown completed");
 	}
 
 	/** Methods that are not supported and therefore throw {@link UnsupportedOperationException} */
