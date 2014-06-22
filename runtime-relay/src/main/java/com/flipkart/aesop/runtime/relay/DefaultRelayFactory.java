@@ -100,7 +100,7 @@ public class DefaultRelayFactory  implements FactoryBean<DefaultRelay>, Initiali
 						pStaticConfig.getSources()[0].getId())); // here we assume single event buffer is shared among all logical sources								
 				producer.setMaxScnReaderWriter(this.maxScnReaderWriters.getOrCreateHandler(pStaticConfig.getPhysicalPartition()));
 				producer.setSchemaRegistryService(relay.getSchemaRegistryService());
-				producer.setDbusEventsStatisticsCollector(relay.getInBoundStatsCollectors().getStatsCollector(STATS_COLLECTOR));
+				producer.setDbusEventsStatisticsCollector(relay.getInboundEventStatisticsCollector());
 			}
 		}
 		// set the ProducerRegistration instances on the Relay

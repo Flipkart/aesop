@@ -102,11 +102,12 @@ public class PersonEventProducer extends AbstractEventProducer {
 	
 	/** Thread that creates a specified number of Person instances from in-memory data*/
 	private class EventProducerThread extends Thread {
-		int count = 0;
 		public void run() {
-			while (count < 2) {
-				eventBuffer.startEvents();
-				long endValue = sinceSCN.longValue() + numberOfEventsPerRun;
+			while (true) {
+                int numberOfEvents = (int) (Math.random()*10);
+                int sleep = (int) (Math.random()*5000);
+				getEventBuffer().startEvents();
+				long endValue = sinceSCN.longValue() + numberOfEvents;
 				for (long i = sinceSCN.longValue(); i < endValue; i++) {
 					Person person = new Person(i, "Aesop " + i, "Mr. " + i, i,"false",new LinkedList<FieldChange>());
 					byte[] serializedEvent = serializeEvent(person);
@@ -115,19 +116,18 @@ public class PersonEventProducer extends AbstractEventProducer {
 							(short)physicalSourceStaticConfig.getId(),(short)physicalSourceStaticConfig.getId(),
 							System.nanoTime(),(short)physicalSourceStaticConfig.getSources()[0].getId(), // here we use the Logical Source Id
 							schemaId,serializedEvent, false, true);
-					eventBuffer.appendEvent(eventKey, eventInfo, dbusEventsStatisticsCollector);
+					getEventBuffer().appendEvent(eventKey, eventInfo, dbusEventsStatisticsCollector);
 					sinceSCN.getAndIncrement();
 					LOGGER.info("Added an event : " + "Aesop Mr. " + i);
 				}
-				eventBuffer.endEvents(sinceSCN.longValue() , dbusEventsStatisticsCollector);
+				getEventBuffer().endEvents(sinceSCN.longValue(),dbusEventsStatisticsCollector);
 				try {
 					maxScnReaderWriter.saveMaxScn(sinceSCN.longValue() + numberOfEventsPerRun);
 				} catch (DatabusException e) {
 					LOGGER.error("Error persisting Max SCN : " + e.getMessage(), e);
 				}
-				count += 1;
 				try {
-					Thread.sleep(10000);
+					Thread.sleep(sleep);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
