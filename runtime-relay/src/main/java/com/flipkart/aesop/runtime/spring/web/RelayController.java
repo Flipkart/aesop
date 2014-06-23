@@ -118,18 +118,12 @@ public class RelayController {
      */
     @RequestMapping(value = {"/metrics-stream"}, method = RequestMethod.GET)
     public @ResponseBody void metricsStream(HttpServletRequest request, HttpServletResponse response) {
-
         try {
-
             // restrict max concurrency
             if (concurrentConnections.incrementAndGet() > MAX_CONNECTIONS) {
-
                 logger.info("Client refused due to max concurrency reached");
                 response.sendError(503, "Max concurrent connections reached: " + MAX_CONNECTIONS);
-
             } else {
-
-
                 // find the relay
                 DefaultRelay relay = null;
                 for (ServerContainer serverContainer : this.runtimeRegistry.getRuntimes()) {
@@ -138,30 +132,23 @@ public class RelayController {
                         break;
                     }
                 }
-
                 if (relay != null) {
-
                     logger.info("Client connected: " + request.getSession().getId());
-
                     // set appropriate headers for a stream
                     response.setHeader("Content-Type", "text/event-stream;charset=UTF-8");
                     response.setHeader("Cache-Control", "no-cache, no-store, max-age=0, must-revalidate");
                     response.setHeader("Pragma", "no-cache");
-
                     // loop metrics
                     while (true) {
                         response.getWriter().println("data: " + relay.getMetricsCollector().getJson() + "\n");
                         response.flushBuffer();
                         Thread.sleep(relay.getMetricsCollector().getRefreshInterval() * 1000);
                     }
-
                 } else {
                     logger.info("Relay not found!");
                     response.sendError(404,"Relay not found!");
                 }
-
             }
-
         } catch (IOException e) {
             logger.info("Client Disconnected: " + request.getSession().getId());
         } catch (InterruptedException e) {
@@ -180,14 +167,11 @@ public class RelayController {
      */
     @RequestMapping(value = {"/metrics-json"}, method = RequestMethod.GET)
     public @ResponseBody void metricsJSON(HttpServletRequest request, HttpServletResponse response) {
-
         try {
-
             // set appropriate headers for a stream
             response.setHeader("Content-Type", "application/json");
             response.setHeader("Cache-Control", "no-cache, no-store, max-age=0, must-revalidate");
             response.setHeader("Pragma", "no-cache");
-
             DefaultRelay relay = null;
             for (ServerContainer serverContainer : this.runtimeRegistry.getRuntimes()) {
                 if (DefaultRelay.class.isAssignableFrom(serverContainer.getClass())) {
@@ -195,7 +179,6 @@ public class RelayController {
                     break;
                 }
             }
-
             if (relay != null) {
                 if (request.getParameterMap().containsKey("full")) {
                     Map<String,Object> map = new HashMap<String, Object>();
@@ -210,16 +193,12 @@ public class RelayController {
                 response.getWriter().println("{}");
             }
             response.flushBuffer();
-
         } catch (IOException e) {
             logger.info("Client Disconnected: " + request.getSession().getId());
         } catch (Exception e) {
             logger.error("Client Disconnected: " + request.getSession().getId() + " (Unknown Exception)", e);
         }
-
     }
-
-
 
     /** Getter Setter methods */
 	public ServerContainerRegistry getRuntimeRegistry() {
