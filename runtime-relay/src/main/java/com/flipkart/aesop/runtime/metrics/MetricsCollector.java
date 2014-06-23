@@ -1,13 +1,11 @@
 package com.flipkart.aesop.runtime.metrics;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.linkedin.databus.core.monitoring.mbean.DbusEventsTotalStats;
 import com.linkedin.databus2.core.container.monitoring.mbean.DbusHttpTotalStats;
+import org.codehaus.jackson.map.ObjectMapper;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Queue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
