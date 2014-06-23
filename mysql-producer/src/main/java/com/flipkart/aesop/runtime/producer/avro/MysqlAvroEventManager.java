@@ -28,6 +28,7 @@ import org.trpr.platform.core.impl.logging.LogFactory;
 import org.trpr.platform.core.spi.logging.Logger;
 
 import com.flipkart.aesop.runtime.producer.mapper.BinLogEventMapper;
+import com.flipkart.aesop.runtime.producer.mapper.impl.DefaultBinLogEventMapper;
 import com.flipkart.aesop.runtime.producer.mapper.impl.ORToAvroMapper;
 import com.google.code.or.binlog.BinlogEventV4Header;
 import com.google.code.or.common.glossary.Column;
@@ -139,11 +140,10 @@ public class MysqlAvroEventManager
 			for (Row row : rowList)
 			{
 				List<Column> columns = row.getColumns();
-				// get the appropriate mapping done for the bin log event
+				// getting the appropriate bin log mapper for the logicalSource
 				BinLogEventMapper binLogEventMapper =
-				        binLogEventMappers.get(lSourceId) == null
-				                ? new com.flipkart.aesop.runtime.producer.mapper.impl.DefaultBinLogEventMapper(
-				                        new ORToAvroMapper()) : binLogEventMappers.get(lSourceId);
+				        binLogEventMappers.get(lSourceId) == null ? new DefaultBinLogEventMapper(new ORToAvroMapper())
+				                : binLogEventMappers.get(lSourceId);
 
 				GenericRecord genericRecord = binLogEventMapper.mapBinLogEvent(eventHeader, row, dbusOpCode, schema);
 				List<KeyPair> keyPairList = generateKeyPair(columns, schema);

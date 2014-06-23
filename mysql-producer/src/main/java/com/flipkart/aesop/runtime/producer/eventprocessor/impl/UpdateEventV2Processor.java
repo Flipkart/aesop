@@ -16,7 +16,8 @@ import com.google.code.or.common.glossary.Row;
 import com.linkedin.databus.core.DbusOpcode;
 
 /**
- * The <code>UpdateEvent2Processor</code> processes UpdateRowsEventV2 from source. This event is received if there is any
+ * The <code>UpdateEvent2Processor</code> processes UpdateRowsEventV2 from source. This event is received if there is
+ * any
  * update operation on the source.
  * @author jagadeesh.huliyar
  */
@@ -47,7 +48,7 @@ public class UpdateEventV2Processor implements BinLogEventProcessor
 			Row row = pair.getAfter();
 			rowList.add(row);
 		}
-		manager.performChanges(updateRowsEvent.getHeader(), rowList, DbusOpcode.UPSERT);
+		manager.performChanges(updateRowsEvent.getTableId(), updateRowsEvent.getHeader(), rowList, DbusOpcode.UPSERT);
 		LOGGER.debug("Update Successful for  " + event.getHeader().getEventLength() + " . Data updated : " + rowList);
 	}
 }

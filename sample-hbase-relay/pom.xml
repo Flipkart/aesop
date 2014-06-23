@@ -7,12 +7,12 @@
     <parent>
         <groupId>com.flipkart.aesop</groupId>
         <artifactId>aesop</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.2-SNAPSHOT</version>
     </parent>
 
     <groupId>com.flipkart.aesop</groupId>
     <artifactId>sample-hbase-relay</artifactId>
-    <version>1.0.0</version>
+    <version>${project.parent.version}</version>
     <name>Sample Relay with HBase WAL edits Producer</name>
     <description>Sample Relay with HBase WAL edits Producer</description>
 
@@ -24,13 +24,13 @@
         </license>
     </licenses>
 
-    <distributionManagement>
-        <repository>
-            <id>clojars</id>
-            <name>Clojars repository</name>
-            <url>https://clojars.org/repo</url>
-        </repository>
-    </distributionManagement>
+	<distributionManagement>
+		<repository>
+			<id>clojars</id>
+			<name>Clojars repository</name>
+			<url>https://clojars.org/repo</url>
+		</repository>
+	</distributionManagement>
 
     <scm>
         <url>https://github.com/Flipkart/aesop</url>

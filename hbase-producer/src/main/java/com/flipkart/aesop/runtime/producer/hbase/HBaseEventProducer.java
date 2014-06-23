@@ -17,6 +17,7 @@ package com.flipkart.aesop.runtime.producer.hbase;
 
 import java.net.InetAddress;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.avro.generic.GenericRecord;
 import org.apache.hadoop.conf.Configuration;
@@ -33,6 +34,7 @@ import com.linkedin.databus.core.DbusEventInfo;
 import com.linkedin.databus.core.DbusEventKey;
 import com.linkedin.databus.core.DbusOpcode;
 import com.linkedin.databus2.core.DatabusException;
+import com.linkedin.databus2.schemas.utils.SchemaHelper;
 import com.ngdata.sep.EventListener;
 import com.ngdata.sep.SepEvent;
 import com.ngdata.sep.SepModel;
@@ -74,6 +76,8 @@ public class HBaseEventProducer<T extends GenericRecord> extends AbstractEventPr
 	
 	/** The SepEventMapper for translating WAL edits to change events*/
 	protected SepEventMapper<T> sepEventMapper;
+	
+	private volatile AtomicBoolean shutdownRequested = new AtomicBoolean(false);
 
 	/**
 	 * Interface method implementation. Checks for mandatory dependencies and creates the SEP consumer
@@ -91,6 +95,7 @@ public class HBaseEventProducer<T extends GenericRecord> extends AbstractEventPr
 	 * @see com.linkedin.databus2.producers.EventProducer#start(long)
 	 */
 	public void start (long sinceSCN) {
+		shutdownRequested.set(false);
 		this.sinceSCN.set(sinceSCN);
 		LOGGER.info("Starting SEP subscription : " + this.getName());
 		LOGGER.info("ZK connection details [host:port] = {} : {}", this.zkQuorum, this.zkPort);
@@ -121,12 +126,18 @@ public class HBaseEventProducer<T extends GenericRecord> extends AbstractEventPr
 	 * The SEP EventListener that consumes {@link SepEvent} instances and appends them to the Databus event buffer after suitable conversion/interpretation.
 	 */
 	class RelayAppender implements EventListener {
-		public void processEvents(List<SepEvent> sepEvents) {
+		public void processEvents(List<SepEvent> sepEvents) 
+		{
+			if(shutdownRequested.get())
+			{
+				return;
+			}
 			long lastSavedSCN = sinceSCN.get();
 			eventBuffer.startEvents();
             for (SepEvent sepEvent : sepEvents) {
             	T changeEvent = sepEventMapper.mapSepEvent(sepEvent);
-            	byte[] serializedEvent = serializeEvent(changeEvent);
+            	byte[] schemaId=SchemaHelper.getSchemaId(changeEvent.getSchema().toString());
+               	byte[] serializedEvent = serializeEvent(changeEvent);
             	// we find the last processed timestamp and are conservative to take the earliest
             	long latestTimestamp = 0;
             	for (KeyValue kv : sepEvent.getKeyValues()) {
@@ -155,8 +166,13 @@ public class HBaseEventProducer<T extends GenericRecord> extends AbstractEventPr
 	 * Interface method implementation. Stops the SEP consumer
 	 * @see com.linkedin.databus2.producers.EventProducer#shutdown()
 	 */
-	public void shutdown() {
+	public void shutdown() 
+	{
+		LOGGER.info("Shutdown has been requested. HBaseEventProducer shutting down");
+		this.shutdownRequested.set(true);
 		this.sepConsumer.stop();
+		super.shutdown();
+		LOGGER.info("HBaseEventProducer shut down complete");
 	}
 
 	/**

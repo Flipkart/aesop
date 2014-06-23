@@ -12,8 +12,10 @@
  */
 package com.flipkart.aesop.runtime.producer.txnprocessor.impl;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.trpr.platform.core.impl.logging.LogFactory;
@@ -85,6 +87,10 @@ public class MysqlTransactionManagerImpl implements MysqlTransactionManager
 	private Map<Integer, BinLogEventMapper> binLogEventMappers;
 	/** Schema registry service which maintains currently active schemas */
 	private SchemaRegistryService schemaRegistryService;
+	/** mysqlTableId to tableName mapping */
+	private Map<Long, String> mysqlTableIdToTableNameMap;
+	
+	private volatile AtomicBoolean shutdownRequested = new AtomicBoolean(false);
 
 	/** Constructor for the class */
 	public MysqlTransactionManagerImpl(final DbusEventBufferAppendable eventBuffer,
@@ -105,6 +111,7 @@ public class MysqlTransactionManagerImpl implements MysqlTransactionManager
 		this.schemaRegistryService = schemaRegistryService;
 		this.sinceSCN = sinceSCN;
 		this.binLogEventMappers = binLogEventMappers;
+		this.mysqlTableIdToTableNameMap = new HashMap<Long, String>();
 	}
 
 	/**
@@ -133,29 +140,36 @@ public class MysqlTransactionManagerImpl implements MysqlTransactionManager
 	@Override
 	public void endXtion(long eventTimeStamp)
 	{
-		currTxnTimestamp = eventTimeStamp * 1000000L;
-		long txnReadLatency = System.nanoTime() - currTxnStartReadTimestamp;
-		try
+		if(!shutdownRequested.get())
 		{
-			if (transaction.getScn() != -1)
+			currTxnTimestamp = eventTimeStamp * 1000000L;
+			long txnReadLatency = System.nanoTime() - currTxnStartReadTimestamp;
+			try
 			{
-				transaction.setSizeInBytes(currTxnSizeInBytes);
-				transaction.setTxnNanoTimestamp(currTxnTimestamp);
-				transaction.setTxnReadLatencyNanos(txnReadLatency);
-				try
+				if (transaction.getScn() != -1)
 				{
-					onEndTransaction(transaction);
-				}
-				catch (DatabusException e3)
-				{
-					LOGGER.error("Got exception in the transaction handler ", e3);
-					throw new DatabusRuntimeException(e3);
+					transaction.setSizeInBytes(currTxnSizeInBytes);
+					transaction.setTxnNanoTimestamp(currTxnTimestamp);
+					transaction.setTxnReadLatencyNanos(txnReadLatency);
+					try
+					{
+						onEndTransaction(transaction);
+					}
+					catch (DatabusException e3)
+					{
+						LOGGER.error("Got exception in the transaction handler ", e3);
+						throw new DatabusRuntimeException(e3);
+					}
 				}
 			}
+			finally
+			{
+				resetTxn();
+			}
 		}
-		finally
+		else
 		{
-			resetTxn();
+			LOGGER.info("Not writing event to buffer as shutdown has been requested");
 		}
 	}
 
@@ -173,13 +187,12 @@ public class MysqlTransactionManagerImpl implements MysqlTransactionManager
 	}
 
 	/**
-	 * Identifies the source from which change events are being received. This method would be invoked when the table
-	 * map event is received.
+	 * starts new source
 	 * @param newTableName table name from which event is being received
 	 * @param newTableId table id from which event is being received
 	 */
-	@Override
-	public void startSource(String newTableName, long newTableId)
+
+	private void startSource(String newTableName, long newTableId)
 	{
 		currTableName = newTableName;
 		currTableId = newTableId;
@@ -188,6 +201,7 @@ public class MysqlTransactionManagerImpl implements MysqlTransactionManager
 			Short srcId = tableUriToSrcIdMap.get(currTableName);
 			if (null == srcId)
 			{
+				/** Only case when perSourceTransaction will be null in the end source call */
 				LOGGER.warn("Could not find a matching logical source for table Uri (" + currTableName + ")");
 				return;
 			}
@@ -203,21 +217,48 @@ public class MysqlTransactionManagerImpl implements MysqlTransactionManager
 	}
 
 	/**
-	 * Handles change of source event. Say whenever table name changes.
+	 * ends the current source
+	 */
+	private void endSource()
+	{
+		perSourceTransaction = null;
+	}
+
+	/**
+	 * Identifies if source has changed and if changed starts new source.
+	 * @param newTableId
 	 */
 	@Override
-	public void endSource()
+	public void setSource(long newTableId)
 	{
-		if (perSourceTransaction != null)
+		String newTableName = mysqlTableIdToTableNameMap.get(newTableId);
+		if (null == newTableName)
 		{
-			perSourceTransaction = null;
+			LOGGER.error("TableMap Event not received for the change event tableId: " + newTableId);
+			throw new DatabusRuntimeException("TableMap Event not received for the change event tableId: " + newTableId);
+		}
+		else if (this.currTableName.isEmpty() && (this.currTableId == -1))
+		{
+			/** First changeEvent for the transaction. */
+			startSource(newTableName, newTableId);
+		}
+		else if (!this.currTableName.equals(newTableName) || this.currTableId != newTableId)
+		{
+			LOGGER.debug("Table name changed from " + this.currTableName + " to " + newTableName);
+			endSource();
+			startSource(newTableName, newTableId);
 		}
 		else
 		{
-			String errorMessage = "perSourceTransaction should not be null in endSource()";
-			LOGGER.error(errorMessage);
-			throw new DatabusRuntimeException(errorMessage);
+			/** change event from the current source */
 		}
+
+	}
+
+	@Override
+	public Map<Long, String> getMysqlTableIdToTableNameMap()
+	{
+		return this.mysqlTableIdToTableNameMap;
 	}
 
 	/**
@@ -227,10 +268,12 @@ public class MysqlTransactionManagerImpl implements MysqlTransactionManager
 	 * @param databusOpcode operation code indicating nature of change such as insertion,deletion or updation.
 	 */
 	@Override
-	public void performChanges(BinlogEventV4Header eventHeader, List<Row> rowList, final DbusOpcode databusOpcode)
+	public void performChanges(long tableId, BinlogEventV4Header eventHeader, List<Row> rowList,
+	        final DbusOpcode databusOpcode)
 	{
 		try
 		{
+			setSource(tableId);
 			VersionedSchema schema =
 			        schemaRegistryService.fetchLatestVersionedSchemaBySourceName(tableUriToSrcNameMap
 			                .get(currTableName));
@@ -492,5 +535,11 @@ public class MysqlTransactionManagerImpl implements MysqlTransactionManager
 		}
 		eventBuffer.endEvents(scn, dbusEventsStatisticsCollector);
 	}
+
+	@Override
+    public void setShutdownRequested(boolean shutdownRequested)
+    {
+		this.shutdownRequested.set(shutdownRequested);
+    }
 
 }

@@ -30,11 +30,9 @@ import com.linkedin.databus.core.DbusEventBufferAppendable;
 import com.linkedin.databus.core.monitoring.mbean.DbusEventsStatisticsCollector;
 import com.linkedin.databus2.core.seq.MaxSCNReaderWriter;
 import com.linkedin.databus2.producers.EventProducer;
-import com.linkedin.databus2.relay.config.LogicalSourceStaticConfig;
 import com.linkedin.databus2.relay.config.PhysicalSourceConfig;
 import com.linkedin.databus2.relay.config.PhysicalSourceStaticConfig;
 import com.linkedin.databus2.schemas.SchemaRegistryService;
-import com.linkedin.databus2.schemas.utils.SchemaHelper;
 
 /**
  * <code>AbstractEventProducer</code> is an implementation of {@link EventProducer} that provides convenience methods for all sub-types
@@ -54,10 +52,9 @@ public abstract class AbstractEventProducer implements EventProducer {
 	/** Source related member variables*/
 	protected PhysicalSourceConfig physicalSourceConfig;
 	protected PhysicalSourceStaticConfig physicalSourceStaticConfig;
-	protected byte[] schemaId;	
-        protected SchemaRegistryService schemaRegistryService; 	
+    protected SchemaRegistryService schemaRegistryService; 	
 	/** Event-handling related member variables*/
-	protected AtomicLong sinceSCN = new AtomicLong(-1);
+	protected AtomicLong sinceSCN = new AtomicLong(-1); // This is the previous SCN to which it was read. 
 	protected DbusEventBufferAppendable eventBuffer;
 	protected MaxSCNReaderWriter maxScnReaderWriter;
 	protected DbusEventsStatisticsCollector dbusEventsStatisticsCollector;	
@@ -96,9 +93,6 @@ public abstract class AbstractEventProducer implements EventProducer {
 	public void setSchemaRegistryService(SchemaRegistryService schemaRegistryService) throws Exception {
 		this.schemaRegistryService = schemaRegistryService;
 		this.physicalSourceStaticConfig = this.physicalSourceConfig.build();
-		LogicalSourceStaticConfig sourceConfig = physicalSourceStaticConfig.getSources()[0]; // here we assume that all logical sources share the same schema
-		String schema = schemaRegistryService.fetchLatestSchemaBySourceName(sourceConfig.getName());
-		this.schemaId =  SchemaHelper.getSchemaId(schema);
 	}		
 	public void setDbusEventsStatisticsCollector(DbusEventsStatisticsCollector dbusEventsStatisticsCollector) {
 		this.dbusEventsStatisticsCollector = dbusEventsStatisticsCollector;
@@ -131,5 +125,10 @@ public abstract class AbstractEventProducer implements EventProducer {
 	public PhysicalSourceStaticConfig getPhysicalSourceStaticConfig() {
 		return physicalSourceStaticConfig;
 	}
-	
+
+	@Override
+    public void shutdown()
+    {
+		eventBuffer.rollbackEvents();
+    }
 }

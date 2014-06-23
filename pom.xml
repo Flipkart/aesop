@@ -7,7 +7,7 @@
     <artifactId>aesop</artifactId>
     <name>Aesop Full Build</name>
     <packaging>pom</packaging>
-    <version>1.0.0</version>
+    <version>1.0.2-SNAPSHOT</version>
 
     <licenses>
         <license>
@@ -17,13 +17,13 @@
         </license>
     </licenses>
 
-    <distributionManagement>
-        <repository>
-            <id>clojars</id>
-            <name>Clojars repository</name>
-            <url>https://clojars.org/repo</url>
-        </repository>
-    </distributionManagement>
+	<distributionManagement>
+		<repository>
+			<id>clojars</id>
+			<name>Clojars repository</name>
+			<url>https://clojars.org/repo</url>
+		</repository>
+	</distributionManagement>
 
     <scm>
         <url>https://github.com/Flipkart/aesop</url>
@@ -96,6 +96,8 @@
         <module>sample-bootstrap-server</module>
         <module>sample-snapshot-serializer</module>
         <module>sample-mysql-relay</module>
+        <module>sample-client-mysql-relay</module>
+        <module>avro-schema-generator</module>
     </modules>
 
 </project>

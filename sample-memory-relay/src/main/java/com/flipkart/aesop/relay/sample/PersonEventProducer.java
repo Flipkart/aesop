@@ -16,6 +16,8 @@
 package com.flipkart.aesop.relay.sample;
 
 import java.util.LinkedList;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.trpr.platform.core.impl.logging.LogFactory;
 import org.trpr.platform.core.spi.logging.Logger;
@@ -27,6 +29,7 @@ import com.linkedin.databus.core.DbusEventInfo;
 import com.linkedin.databus.core.DbusEventKey;
 import com.linkedin.databus.core.DbusOpcode;
 import com.linkedin.databus2.core.DatabusException;
+import com.linkedin.databus2.schemas.utils.SchemaHelper;
 
 /**
  * <code>PersonEventProducer</code> is a sub-type of {@link AbstractEventProducer}} that creates a specified number 
@@ -45,6 +48,8 @@ public class PersonEventProducer extends AbstractEventProducer {
 	
 	/** Member variables related to events production an handling*/
 	private int numberOfEventsPerRun = NUM_EVENTS;
+	
+	private volatile AtomicBoolean shutdownRequested = new AtomicBoolean(false);
 
 	/**
 	 * Interface method implementation
@@ -58,7 +63,9 @@ public class PersonEventProducer extends AbstractEventProducer {
 	 * Interface method implementation. Starts up the event producer thread
 	 * @see com.linkedin.databus2.producers.EventProducer#start(long)
 	 */
-	public void start (long sinceSCN) {
+	public void start (long sinceSCN) 
+	{
+		shutdownRequested.set(false);
 		this.sinceSCN.set(sinceSCN);
 		EventProducerThread thread = new EventProducerThread();
 		thread.start();
@@ -90,7 +97,15 @@ public class PersonEventProducer extends AbstractEventProducer {
 
 	/** No Op methods*/
 	public void pause() {}
-	public void shutdown() {}
+	
+	public void shutdown() 
+	{
+		LOGGER.info("Shutdown has been requested. PersonEventProducer shutttng down");
+		shutdownRequested.set(true);
+		super.shutdown();
+		LOGGER.info("PersonEventProducer shutdown completed");
+	}
+	
 	public void unpause() {}
 	public void waitForShutdown() throws InterruptedException,IllegalStateException {}
 	public void waitForShutdown(long time) throws InterruptedException,IllegalStateException {}
@@ -103,7 +118,7 @@ public class PersonEventProducer extends AbstractEventProducer {
 	/** Thread that creates a specified number of Person instances from in-memory data*/
 	private class EventProducerThread extends Thread {
 		public void run() {
-			while (true) {
+			while (!shutdownRequested.get()) {
                 int numberOfEvents = (int) (Math.random()*10);
                 int sleep = (int) (Math.random()*5000);
 				getEventBuffer().startEvents();
@@ -111,6 +126,7 @@ public class PersonEventProducer extends AbstractEventProducer {
 				for (long i = sinceSCN.longValue(); i < endValue; i++) {
 					Person person = new Person(i, "Aesop " + i, "Mr. " + i, i,"false",new LinkedList<FieldChange>());
 					byte[] serializedEvent = serializeEvent(person);
+					byte[] schemaId=SchemaHelper.getSchemaId(person.getSchema().toString());
 					DbusEventKey eventKey = new DbusEventKey(i);
 					DbusEventInfo eventInfo = new DbusEventInfo(DbusOpcode.UPSERT,i,
 							(short)physicalSourceStaticConfig.getId(),(short)physicalSourceStaticConfig.getId(),

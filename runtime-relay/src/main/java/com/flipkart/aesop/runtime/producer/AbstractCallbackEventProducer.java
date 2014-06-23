@@ -26,6 +26,7 @@ import com.linkedin.databus.core.DbusEventInfo;
 import com.linkedin.databus.core.DbusEventKey;
 import com.linkedin.databus.core.DbusOpcode;
 import com.linkedin.databus2.producers.EventCreationException;
+import com.linkedin.databus2.schemas.utils.SchemaHelper;
 
 
 /**
@@ -48,7 +49,7 @@ public abstract class AbstractCallbackEventProducer<S extends GenericRecord> ext
 	
 	/** The event generation thread and various related member variables */
 	protected EventProducerThread eventThread;
-	protected int eventThreadState = ACTIVE;
+	protected volatile int eventThreadState = ACTIVE;
 	
 	/** The Databus component status*/
 	protected DatabusComponentStatus status;
@@ -66,7 +67,8 @@ public abstract class AbstractCallbackEventProducer<S extends GenericRecord> ext
 	 * Interface method implementation. Starts up the EventProducerThread
 	 * @see com.linkedin.databus2.producers.EventProducer#start(long)
 	 */
-	public void start (long sinceSCN) {		
+	public void start (long sinceSCN) {
+		eventThreadState = ACTIVE;
 		this.sinceSCN.set(sinceSCN);
 		this.eventThread = new EventProducerThread(name);
 		this.eventThread.setDaemon(true);
@@ -78,14 +80,17 @@ public abstract class AbstractCallbackEventProducer<S extends GenericRecord> ext
 	 * Interface method implementation. Stops the EventProducerThread
 	 * @see com.linkedin.databus2.producers.EventProducer#shutdown()
 	 */
-	public void shutdown() {
-		this.eventThreadState = EXIT;
-		synchronized(this) {
+	public void shutdown() 
+	{
+		synchronized(this) 
+		{
+			this.eventThreadState = EXIT;
 			notifyAll();
 			if(eventThread != null) {
 				eventThread.interrupt(); // in case it is sleeping 
 			}
 		}
+		//shutdown() call on super - Not required here as roll back of events is being done in the EventProducerThread
 	}
 
 	/**
@@ -109,8 +114,8 @@ public abstract class AbstractCallbackEventProducer<S extends GenericRecord> ext
 	 * @see com.linkedin.databus2.producers.EventProducer#pause()
 	 */
 	public void pause() {
-		this.eventThreadState = PAUSED;
 		synchronized(this) {
+			this.eventThreadState = PAUSED;
 			notifyAll();
 		}
 	}
@@ -120,8 +125,8 @@ public abstract class AbstractCallbackEventProducer<S extends GenericRecord> ext
 	 * @see com.linkedin.databus2.producers.EventProducer#unpause()
 	 */
 	public void unpause() {
-		this.eventThreadState = ACTIVE;
 		synchronized(this) {
+			this.eventThreadState = ACTIVE;
 			notifyAll();
 		}		
 	}
@@ -203,6 +208,7 @@ public abstract class AbstractCallbackEventProducer<S extends GenericRecord> ext
 	    					if (readEventCycleSummary.getChangeEvents().size() > 0) {
 		    					eventBuffer.startEvents();
 		    					for (S changeEvent : readEventCycleSummary.getChangeEvents()) {
+		    						byte[] schemaId=SchemaHelper.getSchemaId(changeEvent.getSchema().toString());
 		    						byte[] serializedEvent = serializeEvent(changeEvent);
 		    						DbusEventKey eventKey = new DbusEventKey(getEventKey(changeEvent));
 		    						DbusEventInfo eventInfo = new DbusEventInfo(DbusOpcode.UPSERT,getSequenceId(changeEvent),

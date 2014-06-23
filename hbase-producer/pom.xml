@@ -7,12 +7,12 @@
     <parent>
         <groupId>com.flipkart.aesop</groupId>
         <artifactId>aesop</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.2-SNAPSHOT</version>
     </parent>
 
     <groupId>com.flipkart.aesop</groupId>
     <artifactId>hbase-producer</artifactId>
-    <version>1.0.0</version>
+    <version>${project.parent.version}</version>
     <name>Hbase WAL Edits event producer</name>
     <description>Hbase WAL Edits event producer</description>
 
@@ -46,13 +46,13 @@
 		</repository>
 	</repositories> 
 
-    <distributionManagement>
-        <repository>
-            <id>clojars</id>
-            <name>Clojars repository</name>
-            <url>https://clojars.org/repo</url>
-        </repository>
-    </distributionManagement>
+	<distributionManagement>
+		<repository>
+			<id>clojars</id>
+			<name>Clojars repository</name>
+			<url>https://clojars.org/repo</url>
+		</repository>
+	</distributionManagement>
 
     <scm>
         <url>https://github.com/Flipkart/aesop</url>

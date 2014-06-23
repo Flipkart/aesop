@@ -31,6 +31,7 @@ import com.flipkart.aesop.runtime.producer.avro.MysqlAvroEventManager;
 import com.flipkart.aesop.runtime.producer.eventlistener.OpenReplicationListener;
 import com.flipkart.aesop.runtime.producer.eventprocessor.BinLogEventProcessor;
 import com.flipkart.aesop.runtime.producer.mapper.BinLogEventMapper;
+import com.flipkart.aesop.runtime.producer.schema.eventprocessor.SchemaChangeEventProcessor;
 import com.flipkart.aesop.runtime.producer.txnprocessor.MysqlTransactionManager;
 import com.flipkart.aesop.runtime.producer.txnprocessor.impl.MysqlTransactionManagerImpl;
 import com.google.code.or.OpenReplicator;
@@ -55,7 +56,7 @@ public class MysqlEventProducer extends AbstractEventProducer implements Initial
 	/** Default Mysql port */
 	private static final Integer DEFAULT_MYSQL_PORT = 3306;
 	/** Pattern for extracting /3306/mysql-bin out of mysql://or_test%2For_test@localhost:3306/3306/mysql-bin */
-	private static final Pattern PATH_PATTERN = Pattern.compile("/([0-9]+)/[a-z|A-Z|-]+");
+	private static final Pattern PATH_PATTERN = Pattern.compile("/([0-9]+)/[a-z|A-Z|0-9|-]+");
 	/** Index of server id in pattern match group */
 	private static final int SERVER_ID = 1;
 	/** Index of bin log prefix in pattern match group */
@@ -68,6 +69,8 @@ public class MysqlEventProducer extends AbstractEventProducer implements Initial
 	protected MysqlTransactionManager mysqlTxnManager;
 	/** Event Id to Event Processor map */
 	protected Map<Integer, BinLogEventProcessor> eventsMap;
+	/** Schema Change Event Processor */
+	protected SchemaChangeEventProcessor schemaChangeEventProcessor;
 
 	/**
 	 * Interface method implementation. Checks for mandatory dependencies and creates the Open Replicator
@@ -119,11 +122,24 @@ public class MysqlEventProducer extends AbstractEventProducer implements Initial
 				}
 				eventManagersMap.put(Integer.valueOf(sourceConfig.getId()), manager);
 			}
+			schemaChangeEventProcessor.setSchemaRegistryService(schemaRegistryService);
+			schemaChangeEventProcessor.setTableUriToSrcNameMap(tableUriToSrcNameMap);
+
+			/** updating schemas for registered logical sources */
+			for (LogicalSourceStaticConfig sourceConfig : physicalSourceStaticConfig.getSources())
+			{
+				String[] parts = sourceConfig.getUri().split("\\.");
+				schemaChangeEventProcessor.process(parts[0], parts[1]);
+			}
+
 			mysqlTxnManager =
 			        new MysqlTransactionManagerImpl(eventBuffer, maxScnReaderWriter, dbusEventsStatisticsCollector,
 			                eventManagersMap, logid, tableUriToSrcIdMap, tableUriToSrcNameMap, schemaRegistryService,
 			                this.sinceSCN, binLogEventMappers);
-			OpenReplicationListener orl = new OpenReplicationListener(mysqlTxnManager, eventsMap, binlogFilePrefix);
+			mysqlTxnManager.setShutdownRequested(false);
+			OpenReplicationListener orl =
+			        new OpenReplicationListener(mysqlTxnManager, eventsMap, schemaChangeEventProcessor,
+			                binlogFilePrefix);
 			openReplicator.setBinlogFileName(binlogFile);
 			openReplicator.setBinlogPosition(offset);
 			openReplicator.setBinlogEventListener(orl);
@@ -201,7 +217,6 @@ public class MysqlEventProducer extends AbstractEventProducer implements Initial
 	@Override
 	public String getName()
 	{
-		// TODO Auto-generated method stub
 		return this.getClass().getName();
 	}
 
@@ -241,14 +256,20 @@ public class MysqlEventProducer extends AbstractEventProducer implements Initial
 	@Override
 	public void shutdown()
 	{
+		LOGGER.info("Shutdown has been requested. MYSQLEventProducer shutttng down");
 		try
 		{
+			mysqlTxnManager.setShutdownRequested(true);
+			LOGGER.info("Open Replicator Shutting down");
 			this.openReplicator.stop(10, TimeUnit.SECONDS);
+			LOGGER.info("Open Replicator shutdown complete");
+			super.shutdown();
 		}
 		catch (Exception e)
 		{
-			LOGGER.error("Error while stopping open replicator");
+			LOGGER.error("Error while stopping open replicator", e);
 		}
+		LOGGER.info("MYSQLEventProducer shutdown completed");
 	}
 
 	/** Methods that are not supported and therefore throw {@link UnsupportedOperationException} */
@@ -301,6 +322,16 @@ public class MysqlEventProducer extends AbstractEventProducer implements Initial
 	public void setEventsMap(Map<Integer, BinLogEventProcessor> eventsMap)
 	{
 		this.eventsMap = eventsMap;
+	}
+
+	public SchemaChangeEventProcessor getSchemaChangeEventProcessor()
+	{
+		return schemaChangeEventProcessor;
+	}
+
+	public void setSchemaChangeEventProcessor(SchemaChangeEventProcessor schemaChangeEventProcessor)
+	{
+		this.schemaChangeEventProcessor = schemaChangeEventProcessor;
 	}
 
 	/**
