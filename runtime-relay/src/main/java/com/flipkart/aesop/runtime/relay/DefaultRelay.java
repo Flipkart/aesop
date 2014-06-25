@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.flipkart.aesop.runtime.metrics.MetricsCollector;
 import org.trpr.platform.core.impl.logging.LogFactory;
 import org.trpr.platform.core.spi.logging.Logger;
 
@@ -57,7 +58,10 @@ public class DefaultRelay extends HttpRelay {
     protected MultiServerSequenceNumberHandler maxScnReaderWriters;
     
 	/** The ProducerRegistration list for the Relay*/
-    protected List<ProducerRegistration> producerRegistrationList = new ArrayList<ProducerRegistration>();    
+    protected List<ProducerRegistration> producerRegistrationList = new ArrayList<ProducerRegistration>();
+
+    /** metrics collector */
+    private MetricsCollector metricsCollector;
     
 	/**
 	 * Constructor for this class. Invokes constructor of the super-type with the passed-in arguments
@@ -65,6 +69,11 @@ public class DefaultRelay extends HttpRelay {
     public DefaultRelay(StaticConfig config, PhysicalSourceStaticConfig[] pConfigs, SourceIdNameRegistry sourcesIdNameRegistry,
             SchemaRegistryService schemaRegistry) throws IOException, InvalidConfigException, DatabusException {
     	super(config, pConfigs, sourcesIdNameRegistry, schemaRegistry);
+        metricsCollector = new MetricsCollector(
+            getHttpStatisticsCollector().getTotalStats(),
+            getInboundEventStatisticsCollector().getTotalStats(),
+            getOutboundEventStatisticsCollector().getTotalStats()
+        );
     }
     
     /**
@@ -164,5 +173,6 @@ public class DefaultRelay extends HttpRelay {
 	public List<ProducerRegistration> getProducerRegistrationList() {
 		return this.producerRegistrationList;
 	}
+    public MetricsCollector getMetricsCollector() { return metricsCollector; }
 	
 }

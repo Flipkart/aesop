@@ -11,27 +11,29 @@ http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
 http://www.springframework.org/schema/context 
 http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
-	<import resource="classpath*:WEB-INF/controller-context.xml" /> 	
-	
-	<context:annotation-config />
- <!-- freemarker config -->
+    <context:annotation-config />
+
+    <!-- controllers -->
+    <bean class="com.flipkart.aesop.runtime.spring.web.RelayController">
+        <property name="runtimeRegistry" ref="runtimeRegistry"></property>
+        <property name="configService" ref="configService" />
+    </bean>
+
+    <!-- freemarker config -->
     <bean id="freemarkerConfig" class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
-      <property name="templateLoaderPath" value="/WEB-INF/pages/"/>
+        <property name="templateLoaderPath" value="/WEB-INF/pages/"/>
     </bean>
      
-    <!-- 
-      View resolvers can also be configured with ResourceBundles or XML files. If you need
-      different view resolving based on Locale, you have to use the resource bundle resolver.
-    -->
+    <!-- view resolver -->
     <bean id="viewResolver" class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">
-      <property name="cache" value="true"/>
-      <property name="prefix" value=""/>
-      <property name="suffix" value=".ftl"/>
+        <property name="cache" value="true"/>
+        <property name="prefix" value=""/>
+        <property name="suffix" value=".ftl"/>
     </bean>
- 
-	<mvc:resources location="/, /WEB-INF/pages/resources/, classpath*:WEB-INF/pages/resources/, WEB-INF/pages/resources/" mapping="resources/**" />
+
+    <!-- resources -->
+	<mvc:resources mapping="/resources/**" location="/WEB-INF/pages/resources/" />
 	<mvc:resources mapping="/favicon.ico" location="/WEB-INF/web/resources/images/favicon.ico" />
-	<mvc:annotation-driven />
-	
- 	
+    <mvc:annotation-driven />
+
 </beans>

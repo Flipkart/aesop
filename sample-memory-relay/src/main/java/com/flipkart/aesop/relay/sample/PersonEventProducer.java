@@ -16,7 +16,6 @@
 package com.flipkart.aesop.relay.sample;
 
 import java.util.LinkedList;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.trpr.platform.core.impl.logging.LogFactory;
@@ -44,7 +43,7 @@ public class PersonEventProducer extends AbstractEventProducer {
 	private static final Logger LOGGER = LogFactory.getLogger(PersonEventProducer.class);
 
 	/** The default number of events to produce in a single run*/
-	private static final int NUM_EVENTS = 100;
+	private static final int NUM_EVENTS = 10000;
 	
 	/** Member variables related to events production an handling*/
 	private int numberOfEventsPerRun = NUM_EVENTS;
@@ -116,14 +115,11 @@ public class PersonEventProducer extends AbstractEventProducer {
 	}
 	
 	/** Thread that creates a specified number of Person instances from in-memory data*/
-	private class EventProducerThread extends Thread 
-	{
-		int count = 0;
-		public void run() 
-		{
-			while (count < 2 && !shutdownRequested.get()) 
-			{
-				eventBuffer.startEvents();
+	private class EventProducerThread extends Thread {
+		public void run() {
+			while (!shutdownRequested.get()) {
+                int sleep = (int) (Math.random()*5000);
+				getEventBuffer().startEvents();
 				long endValue = sinceSCN.longValue() + numberOfEventsPerRun;
 				for (long i = sinceSCN.longValue(); i < endValue; i++) {
 					Person person = new Person(i, "Aesop " + i, "Mr. " + i, i,"false",new LinkedList<FieldChange>());
@@ -134,19 +130,18 @@ public class PersonEventProducer extends AbstractEventProducer {
 							(short)physicalSourceStaticConfig.getId(),(short)physicalSourceStaticConfig.getId(),
 							System.nanoTime(),(short)physicalSourceStaticConfig.getSources()[0].getId(), // here we use the Logical Source Id
 							schemaId,serializedEvent, false, true);
-					eventBuffer.appendEvent(eventKey, eventInfo, dbusEventsStatisticsCollector);
+					getEventBuffer().appendEvent(eventKey, eventInfo, dbusEventsStatisticsCollector);
 					sinceSCN.getAndIncrement();
 					LOGGER.info("Added an event : " + "Aesop Mr. " + i);
 				}
-				eventBuffer.endEvents(sinceSCN.longValue() , dbusEventsStatisticsCollector);
+				getEventBuffer().endEvents(sinceSCN.longValue(),dbusEventsStatisticsCollector);
 				try {
 					maxScnReaderWriter.saveMaxScn(sinceSCN.longValue() + numberOfEventsPerRun);
 				} catch (DatabusException e) {
 					LOGGER.error("Error persisting Max SCN : " + e.getMessage(), e);
 				}
-				count += 1;
 				try {
-					Thread.sleep(10000);
+					Thread.sleep(sleep);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
