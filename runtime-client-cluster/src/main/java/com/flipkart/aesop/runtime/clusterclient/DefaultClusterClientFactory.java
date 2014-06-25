@@ -20,6 +20,8 @@ import java.util.Properties;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
+import org.trpr.platform.core.impl.logging.LogFactory;
+import org.trpr.platform.core.spi.logging.Logger;
 
 import com.flipkart.aesop.runtime.client.DefaultClient;
 import com.flipkart.aesop.runtime.config.ClientClusterConfig;
@@ -42,6 +44,8 @@ public class DefaultClusterClientFactory implements FactoryBean<DefaultClient>, 
 	private ClientClusterConfig clientClusterConfig;
 	private List<ClusterRegistration> clusterRegistrations;
 	private List<DatabusRegistration> databusRegistrations = new ArrayList<DatabusRegistration>();
+	private DefaultClient databusClient;
+	private static final Logger logger = LogFactory.getLogger(DefaultClusterClientFactory.class);
 
 	/**
 	 * Interface method implementation. Checks for mandatory dependencies and initializes this Relay Client
@@ -63,7 +67,7 @@ public class DefaultClusterClientFactory implements FactoryBean<DefaultClient>, 
 		                config);
 		Properties properties = this.clientClusterConfig.getClientProperties();
 		DatabusHttpClientImpl.StaticConfig staticConfig = staticConfigLoader.loadConfig(properties);
-		DefaultClient defaultClient = new DefaultClient(staticConfig);
+		databusClient = new DefaultClient(staticConfig);
 		// register all Cluster registrations with the Relay Client
 		for (ClusterRegistration clusterRegistration : clusterRegistrations)
 		{
@@ -77,7 +81,7 @@ public class DefaultClusterClientFactory implements FactoryBean<DefaultClient>, 
 			{
 				filterFactory = new DbusModPartitionedFilterFactory(logicalSourcesArr);
 			}
-			DatabusRegistration registration = defaultClient.registerCluster(clusterName, consumerFactory, filterFactory, partitionListener, logicalSourcesArr);
+			DatabusRegistration registration = databusClient.registerCluster(clusterName, consumerFactory, filterFactory, partitionListener, logicalSourcesArr);
 			databusRegistrations.add(registration);
 		}
 		//Start all registrations now
@@ -85,7 +89,21 @@ public class DefaultClusterClientFactory implements FactoryBean<DefaultClient>, 
 		{
 			databusRegistration.start();
 		}
-		return defaultClient;
+		logger.info("Adding shutdown hook");
+		Runtime.getRuntime().addShutdownHook(new ClusterShutDownHookThread());
+		logger.info("Added shutdown hook");		
+		return databusClient;
+	}
+	
+	private class ClusterShutDownHookThread extends Thread
+	{
+		@Override
+	    public void run()
+	    {
+			logger.info("ClusterShutDownHookThread getting executed. Shutting down Client");
+			databusClient.shutdown();
+			logger.info("ClusterShutDownHookThread executed. Client shutdown complete");
+	    }
 	}
 
 	@Override
@@ -131,4 +149,5 @@ public class DefaultClusterClientFactory implements FactoryBean<DefaultClient>, 
 	{
 		this.clusterRegistrations = clusterRegistrations;
 	}
+
 }
