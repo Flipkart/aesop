@@ -85,30 +85,39 @@ public class RelayStatisticsCollectingHandler extends SimpleChannelHandler {
 	}
 
 	@Override
-	public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception{
-		if (null != outEventStatsCollector || null != outHttpStatsCollector ){
-			if (e.getMessage() instanceof DatabusRequest){
-				latestDbusRequest = (DatabusRequest)e.getMessage();
-				if (null != outEventStatsCollector){
-					latestDbusRequest.getParams().put(outEventStatsCollector.getName(),
-							connOutEventStatsCollector);
-				}
-				if (null != outHttpStatsCollector){
-					latestDbusRequest.getParams().put(outHttpStatsCollector.getName(),
-							connOutHttpStatsCollector);
-				}
-				// check if a checkpoint exists and register the stream request with the connection-specific stats
-				if (latestDbusRequest.getParams().getProperty(ReadEventsRequestProcessor.CHECKPOINT_PARAM) != null) {
-					Checkpoint cp = new Checkpoint(latestDbusRequest.getParams().getProperty(ReadEventsRequestProcessor.CHECKPOINT_PARAM));
-					String peer = connOutHttpStatsCollector.getPeers().get(0); // the only peer that the connection-specific stats collector will have points to the remote client
-					connOutHttpStatsCollector.getPeerStats(peer).registerStreamRequest(peer, cp);
-				}
-			}else if (shouldMerge(e)){
-				//First or Last message in a call
-				mergePerConnStats();
-			}
-		}
-		super.messageReceived(ctx, e);
+	public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception
+	{
+		try
+        {
+	        if (null != outEventStatsCollector || null != outHttpStatsCollector )
+	        {
+	        	if (e.getMessage() instanceof DatabusRequest){
+	        		latestDbusRequest = (DatabusRequest)e.getMessage();
+	        		if (null != outEventStatsCollector){
+	        			latestDbusRequest.getParams().put(outEventStatsCollector.getName(),
+	        					connOutEventStatsCollector);
+	        		}
+	        		if (null != outHttpStatsCollector){
+	        			latestDbusRequest.getParams().put(outHttpStatsCollector.getName(),
+	        					connOutHttpStatsCollector);
+	        		}
+	        		// check if a checkpoint exists and register the stream request with the connection-specific stats
+	        		if (latestDbusRequest.getParams().getProperty(ReadEventsRequestProcessor.CHECKPOINT_PARAM) != null) {
+	        			Checkpoint cp = new Checkpoint(latestDbusRequest.getParams().getProperty(ReadEventsRequestProcessor.CHECKPOINT_PARAM));
+	        			String peer = connOutHttpStatsCollector.getPeers().get(0); // the only peer that the connection-specific stats collector will have points to the remote client
+	        			connOutHttpStatsCollector.getPeerStats(peer).registerStreamRequest(peer, cp);
+	        		}
+	        	}else if (shouldMerge(e)){
+	        		//First or Last message in a call
+	        		mergePerConnStats();
+	        	}
+	        }
+	        super.messageReceived(ctx, e);
+        }
+        catch (Exception ex)
+        {
+        	LOGGER.error("Exception while processing message in RelayStatisticsCollectingHandler");
+        }
 	}
 
 	@Override

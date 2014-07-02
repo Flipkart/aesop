@@ -112,9 +112,9 @@ public class DefaultRelay extends HttpRelay {
      * {@link com.linkedin.databus.container.netty.HttpRelayPipelineFactory}
      * @see com.linkedin.databus.container.netty.HttpRelay#initializeRelayNetworking()
      */
-//    protected void initializeRelayNetworking() throws IOException, DatabusException {
-//      _httpBootstrap.setPipelineFactory(new HttpRelayPipelineFactory(this, _httpBootstrap.getPipelineFactory()));
-//    }
+    protected void initializeRelayNetworking() throws IOException, DatabusException {
+      _httpBootstrap.setPipelineFactory(new HttpRelayPipelineFactory(this, _httpBootstrap.getPipelineFactory()));
+    }
         
     /**
      * Overriden superclass method. Starts up the registered Producers after calling super.doStart()
