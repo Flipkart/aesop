@@ -7,7 +7,7 @@
     <artifactId>aesop</artifactId>
     <name>Aesop Full Build</name>
     <packaging>pom</packaging>
-    <version>1.0.5-SNAPSHOT</version>
+    <version>1.0.6-SNAPSHOT</version>
 
     <licenses>
         <license>
