@@ -15,11 +15,9 @@ package com.flipkart.aesop.runtime.clusterclient;
 import org.trpr.platform.core.impl.logging.LogFactory;
 import org.trpr.platform.core.spi.logging.Logger;
 
-import com.linkedin.databus.client.pub.DatabusClientException;
 import com.linkedin.databus.client.pub.DatabusRegistration;
 import com.linkedin.databus.client.pub.DbusPartitionInfo;
 import com.linkedin.databus.client.pub.DbusPartitionListener;
-import com.linkedin.databus.client.pub.RegistrationId;
 
 /**
  * <code>DefaultPartitionListener</code> is the deafult partition listener. It registers with DatabusRegistration on
@@ -34,18 +32,6 @@ public class DefaultPartitionListener implements DbusPartitionListener
 	public void onAddPartition(DbusPartitionInfo partitionInfo, DatabusRegistration reg)
 	{
 		logger.info("New partition is getting added. Partition Id = " + partitionInfo.getPartitionId());
-		try
-		{
-			reg.withRegId(new RegistrationId("ClusterId_" + partitionInfo.getPartitionId()));
-		}
-		catch (IllegalStateException e)
-		{
-			logger.error("Exception when adding partition", e);
-		}
-		catch (DatabusClientException e)
-		{
-			logger.error("Exception when adding partition", e);
-		}
 	}
 
 	@Override
