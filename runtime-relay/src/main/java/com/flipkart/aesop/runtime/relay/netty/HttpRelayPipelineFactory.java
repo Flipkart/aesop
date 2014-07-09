@@ -15,6 +15,7 @@
  */
 package com.flipkart.aesop.runtime.relay.netty;
 
+import com.flipkart.aesop.runtime.relay.DefaultRelay;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 
@@ -30,10 +31,10 @@ import com.linkedin.databus.container.netty.HttpRelay;
 public class HttpRelayPipelineFactory implements ChannelPipelineFactory {
 
 	/** Member variables for this class */
-	private final HttpRelay relay;
+	private final DefaultRelay relay;
 	private ChannelPipelineFactory oldPipelineFactory;
 	
-	public HttpRelayPipelineFactory(HttpRelay relay, ChannelPipelineFactory oldPipelineFactory) {
+	public HttpRelayPipelineFactory(DefaultRelay relay, ChannelPipelineFactory oldPipelineFactory) {
 		super();
 		this.relay = relay;
 		this.oldPipelineFactory = oldPipelineFactory;

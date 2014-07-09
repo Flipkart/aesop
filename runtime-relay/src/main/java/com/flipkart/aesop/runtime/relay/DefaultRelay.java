@@ -69,11 +69,7 @@ public class DefaultRelay extends HttpRelay {
     public DefaultRelay(StaticConfig config, PhysicalSourceStaticConfig[] pConfigs, SourceIdNameRegistry sourcesIdNameRegistry,
             SchemaRegistryService schemaRegistry) throws IOException, InvalidConfigException, DatabusException {
     	super(config, pConfigs, sourcesIdNameRegistry, schemaRegistry);
-        metricsCollector = new MetricsCollector(
-            getHttpStatisticsCollector().getTotalStats(),
-            getInboundEventStatisticsCollector().getTotalStats(),
-            getOutboundEventStatisticsCollector().getTotalStats()
-        );
+        metricsCollector = new MetricsCollector(this);
     }
     
     /**

@@ -71,7 +71,7 @@ fi
 
 # run command
 info "Running module $run_module"
-java $JMX_PARAMS -cp "$run_module/target/$run_module-$version.jar:$run_module/target/lib/*" org.trpr.platform.runtime.impl.bootstrap.BootstrapLauncher $run_module/src/main/resources/external/bootstrap.xml
+java $JMX_PARAMS -cp "$run_module/target/*:$run_module/target/lib/*" org.trpr.platform.runtime.impl.bootstrap.BootstrapLauncher $run_module/src/main/resources/external/bootstrap.xml
 info "Exiting"
 
 

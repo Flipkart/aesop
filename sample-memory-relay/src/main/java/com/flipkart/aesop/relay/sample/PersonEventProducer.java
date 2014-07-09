@@ -43,7 +43,7 @@ public class PersonEventProducer extends AbstractEventProducer {
 	private static final Logger LOGGER = LogFactory.getLogger(PersonEventProducer.class);
 
 	/** The default number of events to produce in a single run*/
-	private static final int NUM_EVENTS = 10000;
+	private static final int NUM_EVENTS = 1000;
 	
 	/** Member variables related to events production an handling*/
 	private int numberOfEventsPerRun = NUM_EVENTS;
@@ -120,7 +120,7 @@ public class PersonEventProducer extends AbstractEventProducer {
 			while (!shutdownRequested.get()) {
                 int sleep = (int) (Math.random()*5000);
 				getEventBuffer().startEvents();
-				long endValue = sinceSCN.longValue() + numberOfEventsPerRun;
+				long endValue = sinceSCN.longValue() + (int) (Math.random()*numberOfEventsPerRun);
 				for (long i = sinceSCN.longValue(); i < endValue; i++) {
 					Person person = new Person(i, "Aesop " + i, "Mr. " + i, i,"false",new LinkedList<FieldChange>());
 					byte[] serializedEvent = serializeEvent(person);

@@ -18,6 +18,8 @@ package com.flipkart.aesop.runtime.relay;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.flipkart.aesop.runtime.producer.ProducerEventBuffer;
+import com.linkedin.databus.core.DbusEventBufferAppendable;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
@@ -96,8 +98,8 @@ public class DefaultRelayFactory  implements FactoryBean<DefaultRelay>, Initiali
 			PhysicalSourceStaticConfig pStaticConfig = pStaticConfigs[i];
 			if (AbstractEventProducer.class.isAssignableFrom(producerRegistration.getEventProducer().getClass())) {				
 				AbstractEventProducer producer = (AbstractEventProducer)producerRegistration.getEventProducer();
-				producer.setEventBuffer(relay.getEventBuffer().getDbusEventBufferAppendable(
-						pStaticConfig.getSources()[0].getId())); // here we assume single event buffer is shared among all logical sources								
+                DbusEventBufferAppendable eb = relay.getEventBuffer().getDbusEventBufferAppendable(pStaticConfig.getSources()[0].getId());
+				producer.setEventBuffer(new ProducerEventBuffer(producer.getName(), eb, relay.getMetricsCollector())); // here we assume single event buffer is shared among all logical sources
 				producer.setMaxScnReaderWriter(this.maxScnReaderWriters.getOrCreateHandler(pStaticConfig.getPhysicalPartition()));
 				producer.setSchemaRegistryService(relay.getSchemaRegistryService());
 				producer.setDbusEventsStatisticsCollector(relay.getInboundEventStatisticsCollector());

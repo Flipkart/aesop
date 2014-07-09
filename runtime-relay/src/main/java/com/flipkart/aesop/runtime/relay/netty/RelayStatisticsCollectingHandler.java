@@ -17,6 +17,7 @@ package com.flipkart.aesop.runtime.relay.netty;
 
 import java.net.InetSocketAddress;
 
+import com.flipkart.aesop.runtime.relay.DefaultRelay;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.MessageEvent;
@@ -55,7 +56,11 @@ public class RelayStatisticsCollectingHandler extends SimpleChannelHandler {
 	private HttpStatisticsCollector connOutHttpStatsCollector;
 	private DatabusRequest latestDbusRequest = null;
 
-	public RelayStatisticsCollectingHandler(HttpRelay relay) {
+    /** relay instance */
+    private DefaultRelay relay;
+
+	public RelayStatisticsCollectingHandler(DefaultRelay relay) {
+        this.relay = relay;
 	    outEventStatsCollector = relay.getOutboundEventStatisticsCollector();
 	    outHttpStatsCollector = relay.getHttpStatisticsCollector();
 	    connOutEventStatsCollector = null;	    
@@ -106,8 +111,10 @@ public class RelayStatisticsCollectingHandler extends SimpleChannelHandler {
 	        			Checkpoint cp = new Checkpoint(latestDbusRequest.getParams().getProperty(ReadEventsRequestProcessor.CHECKPOINT_PARAM));
 	        			String peer = connOutHttpStatsCollector.getPeers().get(0); // the only peer that the connection-specific stats collector will have points to the remote client
 	        			connOutHttpStatsCollector.getPeerStats(peer).registerStreamRequest(peer, cp);
+                        relay.getMetricsCollector().setClientSCN(peer,cp.getWindowScn());
 	        		}
-	        	}else if (shouldMerge(e)){
+                    // update client scn
+	        	} else if (shouldMerge(e)){
 	        		//First or Last message in a call
 	        		mergePerConnStats();
 	        	}
