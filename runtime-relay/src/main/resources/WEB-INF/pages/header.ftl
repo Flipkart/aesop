@@ -4,7 +4,6 @@
     <title>Aesop Relay Dashboard</title>
     <link rel="stylesheet" href="/resources/styles/main.css?v=3" type="text/css"></link>
     <link rel="stylesheet" href="/resources/styles/metrics.css?v=3" type="text/css"></link>
-	<link rel="stylesheet" type="text/css" href="resources/styles/metrics.css">
     <script src="/resources/js/jquery-1.8.2.min.js" type="text/javascript"></script>
 	<script src="/resources/js/jquery.flot.js"></script>
 	<script src="/resources/js/metrics.js?v=3"></script>

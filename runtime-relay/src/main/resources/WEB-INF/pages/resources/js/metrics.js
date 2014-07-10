@@ -16,8 +16,8 @@
                 },
                 grid: {
                     show: true,
-                    backgroundColor: "#6FC3E9",
-                    borderWidth: 0
+                    backgroundColor: "#FFF",
+                    borderWidth: 1
                 },
                 legend: {
                     margin: 0,
@@ -54,7 +54,7 @@
     Models = [
         {
             type: "combo",
-            title: "Producer / Consumer Stats",
+            title: "Producer / Client Stats",
             data: [
                 {
                     title: "Last Seen SCN",
@@ -179,7 +179,6 @@
             var html = '';
             html += '<div class="section">';
             html += '<h2>'+model.title+'</h2>';
-            html += '<div class="metrics-container">';
             switch (model.type) {
                 case "combo":
                     html += Views.comboList(model.data);
@@ -191,7 +190,6 @@
                     html += Views.graphList(model.data);
                     break;
             }
-            html += '</div>';
             html += '</div>';
             return html;
         },

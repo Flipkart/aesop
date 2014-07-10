@@ -19,8 +19,8 @@
 }
 
 .unit {
-	margin: 12px;
-	width: 270px;
+	padding: 8px;
+	width: 260px;
 	overflow: hidden;
 	float: left;
 }
@@ -41,9 +41,8 @@
 	float: left;
 }
 .combo .name {
-	padding: 0 8px;
 	font-weight: bold;
-	font-size: 13px;
+	font-size: 16px;
 }
 .combo .plot {
     height: 300px;

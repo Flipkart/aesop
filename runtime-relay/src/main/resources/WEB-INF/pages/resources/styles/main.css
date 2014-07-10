@@ -57,7 +57,6 @@ body {
 }
 
 .container {
-	padding: 10px;
 	background: white;
 	min-height: 300px;
 }
@@ -66,13 +65,9 @@ h1 {
 	font-size: 25px;
 	font-weight: bold;
 }
-h2 {
-    font-size: 16px;
-    margin: 5px 0 8px 0;
-}
 table.relays {
 	border: 1px solid #02567A;
-    margin-bottom: 5px;
+	margin: 10px;
 }
 table.relays td, table.relays th {
 	border: 1px solid #02567A;
@@ -106,8 +101,13 @@ table.kv td.v {
     padding: 2px;
 }
 .section {
-    margin-bottom: 20px;
-}
-.metrics-container {
+    padding: 10px 0;
     overflow: hidden;
+}
+.section h2 {
+    font-size: 16px;
+    background: #C6E6F5;
+    padding: 3px 10px 3px 10px;
+    border-bottom: 2px solid #1F83A9;
+    margin-bottom: 5px;
 }

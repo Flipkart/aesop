@@ -29,6 +29,7 @@
 				    <table class="kv" cellspacing=0 cellpadding=0>
 				        <tr><td class="k">Name</td><td class="v">${relay.getProducerName()}</td></tr>
 				        <tr><td class="k">Consumers</td><td class="v">${relay.clientInfos?size}</td></tr>
+				        <tr><td class="k">Last SCN</td><td class="v">${relay.getProducerSinceSCN()}</td></tr>
 				    </table>
 				</td>
 				<#if (relay.clientInfos?size > 0)>
