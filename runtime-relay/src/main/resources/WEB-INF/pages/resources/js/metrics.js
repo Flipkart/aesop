@@ -405,7 +405,6 @@
         this.draw = function(id) {
 
             var series = {
-                color: "#005387",
                 data: this.getSeries(),
                 shadowSize: 0,
                 label: "Rate"
@@ -468,7 +467,6 @@
 
             // series required by flot
             var series = {
-                color: "#005387",
                 data: this.getSeries(),
                 shadowSize: 0,
                 label: "Value"
