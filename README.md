@@ -8,9 +8,13 @@ building Eventually Consistent data sources and systems.
 
 | Release | Date | Description |
 |:------------|:----------------|:------------|
-| Beta Release    | March 2014      |    No release binaries. First version of HBase, MySQL and Pull-based event producers, Relay, Bootstrap and Consumer
+| Version 1.0.7-SNAPSHOT    | July 2014      |    First GA release
 
-## Introduction
+## Changelog
+
+Changelog can be viewed in CHANGELOG.md file (https://github.com/Flipkart/aesop/blob/master/CHANGELOG.md)
+
+## Design
 
 aesop uses the log mining approach of detecting data changes as described by the [LinkedIn Databus](https://github.com/linkedin/databus) 
 project. It also uses the infrastructure components of Databus, mostly for serving change events. The concept of Event Producer,
@@ -42,4 +46,8 @@ Push Producer                        Streaming Client 2       Slow/Catchup clien
  e.g. MySQL Replication listener)
 ```
 
+## Aesop Consoles
+![Relays](https://github.com/Flipkart/aesop/raw/master/docs/Aesop_Relay_Dashboard_Relays.png)
+
+![Relay Metrics](https://github.com/Flipkart/aesop/raw/master/docs/Aesop_Relay_Dashboard_Metrics.png)
 
