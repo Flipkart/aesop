@@ -61,9 +61,9 @@ For discussion, help regarding usage, or receiving important announcements, subs
 Aesop is licensed under : The Apache Software License, Version 2.0. Here is a copy of the license (http://www.apache.org/licenses/LICENSE-2.0.txt)
 
 ## Core contributors
-* Chandan Bansal ([@chandanbansal](http://twitter.com/chandanbansal))
+* Chandan Bansal ([@chandanbansal](https://github.com/chandanbansal))
 * Jagadeesh Huliyar ([@jagadeesh-huliyar](https://github.com/jagadeesh-huliyar))
 * Kartik B Ukhalkar ([@kartikssj](https://github.com/kartikssj))
 * Regunath B ([@regunathb](http://twitter.com/RegunathB))
-* Shoury ([@Shoury](http://twitter.com/Shoury))
-* Yogesh Dahiya ([@yogeshdfk](http://twitter.com/yogeshdfk))
+* Shoury ([@Shoury](https://github.com/Shoury))
+* Yogesh Dahiya ([@yogeshdfk](https://github.com/yogeshdfk))
