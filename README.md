@@ -51,3 +51,18 @@ Push Producer                        Streaming Client 2       Slow/Catchup clien
 
 ![Relay Metrics](https://github.com/Flipkart/aesop/raw/master/docs/Aesop_Relay_Dashboard_Metrics.png)
 
+## Documentation and Examples
+Aesop project modules that start with "sample" - for e.g. sample-memory-relay, sample-client are example implementations.
+
+## Getting help
+For discussion, help regarding usage, or receiving important announcements, subscribe to the Aesop users mailing list: http://groups.google.com/group/aesop-users
+
+## License
+Aesop is licensed under : The Apache Software License, Version 2.0. Here is a copy of the license (http://www.apache.org/licenses/LICENSE-2.0.txt)
+
+## Core contributors
+* Chandan Bansal ([@chandanbansal](http://twitter.com/chandanbansal))
+* Jagadeesh Huliyar ([@jagadeesh-huliyar](https://github.com/jagadeesh-huliyar))
+* Kartik B Ukhalkar ([@kartikssj](https://github.com/kartikssj))
+* Regunath B ([@regunathb](http://twitter.com/RegunathB))
+* Yogesh Dahiya ([@yogeshdfk](http://twitter.com/yogeshdfk))
