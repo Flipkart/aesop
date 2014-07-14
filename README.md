@@ -58,11 +58,14 @@ Push Producer                        Streaming Client 2       Slow/Catchup clien
 
 ## aesop Consoles
 ![Relays](https://github.com/Flipkart/aesop/raw/master/docs/Aesop_Relay_Dashboard_Relays.png)
-
 ![Relay Metrics](https://github.com/Flipkart/aesop/raw/master/docs/Aesop_Relay_Dashboard_Metrics.png)
 
+## Getting Started
+The [Getting Started](https://github.com/Flipkart/aesop/wiki/Getting-started-and-Examples) page has "5 minute" examples to help you start using aesop.
+
 ## Documentation and Examples
-aesop project modules that start with "sample" - for e.g. sample-memory-relay, sample-client are example implementations.
+aesop project modules that start with "sample" - for e.g. sample-memory-relay, sample-client are example implementations. Documentation is 
+continuously being added to the Wiki page of aesop (https://github.com/Flipkart/aesop/wiki)
 
 ## Getting help
 For discussion, help regarding usage, or receiving important announcements, subscribe to the aesop users mailing list: http://groups.google.com/group/aesop-users
