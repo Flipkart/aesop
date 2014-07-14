@@ -1,21 +1,31 @@
 aesop
 =====
-
 A keen observer of changes that can also relay change events reliably to interested parties. Provides useful infrastructure for 
 building Eventually Consistent data sources and systems.
 
 ## Releases
-
 | Release | Date | Description |
 |:------------|:----------------|:------------|
 | Version 1.0.7-SNAPSHOT    | July 2014      |    First GA release
 
 ## Changelog
-
 Changelog can be viewed in CHANGELOG.md file (https://github.com/Flipkart/aesop/blob/master/CHANGELOG.md)
 
-## Design
+## Why aesop
+Data movement from source to consumer is a fairly common requirement in distributed systems. An example is inventory updates on a warehousing system
+reflecting on product pages of an eCommerce portal. Another is price updates on a hot selling item across multiple sellers in an on-line marketplace.
+Both these examples are instances that require the data updates to propagate with low latency and reliably. Few broad options exist:
+* Application publishes changes asynchronously to a queue before/after writing data to persistent store - this is usually fire-and-forget in most implementations.
+* Variants include those with retries, back-off and queue sidelining. Reliability can be enhanced using local transactions (not distributed) and message relaying.
+* Batch extraction(snapshots) and load every few hours - affects data freshness in the consumer systems.
+* Database supported replication - very common approach when source and consumer systems use the same data store technology(e.g. MySQL master-slave replication) 
+and share the same data model / schema.
 
+aesop provides reliable, low-latency data change propagation for source and consumer systems that optionally use different data stores. It also supports
+snapshot based change detection. For consumers, it provides a unified interface for change data consumption that is independent of how the data change is
+sourced.
+
+## Design
 aesop uses the log mining approach of detecting data changes as described by the [LinkedIn Databus](https://github.com/linkedin/databus) 
 project. It also uses the infrastructure components of Databus, mostly for serving change events. The concept of Event Producer,
 Relay, Event Buffer, Bootstrap, Event Consumer and System Change Number(SCN) are quite appealing and used mostly as-is in aesop.
@@ -46,19 +56,19 @@ Push Producer                        Streaming Client 2       Slow/Catchup clien
  e.g. MySQL Replication listener)
 ```
 
-## Aesop Consoles
+## aesop Consoles
 ![Relays](https://github.com/Flipkart/aesop/raw/master/docs/Aesop_Relay_Dashboard_Relays.png)
 
 ![Relay Metrics](https://github.com/Flipkart/aesop/raw/master/docs/Aesop_Relay_Dashboard_Metrics.png)
 
 ## Documentation and Examples
-Aesop project modules that start with "sample" - for e.g. sample-memory-relay, sample-client are example implementations.
+aesop project modules that start with "sample" - for e.g. sample-memory-relay, sample-client are example implementations.
 
 ## Getting help
-For discussion, help regarding usage, or receiving important announcements, subscribe to the Aesop users mailing list: http://groups.google.com/group/aesop-users
+For discussion, help regarding usage, or receiving important announcements, subscribe to the aesop users mailing list: http://groups.google.com/group/aesop-users
 
 ## License
-Aesop is licensed under : The Apache Software License, Version 2.0. Here is a copy of the license (http://www.apache.org/licenses/LICENSE-2.0.txt)
+aesop is licensed under : The Apache Software License, Version 2.0. Here is a copy of the license (http://www.apache.org/licenses/LICENSE-2.0.txt)
 
 ## Core contributors
 * Chandan Bansal ([@chandanbansal](https://github.com/chandanbansal))
