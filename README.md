@@ -1,4 +1,4 @@
-aesop
+Aesop
 =====
 A keen observer of changes that can also relay change events reliably to interested parties. Provides useful infrastructure for 
 building Eventually Consistent data sources and systems.
@@ -11,7 +11,7 @@ building Eventually Consistent data sources and systems.
 ## Changelog
 Changelog can be viewed in CHANGELOG.md file (https://github.com/Flipkart/aesop/blob/master/CHANGELOG.md)
 
-## Why aesop
+## Why Aesop
 Data movement from source to consumer is a fairly common requirement in distributed systems. An example is inventory updates on a warehousing system
 reflecting on product pages of an eCommerce portal. Another is price updates on a hot selling item across multiple sellers in an on-line marketplace.
 Both these examples are instances that require the data updates to propagate with low latency and reliably. Few broad options exist:
@@ -21,26 +21,26 @@ Both these examples are instances that require the data updates to propagate wit
 * Database supported replication - very common approach when source and consumer systems use the same data store technology(e.g. MySQL master-slave replication) 
 and share the same data model / schema.
 
-aesop provides reliable, low-latency data change propagation for source and consumer systems that optionally use different data stores. It also supports
+Aesop provides reliable, low-latency data change propagation for source and consumer systems that optionally use different data stores. It also supports
 snapshot based change detection. For consumers, it provides a unified interface for change data consumption that is independent of how the data change is
 sourced.
 
-## aesop Consoles
+## Aesop Consoles
 ![Relays](https://github.com/Flipkart/aesop/raw/master/docs/Aesop_Relay_Dashboard_Relays.png)
 ![Relay Metrics](https://github.com/Flipkart/aesop/raw/master/docs/Aesop_Relay_Dashboard_Metrics.png)
 
 ## Getting Started
-The [Getting Started](https://github.com/Flipkart/aesop/wiki/Getting-started-and-Examples) page has "5 minute" examples to help you start using aesop.
+The [Getting Started](https://github.com/Flipkart/aesop/wiki/Getting-started-and-Examples) page has "5 minute" examples to help you start using Aesop.
 
 ## Documentation and Examples
-aesop project modules that start with "sample" - for e.g. sample-memory-relay, sample-client are example implementations. Documentation is 
-continuously being added to the Wiki page of aesop (https://github.com/Flipkart/aesop/wiki)
+Aesop project modules that start with "sample" - for e.g. sample-memory-relay, sample-client are example implementations. Documentation is 
+continuously being added to the Wiki page of Aesop (https://github.com/Flipkart/aesop/wiki)
 
 ## Getting help
-For discussion, help regarding usage, or receiving important announcements, subscribe to the aesop users mailing list: http://groups.google.com/group/aesop-users
+For discussion, help regarding usage, or receiving important announcements, subscribe to the Aesop users mailing list: http://groups.google.com/group/aesop-users
 
 ## License
-aesop is licensed under : The Apache Software License, Version 2.0. Here is a copy of the license (http://www.apache.org/licenses/LICENSE-2.0.txt)
+Aesop is licensed under : The Apache Software License, Version 2.0. Here is a copy of the license (http://www.apache.org/licenses/LICENSE-2.0.txt)
 
 ## Core contributors
 * Chandan Bansal ([@chandanbansal](https://github.com/chandanbansal))
