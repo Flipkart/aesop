@@ -12,9 +12,9 @@ building Eventually Consistent data sources and systems.
 Changelog can be viewed in CHANGELOG.md file (https://github.com/Flipkart/aesop/blob/master/CHANGELOG.md)
 
 ## Why Aesop
-Data movement from source to consumer is a fairly common requirement in distributed systems. An example is inventory updates on a warehousing system
-reflecting on product pages of an eCommerce portal. Another is price updates on a hot selling item across multiple sellers in an on-line marketplace.
-Both these examples are instances that require the data updates to propagate with low latency and reliably. Few broad options exist:
+Data change propagation from source to consumer is a fairly common requirement in distributed systems. An example is inventory updates on a warehousing system
+reflecting on product pages of an eCommerce portal. 
+This example is an instance that requires the data updates to propagate with low latency and reliably. Few broad options exist:
 * Application publishes changes asynchronously to a queue before/after writing data to persistent store - this is usually fire-and-forget in most implementations.
 * Variants include those with retries, back-off and queue sidelining. Reliability can be enhanced using local transactions (not distributed) and message relaying.
 * Batch extraction(snapshots) and load every few hours - affects data freshness in the consumer systems.
