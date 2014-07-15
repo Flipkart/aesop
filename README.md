@@ -15,7 +15,8 @@ Changelog can be viewed in CHANGELOG.md file (https://github.com/Flipkart/aesop/
 Data change propagation from source to consumers is a fairly common requirement in systems that automate business processes. 
 An example is inventory updates on a warehousing system reflecting on product pages of an eCommerce portal. 
 This example is an instance that requires the data updates to propagate with low latency and reliably. Few broad options exist:
-* Application publishes changes asynchronously to a queue before/after writing data to persistent store - this is usually fire-and-forget in most implementations.
+* Application publishes changes asynchronously to a queue before/after writing data to persistent store - this is usually fire-and-forget in most implementations
+and therefore unreliable.
 * Variants include those with retries, back-off and queue sidelining. Reliability can be enhanced using local transactions (not distributed) and message relaying.
 * Batch extraction(snapshots) and load every few hours - affects data freshness in the consumer systems.
 * Database supported replication - very common approach when source and consumer systems use the same data store technology(e.g. MySQL master-slave replication) 
@@ -23,7 +24,7 @@ and share the same data model / schema.
 
 Aesop provides reliable, low-latency data change propagation for source and consumer systems that optionally use different data stores. It also supports
 snapshot based change detection. For consumers, it provides a unified interface for change data consumption that is independent of how the data change is
-sourced.
+sourced. More on the [Change Propagation Approach](https://github.com/Flipkart/aesop/wiki/Change-Propagation-Approach)
 
 ## Aesop Consoles
 ![Relays](https://github.com/Flipkart/aesop/raw/master/docs/Aesop_Relay_Dashboard_Relays.png)
