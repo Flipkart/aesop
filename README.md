@@ -53,7 +53,7 @@ Aesop is licensed under : The Apache Software License, Version 2.0. Here is a co
 
 ## Aesop users
 * [PayZippy](https://www.payzippy.com/) : The payment processing system uses a MySQL data store for holding transactional data. This data is
-needed in de-normalized form in the reconciliation data store(MySQL again) and an archive data store (HBase - future implementation). 
+needed in de-normalized form in the reconciliation data store(MySQL again) and an archive data store (HBase - coming shortly). 
 Data changes need to reflect in the reconciliation and archive stores almost instantaneously. Aesop is used to do this.
 This system is in production and has processed a peak throughput of 5200 events per second and sustained throughput of 1000 events per second
 on a single relay.
