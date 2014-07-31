@@ -2,6 +2,7 @@
 ## Eclipse
 #################
 # Intellij
+distribution
 .idea/
 *.iml
 *.iws

@@ -1,5 +1,5 @@
 {
-  "name" : "Person_V2",
+  "name" : "Person_V1",
   "doc" : "Auto-generated Avro schema for sy$person. Generated at Dec 04, 2012 05:07:05 PM PST",
   "type" : "record",
   "meta" : "dbFieldName=person;pk=id;",
