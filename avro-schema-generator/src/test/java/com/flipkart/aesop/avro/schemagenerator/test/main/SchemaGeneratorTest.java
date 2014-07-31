@@ -6,9 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Before;
-import org.junit.Test;
-
 import com.flipkart.aesop.avro.schemagenerator.main.SchemaGenerator;
 import com.flipkart.aesop.avro.schemagenerator.mysql.DataSourceConfig;
 
@@ -25,7 +22,6 @@ public class SchemaGeneratorTest
 	 * Setup schema generator.
 	 * @throws Exception the exception
 	 */
-	@Before
 	public void setupSchemaGenerator() throws Exception
 	{
 
@@ -54,7 +50,6 @@ public class SchemaGeneratorTest
 	 * Test suite.
 	 * @throws Exception the exception
 	 */
-	@Test
 	public void testSuite() throws Exception
 	{
 		System.out.println("Test Result for single table : ");

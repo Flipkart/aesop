@@ -1,10 +1,10 @@
 #!/bin/bash
 script_dir=`dirname $0`
 #Setup this to point appropriately to MySQL instance
-MYSQL='/usr/bin/mysql --protocol=tcp --port=33066'
+MYSQL='mysql'
 
 ${MYSQL} -uroot -e 'CREATE DATABASE IF NOT EXISTS or_test;';
-${MYSQL} -uroot -e "CREATE USER 'or_test'@'localhost' IDENTIFIED BY 'or_test';";
+${MYSQL} -uroot -e "CREATE USER IF NOT EXISTS 'or_test'@'localhost' IDENTIFIED BY 'or_test';";
 ${MYSQL} -uroot -e "GRANT ALL ON or_test.* TO 'or_test'@'localhost';"
 ${MYSQL} -uroot -e "GRANT ALL ON *.* TO 'or_test'@'localhost';"
 ${MYSQL} -uroot -e "GRANT ALL ON *.* TO 'or_test'@'127.0.0.1';"

@@ -133,6 +133,9 @@
 								<copy todir="distribution/schemas_registry" overwrite="true">
 									<fileset dir="target/classes/schemas_registry" />
 								</copy>
+								<copy todir="distribution/sample-db" overwrite="true">
+									<fileset dir="target/classes/sample-db" />
+								</copy>
 								<copy todir="distribution/" overwrite="true">
 									<fileset dir="target/classes/scripts" />
 								</copy>
