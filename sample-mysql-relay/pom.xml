@@ -10,7 +10,7 @@
 	</parent>
 
 	<artifactId>sample-mysql-relay</artifactId>
-	<version>${project.parent.version}</version>
+	<version>1.0.7-SNAPSHOT</version>
 	<name>Sample Relay with MySQL Producer</name>
 	<description>Sample Relay with MySql Producer</description>
 
@@ -53,7 +53,7 @@
 		<dependency>
 			<groupId>com.flipkart.aesop</groupId>
 			<artifactId>mysql-producer</artifactId>
-			<version>${project.version}</version>
+			<version>1.0.7-SNAPSHOT</version>
 		</dependency>
 		<!-- Third party dependencies -->
 		<dependency>
@@ -139,7 +139,7 @@
 								<copy todir="distribution/" overwrite="true">
 									<fileset dir="target/classes/scripts" />
 								</copy>
-								<copy file="target/sample-mysql-relay-${project.version}.jar"
+								<copy file="target/sample-mysql-relay-1.0.7-SNAPSHOT.jar"
 									toDir="distribution/lib" overwrite="true" />
 							</tasks>
 						</configuration>

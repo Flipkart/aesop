@@ -12,7 +12,7 @@
     <groupId>com.flipkart.aesop</groupId>
     <artifactId>runtime-relay</artifactId>
     <name>Relay Runtime</name>
-    <version>${project.parent.version}</version>
+    <version>1.0.7-SNAPSHOT</version>
     <description>Relay Runtime</description>
 
     <licenses>
@@ -137,7 +137,7 @@
         <dependency>
             <groupId>com.flipkart.aesop</groupId>
             <artifactId>runtime</artifactId>
-            <version>${project.version}</version>
+            <version>1.0.7-SNAPSHOT</version>
         </dependency>    
     </dependencies>
 

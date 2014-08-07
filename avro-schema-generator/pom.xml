@@ -9,7 +9,7 @@
 
 	<artifactId>avro-schema-generator</artifactId>
 	<packaging>jar</packaging>
-	<version>${project.parent.version}</version>
+	<version>1.0.7-SNAPSHOT</version>
 	<name>avro-schema-generator</name>
 	<description>Generate avro schemas for mysql tables</description>
 	<url>http://maven.apache.org</url>

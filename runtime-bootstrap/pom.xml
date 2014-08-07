@@ -11,7 +11,7 @@
 
     <artifactId>runtime-bootstrap</artifactId>
     <name>Bootstrap Runtime</name>
-    <version>${project.parent.version}</version>
+    <version>1.0.7-SNAPSHOT</version>
     <description>Bootstrap Runtime</description>
 
     <properties>
@@ -53,7 +53,7 @@
         <dependency>
             <groupId>com.flipkart.aesop</groupId>
             <artifactId>runtime</artifactId>
-            <version>${project.version}</version>
+            <version>1.0.7-SNAPSHOT</version>
         </dependency>    
         <!-- Databus dependencies -->
         <dependency>

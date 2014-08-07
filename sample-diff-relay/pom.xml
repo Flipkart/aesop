@@ -7,12 +7,12 @@
     <parent>
         <groupId>com.flipkart.aesop</groupId>
         <artifactId>aesop</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.7-SNAPSHOT</version>
     </parent>
 
     <groupId>com.flipkart.aesop</groupId>
     <artifactId>sample-diff-relay</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.7-SNAPSHOT</version>
     <name>Sample Relay with Diff Event Producer</name>
     <description>Sample Relay with Diff Event Producer</description>
 
@@ -50,7 +50,7 @@
         <dependency>
             <groupId>com.flipkart.aesop</groupId>
             <artifactId>diff-producer</artifactId>
-            <version>${project.version}</version>
+            <version>1.0.7-SNAPSHOT</version>
         </dependency>    
     </dependencies>
 
