@@ -1,5 +1,9 @@
 package com.flipkart.aesop.avro.schemagenerator.main;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -29,7 +33,12 @@ public class SchemaGeneratorCli
 	{
 		final CommandLineParser cmdLineGnuParser = new GnuParser();
 		final Options gnuOptions = constructOptions();
+		final String prefix="pz.";
+		final String extension=".avsc";//extension of file in which generated schema will be stored
 		CommandLine commandLine;
+		
+		FileWriter fileWriter=null;
+		BufferedWriter bufferedWriter=null;
 		try
 		{
 			commandLine = cmdLineGnuParser.parse(gnuOptions, commandLineArguments);
@@ -42,6 +51,18 @@ public class SchemaGeneratorCli
 			{
 				throw new Exception("mandatory parameter db missing;");
 			}
+			
+			if (!commandLine.hasOption("f"))
+			{
+				throw new Exception("mandatory parameter output-folder missing;");
+			}
+			
+			if (!commandLine.hasOption("v"))
+			{
+				throw new Exception("mandatory parameter version missing;");
+			}
+			
+			
 
 			List<DataSourceConfig> dataSourceConfigs = new ArrayList<DataSourceConfig>();
 			Map<String, List<String>> tablesInclusionListMap = new HashMap<String, List<String>>();
@@ -62,6 +83,16 @@ public class SchemaGeneratorCli
 			tablesInclusionListMap.put(commandLine.getOptionValue("d"), dbInclusionTableList);
 			tablesExclusionListMap.put(commandLine.getOptionValue("d"), dbExclusionTableList);
 
+			
+			String outputFolder=commandLine.getOptionValue("f");
+			//check if outputFolder exists, if not create one.
+			File f = new File(outputFolder);
+			if (!f.exists() || !f.isDirectory()) {
+					f.mkdir();
+				}
+			
+			
+			
 			SchemaGenerator schemaGenerator =
 			        new SchemaGenerator(dataSourceConfigs, tablesInclusionListMap, tablesExclusionListMap);
 			System.out.println("Generating Schema ...\n");
@@ -70,7 +101,10 @@ public class SchemaGeneratorCli
 				String schema =
 				        schemaGenerator
 				                .generateSchema(commandLine.getOptionValue("d"), commandLine.getOptionValue("t"));
-				System.out.println(schema);
+				fileWriter= new FileWriter(outputFolder+"/"+prefix+commandLine.getOptionValue("d")+"."+commandLine.getOptionValue("t") + "." + commandLine.getOptionValue("v") + extension);
+				bufferedWriter=new BufferedWriter(fileWriter);
+				bufferedWriter.write(schema);
+				bufferedWriter.close();
 			}
 			else
 			{
@@ -78,16 +112,26 @@ public class SchemaGeneratorCli
 				        schemaGenerator.generateSchemaForAllTables(commandLine.getOptionValue("d"));
 				for (String tableName : tableNameToSchema.keySet())
 				{
-					System.out.println("\n=====" + tableName + "=====\n");
-					System.out.println(tableNameToSchema.get(tableName));
-					System.out.println("\n=====End=====\n");
+					fileWriter= new FileWriter(outputFolder+"/"+prefix+commandLine.getOptionValue("d")+"."+tableName+ "." + commandLine.getOptionValue("v") + extension);
+					bufferedWriter=new BufferedWriter(fileWriter);
+					bufferedWriter.write(tableNameToSchema.get(tableName));
+					bufferedWriter.close();
 				}
 			}
-
+			System.out.println("Written Schema to folder "+outputFolder+"\n");
 		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
+		}
+		finally{
+			if(bufferedWriter!=null){
+				try{
+				bufferedWriter.close();
+				}catch(IOException ioe){
+					ioe.printStackTrace();
+				}
+			}
 		}
 
 	}
@@ -100,7 +144,9 @@ public class SchemaGeneratorCli
 	{
 		final Options gnuOptions = new Options();
 		gnuOptions
-		        .addOption("h", "host", true, "host name for connection ; default localhost")
+				.addOption("f", "output-folder", true, "path to the folder for storing output")
+				.addOption("v", "version", true, "version number of schema")
+				.addOption("h", "host", true, "host name for connection ; default localhost")
 		        .addOption("o", "port", true, "port for connection ; default 3306")
 		        .addOption("u", "user", true, "user name for connection ; default root")
 		        .addOption("p", "password", true, "password for the connection ; default empty string")

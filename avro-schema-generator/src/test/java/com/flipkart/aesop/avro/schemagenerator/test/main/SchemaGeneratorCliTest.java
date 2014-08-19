@@ -13,7 +13,8 @@ public class SchemaGeneratorCliTest
 	@Test
 	public void testForSchemaGeneratorCli()
 	{
-		String[] commandLineArguments = "-d or_test -t test_table".split("\\s+");
+		//String[] commandLineArguments = "-d information_schema -f /Users/santosh.p/Desktop/test -v 0.1 -t INNODB_METRICS".split("\\s+");
+		String[] commandLineArguments = "-d payment -f /Users/santosh.p/Desktop/avro-schema -v 0.1".split("\\s+");
 		SchemaGeneratorCli.main(commandLineArguments);
 	}
 
