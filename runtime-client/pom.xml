@@ -12,7 +12,7 @@
     <groupId>com.flipkart.aesop</groupId>
     <artifactId>runtime-client</artifactId>
     <name>Client Runtime</name>
-    <version>${project.parent.version}</version>
+    <version>1.0.7-SNAPSHOT</version>
     <description>Client Runtime</description>
 
     <licenses>
@@ -85,7 +85,7 @@
         <dependency>
             <groupId>com.flipkart.aesop</groupId>
             <artifactId>runtime</artifactId>
-            <version>${project.version}</version>
+            <version>1.0.7-SNAPSHOT</version>
         </dependency>    		    
     </dependencies>
 

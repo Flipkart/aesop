@@ -12,7 +12,7 @@
 
     <groupId>com.flipkart.aesop</groupId>
     <artifactId>diff-producer</artifactId>
-    <version>${project.parent.version}</version>
+    <version>1.0.7-SNAPSHOT</version>
     <name>Serialized state diff event producer</name>
     <description>Serialized state diff event producer</description>
 
@@ -50,7 +50,7 @@
         <dependency>
             <groupId>com.flipkart.aesop</groupId>
             <artifactId>runtime-relay</artifactId>
-            <version>${project.version}</version>
+            <version>1.0.7-SNAPSHOT</version>
         </dependency>    
         <!-- Zeno dependencies -->
 		<dependency>

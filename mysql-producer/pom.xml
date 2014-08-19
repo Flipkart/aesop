@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.flipkart.aesop</groupId>
     <artifactId>mysql-producer</artifactId>
-    <version>${project.parent.version}</version>
+    <version>1.0.7-SNAPSHOT</version>
     <name>Mysql event producer</name>
     <description>Mysql event producer</description>
 
@@ -115,12 +115,12 @@
         <dependency>
             <groupId>com.flipkart.aesop</groupId>
             <artifactId>runtime-relay</artifactId>
-            <version>${project.version}</version>
+            <version>1.0.7-SNAPSHOT</version>
         </dependency>   
         <dependency>
 			<groupId>com.flipkart.aesop</groupId>
 			<artifactId>avro-schema-generator</artifactId>
-			<version>${project.version}</version>
+			<version>1.0.7-SNAPSHOT</version>
 			<exclusions>
 			  	<exclusion>
 			  		<groupId>org.mortbay.jetty</groupId>
@@ -134,9 +134,9 @@
 		</dependency> 
         <!-- Mysql Open Replication dependencies -->
         <dependency>
-        	<groupId>open-replicator</groupId>
+        	<groupId>com.flipkart</groupId>
         	<artifactId>open-replicator</artifactId>
-        	<version>1.0.6</version>
+        	<version>1.0.8</version>
         	<scope>compile</scope>
 			<exclusions>
 			      <exclusion>

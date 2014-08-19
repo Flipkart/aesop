@@ -1,7 +1,5 @@
 package com.flipkart.aesop.avro.schemagenerator.test.main;
 
-import org.junit.Test;
-
 import com.flipkart.aesop.avro.schemagenerator.main.SchemaGeneratorCli;
 
 /**
@@ -10,7 +8,6 @@ import com.flipkart.aesop.avro.schemagenerator.main.SchemaGeneratorCli;
 
 public class SchemaGeneratorCliTest
 {
-	@Test
 	public void testForSchemaGeneratorCli()
 	{
 		//String[] commandLineArguments = "-d information_schema -f /Users/santosh.p/Desktop/test -v 0.1 -t INNODB_METRICS".split("\\s+");

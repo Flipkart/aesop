@@ -2,6 +2,7 @@
 ## Eclipse
 #################
 # Intellij
+distribution
 .idea/
 *.iml
 *.iws
@@ -21,6 +22,7 @@ local.properties
 .loadpath
 *.iml
 .idea/
+sandbox
 
 # External tool builders
 .externalToolBuilders/

@@ -12,7 +12,7 @@
     <groupId>com.flipkart.aesop</groupId>
     <artifactId>runtime-snapshot-serializer</artifactId>
     <name>Snapshot Serializer Runtime</name>
-    <version>${project.parent.version}</version>
+    <version>1.0.7-SNAPSHOT</version>
     <description>Snapshot Serializer Runtime</description>
 
     <licenses>

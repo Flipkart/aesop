@@ -12,7 +12,7 @@
 
     <groupId>com.flipkart.aesop</groupId>
     <artifactId>sample-snapshot-serializer</artifactId>
-    <version>${project.parent.version}</version>
+    <version>1.0.7-SNAPSHOT</version>
     <name>Sample Snapshot Serializer</name>
     <description>Sample Snapshot Serializer</description>
 
@@ -65,7 +65,7 @@
         <dependency>
             <groupId>com.flipkart.aesop</groupId>
             <artifactId>runtime-snapshot-serializer</artifactId>
-            <version>${project.version}</version>
+            <version>1.0.7-SNAPSHOT</version>
 		    <exclusions>
 	        	<exclusion> <!-- Remove slf4j over log4j -->
 		      	  <groupId>org.slf4j</groupId> 

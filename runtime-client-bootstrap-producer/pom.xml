@@ -12,7 +12,7 @@
     <groupId>com.flipkart.aesop</groupId>
     <artifactId>runtime-client-bootstrap-producer</artifactId>
     <name>Client Bootstrap Producer Runtime</name>
-    <version>${project.parent.version}</version>
+    <version>1.0.7-SNAPSHOT</version>
     <description>Client Bootstrap Producer Runtime</description>
 
     <licenses>
@@ -91,7 +91,7 @@
         <dependency>
             <groupId>com.flipkart.aesop</groupId>
             <artifactId>runtime-client</artifactId>
-            <version>${project.version}</version>
+            <version>1.0.7-SNAPSHOT</version>
         </dependency>    
     </dependencies>
 

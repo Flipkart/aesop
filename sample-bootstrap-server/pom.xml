@@ -12,7 +12,7 @@
 
     <groupId>com.flipkart.aesop</groupId>
     <artifactId>sample-bootstrap-server</artifactId>
-    <version>${project.parent.version}</version>
+    <version>1.0.7-SNAPSHOT</version>
     <name>Sample Bootstrap Server</name>
     <description>Sample Bootstrap Server</description>
 
@@ -50,7 +50,7 @@
         <dependency>
             <groupId>com.flipkart.aesop</groupId>
             <artifactId>runtime-bootstrap</artifactId>
-            <version>${project.version}</version>
+            <version>1.0.7-SNAPSHOT</version>
         </dependency>    
     </dependencies>
 

@@ -1,16 +1,15 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	 <parent>
-        <groupId>com.flipkart.aesop</groupId>
-        <artifactId>aesop</artifactId>
-        <version>1.0.7-SNAPSHOT</version>
-    </parent>
-    
-	<groupId>com.flipkart.aesop</groupId>
+	<parent>
+		<groupId>com.flipkart.aesop</groupId>
+		<artifactId>aesop</artifactId>
+		<version>1.0.7-SNAPSHOT</version>
+	</parent>
+
 	<artifactId>avro-schema-generator</artifactId>
 	<packaging>jar</packaging>
-	<version>${project.parent.version}</version>
+	<version>1.0.7-SNAPSHOT</version>
 	<name>avro-schema-generator</name>
 	<description>Generate avro schemas for mysql tables</description>
 	<url>http://maven.apache.org</url>
@@ -19,13 +18,13 @@
 		<avro.version>1.7.5</avro.version>
 		<org.springframework.version>3.2.5.RELEASE</org.springframework.version>
 	</properties>
-	 <licenses>
-        <license>
-            <name>The Apache Software License, Version 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-            <distribution>repo</distribution>
-        </license>
-    </licenses>
+	<licenses>
+		<license>
+			<name>The Apache Software License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
 
 	<distributionManagement>
 		<repository>
@@ -34,20 +33,25 @@
 			<url>https://clojars.org/repo</url>
 		</repository>
 	</distributionManagement>
-	
-    <scm>
-        <url>https://github.com/Flipkart/aesop</url>
-        <connection>https://github.com/Flipkart/aesop.git</connection>
-    </scm>
+
+	<scm>
+		<url>https://github.com/Flipkart/aesop</url>
+		<connection>https://github.com/Flipkart/aesop.git</connection>
+	</scm>
 	<developers>
 		<developer>
 			<id>Chandan.Bansal</id>
 			<name>Chandan Bansal</name>
 			<email>chandanbansal2004@gmail.com</email>
 		</developer>
+		<developer>
+			<id>jagadeesh.huliyar</id>
+			<name>Jagadeesh Huliyar</name>
+			<email>jagadeesh.huliyar@gmail.com</email>
+		</developer>
 	</developers>
 	<dependencies>
-		
+
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
