@@ -118,11 +118,13 @@ public class SchemaGeneratorCli
 					bufferedWriter.close();
 				}
 			}
-			System.out.println("Written Schema to folder "+outputFolder+"\n");
+			System.out.println("**********************************************************************************\n");
+			System.out.println("********* Written Schema to folder "+outputFolder+" ***********\n");
+			System.out.println("**********************************************************************************\n");
 		}
 		catch (Exception e)
 		{
-			e.printStackTrace();
+			System.out.println(e.getMessage());
 		}
 		finally{
 			if(bufferedWriter!=null){
