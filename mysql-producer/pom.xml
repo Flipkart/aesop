@@ -73,6 +73,10 @@
 		  		<artifactId>open-replicator</artifactId>
 		  		<groupId>com.google</groupId>
 		  	</exclusion>
+		  	<exclusion>
+		  		<artifactId>ojdbc6</artifactId>
+		  		<groupId>com.oracle</groupId>
+		  	</exclusion>
 		  </exclusions>
 		</dependency>
 		<dependency>
