@@ -139,7 +139,7 @@
 								<copy todir="distribution/" overwrite="true">
 									<fileset dir="target/classes/scripts" />
 								</copy>
-								<copy file="target/sample-mysql-relay-1.0.7-SNAPSHOT.jar"
+								<copy file="target/sample-mysql-relay-${project.parent.version}.jar"
 									toDir="distribution/lib" overwrite="true" />
 							</tasks>
 						</configuration>

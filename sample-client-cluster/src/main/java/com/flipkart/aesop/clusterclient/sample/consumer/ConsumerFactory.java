@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import com.flipkart.aesop.sample.client.common.consumer.ConsoleAppenderEventConsumer;
 import com.linkedin.databus.client.pub.DatabusCombinedConsumer;
 import com.linkedin.databus.client.pub.DbusClusterConsumerFactory;
 import com.linkedin.databus.client.pub.DbusClusterInfo;
@@ -32,7 +33,7 @@ public class ConsumerFactory implements DbusClusterConsumerFactory
 	public Collection<DatabusCombinedConsumer> createPartitionedConsumers(DbusClusterInfo clusterInfo,
 	        DbusPartitionInfo partitionInfo)
 	{
-		DatabusCombinedConsumer personConsumer = new PersonEventConsumer();
+		DatabusCombinedConsumer personConsumer = new ConsoleAppenderEventConsumer();
 		List<DatabusCombinedConsumer> list = new ArrayList<DatabusCombinedConsumer>();
 		list.add(personConsumer);
 		return list;

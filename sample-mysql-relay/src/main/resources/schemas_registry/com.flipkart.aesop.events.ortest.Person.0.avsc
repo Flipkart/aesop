@@ -7,22 +7,22 @@
   "fields" : [ {
     "name" : "id",
     "type" : [ "long", "null" ],
-    "meta" : "dbFieldName=ID;dbFieldPosition=0;"
+    "meta" : "dbFieldName=ID;dbFieldPosition=0;dbFieldType=bigint"
   }, {
     "name" : "firstName",
     "type" : [ "string", "null" ],
-    "meta" : "dbFieldName=FIRST_NAME;dbFieldPosition=1;"
+    "meta" : "dbFieldName=FIRST_NAME;dbFieldPosition=1;dbFieldType=varchar"
   }, {
     "name" : "lastName",
     "type" : [ "string", "null" ],
-    "meta" : "dbFieldName=LAST_NAME;dbFieldPosition=2;"
+    "meta" : "dbFieldName=LAST_NAME;dbFieldPosition=2;dbFieldType=varchar"
   }, {
     "name" : "birthDate",
     "type" : [ "long", "null" ],
-    "meta" : "dbFieldName=BIRTH_DATE;dbFieldPosition=3;"
+    "meta" : "dbFieldName=BIRTH_DATE;dbFieldPosition=3;dbFieldType=timestamp"
   }, {
     "name" : "deleted",
     "type" : [ "string", "null" ],
-    "meta" : "dbFieldName=DELETED;dbFieldPosition=4;"
+    "meta" : "dbFieldName=DELETED;dbFieldPosition=4;dbFieldType=varchar"
   } ]
 }

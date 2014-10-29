@@ -98,6 +98,7 @@
         <module>sample-mysql-relay</module>
         <module>sample-client-mysql-relay</module>
         <module>avro-schema-generator</module>
+        <module>sample-client-common</module>
     </modules>
 
 </project>

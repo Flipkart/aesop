@@ -78,6 +78,7 @@ public class OpenReplicationListener implements BinlogEventListener
 			LOGGER.error("Received null event");
 			return;
 		}
+		System.out.println("Event type:"+event.getHeader().getEventType());
 		try
 		{
 			/**

@@ -48,7 +48,12 @@
             <groupId>com.flipkart.aesop</groupId>
             <artifactId>runtime-client-cluster</artifactId>
             <version>${project.version}</version>
-        </dependency>    
+        </dependency>
+        <dependency>
+            <groupId>com.flipkart.aesop</groupId>
+            <artifactId>sample-client-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
     <build>
