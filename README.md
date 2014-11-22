@@ -47,6 +47,7 @@ Aesop is licensed under : The Apache Software License, Version 2.0. Here is a co
 * Chandan Bansal ([@chandanbansal](https://github.com/chandanbansal))
 * Jagadeesh Huliyar ([@jagadeesh-huliyar](https://github.com/jagadeesh-huliyar))
 * Kartik B Ukhalkar ([@kartikssj](https://github.com/kartikssj))
+* Prakhar Jain ([@jprakhar77](https://github.com/jprakhar77))
 * Regunath B ([@regunathb](http://twitter.com/RegunathB))
 * Shoury ([@Shoury](https://github.com/Shoury))
 * Yogesh Dahiya ([@yogeshdfk](https://github.com/yogeshdfk))
