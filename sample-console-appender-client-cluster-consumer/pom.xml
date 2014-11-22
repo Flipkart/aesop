@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.flipkart.aesop</groupId>
+        <artifactId>aesop</artifactId>
+        <version>1.0.8-SNAPSHOT</version>
+    </parent>
+	<artifactId>sample-console-appender-client-cluster-consumer</artifactId>
+	<name>Sample Console Appender Client Cluster</name>
+	<description>Sample Console Appender Client Cluster</description>
+
+	<dependencies>
+			
+		<!-- aesop dependencies -->
+		<dependency>
+			<groupId>com.flipkart.aesop</groupId>
+			<artifactId>runtime-client-cluster</artifactId>
+			<version>1.0.8-SNAPSHOT</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>com.flipkart.aesop</groupId>
+			<artifactId>data-layer-console-appender</artifactId>
+			<version>1.0.8-SNAPSHOT</version>
+		</dependency>
+		
+	</dependencies>
+
+	<build>
+		<sourceDirectory>src/main/java</sourceDirectory>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
+
+		<plugins>
+			<plugin>
+				<artifactId>maven-clean-plugin</artifactId>
+				<version>2.5</version>
+				<configuration>
+					<filesets>
+						<fileset>
+							<directory>distribution</directory>
+							<includes>
+								<include>**/*</include>
+								<include>**/*</include>
+							</includes>
+							<followSymlinks>false</followSymlinks>
+						</fileset>
+					</filesets>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>${maven-jar-plugin.version}</version>
+				<configuration>
+					<archive>
+						<manifest>
+							<addClasspath>true</addClasspath>
+						</manifest>
+					</archive>
+					<includes>
+						<include>packaged/**/*</include>
+						<include>com/**/*</include>
+						<include>project.properties</include>
+					</includes>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>${maven-compiler-plugin.version}</version>
+				<configuration>
+					<source>${jdk.version}</source>
+					<target>${jdk.version}</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>install</phase>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>distribution/lib</outputDirectory>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>CopyResources</id>
+						<phase>install</phase>
+						<configuration>
+							<tasks>
+								<copy todir="distribution/resources/external"
+									overwrite="true">
+									<fileset dir="target/classes/external"/>
+								</copy>
+								<copy file="src/main/resources/application.conf" 
+									tofile="distribution/resources/application.conf"/>
+								<copy file="target/sample-console-appender-client-cluster-consumer-${project.version}.jar"
+									 toDir="distribution/lib" overwrite="true" />
+								<copy file="target/classes/project.properties" 
+									tofile="distribution/resources/external/project.properties.snapshot"
+									overwrite="true" />
+							</tasks>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+		<pluginManagement>
+			<plugins>
+				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
+											org.apache.maven.plugins
+										</groupId>
+										<artifactId>
+											maven-dependency-plugin
+										</artifactId>
+										<versionRange>
+											[2.1,)
+										</versionRange>
+										<goals>
+											<goal>
+												copy-dependencies
+											</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
+	<profiles>
+		<profile>
+			<id>local</id>
+			<build>
+				<filters>
+					<filter>src/main/filters/local.properties</filter>
+				</filters>
+			</build>
+		</profile>
+		<profile>
+			<id>stage</id>
+			<build>
+				<filters>
+					<filter>src/main/filters/stage.properties</filter>
+				</filters>
+			</build>
+		</profile>
+
+		<profile>
+			<id>prod</id>
+			<build>
+				<filters>
+					<filter>src/main/filters/prod.properties</filter>
+				</filters>
+			</build>
+		</profile>
+	</profiles>
+</project>

@@ -99,6 +99,11 @@
         <module>sample-client-mysql-relay</module>
         <module>avro-schema-generator</module>
         <module>sample-client-common</module>
+        <module>client-event-consumer</module>
+        <module>data-layer-hbase</module>
+        <module>data-layer-mysql</module>
+        <module>data-layer-console-appender</module>
+        <module>sample-console-appender-client-cluster-consumer</module>
     </modules>
 
 </project>
