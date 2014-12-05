@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: org.perf4j:perf4j:0.9.15">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/perf4j/perf4j/0.9.15/perf4j-0.9.15.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/org/perf4j/perf4j/0.9.15/perf4j-0.9.15-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/perf4j/perf4j/0.9.15/perf4j-0.9.15-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

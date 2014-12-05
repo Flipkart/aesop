@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: org.eclipse.jetty:jetty-security:8.1.5.v20120716">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/eclipse/jetty/jetty-security/8.1.5.v20120716/jetty-security-8.1.5.v20120716.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/org/eclipse/jetty/jetty-security/8.1.5.v20120716/jetty-security-8.1.5.v20120716-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/eclipse/jetty/jetty-security/8.1.5.v20120716/jetty-security-8.1.5.v20120716-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

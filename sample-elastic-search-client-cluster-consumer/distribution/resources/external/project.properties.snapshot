@@ -1,0 +1,9 @@
+CHECKPOINT_DIR_LOCATION=${checkpoint_dir_location}
+ZK_ADDR=${zk_addr}
+MAPPER_CONFIG_FILE_PATH=${mapper_config_file_path}
+RELAY_HOST=${relay_host}
+DENORMALIZED_DB=${denormalized_db}
+DENORMALIZED_DB_USER=${denormalized_db_user}
+DENORMALIZED_DB_PASSWORD=${denormalized_db_password}
+DENORMALIZED_DB_JDBC_URL=${denormalized_db_jdbc_url}
+NUM_PARTITIONS=${num_partitions}

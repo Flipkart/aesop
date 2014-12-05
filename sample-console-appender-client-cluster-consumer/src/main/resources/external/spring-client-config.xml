@@ -31,7 +31,7 @@
 
 	<bean id="defaultMapperImpl"
 		class="com.flipkart.aesop.mapper.implementation.DefaultMapperImpl">
-		<property name="configFilePath" value="resources/application.conf" />
+		<property name="configFilePath" value="../resources/application.conf" />
 		<property name="configRoot" value="MAPPER_CONFIG" />
 		<property name="mapperConfig" ref="mapperConfig" />
 		<property name="mapperTypeList">
