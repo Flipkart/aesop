@@ -2,39 +2,24 @@ package com.flipkart.aesop.elasticsearchdatalayer.upsert;
 
 
 import com.typesafe.config.Config;
-import com.typesafe.config.ConfigFactory;
-import com.typesafe.config.ConfigList;
-import com.typesafe.config.ConfigObject;
-import com.typesafe.config.ConfigValue;
 import org.trpr.platform.core.impl.logging.LogFactory;
 import org.trpr.platform.core.spi.logging.Logger;
 
 import com.flipkart.aesop.destinationoperation.UpsertDestinationStoreOperation;
 import com.flipkart.aesop.event.AbstractEvent;
 import com.linkedin.databus.core.DbusOpcode;
-import org.elasticsearch.ElasticsearchException;
-import org.elasticsearch.action.ActionRequestValidationException;
-import org.elasticsearch.action.count.CountResponse;
-import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexResponse;
-import org.elasticsearch.action.search.SearchRequestBuilder;
-import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.node.Node;
-import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.SearchHits;
 import org.springframework.util.StringUtils;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutionException;
+
 
 
 
@@ -63,7 +48,25 @@ public class ElasticSearchUpsertDataLayer extends UpsertDestinationStoreOperatio
 	{
         //ds.checkServer();
 		LOGGER.info("Received Upsert Event. Event is " + event);
-        LOGGER.info(event.getFieldMapPair().toString());
+        LOGGER.info("Field Map Pair : " + event.getFieldMapPair().toString());
+        LOGGER.info("Person ID:" + event.getFieldMapPair().get("id"));
+
+
+        try {
+            String id = String.valueOf(event.getFieldMapPair().get("id"));
+            client.prepareDelete("ortest_person","person",id)
+                    .execute()
+                    .actionGet();
+            IndexResponse response = client.prepareIndex("ortest_person","person",id)
+                    .setSource(event.getFieldMapPair())
+                    .execute()
+                    .get();
+            if(!response.isCreated())  {
+                LOGGER.info("Create Error : " + response);
+            }
+        } catch (Exception e) {
+            LOGGER.info("Create Error : " + e);
+        }
 
 	}
 

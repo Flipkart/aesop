@@ -10,9 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
-import com.typesafe.config.ConfigList;
-import com.typesafe.config.ConfigObject;
-import com.typesafe.config.ConfigValue;
+
 
 /**
  * Generates objects of {@link ElasticSearchUpsertDataLayer } and ensures that it is singleton.
