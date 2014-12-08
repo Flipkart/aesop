@@ -1,6 +1,7 @@
 package com.flipkart.aesop.elasticsearchdatalayer.upsert;
 
 
+import com.flipkart.aesop.elasticsearchdatalayer.config.ElasticSearchInitializer;
 import com.typesafe.config.Config;
 import org.trpr.platform.core.impl.logging.LogFactory;
 import org.trpr.platform.core.spi.logging.Logger;
@@ -39,9 +40,7 @@ public class ElasticSearchUpsertDataLayer extends UpsertDestinationStoreOperatio
     private static SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     /* ES Node Client. */
 
-    private Client client = null;
-    /* ES Node */
-    private Node node = null;
+    public ElasticSearchInitializer elasticSearchInitializer;
 
 	@Override
 	protected void upsert(AbstractEvent event)
@@ -54,10 +53,10 @@ public class ElasticSearchUpsertDataLayer extends UpsertDestinationStoreOperatio
 
         try {
             String id = String.valueOf(event.getFieldMapPair().get("id"));
-            client.prepareDelete("ortest_person","person",id)
+            elasticSearchInitializer.client.prepareDelete("ortest_person","person",id)
                     .execute()
                     .actionGet();
-            IndexResponse response = client.prepareIndex("ortest_person","person",id)
+            IndexResponse response = elasticSearchInitializer.client.prepareIndex("ortest_person","person",id)
                     .setSource(event.getFieldMapPair())
                     .execute()
                     .get();
@@ -69,61 +68,4 @@ public class ElasticSearchUpsertDataLayer extends UpsertDestinationStoreOperatio
         }
 
 	}
-
-    public void initialise(Config config) {
-        String hostname;
-        try{
-            hostname  = InetAddress.getLocalHost().getHostName();
-        }
-        catch(UnknownHostException e)
-        {
-            LOGGER.info("Unknown HostException Thrown - UpsertDatalayer");
-            return;
-        }
-
-        /* Removing current host from host list so as to ensure that circular heart-beats are not sent. */
-        List<String> hosts = (List<String>) config.getStringList("hosts");
-        hosts.remove(hostname+":9300");
-        String hostListStr = StringUtils.collectionToDelimitedString(hosts,",");
-
-        LOGGER.info("HOST LIST : {} ", hostListStr);
-        Settings.Builder settings = ImmutableSettings.settingsBuilder()
-                .put("cluster.name", config.getString("cluster.name")) /* Cluster Name Type : String */
-                .put("http.port", 9200)
-                .put("transport.tcp.port", 9300)
-                .put("node.name", hostname.replace('.', '-'))
-                .put("node.data", true)
-                .put("node.local", config.getBoolean("isLocal")) /* Whether Its local Type : boolean */
-                .put("path.work", config.getString("worklocation"))  /* Temp storage Location Type:String */
-                .put("path.logs", config.getString("loglocation"))  /* Log Location Type:String */
-                .put("path.data", config.getString("datalocation"))   /* Data Location Type:String */
-                .put("index.number_of_shards", config.getInt("num.shards")) /* No Of Shards In 1 Node Type:Integer */
-                .put("index.number_of_replicas", config.getInt("num.replicas"))  /* No Of Replicas In Cluster Type:Integer */
-                .put("index.refresh_interval", config.getString("num.refresh_interval"))  /* No Of Replicas In Cluster Type:String */
-                .put("discovery.zen.ping.multicast.enabled", false)
-                .put("index.translog.flush_threshold_size","400mb")
-                .put("indices.memory.index_buffer_size","25%")
-                .put("threadpool.bulk.size",16)
-                .put("threadpool.bulk.queue_size",100)
-                .put("bootstrap.mlockall",true)
-                .put("action.disable_delete_all_indices",true)
-                .put("cluster.routing.allocation.cluster_concurrent_rebalance",16)
-                .put("cluster.routing.allocation.node_initial_primaries_recoveries",32)
-                .put("cluster.routing.allocation.node_concurrent_recoveries",4)
-                .put("indices.recovery.concurrent_streams",8)
-                .put("indices.recovery.max_bytes_per_sec","80mb")
-                .put("discovery.zen.minimum_master_nodes", config.getInt("minimum_master_nodes"))
-                .put("discovery.zen.ping.unicast.hosts", hostListStr)
-                .put("network.host", hostname);
-
-        Node node = nodeBuilder().local(Boolean.parseBoolean(String.valueOf(config.getBoolean("isLocal"))))
-                .clusterName(String.valueOf(config.getString("cluster.name"))).data(true).client(false).settings(settings).node();
-
-        node.client().admin().cluster().prepareHealth().setWaitForYellowStatus().execute().actionGet();
-        node.start() ;
-
-        this.node = node;
-        this.client = node.client();
-    }
-
 }

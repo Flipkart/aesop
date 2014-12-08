@@ -1,5 +1,6 @@
 package com.flipkart.aesop.elasticsearchdatalayer.upsert;
 
+import com.flipkart.aesop.elasticsearchdatalayer.config.ElasticSearchInitializer;
 import org.springframework.beans.factory.FactoryBean;
 import com.flipkart.aesop.elasticsearchdatalayer.config.ElasticSearchConfig;
 import org.trpr.platform.core.impl.logging.LogFactory;
@@ -19,8 +20,9 @@ import com.typesafe.config.ConfigFactory;
 public class ElasticSearchUpsertDataLayerFactory implements FactoryBean<ElasticSearchUpsertDataLayer>
 {
     private static final Logger LOGGER = LogFactory.getLogger(ElasticSearchUpsertDataLayerFactory.class);
-    public ElasticSearchConfig elasticSearchConfig;
+
     public ElasticSearchUpsertDataLayer es;
+    public ElasticSearchConfig elasticSearchConfig;
     public ConcurrentHashMap<String, Config> cachedConfigMap;
 
 	public ElasticSearchUpsertDataLayer getObject() throws Exception
@@ -28,11 +30,14 @@ public class ElasticSearchUpsertDataLayerFactory implements FactoryBean<ElasticS
         es =  new ElasticSearchUpsertDataLayer();
         cachedConfigMap = new ConcurrentHashMap<String, Config>();
         LOGGER.info("elasticSearchConfig: "+elasticSearchConfig.getConfig());
-	    cachedConfigMap.putIfAbsent(elasticSearchConfig.getConfig(),
+        cachedConfigMap.putIfAbsent(elasticSearchConfig.getConfig(),
                 ConfigFactory.parseFile(new File(elasticSearchConfig.getConfig()))) ;
 
+
         //LOGGER.info("elasticSearchConfig: "+ es.cachedConfigMap.get("config.infra.es.conf").getString("cluster.name"));
-        es.initialise(cachedConfigMap.get("config.infra.es.conf"));
+        //es.initialise();
+
+        es.elasticSearchInitializer = ElasticSearchInitializer.getInstance( cachedConfigMap.get("config.infra.es.conf"));
         LOGGER.info("elasticSearchConfig: "+es);
 
         return es;

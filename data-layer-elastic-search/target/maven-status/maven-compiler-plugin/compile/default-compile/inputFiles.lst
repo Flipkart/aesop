@@ -2,5 +2,6 @@
 /Users/pratyay.banerjee/flipkart/aesop/data-layer-elastic-search/src/main/java/com/flipkart/aesop/elasticsearchdatalayer/DialServer.java
 /Users/pratyay.banerjee/flipkart/aesop/data-layer-elastic-search/src/main/java/com/flipkart/aesop/elasticsearchdatalayer/config/ElasticSearchConfig.java
 /Users/pratyay.banerjee/flipkart/aesop/data-layer-elastic-search/src/main/java/com/flipkart/aesop/elasticsearchdatalayer/delete/ElasticSearchDeleteDataLayerFactory.java
+/Users/pratyay.banerjee/flipkart/aesop/data-layer-elastic-search/src/main/java/com/flipkart/aesop/elasticsearchdatalayer/config/ElasticSearchInitializer.java
 /Users/pratyay.banerjee/flipkart/aesop/data-layer-elastic-search/src/main/java/com/flipkart/aesop/elasticsearchdatalayer/upsert/ElasticSearchUpsertDataLayer.java
 /Users/pratyay.banerjee/flipkart/aesop/data-layer-elastic-search/src/main/java/com/flipkart/aesop/elasticsearchdatalayer/delete/ElasticSearchDeleteDataLayer.java

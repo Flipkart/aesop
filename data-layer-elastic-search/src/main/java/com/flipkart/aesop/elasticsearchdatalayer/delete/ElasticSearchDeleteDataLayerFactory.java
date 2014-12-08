@@ -1,6 +1,7 @@
 package com.flipkart.aesop.elasticsearchdatalayer.delete;
 
 
+import com.flipkart.aesop.elasticsearchdatalayer.config.ElasticSearchInitializer;
 import org.springframework.beans.factory.FactoryBean;
 import com.flipkart.aesop.elasticsearchdatalayer.config.ElasticSearchConfig;
 
@@ -21,8 +22,10 @@ import com.typesafe.config.ConfigFactory;
 public class ElasticSearchDeleteDataLayerFactory implements FactoryBean<ElasticSearchDeleteDataLayer>
 {
     private static final Logger LOGGER = LogFactory.getLogger(ElasticSearchDeleteDataLayerFactory.class);
-    public ElasticSearchConfig elasticSearchConfig;
+
     public ElasticSearchDeleteDataLayer es;
+
+    public ElasticSearchConfig elasticSearchConfig;
     public ConcurrentHashMap<String, Config> cachedConfigMap;
 
 	public ElasticSearchDeleteDataLayer getObject() throws Exception
@@ -33,8 +36,10 @@ public class ElasticSearchDeleteDataLayerFactory implements FactoryBean<ElasticS
         cachedConfigMap.putIfAbsent(elasticSearchConfig.getConfig(),
                 ConfigFactory.parseFile(new File(elasticSearchConfig.getConfig()))) ;
 
+
         //LOGGER.info("elasticSearchConfig: "+ es.cachedConfigMap.get("config.infra.es.conf").getString("cluster.name"));
        // es.initialise(cachedConfigMap.get("config.infra.es.conf"));
+        es.elasticSearchInitializer = ElasticSearchInitializer.getInstance( cachedConfigMap.get("config.infra.es.conf"));
         LOGGER.info("elasticSearchConfig: "+es);
 
         return es;
