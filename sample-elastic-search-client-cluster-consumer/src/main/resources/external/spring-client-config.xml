@@ -108,7 +108,7 @@
 					</property>
 					<property name="logicalSources">
 						<list value-type="java.lang.String">
-                            <value>com.flipkart.aesop.events.wishlist_service.wishlist</value>
+                            <value>com.flipkart.aesop.events.or_test.person</value>
 						</list>
 					</property>
 				</bean>
@@ -143,7 +143,7 @@
 					<property name="relayPort" value="25022" />
 					<property name="relayLogicalSourceNames">
 						<list value-type="java.lang.String">
-                            <value>com.flipkart.aesop.events.wishlist_service.wishlist</value>
+                            <value>com.flipkart.aesop.events.or_test.person</value>
 						</list>
 					</property>
 				</bean>

@@ -1,14 +1,7 @@
 package com.flipkart.aesop.elasticsearchdatalayer.delete;
 
 import com.flipkart.aesop.elasticsearchdatalayer.config.ElasticSearchInitializer;
-import com.typesafe.config.Config;
-import org.elasticsearch.action.admin.cluster.health.ClusterHealthResponse;
 import org.elasticsearch.action.get.GetResponse;
-import org.elasticsearch.client.Client;
-import org.elasticsearch.common.settings.ImmutableSettings;
-import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.node.Node;
-import org.springframework.util.StringUtils;
 import org.trpr.platform.core.impl.logging.LogFactory;
 import org.trpr.platform.core.spi.logging.Logger;
 
@@ -17,15 +10,9 @@ import com.flipkart.aesop.event.AbstractEvent;
 import com.linkedin.databus.core.DbusOpcode;
 
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.text.SimpleDateFormat;
-import java.util.*;
-
-import static org.elasticsearch.node.NodeBuilder.nodeBuilder;
 /**
- * Sample Delete Data Layer. Persists {@link DbusOpcode#DELETE} events to Log File.
- * @author Jagadeesh Huliyar
+ * ElasticSearch Delete Data Layer. Persists {@link DbusOpcode#DELETE} events to Log File.
+ * @author Pratyay Banerjee
  * @see com.flipkart.aesop.elasticsearchdatalayer.upsert.ElasticSearchUpsertDataLayer
  */
 public class ElasticSearchDeleteDataLayer extends DeleteDestinationStoreOperation
@@ -33,10 +20,8 @@ public class ElasticSearchDeleteDataLayer extends DeleteDestinationStoreOperatio
 
     /** Logger for this class*/
     private static final Logger LOGGER = LogFactory.getLogger(ElasticSearchDeleteDataLayer.class);
-    // private static final DialServer ds = new DialServer();
 
-
-    private static SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+     /* ES Initializer Client. */
 
     public ElasticSearchInitializer elasticSearchInitializer;
 
@@ -45,14 +30,14 @@ public class ElasticSearchDeleteDataLayer extends DeleteDestinationStoreOperatio
 	{
 		LOGGER.info("Received Delete Event. Event is " + event);
         String id = String.valueOf(event.getFieldMapPair().get("id"));
-        /* Prepare Delete Request and exeucte */
-        elasticSearchInitializer.client.prepareDelete("wishlist_service", "wishlist",id)
+        /* Prepare Delete Request and execute */
+        elasticSearchInitializer.client.prepareDelete(elasticSearchInitializer.getNamespace(), elasticSearchInitializer.getIndex(),id)
                 .execute()
                 .actionGet();
 
             /* Check if source still exists*/
         try{
-        GetResponse response = elasticSearchInitializer.client.prepareGet("wishlist_service", "wishlist", id).execute().get();
+        GetResponse response = elasticSearchInitializer.client.prepareGet(elasticSearchInitializer.getNamespace(),elasticSearchInitializer.getIndex(), id).execute().get();
         if(!response.isSourceEmpty()) {
             LOGGER.info("Delete Error:" + response);
         }

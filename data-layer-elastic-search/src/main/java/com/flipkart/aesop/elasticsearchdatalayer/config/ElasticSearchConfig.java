@@ -1,17 +1,12 @@
 package com.flipkart.aesop.elasticsearchdatalayer.config;
 
 /**
- * Created with IntelliJ IDEA.
- * User: pratyay.banerjee
- * Date: 05/12/14
- * Time: 12:16 PM
- * To change this template use File | Settings | File Templates.
+ * Passes ElasticSearchConfig filename
+ * @author Pratyay Banerjee
  */
-import org.apache.commons.lang.StringUtils;
+
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
-import org.trpr.platform.core.PlatformException;
-import org.trpr.platform.runtime.common.RuntimeVariables;
 
 public class ElasticSearchConfig implements  InitializingBean{
     public String config;
@@ -29,7 +24,7 @@ public class ElasticSearchConfig implements  InitializingBean{
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        //To change body of implemented methods use File | Settings | File Templates.
+        //Assert if filename is ot empty
         Assert.notNull(this.config,"'ElasticSearchConfig' cannot be null. This Databus Client will not be initialized");
     }
 }

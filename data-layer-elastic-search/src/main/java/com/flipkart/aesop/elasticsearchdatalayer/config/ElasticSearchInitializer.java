@@ -20,11 +20,8 @@ import java.util.*;
 import static org.elasticsearch.node.NodeBuilder.nodeBuilder;
 
 /**
- * Created with IntelliJ IDEA.
- * User: pratyay.banerjee
- * Date: 08/12/14
- * Time: 10:34 PM
- * To change this template use File | Settings | File Templates.
+ * Initiates ElasticSearch Client , reads config from ElasticSearchConfig
+ * @author Pratyay Banerjee
  */
 public class ElasticSearchInitializer implements InitializingBean{
 
@@ -34,10 +31,11 @@ public class ElasticSearchInitializer implements InitializingBean{
     public Node node;
 
     private ElasticSearchConfig elasticSearchConfig;
+    private Config config;
 
     public void init()
     {
-        Config config = ConfigFactory.parseFile(new File(elasticSearchConfig.getConfig()));
+        config = ConfigFactory.parseFile(new File(elasticSearchConfig.getConfig()));
         String hostname;
         try{
             hostname  = InetAddress.getLocalHost().getHostName();
@@ -104,5 +102,15 @@ public class ElasticSearchInitializer implements InitializingBean{
 
     public void setElasticSearchConfig(ElasticSearchConfig elasticSearchConfig) {
         this.elasticSearchConfig = elasticSearchConfig;
+    }
+
+    public String getIndex()
+    {
+        return  config.getString("cluster.index");
+    }
+
+    public String getNamespace()
+    {
+        return config.getString("cluster.namespace");
     }
 }
