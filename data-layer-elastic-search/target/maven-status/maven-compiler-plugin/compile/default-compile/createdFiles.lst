@@ -1,7 +1,0 @@
-com/flipkart/aesop/elasticsearchdatalayer/config/ElasticSearchConfig.class
-com/flipkart/aesop/elasticsearchdatalayer/DialServer.class
-com/flipkart/aesop/elasticsearchdatalayer/upsert/ElasticSearchUpsertDataLayer.class
-com/flipkart/aesop/elasticsearchdatalayer/config/ElasticSearchInitializer.class
-com/flipkart/aesop/elasticsearchdatalayer/upsert/ElasticSearchUpsertDataLayerFactory.class
-com/flipkart/aesop/elasticsearchdatalayer/delete/ElasticSearchDeleteDataLayer.class
-com/flipkart/aesop/elasticsearchdatalayer/delete/ElasticSearchDeleteDataLayerFactory.class
