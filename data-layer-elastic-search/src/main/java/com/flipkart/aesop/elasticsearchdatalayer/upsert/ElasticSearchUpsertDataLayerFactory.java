@@ -22,22 +22,12 @@ public class ElasticSearchUpsertDataLayerFactory implements FactoryBean<ElasticS
     private static final Logger LOGGER = LogFactory.getLogger(ElasticSearchUpsertDataLayerFactory.class);
 
     public ElasticSearchUpsertDataLayer es;
-    public ElasticSearchConfig elasticSearchConfig;
-    public ConcurrentHashMap<String, Config> cachedConfigMap;
+    private ElasticSearchInitializer elasticSearchInitializer;
 
 	public ElasticSearchUpsertDataLayer getObject() throws Exception
     {
         es =  new ElasticSearchUpsertDataLayer();
-        cachedConfigMap = new ConcurrentHashMap<String, Config>();
-        LOGGER.info("elasticSearchConfig: "+elasticSearchConfig.getConfig());
-        cachedConfigMap.putIfAbsent(elasticSearchConfig.getConfig(),
-                ConfigFactory.parseFile(new File(elasticSearchConfig.getConfig()))) ;
-
-
-        //LOGGER.info("elasticSearchConfig: "+ es.cachedConfigMap.get("config.infra.es.conf").getString("cluster.name"));
-        //es.initialise();
-
-        es.elasticSearchInitializer = ElasticSearchInitializer.getInstance( cachedConfigMap.get("config.infra.es.conf"));
+        es.elasticSearchInitializer = elasticSearchInitializer;
         LOGGER.info("elasticSearchConfig: "+es);
 
         return es;
@@ -53,8 +43,11 @@ public class ElasticSearchUpsertDataLayerFactory implements FactoryBean<ElasticS
 	    return true;
     }
 
-    public void setElasticSearchConfig(ElasticSearchConfig elasticSearchConfig)
-    {
-        this.elasticSearchConfig=elasticSearchConfig;
+    public ElasticSearchInitializer getElasticSearchInitializer() {
+        return elasticSearchInitializer;
+    }
+
+    public void setElasticSearchInitializer(ElasticSearchInitializer elasticSearchInitializer) {
+        this.elasticSearchInitializer = elasticSearchInitializer;
     }
 }

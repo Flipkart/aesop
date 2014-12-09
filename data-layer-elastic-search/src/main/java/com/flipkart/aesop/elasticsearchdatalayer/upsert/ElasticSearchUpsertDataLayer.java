@@ -53,10 +53,10 @@ public class ElasticSearchUpsertDataLayer extends UpsertDestinationStoreOperatio
 
         try {
             String id = String.valueOf(event.getFieldMapPair().get("id"));
-            elasticSearchInitializer.client.prepareDelete("ortest_person","person",id)
+            elasticSearchInitializer.client.prepareDelete("wishlist_service","wishlist",id)
                     .execute()
                     .actionGet();
-            IndexResponse response = elasticSearchInitializer.client.prepareIndex("ortest_person","person",id)
+            IndexResponse response = elasticSearchInitializer.client.prepareIndex("wishlist_service","wishlist",id)
                     .setSource(event.getFieldMapPair())
                     .execute()
                     .get();

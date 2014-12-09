@@ -73,13 +73,17 @@
 
 	<bean id="elasticSearchUpsertDataLayer"
 		class="com.flipkart.aesop.elasticsearchdatalayer.upsert.ElasticSearchUpsertDataLayerFactory">
-        <property name="elasticSearchConfig" ref="elasticSearchConfig"/>
+        <property name="elasticSearchInitializer" ref="elasticSearchInitializer"/>
 	</bean>
 
 	<bean id="elasticSearchDeleteDataLayer"
 		class="com.flipkart.aesop.elasticsearchdatalayer.delete.ElasticSearchDeleteDataLayerFactory">
-        <property name="elasticSearchConfig" ref="elasticSearchConfig"/>
+        <property name="elasticSearchInitializer" ref="elasticSearchInitializer"/>
 	</bean>
+
+    <bean id="elasticSearchInitializer" class="com.flipkart.aesop.elasticsearchdatalayer.config.ElasticSearchInitializer">
+        <property name="elasticSearchConfig" ref="elasticSearchConfig"/>
+    </bean>
 
     <bean id="elasticSearchConfig" class="com.flipkart.aesop.elasticsearchdatalayer.config.ElasticSearchConfig">
         <constructor-arg value="config.infra.es.conf" />
@@ -104,7 +108,7 @@
 					</property>
 					<property name="logicalSources">
 						<list value-type="java.lang.String">
-							<value>com.flipkart.aesop.events.ortest.Person</value>
+                            <value>com.flipkart.aesop.events.wishlist_service.wishlist</value>
 						</list>
 					</property>
 				</bean>
@@ -136,10 +140,10 @@
 				<bean class="com.flipkart.aesop.runtime.config.RelayClientConfig">
 					<property name="relayId" value="1" />
 					<property name="relayHost" value="localhost" />
-					<property name="relayPort" value="25021" />
+					<property name="relayPort" value="25022" />
 					<property name="relayLogicalSourceNames">
 						<list value-type="java.lang.String">
-							<value>com.flipkart.aesop.events.ortest.Person</value>
+                            <value>com.flipkart.aesop.events.wishlist_service.wishlist</value>
 						</list>
 					</property>
 				</bean>

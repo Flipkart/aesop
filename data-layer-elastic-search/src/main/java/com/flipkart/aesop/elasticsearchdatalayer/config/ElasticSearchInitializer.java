@@ -6,10 +6,6 @@ import org.springframework.beans.factory.InitializingBean;
 import org.trpr.platform.core.impl.logging.LogFactory;
 import org.trpr.platform.core.spi.logging.Logger;
 
-import com.flipkart.aesop.destinationoperation.UpsertDestinationStoreOperation;
-import com.flipkart.aesop.event.AbstractEvent;
-import com.linkedin.databus.core.DbusOpcode;
-import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;
@@ -19,11 +15,9 @@ import org.springframework.util.StringUtils;
 import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
+
 import static org.elasticsearch.node.NodeBuilder.nodeBuilder;
-import com.flipkart.aesop.elasticsearchdatalayer.config.ElasticSearchConfig;
 
 /**
  * Created with IntelliJ IDEA.
@@ -35,25 +29,15 @@ import com.flipkart.aesop.elasticsearchdatalayer.config.ElasticSearchConfig;
 public class ElasticSearchInitializer implements InitializingBean{
 
     private static final Logger LOGGER = LogFactory.getLogger(ElasticSearchInitializer.class);
+
     public Client client;
     public Node node;
-    private static ElasticSearchInitializer INSTANCE = null;
 
-    private ElasticSearchInitializer(Config config) {
-        init(config);
-    }
+    private ElasticSearchConfig elasticSearchConfig;
 
-    public static ElasticSearchInitializer getInstance(Config config)
+    public void init()
     {
-        if(INSTANCE==null)
-        {
-            INSTANCE = new ElasticSearchInitializer(config);
-        }
-            return INSTANCE;
-    }
-
-    public void init(Config config)
-    {
+        Config config = ConfigFactory.parseFile(new File(elasticSearchConfig.getConfig()));
         String hostname;
         try{
             hostname  = InetAddress.getLocalHost().getHostName();
@@ -111,6 +95,14 @@ public class ElasticSearchInitializer implements InitializingBean{
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        //To change body of implemented methods use File | Settings | File Templates.
+       init();
+    }
+
+    public ElasticSearchConfig getElasticSearchConfig() {
+        return elasticSearchConfig;
+    }
+
+    public void setElasticSearchConfig(ElasticSearchConfig elasticSearchConfig) {
+        this.elasticSearchConfig = elasticSearchConfig;
     }
 }

@@ -46,13 +46,13 @@ public class ElasticSearchDeleteDataLayer extends DeleteDestinationStoreOperatio
 		LOGGER.info("Received Delete Event. Event is " + event);
         String id = String.valueOf(event.getFieldMapPair().get("id"));
         /* Prepare Delete Request and exeucte */
-        elasticSearchInitializer.client.prepareDelete("ortest_person", "person",id)
+        elasticSearchInitializer.client.prepareDelete("wishlist_service", "wishlist",id)
                 .execute()
                 .actionGet();
 
             /* Check if source still exists*/
         try{
-        GetResponse response = elasticSearchInitializer.client.prepareGet("ortest_person", "person", id).execute().get();
+        GetResponse response = elasticSearchInitializer.client.prepareGet("wishlist_service", "wishlist", id).execute().get();
         if(!response.isSourceEmpty()) {
             LOGGER.info("Delete Error:" + response);
         }

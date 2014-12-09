@@ -25,23 +25,14 @@ public class ElasticSearchDeleteDataLayerFactory implements FactoryBean<ElasticS
 
     public ElasticSearchDeleteDataLayer es;
 
-    public ElasticSearchConfig elasticSearchConfig;
-    public ConcurrentHashMap<String, Config> cachedConfigMap;
+    private ElasticSearchInitializer elasticSearchInitializer;
 
 	public ElasticSearchDeleteDataLayer getObject() throws Exception
     {
         es =  new ElasticSearchDeleteDataLayer();
-        cachedConfigMap = new ConcurrentHashMap<String, Config>();
-        LOGGER.info("elasticSearchConfig: "+elasticSearchConfig.getConfig());
-        cachedConfigMap.putIfAbsent(elasticSearchConfig.getConfig(),
-                ConfigFactory.parseFile(new File(elasticSearchConfig.getConfig()))) ;
+        es.elasticSearchInitializer = elasticSearchInitializer;
 
-
-        //LOGGER.info("elasticSearchConfig: "+ es.cachedConfigMap.get("config.infra.es.conf").getString("cluster.name"));
-       // es.initialise(cachedConfigMap.get("config.infra.es.conf"));
-        es.elasticSearchInitializer = ElasticSearchInitializer.getInstance( cachedConfigMap.get("config.infra.es.conf"));
         LOGGER.info("elasticSearchConfig: "+es);
-
         return es;
     }
 
@@ -55,8 +46,11 @@ public class ElasticSearchDeleteDataLayerFactory implements FactoryBean<ElasticS
 	    return true;
     }
 
-    public void setElasticSearchConfig(ElasticSearchConfig elasticSearchConfig)
-    {
-        this.elasticSearchConfig=elasticSearchConfig;
+    public ElasticSearchInitializer getElasticSearchInitializer() {
+        return elasticSearchInitializer;
+    }
+
+    public void setElasticSearchInitializer(ElasticSearchInitializer elasticSearchInitializer) {
+        this.elasticSearchInitializer = elasticSearchInitializer;
     }
 }
