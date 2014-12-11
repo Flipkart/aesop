@@ -111,6 +111,8 @@
 								<copy file="target/classes/project.properties" 
 									tofile="distribution/resources/external/project.properties.snapshot"
 									overwrite="true" />
+								<copy file="src/main/start.sh"
+                                                                        tofile="distribution/start.sh"/>
 							</tasks>
 						</configuration>
 						<goals>
