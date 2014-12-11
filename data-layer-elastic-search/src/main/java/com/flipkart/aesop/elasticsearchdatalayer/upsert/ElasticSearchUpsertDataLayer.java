@@ -49,6 +49,7 @@ public class ElasticSearchUpsertDataLayer extends UpsertDestinationStoreOperatio
             }
         } catch (Exception e) {
             LOGGER.info("Create Error : " + e);
+            throw new RuntimeException("Server Down Error: Unable To get Host Information");
         }
     }
 

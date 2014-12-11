@@ -46,6 +46,7 @@ public class ElasticSearchDeleteDataLayer extends DeleteDestinationStoreOperatio
         catch(Exception e)
         {
             LOGGER.info("Delete Error:" + e);
+            throw new RuntimeException("Server Down Error: Unable To get Host Information");
         }
 
     }
