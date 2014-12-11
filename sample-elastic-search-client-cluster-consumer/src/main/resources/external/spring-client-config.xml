@@ -126,11 +126,9 @@
                         <prop key="databus.client.container.httpPort">11125</prop>
                         <prop key="databus.client.container.jmx.rmiEnabled">false</prop>
                         <prop key="databus.client.connectionDefaults.pullerRetries.initSleep">1</prop>
-                        <prop
-                                key="databus.client.connectionDefaults.pullerRetries.maxRetryNum">-1</prop>
+                        <prop key="databus.client.connectionDefaults.pullerRetries.maxRetryNum">-1</prop>
                         <prop key="databus.client.checkpointPersistence.clearBeforeUse">false</prop>
-                        <prop
-                                key="databus.client.connectionDefaults.enablePullerMessageQueueLogging">false</prop>
+                        <prop key="databus.client.connectionDefaults.enablePullerMessageQueueLogging">false</prop>
                     </props>
                 </property>
             </bean>

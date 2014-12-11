@@ -160,7 +160,6 @@ public abstract class AbstractEventConsumer extends AbstractDatabusCombinedConsu
 		{
 			event = decodeSourceEvent(dbusEvent, eventDecoder);
 			LOGGER.info("Event : " + event.toString()); // Log Properly
-
 		}
 		catch (DatabusException ex)
 		{
