@@ -16,8 +16,8 @@
 		<property name="mapper" ref="defaultMapperImpl" />
 		<property name="destStoreOperationsMap">
 			<map>
-				<entry key-ref="upsertDbusOpCode" value-ref="consoleAppenderUpsertDataLayer" />
-				<entry key-ref="deleteDbusOpCode" value-ref="consoleAppenderDeleteDataLayer" />
+				<entry key-ref="upsertDbusOpCode" value-ref="elasticSearchUpsertDataLayer" />
+				<entry key-ref="deleteDbusOpCode" value-ref="elasticSearchDeleteDataLayer" />
 			</map>
 		</property>
 		<property name="sourceEventFactory" ref="sourceEventFactory" />
@@ -31,7 +31,7 @@
 
 	<bean id="defaultMapperImpl"
 		class="com.flipkart.aesop.mapper.implementation.DefaultMapperImpl">
-		<property name="configFilePath" value="../resources/application.conf" />
+		<property name="configFilePath" value="resources/application.conf" />
 		<property name="configRoot" value="MAPPER_CONFIG" />
 		<property name="mapperConfig" ref="mapperConfig" />
 		<property name="mapperTypeList">
@@ -71,13 +71,23 @@
 	<bean id="sourceEventFactory"
 		class="com.flipkart.aesop.event.implementation.SourceEventFactory" />
 
-	<bean id="consoleAppenderUpsertDataLayer"
-		class="com.flipkart.aesop.consoleappenderdatalayer.upsert.ConsoleAppenderUpsertDataLayerFactory">
+	<bean id="elasticSearchUpsertDataLayer"
+		class="com.flipkart.aesop.elasticsearchdatalayer.upsert.ElasticSearchUpsertDataLayerFactory">
+        <property name="elasticSearchDataLayerClient" ref="elasticSearchDataLayerClient"/>
 	</bean>
 
-	<bean id="consoleAppenderDeleteDataLayer"
-		class="com.flipkart.aesop.consoleappenderdatalayer.delete.ConsoleAppenderDeleteDataLayerFactory">
+	<bean id="elasticSearchDeleteDataLayer"
+		class="com.flipkart.aesop.elasticsearchdatalayer.delete.ElasticSearchDeleteDataLayerFactory">
+        <property name="elasticSearchDataLayerClient" ref="elasticSearchDataLayerClient"/>
 	</bean>
+
+    <bean id="elasticSearchDataLayerClient" class="com.flipkart.aesop.elasticsearchdatalayer.config.ElasticSearchDataLayerClient">
+        <property name="elasticSearchConfig" ref="elasticSearchConfig"/>
+    </bean>
+
+    <bean id="elasticSearchConfig" class="com.flipkart.aesop.elasticsearchdatalayer.config.ElasticSearchConfig">
+        <constructor-arg value="config.infra.es.conf" />
+    </bean>
 
 	<bean id="sampleClient"
 		class="com.flipkart.aesop.runtime.clusterclient.DefaultClusterClientFactory">
@@ -98,7 +108,7 @@
 					</property>
 					<property name="logicalSources">
 						<list value-type="java.lang.String">
-							<value>com.flipkart.aesop.events.ortest.Person</value>
+                            <value>com.flipkart.aesop.events.or_test.person</value>
 						</list>
 					</property>
 				</bean>
@@ -130,10 +140,10 @@
 				<bean class="com.flipkart.aesop.runtime.config.RelayClientConfig">
 					<property name="relayId" value="1" />
 					<property name="relayHost" value="localhost" />
-					<property name="relayPort" value="25021" />
+					<property name="relayPort" value="25022" />
 					<property name="relayLogicalSourceNames">
 						<list value-type="java.lang.String">
-							<value>com.flipkart.aesop.events.ortest.Person</value>
+                            <value>com.flipkart.aesop.events.or_test.person</value>
 						</list>
 					</property>
 				</bean>
