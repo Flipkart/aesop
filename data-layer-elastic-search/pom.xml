@@ -5,9 +5,36 @@
         <artifactId>aesop</artifactId>
         <version>1.0.8-SNAPSHOT</version>
     </parent>
+  <groupId>com.flipkart.aesop</groupId>
   <artifactId>data-layer-elastic-search</artifactId>
   <name>Elastic Search Data Layer</name>
   <description>Elastic Search Data Layer</description>
+
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    <distributionManagement>
+        <repository>
+            <id>clojars</id>
+            <name>Clojars repository</name>
+            <url>https://clojars.org/repo</url>
+        </repository>
+    </distributionManagement>
+    <scm>
+        <url>https://github.com/Flipkart/aesop</url>
+        <connection>https://github.com/Flipkart/aesop.git</connection>
+    </scm>
+    <developers>
+        <developer>
+            <id>pratyay-banerjee</id>
+            <name>Pratyay Banerjee</name>
+            <email>pratyay.ju55@gmail.com</email>
+        </developer>
+    </developers>
   
   <dependencies>
   		<dependency>
