@@ -59,15 +59,16 @@ public class ElasticSearchDataLayerClient implements InitializingBean
         String hostListStr = StringUtils.collectionToDelimitedString(hosts, ",");
 
         LOGGER.info("HOST LIST : {} ", hostListStr);
-        Settings.Builder settings = ImmutableSettings.settingsBuilder()
-                .put("cluster.name", config.getString("cluster.name")) /* Cluster Name Type : String */
-                .put("node.name", hostname.replace('.', '-'))
-                .put("node.data", false)
-                .put("node.local", Boolean.parseBoolean(String.valueOf(config.getBoolean("isLocal")))) /* Whether Its local Type : boolean */
-                .put("network.host", hostname);
 
-        Node node = nodeBuilder().local(Boolean.parseBoolean(String.valueOf(config.getBoolean("isLocal"))))
-                .clusterName(String.valueOf(config.getString("cluster.name"))).client(true).settings(settings).node();
+        Settings.Builder settings = ImmutableSettings.settingsBuilder()
+                .put("cluster.name",config.getString("cluster.name"))
+                .put("node.name", hostname.replace('.', '-'))
+                .put("network.host", hostname)
+                .put("node.data",false)
+                .put("node.local",false);
+
+        Node node = nodeBuilder().clusterName(config.getString("cluster.name")).client(true).local(false).settings(settings).node();
+        node.start();
 
         this.client = node.client();
     }

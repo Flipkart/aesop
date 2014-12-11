@@ -89,81 +89,81 @@
         <constructor-arg value="config.infra.es.conf" />
     </bean>
 
-	<bean id="sampleClient"
-		class="com.flipkart.aesop.runtime.clusterclient.DefaultClusterClientFactory">
-		<property name="clientClusterConfig" ref="clientClusterConfig" />
-		<property name="clusterRegistrations">
-			<list>
-				<bean class="com.flipkart.aesop.runtime.config.ClusterRegistration">
-					<property name="clusterName" value="pz_console_appender_cluster" />
-					<property name="consumerFactory">
-						<bean class="com.flipkart.aesop.eventconsumer.ConsumerFactory">
-							<property name="eventConsumerFactoryList">
-								<list>
-									<ref bean="defaultEventConsumerFactory" />
-								</list>
-							</property>
-							<property name="totalDestinationGroups" value="1" />
-						</bean>
-					</property>
-					<property name="logicalSources">
-						<list value-type="java.lang.String">
-                            <value>com.flipkart.aesop.events.or_test.person</value>
-						</list>
-					</property>
-				</bean>
-			</list>
-		</property>
-	</bean>
+    <bean id="sampleClient"
+          class="com.flipkart.aesop.runtime.clusterclient.DefaultClusterClientFactory">
+        <property name="clientClusterConfig" ref="clientClusterConfig" />
+        <property name="clusterRegistrations">
+            <list>
+                <bean class="com.flipkart.aesop.runtime.config.ClusterRegistration">
+                    <property name="clusterName" value="pz_elastic_search_cluster" />
+                    <property name="consumerFactory">
+                        <bean class="com.flipkart.aesop.eventconsumer.ConsumerFactory">
+                            <property name="eventConsumerFactoryList">
+                                <list>
+                                    <ref bean="defaultEventConsumerFactory" />
+                                </list>
+                            </property>
+                            <property name="totalDestinationGroups" value="1" />
+                        </bean>
+                    </property>
+                    <property name="logicalSources">
+                        <list value-type="java.lang.String">
+                            <value>com.flipkart.aesop.events.ortest.Person</value>
+                        </list>
+                    </property>
+                </bean>
+            </list>
+        </property>
+    </bean>
 
-	<bean id="clientClusterConfig" class="com.flipkart.aesop.runtime.config.ClientClusterConfig">
-		<property name="clientProperties">
-			<bean id="clientPropertiesFactory"
-				class="org.springframework.beans.factory.config.PropertiesFactoryBean">
-				<property name="singleton" value="true" />
-				<property name="properties">
-					<props>
-						<prop key="databus.client.container.httpPort">11125</prop>
-						<prop key="databus.client.container.jmx.rmiEnabled">false</prop>
-						<prop key="databus.client.connectionDefaults.pullerRetries.initSleep">1</prop>
-						<prop
-							key="databus.client.connectionDefaults.pullerRetries.maxRetryNum">-1</prop>
-						<prop key="databus.client.checkpointPersistence.clearBeforeUse">false</prop>
-						<prop
-							key="databus.client.connectionDefaults.enablePullerMessageQueueLogging">false</prop>
-					</props>
-				</property>
-			</bean>
-		</property>
-		<property name="relayClientConfigs">
-			<list>
-				<bean class="com.flipkart.aesop.runtime.config.RelayClientConfig">
-					<property name="relayId" value="1" />
-					<property name="relayHost" value="localhost" />
-					<property name="relayPort" value="25022" />
-					<property name="relayLogicalSourceNames">
-						<list value-type="java.lang.String">
-                            <value>com.flipkart.aesop.events.or_test.person</value>
-						</list>
-					</property>
-				</bean>
-			</list>
-		</property>
-		<property name="clusterInfoConfigs">
-			<list>
-				<bean class="com.flipkart.aesop.runtime.config.ClusterInfoConfig">
-					<property name="id" value="1" />
-					<property name="clusterName" value="pz_console_appender_cluster" />
-					<property name="zkAddr" value="localhost:2181" />
-					<property name="numPartitions" value="2" />
-					<property name="quorum" value="1" />
-					<property name="zkSessionTimeoutMs" value="3000" />
-					<property name="zkConnectionTimeoutMs" value="3000" />
-					<property name="checkpointIntervalMs" value="300000" />
-				</bean>
-			</list>
-		</property>
+    <bean id="clientClusterConfig" class="com.flipkart.aesop.runtime.config.ClientClusterConfig">
+        <property name="clientProperties">
+            <bean id="clientPropertiesFactory"
+                  class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+                <property name="singleton" value="true" />
+                <property name="properties">
+                    <props>
+                        <prop key="databus.client.container.httpPort">11125</prop>
+                        <prop key="databus.client.container.jmx.rmiEnabled">false</prop>
+                        <prop key="databus.client.connectionDefaults.pullerRetries.initSleep">1</prop>
+                        <prop
+                                key="databus.client.connectionDefaults.pullerRetries.maxRetryNum">-1</prop>
+                        <prop key="databus.client.checkpointPersistence.clearBeforeUse">false</prop>
+                        <prop
+                                key="databus.client.connectionDefaults.enablePullerMessageQueueLogging">false</prop>
+                    </props>
+                </property>
+            </bean>
+        </property>
+        <property name="relayClientConfigs">
+            <list>
+                <bean class="com.flipkart.aesop.runtime.config.RelayClientConfig">
+                    <property name="relayId" value="1" />
+                    <property name="relayHost" value="localhost" />
+                    <property name="relayPort" value="25021" />
+                    <property name="relayLogicalSourceNames">
+                        <list value-type="java.lang.String">
+                            <value>com.flipkart.aesop.events.ortest.Person</value>
+                        </list>
+                    </property>
+                </bean>
+            </list>
+        </property>
+        <property name="clusterInfoConfigs">
+            <list>
+                <bean class="com.flipkart.aesop.runtime.config.ClusterInfoConfig">
+                    <property name="id" value="1" />
+                    <property name="clusterName" value="pz_elastic_search_cluster" />
+                    <property name="zkAddr" value="localhost:2181" />
+                    <property name="numPartitions" value="2" />
+                    <property name="quorum" value="1" />
+                    <property name="zkSessionTimeoutMs" value="3000" />
+                    <property name="zkConnectionTimeoutMs" value="3000" />
+                    <property name="checkpointIntervalMs" value="300000" />
+                </bean>
+            </list>
+        </property>
 
-		<property name="checkpointDirectoryLocation" value="../../data-dir/client_checkpoint_directory" />
-	</bean>
+        <property name="checkpointDirectoryLocation" value="../../data-dir/client_checkpoint_directory" />
+    </bean>
 </beans>
