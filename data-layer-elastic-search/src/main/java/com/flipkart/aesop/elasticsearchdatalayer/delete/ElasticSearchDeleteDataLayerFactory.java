@@ -1,12 +1,8 @@
 package com.flipkart.aesop.elasticsearchdatalayer.delete;
 
 
-import com.flipkart.aesop.elasticsearchdatalayer.config.ElasticSearchInitializer;
+import com.flipkart.aesop.elasticsearchdatalayer.config.ElasticSearchDataLayerClient;
 import org.springframework.beans.factory.FactoryBean;
-
-import org.trpr.platform.core.impl.logging.LogFactory;
-import org.trpr.platform.core.spi.logging.Logger;
-
 
 
 /**
@@ -15,37 +11,34 @@ import org.trpr.platform.core.spi.logging.Logger;
  */
 public class ElasticSearchDeleteDataLayerFactory implements FactoryBean<ElasticSearchDeleteDataLayer>
 {
-    private static final Logger LOGGER = LogFactory.getLogger(ElasticSearchDeleteDataLayerFactory.class);
+    /* Data Layer Client */
+    private ElasticSearchDataLayerClient elasticSearchDataLayerClient;
 
-    public ElasticSearchDeleteDataLayer elasticSearchDeleteDataLayer;
-
-    private ElasticSearchInitializer elasticSearchInitializer;
-
-	public ElasticSearchDeleteDataLayer getObject() throws Exception
+    public ElasticSearchDeleteDataLayer getObject() throws Exception
     {
-        elasticSearchDeleteDataLayer =  new ElasticSearchDeleteDataLayer();
+        ElasticSearchDeleteDataLayer  elasticSearchDeleteDataLayer =  new ElasticSearchDeleteDataLayer();
 
-        //set the elasticSearchInitializer
-        elasticSearchDeleteDataLayer.elasticSearchInitializer = elasticSearchInitializer;
+        /* set the elasticSearchDataLayerClient */
+        elasticSearchDeleteDataLayer.setElasticSearchDataLayerClient(elasticSearchDataLayerClient);
 
         return elasticSearchDeleteDataLayer;
     }
 
-	public Class<?> getObjectType()
-    {
-	    return ElasticSearchDeleteDataLayer.class;
+    public Class<?> getObjectType() {
+        return ElasticSearchDeleteDataLayer.class;
     }
 
-	public boolean isSingleton()
-    {
-	    return true;
+    public boolean isSingleton() {
+        return true;
     }
 
-    public ElasticSearchInitializer getElasticSearchInitializer() {
-        return elasticSearchInitializer;
+    /* Getters and Setters Start */
+    public ElasticSearchDataLayerClient getElasticSearchDataLayerClient() {
+        return elasticSearchDataLayerClient;
     }
 
-    public void setElasticSearchInitializer(ElasticSearchInitializer elasticSearchInitializer) {
-        this.elasticSearchInitializer = elasticSearchInitializer;
+    public void setElasticSearchDataLayerClient(ElasticSearchDataLayerClient elasticSearchDataLayerClient) {
+        this.elasticSearchDataLayerClient = elasticSearchDataLayerClient;
     }
+    /* Getters and Setters End */
 }

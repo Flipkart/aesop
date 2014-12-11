@@ -8,7 +8,8 @@ package com.flipkart.aesop.elasticsearchdatalayer.config;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
-public class ElasticSearchConfig implements  InitializingBean{
+public class ElasticSearchConfig implements  InitializingBean
+{
     public String config;
 
     public ElasticSearchConfig(String config)
@@ -24,7 +25,7 @@ public class ElasticSearchConfig implements  InitializingBean{
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        //Assert if filename is ot empty
+        /* Assert if filename is ot empty */
         Assert.notNull(this.config,"'ElasticSearchConfig' cannot be null. This Databus Client will not be initialized");
     }
 }

@@ -1,7 +1,8 @@
 package com.flipkart.aesop.elasticsearchdatalayer.delete;
 
-import com.flipkart.aesop.elasticsearchdatalayer.config.ElasticSearchInitializer;
+import com.flipkart.aesop.elasticsearchdatalayer.config.ElasticSearchDataLayerClient;
 import org.elasticsearch.action.get.GetResponse;
+import org.elasticsearch.client.Client;
 import org.trpr.platform.core.impl.logging.LogFactory;
 import org.trpr.platform.core.spi.logging.Logger;
 
@@ -17,35 +18,41 @@ import com.linkedin.databus.core.DbusOpcode;
  */
 public class ElasticSearchDeleteDataLayer extends DeleteDestinationStoreOperation
 {
-
     /** Logger for this class*/
     private static final Logger LOGGER = LogFactory.getLogger(ElasticSearchDeleteDataLayer.class);
 
-     /* ES Initializer Client. */
+    /* ES Data Layer Client. */
+    private ElasticSearchDataLayerClient elasticSearchDataLayerClient;
 
-    public ElasticSearchInitializer elasticSearchInitializer;
-
-	@Override
-	protected void delete(AbstractEvent event)
-	{
-		LOGGER.info("Received Delete Event. Event is " + event);
+    @Override
+    protected void delete(AbstractEvent event)
+    {
+        LOGGER.info("Received Delete Event. Event is " + event);
         String id = String.valueOf(event.getFieldMapPair().get("id"));
         /* Prepare Delete Request and execute */
-        elasticSearchInitializer.client.prepareDelete(elasticSearchInitializer.getNamespace(), elasticSearchInitializer.getIndex(),id)
+        elasticSearchDataLayerClient.getClient().prepareDelete(elasticSearchDataLayerClient.getIndex(),
+                elasticSearchDataLayerClient.getType(), id)
                 .execute()
                 .actionGet();
 
-            /* Check if source still exists*/
+        /* Check if source still exists*/
         try{
-        GetResponse response = elasticSearchInitializer.client.prepareGet(elasticSearchInitializer.getNamespace(),elasticSearchInitializer.getIndex(), id).execute().get();
-        if(!response.isSourceEmpty()) {
-            LOGGER.info("Delete Error:" + response);
-        }
+            GetResponse response = elasticSearchDataLayerClient.getClient().prepareGet(elasticSearchDataLayerClient.getIndex(),
+                    elasticSearchDataLayerClient.getType(), id).execute().get();
+            if(!response.isSourceEmpty()) {
+                LOGGER.info("Delete Error:" + response);
+            }
         }
         catch(Exception e)
         {
             LOGGER.info("Delete Error:" + e);
         }
 
-	}
+    }
+
+    /* Getters and Setters start */
+    public void setElasticSearchDataLayerClient(ElasticSearchDataLayerClient elasticSearchDataLayerClient) {
+        this.elasticSearchDataLayerClient = elasticSearchDataLayerClient;
+    }
+    /* Getters and Setters end */
 }

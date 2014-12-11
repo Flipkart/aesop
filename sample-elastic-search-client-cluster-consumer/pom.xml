@@ -113,6 +113,8 @@
 									overwrite="true" />
 								<copy file="src/main/config.infra.es.conf"
 									tofile="distribution/config.infra.es.conf" />
+								<copy file="src/main/start.sh"
+                                                                        tofile="distribution/start.sh" />
 							</tasks>
 						</configuration>
 						<goals>
