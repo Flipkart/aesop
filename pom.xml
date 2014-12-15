@@ -104,6 +104,7 @@
         <module>data-layer-mysql</module>
         <module>data-layer-console-appender</module>
         <module>sample-console-appender-client-cluster-consumer</module>
+        <module>sample-hbase-client-cluster-consumer</module>
     </modules>
 
 </project>
