@@ -7,12 +7,12 @@
     <parent>
         <groupId>com.flipkart.aesop</groupId>
         <artifactId>aesop</artifactId>
-        <version>1.0.8-SNAPSHOT</version>
+        <version>1.0.9-SNAPSHOT</version>
     </parent>
 
     <groupId>com.flipkart.aesop</groupId>
     <artifactId>sample-client-bootstrap-producer</artifactId>
-    <version>1.0.8-SNAPSHOT</version>
+    <version>1.0.9-SNAPSHOT</version>
     <name>Sample Client Bootstrap Producer</name>
     <description>Sample Client Bootstrap Producer</description>
 
@@ -50,7 +50,7 @@
         <dependency>
             <groupId>com.flipkart.aesop</groupId>
             <artifactId>runtime-client-bootstrap-producer</artifactId>
-            <version>1.0.8-SNAPSHOT</version>
+            <version>1.0.9-SNAPSHOT</version>
         </dependency>    
     </dependencies>
 
