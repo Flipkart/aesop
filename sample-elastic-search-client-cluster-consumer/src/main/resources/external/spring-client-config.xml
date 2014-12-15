@@ -73,15 +73,15 @@
 
 	<bean id="elasticSearchUpsertDataLayer"
 		class="com.flipkart.aesop.elasticsearchdatalayer.upsert.ElasticSearchUpsertDataLayerFactory">
-        <property name="elasticSearchDataLayerClient" ref="elasticSearchDataLayerClient"/>
+        <property name="elasticSearchClient" ref="elasticSearchClient"/>
 	</bean>
 
 	<bean id="elasticSearchDeleteDataLayer"
 		class="com.flipkart.aesop.elasticsearchdatalayer.delete.ElasticSearchDeleteDataLayerFactory">
-        <property name="elasticSearchDataLayerClient" ref="elasticSearchDataLayerClient"/>
+        <property name="elasticSearchClient" ref="elasticSearchClient"/>
 	</bean>
 
-    <bean id="elasticSearchDataLayerClient" class="com.flipkart.aesop.elasticsearchdatalayer.config.ElasticSearchDataLayerClient">
+    <bean id="elasticSearchClient" class="com.flipkart.aesop.elasticsearchdatalayer.elasticsearchclient.ElasticSearchTransportClient">
         <property name="elasticSearchConfig" ref="elasticSearchConfig"/>
     </bean>
 

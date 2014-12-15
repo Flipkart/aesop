@@ -1,11 +1,22 @@
+/*******************************************************************************
+ *
+ * Copyright 2012-2015, the original author or authors.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obta a copy of the License at
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ *******************************************************************************/
 package com.flipkart.aesop.elasticsearchdatalayer.upsert;
 
-
-import com.flipkart.aesop.elasticsearchdatalayer.config.ElasticSearchDataLayerClient;
-
+import com.flipkart.aesop.elasticsearchdatalayer.elasticsearchclient.ElasticSearchClient;
 import org.trpr.platform.core.impl.logging.LogFactory;
 import org.trpr.platform.core.spi.logging.Logger;
-
 import com.flipkart.aesop.destinationoperation.UpsertDestinationStoreOperation;
 import com.flipkart.aesop.event.AbstractEvent;
 import com.linkedin.databus.core.DbusOpcode;
@@ -22,7 +33,7 @@ public class ElasticSearchUpsertDataLayer extends UpsertDestinationStoreOperatio
     private static final Logger LOGGER = LogFactory.getLogger(ElasticSearchUpsertDataLayer.class);
 
     /* ES Initializer Client. */
-    private ElasticSearchDataLayerClient elasticSearchDataLayerClient;
+    private ElasticSearchClient elasticSearchClient;
 
     @Override
     protected void upsert(AbstractEvent event)
@@ -34,13 +45,13 @@ public class ElasticSearchUpsertDataLayer extends UpsertDestinationStoreOperatio
         try {
             String id = String.valueOf(event.getFieldMapPair().get("id"));
             //delete if "id" exists
-            elasticSearchDataLayerClient.getClient().prepareDelete(elasticSearchDataLayerClient.getIndex(),
-                    elasticSearchDataLayerClient.getType(), id)
+            elasticSearchClient.getClient().prepareDelete(elasticSearchClient.getIndex(),
+                    elasticSearchClient.getType(), id)
                     .execute()
                     .actionGet();
             //create the new id
-            IndexResponse response = elasticSearchDataLayerClient.getClient().prepareIndex(elasticSearchDataLayerClient.getIndex(),
-                    elasticSearchDataLayerClient.getType(), id)
+            IndexResponse response = elasticSearchClient.getClient().prepareIndex(elasticSearchClient.getIndex(),
+                    elasticSearchClient.getType(), id)
                     .setSource(event.getFieldMapPair())
                     .execute()
                     .get();
@@ -54,8 +65,8 @@ public class ElasticSearchUpsertDataLayer extends UpsertDestinationStoreOperatio
     }
 
     /* Getters and Setters start */
-    public void setElasticSearchDataLayerClient(ElasticSearchDataLayerClient elasticSearchDataLayerClient) {
-        this.elasticSearchDataLayerClient = elasticSearchDataLayerClient;
+    public void setElasticSearchClient(ElasticSearchClient elasticSearchClient) {
+        this.elasticSearchClient = elasticSearchClient;
     }
     /* Getters and Setters end */
 }
