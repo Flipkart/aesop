@@ -22,6 +22,8 @@ import com.flipkart.aesop.event.AbstractEvent;
 import com.linkedin.databus.core.DbusOpcode;
 import org.elasticsearch.action.index.IndexResponse;
 
+import java.util.Map;
+
 /**
  * ElasticSearch Upsert Data Layer. Persists {@link DbusOpcode#UPSERT} events to Logs.
  * @author Pratyay Banerjee
@@ -52,7 +54,7 @@ public class ElasticSearchUpsertDataLayer extends UpsertDestinationStoreOperatio
             //create the new id
             IndexResponse response = elasticSearchClient.getClient().prepareIndex(elasticSearchClient.getIndex(),
                     elasticSearchClient.getType(), id)
-                    .setSource(event.getFieldMapPair())
+                    .setSource(transform(event.getFieldMapPair()))
                     .execute()
                     .get();
             if(!response.isCreated())  {
@@ -62,6 +64,15 @@ public class ElasticSearchUpsertDataLayer extends UpsertDestinationStoreOperatio
             LOGGER.info("Create Error : " + e);
             throw new RuntimeException("Server Down Error: Unable To get Host Information");
         }
+    }
+
+    /**  transform() converts the Input data to Target Data Map, which can be customised as per user's need
+     *
+     * @param input
+     * @return
+     */
+    protected  Map<String,Object> transform(Map<String,Object> input) {
+        return input;
     }
 
     /* Getters and Setters start */
