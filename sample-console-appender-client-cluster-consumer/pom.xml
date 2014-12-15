@@ -108,11 +108,11 @@
 									tofile="distribution/resources/application.conf"/>
 								<copy file="target/sample-console-appender-client-cluster-consumer-${project.version}.jar"
 									 toDir="distribution/lib" overwrite="true" />
-								<copy file="target/classes/project.properties" 
-									tofile="distribution/resources/external/project.properties.snapshot"
-									overwrite="true" />
-								<copy file="src/main/start.sh"
-                                                                        tofile="distribution/start.sh"/>
+                                <copy file="target/classes/project.properties"
+                                      tofile="distribution/resources/external/project.properties.snapshot"
+                                      overwrite="true" />
+                                <copy file="src/main/start.sh"
+                                      tofile="distribution/start.sh" />
 							</tasks>
 						</configuration>
 						<goals>

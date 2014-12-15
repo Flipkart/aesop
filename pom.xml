@@ -103,7 +103,9 @@
         <module>data-layer-hbase</module>
         <module>data-layer-mysql</module>
         <module>data-layer-console-appender</module>
-        <module>sample-console-appender-client-cluster-consumer</module>
+        <module>data-layer-elastic-search</module>
+	<module>sample-console-appender-client-cluster-consumer</module>
+	<module>sample-elastic-search-client-cluster-consumer</module>   
     </modules>
 
 </project>

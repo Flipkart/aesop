@@ -1,6 +1,20 @@
+/*******************************************************************************
+ *
+ * Copyright 2012-2015, the original author or authors.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obta a copy of the License at
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ *******************************************************************************/
 package com.flipkart.aesop.elasticsearchdatalayer.upsert;
 
-import com.flipkart.aesop.elasticsearchdatalayer.config.ElasticSearchDataLayerClient;
+import com.flipkart.aesop.elasticsearchdatalayer.elasticsearchclient.ElasticSearchClient;
 import org.springframework.beans.factory.FactoryBean;
 
 
@@ -11,14 +25,14 @@ import org.springframework.beans.factory.FactoryBean;
 public class ElasticSearchUpsertDataLayerFactory implements FactoryBean<ElasticSearchUpsertDataLayer>
 {
     /* Data Layer Client */
-    private ElasticSearchDataLayerClient elasticSearchDataLayerClient;
+    private ElasticSearchClient elasticSearchClient;
 
     public ElasticSearchUpsertDataLayer getObject() throws Exception
     {
         ElasticSearchUpsertDataLayer elasticSearchUpsertDataLayer =  new ElasticSearchUpsertDataLayer();
 
         /* set the elasticSearchDataLayerClient, initiates the elasticSearch server */
-        elasticSearchUpsertDataLayer.setElasticSearchDataLayerClient(elasticSearchDataLayerClient);
+        elasticSearchUpsertDataLayer.setElasticSearchClient(elasticSearchClient);
 
         return elasticSearchUpsertDataLayer;
     }
@@ -32,12 +46,12 @@ public class ElasticSearchUpsertDataLayerFactory implements FactoryBean<ElasticS
     }
 
     /* Getters and Setters Start */
-    public ElasticSearchDataLayerClient getElasticSearchDataLayerClient() {
-        return elasticSearchDataLayerClient;
+    public ElasticSearchClient getElasticSearchClient() {
+        return elasticSearchClient;
     }
 
-    public void setElasticSearchDataLayerClient(ElasticSearchDataLayerClient elasticSearchDataLayerClient) {
-        this.elasticSearchDataLayerClient = elasticSearchDataLayerClient;
+    public void setElasticSearchClient(ElasticSearchClient elasticSearchClient) {
+        this.elasticSearchClient = elasticSearchClient;
     }
     /* Getters and Setters End */
 }
