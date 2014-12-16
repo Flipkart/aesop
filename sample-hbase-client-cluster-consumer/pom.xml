@@ -249,36 +249,6 @@
 			<artifactId>log4j-over-slf4j</artifactId>
 			<version>1.7.5</version>
 		</dependency>
-
-		<!-- General Dependencies -->
-		<!-- Make sure we have all the antlr dependencies -->
-		<!-- <dependency> <groupId>org.antlr</groupId> <artifactId>antlr</artifactId> 
-			<version>${antlr.version}</version> </dependency> <dependency> <groupId>org.antlr</groupId> 
-			<artifactId>antlr-runtime</artifactId> <version>${antlr.version}</version> 
-			</dependency> <dependency> <groupId>jline</groupId> <artifactId>jline</artifactId> 
-			<version>2.11</version> </dependency> <dependency> <groupId>sqlline</groupId> 
-			<artifactId>sqlline</artifactId> <version>${sqlline.version}</version> </dependency> 
-			<dependency> <groupId>com.google.guava</groupId> <artifactId>guava</artifactId> 
-			<version>${guava.version}</version> </dependency> <dependency> <groupId>org.apache.flume</groupId> 
-			<artifactId>flume-ng-core</artifactId> <version>${flume.version}</version> 
-			</dependency> <dependency> <groupId>net.sourceforge.findbugs</groupId> <artifactId>annotations</artifactId> 
-			<version>${findbugs.version}</version> </dependency> <dependency> <groupId>org.xerial.snappy</groupId> 
-			<artifactId>snappy-java</artifactId> <version>${snappy.version}</version> 
-			</dependency> <dependency> <groupId>org.codehaus.jackson</groupId> <artifactId>jackson-core-asl</artifactId> 
-			<version>${jackson.version}</version> <scope>compile</scope> </dependency> 
-			<dependency> <groupId>org.codehaus.jackson</groupId> <artifactId>jackson-mapper-asl</artifactId> 
-			<version>${jackson.version}</version> <scope>compile</scope> </dependency> 
-			<dependency> <groupId>com.google.protobuf</groupId> <artifactId>protobuf-java</artifactId> 
-			<version>${protobuf-java.version}</version> </dependency> <dependency> <groupId>org.apache.httpcomponents</groupId> 
-			<artifactId>httpclient</artifactId> <version>4.0.1</version> </dependency> 
-			<dependency> <groupId>org.cloudera.htrace</groupId> <artifactId>htrace-core</artifactId> 
-			<version>${htrace.version}</version> </dependency> <dependency> <groupId>io.netty</groupId> 
-			<artifactId>netty</artifactId> <version>${netty.version}</version> </dependency> 
-			<dependency> <groupId>commons-codec</groupId> <artifactId>commons-codec</artifactId> 
-			<version>${commons-codec.version}</version> </dependency> <dependency> <groupId>commons-collections</groupId> 
-			<artifactId>commons-collections</artifactId> <version>${collections.version}</version> 
-			</dependency> <dependency> <groupId>joda-time</groupId> <artifactId>joda-time</artifactId> 
-			<version>${jodatime.version}</version> </dependency> -->
 	</dependencies>
 
 	<build>
@@ -412,31 +382,4 @@
 			</plugins>
 		</pluginManagement>
 	</build>
-	<profiles>
-		<profile>
-			<id>local</id>
-			<build>
-				<filters>
-					<filter>src/main/filters/local.properties</filter>
-				</filters>
-			</build>
-		</profile>
-		<profile>
-			<id>stage</id>
-			<build>
-				<filters>
-					<filter>src/main/filters/stage.properties</filter>
-				</filters>
-			</build>
-		</profile>
-
-		<profile>
-			<id>prod</id>
-			<build>
-				<filters>
-					<filter>src/main/filters/prod.properties</filter>
-				</filters>
-			</build>
-		</profile>
-	</profiles>
 </project>
