@@ -4,7 +4,7 @@
     <parent>
         <groupId>com.flipkart.aesop</groupId>
         <artifactId>aesop</artifactId>
-        <version>1.0.8-SNAPSHOT</version>
+        <version>1.0.9-SNAPSHOT</version>
     </parent>
 	<artifactId>sample-console-appender-client-cluster-consumer</artifactId>
 	<name>Sample Console Appender Client Cluster</name>
@@ -16,13 +16,13 @@
 		<dependency>
 			<groupId>com.flipkart.aesop</groupId>
 			<artifactId>runtime-client-cluster</artifactId>
-			<version>1.0.8-SNAPSHOT</version>
+			<version>1.0.9-SNAPSHOT</version>
 		</dependency>
 		
 		<dependency>
 			<groupId>com.flipkart.aesop</groupId>
 			<artifactId>data-layer-console-appender</artifactId>
-			<version>1.0.8-SNAPSHOT</version>
+			<version>1.0.9-SNAPSHOT</version>
 		</dependency>
 		
 	</dependencies>
@@ -108,11 +108,11 @@
 									tofile="distribution/resources/application.conf"/>
 								<copy file="target/sample-console-appender-client-cluster-consumer-${project.version}.jar"
 									 toDir="distribution/lib" overwrite="true" />
-								<copy file="target/classes/project.properties" 
-									tofile="distribution/resources/external/project.properties.snapshot"
-									overwrite="true" />
-								<copy file="src/main/start.sh"
-                                                                        tofile="distribution/start.sh"/>
+                                <copy file="target/classes/project.properties"
+                                      tofile="distribution/resources/external/project.properties.snapshot"
+                                      overwrite="true" />
+                                <copy file="src/main/start.sh"
+                                      tofile="distribution/start.sh" />
 							</tasks>
 						</configuration>
 						<goals>

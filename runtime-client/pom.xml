@@ -6,13 +6,13 @@
     <parent>
         <groupId>com.flipkart.aesop</groupId>
         <artifactId>aesop</artifactId>
-        <version>1.0.8-SNAPSHOT</version>
+        <version>1.0.9-SNAPSHOT</version>
     </parent>
 
     <groupId>com.flipkart.aesop</groupId>
     <artifactId>runtime-client</artifactId>
     <name>Client Runtime</name>
-    <version>1.0.8-SNAPSHOT</version>
+    <version>1.0.9-SNAPSHOT</version>
     <description>Client Runtime</description>
 
     <licenses>
@@ -85,7 +85,7 @@
         <dependency>
             <groupId>com.flipkart.aesop</groupId>
             <artifactId>runtime</artifactId>
-            <version>1.0.8-SNAPSHOT</version>
+            <version>1.0.9-SNAPSHOT</version>
         </dependency>    		    
     </dependencies>
 
