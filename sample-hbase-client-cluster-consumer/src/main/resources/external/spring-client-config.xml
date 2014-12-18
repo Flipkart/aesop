@@ -11,8 +11,8 @@
 		<property name="location" value="classpath:project.properties" />
 	</bean>
 
-	<bean id="defaultEventConsumerFactory1"
-		class="com.flipkart.payzippy.eventconsumer.implementation.DefaultEventConsumerFactoryBean">
+	<bean id="defaultEventConsumerFactory"
+		class="com.flipkart.aesop.eventconsumer.implementation.DefaultEventConsumerFactoryBean">
 		<property name="mapper" ref="defaultMapperImpl" />
 		<property name="destStoreOperationsMap">
 			<map>
@@ -26,28 +26,12 @@
 				<value>1</value>
 			</set>
 		</property>
-	</bean>
-
-	<bean id="defaultEventConsumerFactory2"
-		class="com.flipkart.payzippy.eventconsumer.implementation.DefaultEventConsumerFactoryBean">
-		<property name="mapper" ref="defaultMapperImpl" />
-		<property name="destStoreOperationsMap">
-			<map>
-				<entry key-ref="upsertDbusOpCode" value-ref="hBaseUpsertDataLayer" />
-				<entry key-ref="deleteDbusOpCode" value-ref="hBaseDeleteDataLayer" />
-			</map>
-		</property>
-		<property name="sourceEventFactory" ref="sourceEventFactory" />
-		<property name="destinationGroupSet">
-			<set>
-				<value>2</value>
-			</set>
-		</property>
+		<property name="totalDestinationGroups" value="1" />
 	</bean>
 
 	<bean id="defaultMapperImpl"
-		class="com.flipkart.payzippy.mapper.implementation.DefaultMapperImpl">
-		<property name="configFilePath" value="${MAPPER_CONFIG_FILE_PATH}" />
+		class="com.flipkart.aesop.mapper.implementation.DefaultMapperImpl">
+		<property name="configFilePath" value="resources/application.conf" />
 		<property name="configRoot" value="HBASE_CONFIG" />
 		<property name="mapperConfig" ref="mapperConfig" />
 		<property name="mapperTypeList">
@@ -67,52 +51,49 @@
 		static-field="com.linkedin.databus.core.DbusOpcode.DELETE" />
 
 	<bean id="mapperConfig"
-		class="com.flipkart.payzippy.mapper.config.implementation.MapperConfigImpl"
+		class="com.flipkart.aesop.mapper.config.implementation.MapperConfigImpl"
 		factory-method="getInstance" />
 
 	<util:constant id="noNamespaceEntityMapperType"
-		static-field="com.flipkart.payzippy.mapper.implementation.MapperType.MAP_WITHOUT_SOURCE_NAMESPACE_ENTITY_CONFIG" />
+		static-field="com.flipkart.aesop.mapper.implementation.MapperType.MAP_WITHOUT_SOURCE_NAMESPACE_ENTITY_CONFIG" />
 	<util:constant id="noEntityMapperType"
-		static-field="com.flipkart.payzippy.mapper.implementation.MapperType.MAP_WITHOUT_SOURCE_ENTITY_CONFIG" />
+		static-field="com.flipkart.aesop.mapper.implementation.MapperType.MAP_WITHOUT_SOURCE_ENTITY_CONFIG" />
 	<util:constant id="namespaceEntityMapperType"
-		static-field="com.flipkart.payzippy.mapper.implementation.MapperType.MAP_WITH_SOURCE_ENTITY_CONFIG" />
+		static-field="com.flipkart.aesop.mapper.implementation.MapperType.MAP_WITH_SOURCE_ENTITY_CONFIG" />
 
 	<bean id="defaultEventGroupFinder"
-		class="com.flipkart.payzippy.mapper.eventGroupFilter.implementation.DefaultEventGroupFinderImpl"
+		class="com.flipkart.aesop.mapper.eventGroupFilter.implementation.DefaultEventGroupFinderImpl"
 		factory-method="getInstance" />
 
 	<bean id="destinationEventFactory"
-		class="com.flipkart.payzippy.event.implementation.DestinationEventFactory" />
+		class="com.flipkart.aesop.event.implementation.DestinationEventFactory" />
 
 	<bean id="sourceEventFactory"
-		class="com.flipkart.payzippy.event.implementation.SourceEventFactory" />
+		class="com.flipkart.aesop.event.implementation.SourceEventFactory" />
 
-	<bean id="hbaseConfig" class="com.flipkart.payzippy.hbasedatalayer.config.HBaseConfig">
-		<constructor-arg type="java.lang.String" value="${HBASE_ZOOKEEPER_QUORUM}" />
-		<property name="hBaseZookeeperClientPort" value="${HBASE_ZOOKEEPER_CLIENT_PORT}" />
-		<property name="zookeeperZnodeParent" value="${HBASE_ZOOKEEPER_ZNODE_PARENT}" />
+	<bean id="hbaseConfig" class="com.flipkart.aesop.hbasedatalayer.config.HBaseConfig">
+		<constructor-arg type="java.lang.String" value="localhost" />
+		<property name="hBaseZookeeperClientPort" value="2181" />
+		<property name="zookeeperZnodeParent" value="/hbase" />
 	</bean>
 
 	<bean id="hBaseUpsertDataLayer"
-		class="com.flipkart.payzippy.hbasedatalayer.upsert.HBaseUpsertDataLayerFactory ">
+		class="com.flipkart.aesop.hbasedatalayer.upsert.HBaseUpsertDataLayerFactory ">
 		<property name="dataSourceMap" ref="dataSourceMap" />
 	</bean>
 
 	<bean id="hBaseDeleteDataLayer"
-		class="com.flipkart.payzippy.hbasedatalayer.delete.HBaseDeleteDataLayerFactory">
+		class="com.flipkart.aesop.hbasedatalayer.delete.HBaseDeleteDataLayerFactory">
 		<property name="dataSourceMap" ref="dataSourceMap" />
 	</bean>
 
 	<util:map id="dataSourceMap">
-		<entry key="">
-			<ref bean="dataSource1"></ref>
-		</entry>
-		<entry key="payment">
-			<ref bean="dataSource1"></ref>
+		<entry key="com.flipkart.aesop.events.ortest.person">
+			<ref bean="dataSource"></ref>
 		</entry>
 	</util:map>
 
-	<bean id="dataSource1" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
 		<property name="driverClass" value="org.apache.phoenix.jdbc.PhoenixDriver" />
 		<property name="jdbcUrl" value="#{hbaseConfig.getConnectionUrl()}" />
 		<property name="properties">
@@ -128,29 +109,14 @@
 		<property name="maxIdleTime" value="3600" />
 		<property name="idleConnectionTestPeriod" value="300" />
 		<property name="testConnectionOnCheckin" value="true" />
-		<property name="preferredTestQuery" value="select 1 from dual" />
+		<property name="preferredTestQuery" value="select 1 from PERSON" />
 	</bean>
 
 	<bean id="clusterRegistration" class="com.flipkart.aesop.runtime.config.ClusterRegistration"
 		abstract="true">
 		<property name="logicalSources">
 			<list value-type="java.lang.String">
-				<value>pz.payment.TransactionMaster</value>
-				<value>pz.payment.TransactionUserDetail</value>
-				<value>pz.payment.TransactionSaleDetail</value>
-				<value>pz.payment.TransactionAuditSummary</value>
-				<value>pz.payment.TransactionFingerprint</value>
-				<value>pz.payment.TransactionCardDetail</value>
-				<value>pz.payment.TransactionFraudStatus</value>
-				<value>pz.payment.TransactionPGResponse</value>
-				<value>pz.payment.PayZippyUserProfile</value>
-				<value>pz.payment.TransactionRefundPGTrack</value>
-				<value>pz.payment.TransactionRefundDetail</value>
-				<value>pz.payment.TransactionSettlement</value>
-				<value>pz.payment.TransactionPGTrack</value>
-				<value>pz.payment.RelatedTransaction</value>
-				<value>pz.payment.OfflineAdjustmentDetails</value>
-				<value>pz.payment.TransactionAdjustmentDetail</value>
+				<value>com.flipkart.aesop.events.ortest.Person</value>
 			</list>
 		</property>
 	</bean>
@@ -160,30 +126,22 @@
 		<property name="clientClusterConfig" ref="clientClusterConfig" />
 		<property name="clusterRegistrations">
 			<list>
-				<bean parent="clusterRegistration">
-					<property name="clusterName" value="pz_hbase_cluster_denormalized" />
+				<bean class="com.flipkart.aesop.runtime.config.ClusterRegistration">
+					<property name="clusterName" value="pz_hbase_cluster_person" />
 					<property name="consumerFactory">
-						<bean class="com.flipkart.payzippy.eventconsumer.ConsumerFactory">
+						<bean class="com.flipkart.aesop.eventconsumer.ConsumerFactory">
 							<property name="eventConsumerFactoryList">
 								<list>
-									<ref bean="defaultEventConsumerFactory1" />
+									<ref bean="defaultEventConsumerFactory" />
 								</list>
 							</property>
-							<property name="totalDestinationGroups" value="2" />
+							<property name="totalDestinationGroups" value="1" />
 						</bean>
 					</property>
-				</bean>
-				<bean parent="clusterRegistration">
-					<property name="clusterName" value="pz_hbase_cluster_onetoone" />
-					<property name="consumerFactory">
-						<bean class="com.flipkart.payzippy.eventconsumer.ConsumerFactory">
-							<property name="eventConsumerFactoryList">
-								<list>
-									<ref bean="defaultEventConsumerFactory2" />
-								</list>
-							</property>
-							<property name="totalDestinationGroups" value="2" />
-						</bean>
+					<property name="logicalSources">
+						<list value-type="java.lang.String">
+							<value>com.flipkart.aesop.events.ortest.Person</value>
+						</list>
 					</property>
 				</bean>
 			</list>
@@ -205,7 +163,6 @@
 						<prop key="databus.client.checkpointPersistence.clearBeforeUse">false</prop>
 						<prop
 							key="databus.client.connectionDefaults.enablePullerMessageQueueLogging">false</prop>
-						<prop key="databus.client.container.httpPort">11125</prop>
 					</props>
 				</property>
 			</bean>
@@ -214,26 +171,11 @@
 			<list>
 				<bean class="com.flipkart.aesop.runtime.config.RelayClientConfig">
 					<property name="relayId" value="1" />
-					<property name="relayHost" value="${RELAY_HOST}" />
+					<property name="relayHost" value="localhost" />
 					<property name="relayPort" value="25021" />
 					<property name="relayLogicalSourceNames">
 						<list value-type="java.lang.String">
-							<value>pz.payment.TransactionMaster</value>
-							<value>pz.payment.TransactionUserDetail</value>
-							<value>pz.payment.TransactionSaleDetail</value>
-							<value>pz.payment.TransactionAuditSummary</value>
-							<value>pz.payment.TransactionFingerprint</value>
-							<value>pz.payment.TransactionCardDetail</value>
-							<value>pz.payment.TransactionFraudStatus</value>
-							<value>pz.payment.TransactionPGResponse</value>
-							<value>pz.payment.PayZippyUserProfile</value>
-							<value>pz.payment.TransactionRefundPGTrack</value>
-							<value>pz.payment.TransactionRefundDetail</value>
-							<value>pz.payment.TransactionSettlement</value>
-							<value>pz.payment.TransactionPGTrack</value>
-							<value>pz.payment.RelatedTransaction</value>
-							<value>pz.payment.OfflineAdjustmentDetails</value>
-							<value>pz.payment.TransactionAdjustmentDetail</value>
+							<value>com.flipkart.aesop.events.ortest.Person</value>
 						</list>
 					</property>
 				</bean>
@@ -243,19 +185,9 @@
 			<list>
 				<bean class="com.flipkart.aesop.runtime.config.ClusterInfoConfig">
 					<property name="id" value="1" />
-					<property name="clusterName" value="pz_hbase_cluster_denormalized" />
-					<property name="zkAddr" value="${ZK_ADDR}" />
-					<property name="numPartitions" value="${NUM_PARTITIONS}" />
-					<property name="quorum" value="1" />
-					<property name="zkSessionTimeoutMs" value="60000" />
-					<property name="zkConnectionTimeoutMs" value="60000" />
-					<property name="checkpointIntervalMs" value="300000" />
-				</bean>
-				<bean class="com.flipkart.aesop.runtime.config.ClusterInfoConfig">
-					<property name="id" value="2" />
-					<property name="clusterName" value="pz_hbase_cluster_onetoone" />
-					<property name="zkAddr" value="${ZK_ADDR}" />
-					<property name="numPartitions" value="${NUM_PARTITIONS}" />
+					<property name="clusterName" value="pz_hbase_cluster_person" />
+					<property name="zkAddr" value="localhost:2181" />
+					<property name="numPartitions" value="2" />
 					<property name="quorum" value="1" />
 					<property name="zkSessionTimeoutMs" value="60000" />
 					<property name="zkConnectionTimeoutMs" value="60000" />
@@ -264,6 +196,6 @@
 			</list>
 		</property>
 
-		<property name="checkpointDirectoryLocation" value="${CHECKPOINT_DIR_LOCATION}" /> <!-- This is relative to projects root -->
+		<property name="checkpointDirectoryLocation" value="../../data-dir/client_checkpoint_directory" />
 	</bean>
 </beans>

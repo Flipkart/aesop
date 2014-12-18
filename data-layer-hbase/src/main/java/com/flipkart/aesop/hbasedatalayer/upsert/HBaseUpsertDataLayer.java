@@ -94,10 +94,10 @@ public class HBaseUpsertDataLayer extends UpsertDestinationStoreOperation implem
 		StringBuilder upsertQuery = new StringBuilder();
 
 		upsertQuery.append("UPSERT INTO ");
-		if (namespace != null && !"".equals(namespace))
-		{
-			upsertQuery.append(namespace + ".");
-		}
+//		if (namespace != null && !"".equals(namespace))
+//		{
+//			upsertQuery.append(namespace + ".");
+//		}
 		upsertQuery.append(entity + "(");
 		upsertQuery.append(columnNameStringBuilder.substring(0, columnNameStringBuilder.length() - 1));
 		upsertQuery.append(") VALUES(");

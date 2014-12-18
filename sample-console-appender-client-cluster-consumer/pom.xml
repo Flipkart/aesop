@@ -1,30 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>com.flipkart.aesop</groupId>
-        <artifactId>aesop</artifactId>
-        <version>1.0.9-SNAPSHOT</version>
-    </parent>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.flipkart.aesop</groupId>
+		<artifactId>aesop</artifactId>
+		<version>1.0.9-SNAPSHOT</version>
+	</parent>
 	<artifactId>sample-console-appender-client-cluster-consumer</artifactId>
 	<name>Sample Console Appender Client Cluster</name>
 	<description>Sample Console Appender Client Cluster</description>
 
 	<dependencies>
-			
+
 		<!-- aesop dependencies -->
 		<dependency>
 			<groupId>com.flipkart.aesop</groupId>
 			<artifactId>runtime-client-cluster</artifactId>
 			<version>1.0.9-SNAPSHOT</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>com.flipkart.aesop</groupId>
 			<artifactId>data-layer-console-appender</artifactId>
 			<version>1.0.9-SNAPSHOT</version>
 		</dependency>
-		
+
 	</dependencies>
 
 	<build>
@@ -100,19 +101,19 @@
 						<phase>install</phase>
 						<configuration>
 							<tasks>
-								<copy todir="distribution/resources/external"
-									overwrite="true">
-									<fileset dir="target/classes/external"/>
+								<copy todir="distribution/resources/external" overwrite="true">
+									<fileset dir="target/classes/external" />
 								</copy>
-								<copy file="src/main/resources/application.conf" 
-									tofile="distribution/resources/application.conf"/>
-								<copy file="target/sample-console-appender-client-cluster-consumer-${project.version}.jar"
-									 toDir="distribution/lib" overwrite="true" />
-                                <copy file="target/classes/project.properties"
-                                      tofile="distribution/resources/external/project.properties.snapshot"
-                                      overwrite="true" />
-                                <copy file="src/main/start.sh"
-                                      tofile="distribution/start.sh" />
+								<copy file="src/main/resources/application.conf" tofile="distribution/resources/application.conf" />
+								<copy todir="distribution/" overwrite="true">
+									<fileset dir="target/classes/scripts" />
+								</copy>
+								<copy
+									file="target/sample-console-appender-client-cluster-consumer-${project.version}.jar"
+									toDir="distribution/lib" overwrite="true" />
+								<copy file="target/classes/project.properties"
+									tofile="distribution/resources/external/project.properties.snapshot"
+									overwrite="true" />
 							</tasks>
 						</configuration>
 						<goals>
@@ -124,7 +125,8 @@
 		</plugins>
 		<pluginManagement>
 			<plugins>
-				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+				<!--This plugin's configuration is used to store Eclipse m2e settings 
+					only. It has no influence on the Maven build itself. -->
 				<plugin>
 					<groupId>org.eclipse.m2e</groupId>
 					<artifactId>lifecycle-mapping</artifactId>
@@ -160,31 +162,4 @@
 			</plugins>
 		</pluginManagement>
 	</build>
-	<profiles>
-		<profile>
-			<id>local</id>
-			<build>
-				<filters>
-					<filter>src/main/filters/local.properties</filter>
-				</filters>
-			</build>
-		</profile>
-		<profile>
-			<id>stage</id>
-			<build>
-				<filters>
-					<filter>src/main/filters/stage.properties</filter>
-				</filters>
-			</build>
-		</profile>
-
-		<profile>
-			<id>prod</id>
-			<build>
-				<filters>
-					<filter>src/main/filters/prod.properties</filter>
-				</filters>
-			</build>
-		</profile>
-	</profiles>
 </project>
