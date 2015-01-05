@@ -1,0 +1,3 @@
+CREATE TABLE Person (id bigint(20) primary key,  firstName varchar(120) ,  lastName varchar(120) ,  birthDate date ,  deleted varchar(5)) ;
+
+CREATE TABLE PersonParallel (pid bigint(20) primary key,  firstname varchar(120) ,  lastname varchar(120) ,  birthdate date ,  deleted varchar(5), address varchar(100) ;
