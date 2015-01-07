@@ -88,7 +88,7 @@
 	</bean>
 
 	<util:map id="dataSourceMap">
-		<entry key="com.flipkart.aesop.events.ortest.person">
+		<entry key="or_test">
 			<ref bean="dataSource"></ref>
 		</entry>
 	</util:map>
