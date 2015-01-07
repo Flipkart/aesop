@@ -127,8 +127,7 @@ public abstract class AbstractEventProducer implements EventProducer {
 	}
 
 	@Override
-    public void shutdown()
-    {
+    public void shutdown() {
 		eventBuffer.rollbackEvents();
     }
 }
