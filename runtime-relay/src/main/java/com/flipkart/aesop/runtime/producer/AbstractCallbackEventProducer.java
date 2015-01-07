@@ -80,10 +80,8 @@ public abstract class AbstractCallbackEventProducer<S extends GenericRecord> ext
 	 * Interface method implementation. Stops the EventProducerThread
 	 * @see com.linkedin.databus2.producers.EventProducer#shutdown()
 	 */
-	public void shutdown() 
-	{
-		synchronized(this) 
-		{
+	public void shutdown() {
+		synchronized(this) {
 			this.eventThreadState = EXIT;
 			notifyAll();
 			if(eventThread != null) {

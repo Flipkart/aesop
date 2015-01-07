@@ -102,7 +102,7 @@ public class DefaultRelay extends HttpRelay {
     		producerRegistration.getEventProducer().shutdown();
     	}    	
     }  
-    
+
     /**
      * Overriden superclass method. Creates and uses the Aesop {@link HttpRelayPipelineFactory} instead of the Databus 
      * {@link com.linkedin.databus.container.netty.HttpRelayPipelineFactory}
@@ -134,20 +134,13 @@ public class DefaultRelay extends HttpRelay {
     	this.registerShutdownHook();
     }
     
-	public void shutdown()
-	{
-		super.shutdown();
-	}
-
     /**
      * Overriden superclass method. Stops the registered Producers after calling super.doShutdown()
      * @see com.linkedin.databus.container.netty.HttpRelay#doShutdown()
      */
-	protected void doShutdown()
-	{
+	protected void doShutdown(){
 		LOGGER.info("Shutting down Relay");
-		for (ProducerRegistration producerRegistration : this.producerRegistrationList)
-		{
+		for (ProducerRegistration producerRegistration : this.producerRegistrationList){
 			producerRegistration.getEventProducer().shutdown();
 		}
 		LOGGER.info("All producers shutdown completed");

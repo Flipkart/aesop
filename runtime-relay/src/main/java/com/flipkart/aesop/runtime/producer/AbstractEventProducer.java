@@ -82,7 +82,15 @@ public abstract class AbstractEventProducer implements EventProducer {
 		}
 		return null;
 	}
-	
+
+	/**
+	 * Interface method implementation. Invokes rollback on the event buffer
+	 * @see com.linkedin.databus2.producers.EventProducer#shutdown()
+	 */
+    public void shutdown() {
+		eventBuffer.rollbackEvents();
+    }
+
 	/** Getter/Setter methods */	
 	public String getName() {
 		return this.name;
@@ -126,9 +134,4 @@ public abstract class AbstractEventProducer implements EventProducer {
 		return physicalSourceStaticConfig;
 	}
 
-	@Override
-    public void shutdown()
-    {
-		eventBuffer.rollbackEvents();
-    }
 }
