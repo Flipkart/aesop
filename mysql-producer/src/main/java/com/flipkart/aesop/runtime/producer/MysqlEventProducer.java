@@ -135,7 +135,7 @@ public class MysqlEventProducer extends AbstractEventProducer implements Initial
 			mysqlTxnManager =
 			        new MysqlTransactionManagerImpl(eventBuffer, maxScnReaderWriter, dbusEventsStatisticsCollector,
 			                eventManagersMap, logid, tableUriToSrcIdMap, tableUriToSrcNameMap, schemaRegistryService,
-			                this.sinceSCN, binLogEventMappers);
+			                this.sinceSCN, binLogEventMappers, this);
 			mysqlTxnManager.setShutdownRequested(false);
 			OpenReplicationListener orl =
 			        new OpenReplicationListener(mysqlTxnManager, eventsMap, schemaChangeEventProcessor,
@@ -227,6 +227,11 @@ public class MysqlEventProducer extends AbstractEventProducer implements Initial
 	public long getSCN()
 	{
 		return this.sinceSCN.get();
+	}
+	
+	public void updateSCN(long latestScn)
+	{
+		this.sinceSCN.set(latestScn);
 	}
 
 	/**
