@@ -6,13 +6,13 @@
 	<parent>
 		<groupId>com.flipkart.aesop</groupId>
 		<artifactId>aesop</artifactId>
-		<version>1.0.9-SNAPSHOT</version>
+		<version>1.0.10-SNAPSHOT</version>
 	</parent>
 
 	<groupId>com.flipkart.aesop</groupId>
 	<artifactId>runtime-client-bootstrap-producer</artifactId>
 	<name>Client Bootstrap Producer Runtime</name>
-	<version>1.0.9-SNAPSHOT</version>
+	<version>1.0.10-SNAPSHOT</version>
 	<description>Client Bootstrap Producer Runtime</description>
 
 	<licenses>
@@ -99,7 +99,7 @@
 		<dependency>
 			<groupId>com.flipkart.aesop</groupId>
 			<artifactId>runtime-client</artifactId>
-			<version>1.0.9-SNAPSHOT</version>
+			<version>1.0.10-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 
