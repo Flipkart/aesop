@@ -57,12 +57,13 @@ public class ElasticSearchDeleteDataLayer extends DeleteDestinationStoreOperatio
                     elasticSearchClient.getType(), id).execute().get();
             if(!response.isSourceEmpty()) {
                 LOGGER.info("Delete Error:" + response);
+                throw new RuntimeException("Delete Failure");
             }
         }
         catch(Exception e)
         {
-            LOGGER.info("Delete Error:" + e);
-            throw new RuntimeException("Server Down Error: Unable To get Host Information");
+            LOGGER.info("Server Connection Lost/Delete Error" + e);
+            throw new RuntimeException("Delete Failure");
         }
 
     }
