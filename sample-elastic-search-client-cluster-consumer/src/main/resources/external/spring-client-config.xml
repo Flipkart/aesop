@@ -81,7 +81,7 @@
         <property name="elasticSearchClient" ref="elasticSearchClient"/>
 	</bean>
 
-    <bean id="elasticSearchClient" class="com.flipkart.aesop.elasticsearchdatalayer.elasticsearchclient.ElasticSearchUnicastClient">
+    <bean id="elasticSearchClient" class="com.flipkart.aesop.elasticsearchdatalayer.elasticsearchclient.ElasticSearchTransportClient">
         <property name="elasticSearchConfig" ref="elasticSearchConfig"/>
     </bean>
 
