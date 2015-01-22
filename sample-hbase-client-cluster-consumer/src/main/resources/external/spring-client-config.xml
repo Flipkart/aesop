@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="
+    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+    http://www.springframework.org/schema/util
+	http://www.springframework.org/schema/util/spring-util-2.5.xsd">
+
+	<bean
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="location" value="classpath:project.properties" />
+	</bean>
+
+	<bean id="defaultEventConsumerFactory"
+		class="com.flipkart.aesop.eventconsumer.implementation.DefaultEventConsumerFactoryBean">
+		<property name="mapper" ref="defaultMapperImpl" />
+		<property name="destStoreOperationsMap">
+			<map>
+				<entry key-ref="upsertDbusOpCode" value-ref="hBaseUpsertDataLayer" />
+				<entry key-ref="deleteDbusOpCode" value-ref="hBaseDeleteDataLayer" />
+			</map>
+		</property>
+		<property name="sourceEventFactory" ref="sourceEventFactory" />
+		<property name="destinationGroupSet">
+			<set>
+				<value>1</value>
+			</set>
+		</property>
+		<property name="totalDestinationGroups" value="1" />
+	</bean>
+
+	<bean id="defaultMapperImpl"
+		class="com.flipkart.aesop.mapper.implementation.DefaultMapperImpl">
+		<property name="configFilePath" value="resources/application.conf" />
+		<property name="configRoot" value="HBASE_CONFIG" />
+		<property name="mapperConfig" ref="mapperConfig" />
+		<property name="mapperTypeList">
+			<list>
+				<ref bean="noNamespaceEntityMapperType" />
+				<ref bean="noEntityMapperType" />
+				<ref bean="namespaceEntityMapperType" />
+			</list>
+		</property>
+		<property name="eventGroupFinder" ref="defaultEventGroupFinder" />
+		<property name="destinationEventFactory" ref="destinationEventFactory" />
+	</bean>
+
+	<util:constant id="upsertDbusOpCode"
+		static-field="com.linkedin.databus.core.DbusOpcode.UPSERT" />
+	<util:constant id="deleteDbusOpCode"
+		static-field="com.linkedin.databus.core.DbusOpcode.DELETE" />
+
+	<bean id="mapperConfig"
+		class="com.flipkart.aesop.mapper.config.implementation.MapperConfigImpl"
+		factory-method="getInstance" />
+
+	<util:constant id="noNamespaceEntityMapperType"
+		static-field="com.flipkart.aesop.mapper.implementation.MapperType.MAP_WITHOUT_SOURCE_NAMESPACE_ENTITY_CONFIG" />
+	<util:constant id="noEntityMapperType"
+		static-field="com.flipkart.aesop.mapper.implementation.MapperType.MAP_WITHOUT_SOURCE_ENTITY_CONFIG" />
+	<util:constant id="namespaceEntityMapperType"
+		static-field="com.flipkart.aesop.mapper.implementation.MapperType.MAP_WITH_SOURCE_ENTITY_CONFIG" />
+
+	<bean id="defaultEventGroupFinder"
+		class="com.flipkart.aesop.mapper.eventGroupFilter.implementation.DefaultEventGroupFinderImpl"
+		factory-method="getInstance" />
+
+	<bean id="destinationEventFactory"
+		class="com.flipkart.aesop.event.implementation.DestinationEventFactory" />
+
+	<bean id="sourceEventFactory"
+		class="com.flipkart.aesop.event.implementation.SourceEventFactory" />
+
+	<bean id="hbaseConfig" class="com.flipkart.aesop.hbasedatalayer.config.HBaseConfig">
+		<constructor-arg type="java.lang.String" value="localhost" />
+		<property name="hBaseZookeeperClientPort" value="2181" />
+		<property name="zookeeperZnodeParent" value="/hbase" />
+	</bean>
+
+	<bean id="hBaseUpsertDataLayer"
+		class="com.flipkart.aesop.hbasedatalayer.upsert.HBaseUpsertDataLayerFactory ">
+		<property name="dataSourceMap" ref="dataSourceMap" />
+	</bean>
+
+	<bean id="hBaseDeleteDataLayer"
+		class="com.flipkart.aesop.hbasedatalayer.delete.HBaseDeleteDataLayerFactory">
+		<property name="dataSourceMap" ref="dataSourceMap" />
+	</bean>
+
+	<util:map id="dataSourceMap">
+		<entry key="or_test">
+			<ref bean="dataSource"></ref>
+		</entry>
+	</util:map>
+
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+		<property name="driverClass" value="org.apache.phoenix.jdbc.PhoenixDriver" />
+		<property name="jdbcUrl" value="#{hbaseConfig.getConnectionUrl()}" />
+		<property name="properties">
+			<props>
+				<prop key="c3p0.acquire_increment">5</prop>
+				<prop key="c3p0.idle_test_period">100</prop>
+				<prop key="c3p0.max_size">50</prop>
+				<prop key="c3p0.max_statements">0</prop>
+				<prop key="c3p0.min_size">5</prop>
+				<prop key="c3p0.testConnectionOnCheckin">true</prop>
+			</props>
+		</property>
+		<property name="maxIdleTime" value="3600" />
+		<property name="idleConnectionTestPeriod" value="300" />
+		<property name="testConnectionOnCheckin" value="true" />
+		<property name="preferredTestQuery" value="select 1 from PERSON" />
+	</bean>
+
+	<bean id="clusterRegistration" class="com.flipkart.aesop.runtime.config.ClusterRegistration"
+		abstract="true">
+		<property name="logicalSources">
+			<list value-type="java.lang.String">
+				<value>com.flipkart.aesop.events.ortest.Person</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="sampleClient"
+		class="com.flipkart.aesop.runtime.clusterclient.DefaultClusterClientFactory">
+		<property name="clientClusterConfig" ref="clientClusterConfig" />
+		<property name="clusterRegistrations">
+			<list>
+				<bean class="com.flipkart.aesop.runtime.config.ClusterRegistration">
+					<property name="clusterName" value="pz_hbase_cluster_person" />
+					<property name="consumerFactory">
+						<bean class="com.flipkart.aesop.eventconsumer.ConsumerFactory">
+							<property name="eventConsumerFactoryList">
+								<list>
+									<ref bean="defaultEventConsumerFactory" />
+								</list>
+							</property>
+							<property name="totalDestinationGroups" value="1" />
+						</bean>
+					</property>
+					<property name="logicalSources">
+						<list value-type="java.lang.String">
+							<value>com.flipkart.aesop.events.ortest.Person</value>
+						</list>
+					</property>
+				</bean>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="clientClusterConfig" class="com.flipkart.aesop.runtime.config.ClientClusterConfig">
+		<property name="clientProperties">
+			<bean id="clientPropertiesFactory"
+				class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+				<property name="singleton" value="true" />
+				<property name="properties">
+					<props>
+						<prop key="databus.client.container.httpPort">11125</prop>
+						<prop key="databus.client.container.jmx.rmiEnabled">false</prop>
+						<prop key="databus.client.connectionDefaults.pullerRetries.initSleep">1</prop>
+						<prop
+							key="databus.client.connectionDefaults.pullerRetries.maxRetryNum">-1</prop>
+						<prop key="databus.client.checkpointPersistence.clearBeforeUse">false</prop>
+						<prop
+							key="databus.client.connectionDefaults.enablePullerMessageQueueLogging">false</prop>
+					</props>
+				</property>
+			</bean>
+		</property>
+		<property name="relayClientConfigs">
+			<list>
+				<bean class="com.flipkart.aesop.runtime.config.RelayClientConfig">
+					<property name="relayId" value="1" />
+					<property name="relayHost" value="localhost" />
+					<property name="relayPort" value="25021" />
+					<property name="relayLogicalSourceNames">
+						<list value-type="java.lang.String">
+							<value>com.flipkart.aesop.events.ortest.Person</value>
+						</list>
+					</property>
+				</bean>
+			</list>
+		</property>
+		<property name="clusterInfoConfigs">
+			<list>
+				<bean class="com.flipkart.aesop.runtime.config.ClusterInfoConfig">
+					<property name="id" value="1" />
+					<property name="clusterName" value="pz_hbase_cluster_person" />
+					<property name="zkAddr" value="localhost:2181" />
+					<property name="numPartitions" value="2" />
+					<property name="quorum" value="1" />
+					<property name="zkSessionTimeoutMs" value="60000" />
+					<property name="zkConnectionTimeoutMs" value="60000" />
+					<property name="checkpointIntervalMs" value="300000" />
+				</bean>
+			</list>
+		</property>
+
+		<property name="checkpointDirectoryLocation" value="../../data-dir/client_checkpoint_directory" />
+	</bean>
+</beans>

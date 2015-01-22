@@ -121,7 +121,7 @@ public class SchemaGenerator implements InitializingBean
 		List<TableRecord.Field> fields = MysqlUtils.getFieldDetails(dbName, tableName);
 		List<String> primaryKeys = MysqlUtils.getPrimaryKeys(dbName, tableName);
 
-		String namespace = dbName + "." + tableName;
+		String namespace = dbName;
 		String doc =
 		        "Auto-generated Avro schema for " + tableName + ". Generated at "
 		                + df.format(new Date(System.currentTimeMillis()));

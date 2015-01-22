@@ -21,6 +21,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.trpr.platform.core.impl.logging.LogFactory;
 import org.trpr.platform.core.spi.logging.Logger;
 
+import com.flipkart.aesop.runtime.producer.MysqlEventProducer;
 import com.flipkart.aesop.runtime.producer.avro.MysqlAvroEventManager;
 import com.flipkart.aesop.runtime.producer.mapper.BinLogEventMapper;
 import com.flipkart.aesop.runtime.producer.txnprocessor.MysqlTransactionManager;
@@ -89,6 +90,7 @@ public class MysqlTransactionManagerImpl implements MysqlTransactionManager
 	private SchemaRegistryService schemaRegistryService;
 	/** mysqlTableId to tableName mapping */
 	private Map<Long, String> mysqlTableIdToTableNameMap;
+	private MysqlEventProducer mySqlEventProducer; 
 	
 	private volatile AtomicBoolean shutdownRequested = new AtomicBoolean(false);
 
@@ -99,7 +101,7 @@ public class MysqlTransactionManagerImpl implements MysqlTransactionManager
 	        final Map<Integer, MysqlAvroEventManager> eventManagerMap, final int currFileNum,
 	        final Map<String, Short> tableUriToSrcIdMap, final Map<String, String> tableUriToSrcNameMap,
 	        final SchemaRegistryService schemaRegistryService, final AtomicLong sinceSCN,
-	        Map<Integer, BinLogEventMapper> binLogEventMappers)
+	        Map<Integer, BinLogEventMapper> binLogEventMappers, MysqlEventProducer mySqlEventProducer)
 	{
 		this.eventBuffer = eventBuffer;
 		this.maxSCNReaderWriter = maxSCNReaderWriter;
@@ -112,6 +114,7 @@ public class MysqlTransactionManagerImpl implements MysqlTransactionManager
 		this.sinceSCN = sinceSCN;
 		this.binLogEventMappers = binLogEventMappers;
 		this.mysqlTableIdToTableNameMap = new HashMap<Long, String>();
+		this.mySqlEventProducer = mySqlEventProducer;
 	}
 
 	/**
@@ -475,6 +478,7 @@ public class MysqlTransactionManagerImpl implements MysqlTransactionManager
 		{
 			addTxnToBuffer(txn);
 			maxSCNReaderWriter.saveMaxScn(txn.getScn());
+			mySqlEventProducer.updateSCN(txn.getScn());
 		}
 		catch (UnsupportedKeyException e)
 		{

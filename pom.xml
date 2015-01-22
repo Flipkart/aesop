@@ -7,7 +7,7 @@
     <artifactId>aesop</artifactId>
     <name>Aesop Full Build</name>
     <packaging>pom</packaging>
-    <version>1.0.8-SNAPSHOT</version>
+    <version>1.0.10-SNAPSHOT</version>
 
     <licenses>
         <license>
@@ -96,16 +96,16 @@
         <module>sample-bootstrap-server</module>
         <module>sample-snapshot-serializer</module>
         <module>sample-mysql-relay</module>
-        <module>sample-client-mysql-relay</module>
         <module>avro-schema-generator</module>
         <module>sample-client-common</module>
         <module>client-event-consumer</module>
         <module>data-layer-hbase</module>
         <module>data-layer-mysql</module>
         <module>data-layer-console-appender</module>
-        <module>data-layer-elastic-search</module>
-	<module>sample-console-appender-client-cluster-consumer</module>
-	<module>sample-elastic-search-client-cluster-consumer</module>   
+		<module>data-layer-elastic-search</module>
+		<module>sample-console-appender-client-cluster-consumer</module>
+		<module>sample-elastic-search-client-cluster-consumer</module>   
+		<module>sample-hbase-client-cluster-consumer</module>
     </modules>
 
 </project>

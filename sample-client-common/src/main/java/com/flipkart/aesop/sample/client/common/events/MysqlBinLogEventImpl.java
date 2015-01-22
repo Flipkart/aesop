@@ -108,7 +108,7 @@ public class MysqlBinLogEventImpl implements MysqlBinLogEvent
 
 	public String getEntityName()
 	{
-		return this.schema.getNamespace();
+		return this.schema.getNamespace() + "." + this.schema.getName();
 	}
 
 	public DbusOpcode getEventType()

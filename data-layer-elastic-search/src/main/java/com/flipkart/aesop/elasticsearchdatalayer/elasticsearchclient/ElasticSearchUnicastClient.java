@@ -51,7 +51,7 @@ public class ElasticSearchUnicastClient extends ElasticSearchClient {
                 .put("node.data",false)
                 .put("node.local",false)
                 .put("discovery.zen.ping.multicast.enabled", false)
-                .put("discovery.zen.ping.unicast.hosts", config.getStringList("hosts"))
+                .put("discovery.zen.ping.unicast.hosts", config.getString("hosts"))
                 .put("network.host", hostname);
 
         Node node = nodeBuilder().clusterName(config.getString("cluster.name")).client(true).local(false).settings(settings).node();
