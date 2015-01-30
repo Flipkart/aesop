@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.flipkart.aesop</groupId>
+        <artifactId>aesop</artifactId>
+        <version>1.0.10-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>blocking-bootstrap-common</artifactId>
+    <name>Blocking Bootstrap Common</name>
+    <description>Blocking Bootstrap Common</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.flipkart.aesop</groupId>
+            <artifactId>client-event-consumer</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.linkedin.databus</groupId>
+            <artifactId>databus2-event-producer-common</artifactId>
+            <version>${com.linkedin.databus.version}</version>
+            <scope>compile</scope>
+            <exclusions>
+                <exclusion>
+                    <artifactId>slf4j-log4j12</artifactId>
+                    <groupId>org.slf4j</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+    </dependencies>
+</project>
