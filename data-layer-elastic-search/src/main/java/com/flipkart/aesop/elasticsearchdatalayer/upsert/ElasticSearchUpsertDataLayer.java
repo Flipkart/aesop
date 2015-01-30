@@ -59,10 +59,11 @@ public class ElasticSearchUpsertDataLayer extends UpsertDestinationStoreOperatio
                     .get();
             if(!response.isCreated())  {
                 LOGGER.info("Create Error : " + response);
+                throw new RuntimeException("Create Failure");
             }
         } catch (Exception e) {
-            LOGGER.info("Create Error : " + e);
-            throw new RuntimeException("Server Down Error: Unable To get Host Information");
+            LOGGER.info("Server Connection Lost/Create Error" + e);
+            throw new RuntimeException("Create Failure");
         }
     }
 
