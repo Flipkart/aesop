@@ -6,7 +6,7 @@ import java.util.concurrent.TimeUnit;
 import org.trpr.platform.core.impl.logging.LogFactory;
 import org.trpr.platform.core.spi.logging.Logger;
 
-import com.flipkart.aesop.bootstrap.AbstractEventProducer;
+import com.flipkart.aesop.runtime.bootstrap.producer.AbstractEventProducer;
 import com.flipkart.aesop.bootstrap.mysql.configs.OpenReplicatorConfig;
 import com.flipkart.aesop.bootstrap.mysql.eventlistener.OpenReplicationListener;
 import com.flipkart.aesop.bootstrap.mysql.eventprocessor.BinLogEventProcessor;

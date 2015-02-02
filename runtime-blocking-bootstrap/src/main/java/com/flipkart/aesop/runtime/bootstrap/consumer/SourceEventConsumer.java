@@ -1,4 +1,4 @@
-package com.flipkart.aesop.bootstrap;
+package com.flipkart.aesop.runtime.bootstrap.consumer;
 
 import com.flipkart.aesop.event.AbstractEvent;
 

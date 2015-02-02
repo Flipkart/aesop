@@ -21,6 +21,11 @@ public class BlockingBootstrapServer extends ServerContainer
 		super(new Config().build(), ByteOrder.BIG_ENDIAN);
 	}
 
+	public BlockingBootstrapServer(StaticConfig staticConfig) throws DatabusException, IOException
+	{
+		super(staticConfig, ByteOrder.BIG_ENDIAN);
+	}
+
 	@Override
 	protected DatabusComponentAdmin createComponentAdmin()
 	{
@@ -61,12 +66,7 @@ public class BlockingBootstrapServer extends ServerContainer
 		producer.shutdown();
 	}
 
-	public EventProducer getProducer()
-	{
-		return producer;
-	}
-
-	public void setProducer(EventProducer producer)
+	public void registerProducer(EventProducer producer)
 	{
 		this.producer = producer;
 	}

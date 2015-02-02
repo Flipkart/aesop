@@ -1,10 +1,11 @@
-package com.flipkart.aesop.bootstrap;
+package com.flipkart.aesop.runtime.bootstrap.producer;
 
 import java.util.List;
 import java.util.Map;
 
 import com.flipkart.aesop.eventconsumer.EventConsumerFactoryBean;
-import com.flipkart.aesop.bootstrap.configs.BootstrapConfig;
+import com.flipkart.aesop.runtime.bootstrap.consumer.SourceEventConsumer;
+import com.flipkart.aesop.runtime.bootstrap.configs.BootstrapConfig;
 import com.linkedin.databus2.producers.EventProducer;
 import com.linkedin.databus2.schemas.SchemaRegistryService;
 

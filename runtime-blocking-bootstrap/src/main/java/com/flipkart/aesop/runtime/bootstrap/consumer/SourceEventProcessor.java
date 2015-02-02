@@ -1,10 +1,11 @@
-package com.flipkart.aesop.bootstrap;
+package com.flipkart.aesop.runtime.bootstrap.consumer;
 
 import org.trpr.platform.core.impl.logging.LogFactory;
 import org.trpr.platform.core.spi.logging.Logger;
 
 import com.flipkart.aesop.event.AbstractEvent;
 import com.flipkart.aesop.eventconsumer.AbstractEventConsumer;
+import com.flipkart.aesop.runtime.bootstrap.consumer.DefaultBlockingEventConsumer;
 import com.linkedin.databus.client.pub.ConsumerCallbackResult;
 
 /**

@@ -7,7 +7,7 @@ import java.util.Map;
 import org.trpr.platform.core.impl.logging.LogFactory;
 import org.trpr.platform.core.spi.logging.Logger;
 
-import com.flipkart.aesop.bootstrap.SourceEventConsumer;
+import com.flipkart.aesop.runtime.bootstrap.consumer.SourceEventConsumer;
 import com.flipkart.aesop.bootstrap.mysql.MysqlEventProducer;
 import com.flipkart.aesop.bootstrap.mysql.eventprocessor.BinLogEventProcessor;
 import com.flipkart.aesop.bootstrap.mysql.mapper.BinLogEventMapper;
