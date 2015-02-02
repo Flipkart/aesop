@@ -2,6 +2,7 @@ package com.flipkart.aesop.runtime.bootstrap.consumer;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -13,12 +14,11 @@ public class BoundedThreadPoolExecutor
 {
 	private ThreadPoolExecutor executor;
 
-	public BoundedThreadPoolExecutor(int poolSize, int queueSize)
+	public BoundedThreadPoolExecutor(int poolSize, int queueSize, RejectedExecutionHandler rejectedExecutionHandler)
 	{
 		BlockingQueue<Runnable> queue = new ArrayBlockingQueue<Runnable>(queueSize);
 		this.executor =
-		        new ThreadPoolExecutor(poolSize, poolSize, 0, TimeUnit.MILLISECONDS, queue,
-		                new ThreadPoolExecutor.CallerRunsPolicy());
+		        new ThreadPoolExecutor(poolSize, poolSize, 0, TimeUnit.MILLISECONDS, queue, rejectedExecutionHandler);
 	}
 
 	public void submit(Runnable r)

@@ -2,6 +2,7 @@ package com.flipkart.aesop.runtime.bootstrap.consumer;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.RejectedExecutionHandler;
 
 import org.trpr.platform.core.impl.logging.LogFactory;
 import org.trpr.platform.core.spi.logging.Logger;
@@ -20,7 +21,7 @@ public class DefaultBlockingEventConsumer implements SourceEventConsumer
 	private final AbstractEventConsumer eventConsumer;
 
 	public DefaultBlockingEventConsumer(int numberOfPartition, int executorQueueSize,
-	        AbstractEventConsumer eventConsumer)
+	        AbstractEventConsumer eventConsumer, RejectedExecutionHandler rejectedExecutionHandler)
 	{
 		this.eventConsumer = eventConsumer;
 		this.numberOfPartition = Math.min(numberOfPartition, Runtime.getRuntime().availableProcessors());
@@ -28,7 +29,7 @@ public class DefaultBlockingEventConsumer implements SourceEventConsumer
 		LOGGER.info("numberOfPartition used: " + numberOfPartition);
 		for (int i = 0; i < numberOfPartition; i++)
 		{
-			executors.add(new BoundedThreadPoolExecutor(1, executorQueueSize));
+			executors.add(new BoundedThreadPoolExecutor(1, executorQueueSize, rejectedExecutionHandler));
 		}
 	}
 
