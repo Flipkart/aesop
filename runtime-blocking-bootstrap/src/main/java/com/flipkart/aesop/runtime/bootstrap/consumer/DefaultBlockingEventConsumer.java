@@ -37,7 +37,7 @@ public class DefaultBlockingEventConsumer implements SourceEventConsumer
 	public void onEvent(AbstractEvent sourceEvent)
 	{
 		/** partition and submit */
-		String primaryKeyValues = Joiner.on(PRIMARY_KEY_SEPERATOR).join(sourceEvent.getPrimaryKeySet());
+		String primaryKeyValues = Joiner.on(PRIMARY_KEY_SEPERATOR).join(sourceEvent.getPrimaryKeyValues());
 		Integer partitionNumber = ((primaryKeyValues.hashCode() & 0x7fffffff) % numberOfPartition);
 		LOGGER.debug("Partition:" + primaryKeyValues.hashCode() + ":" + partitionNumber);
 		executors.get(partitionNumber).submit(new SourceEventProcessor(sourceEvent, eventConsumer));
