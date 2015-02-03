@@ -10,9 +10,9 @@
         <version>1.0.10-SNAPSHOT</version>
     </parent>
 
-    <artifactId>blocking-bootstrap-mysql</artifactId>
-    <name>Blocking Bootstrap mysql</name>
-    <description>Blocking Bootstrap mysql</description>
+    <artifactId>blocking-bootstrap-mysql-producer</artifactId>
+    <name>Blocking Bootstrap MySQL Producer</name>
+    <description>Blocking Bootstrap MySQL Producer</description>
 
     <dependencies>
         <dependency>

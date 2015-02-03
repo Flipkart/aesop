@@ -94,7 +94,7 @@
         <module>sample-client</module>
         <module>sample-client-cluster</module>
         <module>sample-client-bootstrap-producer</module>
-        <module>blocking-bootstrap-mysql</module>
+        <module>blocking-bootstrap-mysql-producer</module>
         <module>sample-bootstrap-server</module>
         <module>sample-snapshot-serializer</module>
         <module>sample-mysql-relay</module>
