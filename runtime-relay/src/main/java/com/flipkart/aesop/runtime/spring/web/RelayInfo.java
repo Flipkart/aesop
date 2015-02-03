@@ -29,15 +29,12 @@ public class RelayInfo {
 	private int pSourceId;
 	private String pSourceName;
 	private String pSourceURI;
-	
-	private int lSourceId;
-	private String lSourceName;
-	private String lSourceURI;
-	
+
 	private String producerName;
 	private String producerSinceSCN;
-	
+
 	private RelayInfo.ClientInfo[] clientInfos;
+    private RelayInfo.LSourceInfo[] lSourceInfos;
 	
 	/** Constructor with only physical source attributes*/
 	public RelayInfo(int pSourceId, String pSourceName, String pSourceURI) {
@@ -48,24 +45,7 @@ public class RelayInfo {
 	}
 
 	/** Getter/Setter methods*/
-	public int getlSourceId() {
-		return lSourceId;
-	}
-	public void setlSourceId(int lSourceId) {
-		this.lSourceId = lSourceId;
-	}
-	public String getlSourceName() {
-		return lSourceName;
-	}
-	public void setlSourceName(String lSourceName) {
-		this.lSourceName = lSourceName;
-	}
-	public String getlSourceURI() {
-		return lSourceURI;
-	}
-	public void setlSourceURI(String lSourceURI) {
-		this.lSourceURI = lSourceURI;
-	}
+
 	public String getProducerName() {
 		return producerName;
 	}
@@ -93,6 +73,12 @@ public class RelayInfo {
 	public void setClientInfos(RelayInfo.ClientInfo[] clientInfos) {
 		this.clientInfos = clientInfos;
 	}
+    public RelayInfo.LSourceInfo[] getlSourceInfos() {
+        return lSourceInfos;
+    }
+    public void setlSourceInfos(RelayInfo.LSourceInfo[] lSourceInfos) {
+        this.lSourceInfos = lSourceInfos;
+    }
 	/** End Getter/Setter methods*/
 
 	public static class ClientInfo {
@@ -111,8 +97,40 @@ public class RelayInfo {
 		}
 		public String getClientSinceSCN() {
 			return clientSinceSCN;
-		}		
+		}
 		/** End Getter/Setter methods*/
 	}
-	
+
+    public static class LSourceInfo {
+        private int lSourceId;
+        private String lSourceName;
+        private String lSourceURI;
+
+        /** Constructor with only lSourceId name */
+        public LSourceInfo(int lSourceId) {
+            this.lSourceId = lSourceId;
+        }
+
+        /** Getter/Setter methods*/
+        public int getLSourceId() {
+            return lSourceId;
+        }
+        public void setLSourceId(int lSourceId) {
+            this.lSourceId = lSourceId;
+        }
+        public String getLSourceName() {
+            return lSourceName;
+        }
+        public void setLSourceName(String lSourceName) {
+            this.lSourceName = lSourceName;
+        }
+        public String getLSourceURI() {
+            return lSourceURI;
+        }
+        public void setLSourceURI(String lSourceURI) {
+            this.lSourceURI = lSourceURI;
+        }
+        /** End Getter/Setter methods*/
+    }
+
 }
