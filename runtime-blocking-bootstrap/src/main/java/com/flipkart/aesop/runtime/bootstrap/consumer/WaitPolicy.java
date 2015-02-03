@@ -28,7 +28,7 @@ public class WaitPolicy implements RejectedExecutionHandler
 
 	public WaitPolicy()
 	{
-		this(Long.MAX_VALUE, TimeUnit.SECONDS);
+		this(1, TimeUnit.SECONDS);
 	}
 
 	public WaitPolicy(long time, TimeUnit timeUnit)

@@ -15,7 +15,11 @@ package com.flipkart.aesop.runtime.bootstrap.consumer;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.RejectedExecutionHandler;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import org.trpr.platform.core.impl.logging.LogFactory;
 import org.trpr.platform.core.spi.logging.Logger;
@@ -29,7 +33,7 @@ public class DefaultBlockingEventConsumer implements SourceEventConsumer
 	public static final Logger LOGGER = LogFactory.getLogger(DefaultBlockingEventConsumer.class);
 
 	private final String PRIMARY_KEY_SEPERATOR = ";";
-	private List<BoundedThreadPoolExecutor> executors = new ArrayList<BoundedThreadPoolExecutor>();
+	private List<ThreadPoolExecutor> executors = new ArrayList<ThreadPoolExecutor>();
 	private final int numberOfPartition;
 	private final AbstractEventConsumer eventConsumer;
 
@@ -38,11 +42,12 @@ public class DefaultBlockingEventConsumer implements SourceEventConsumer
 	{
 		this.eventConsumer = eventConsumer;
 		this.numberOfPartition = Math.min(numberOfPartition, Runtime.getRuntime().availableProcessors());
+		BlockingQueue<Runnable> queue = new ArrayBlockingQueue<Runnable>(executorQueueSize);
 
 		LOGGER.info("numberOfPartition used: " + numberOfPartition);
 		for (int i = 0; i < numberOfPartition; i++)
 		{
-			executors.add(new BoundedThreadPoolExecutor(1, executorQueueSize, rejectedExecutionHandler));
+			executors.add(new ThreadPoolExecutor(1, 1, 0, TimeUnit.MILLISECONDS, queue, rejectedExecutionHandler));
 		}
 	}
 
@@ -61,6 +66,11 @@ public class DefaultBlockingEventConsumer implements SourceEventConsumer
 		for (int i = 0; i < numberOfPartition; i++)
 		{
 			executors.get(i).shutdown();
+		}
+
+		for (int i = 0; i < numberOfPartition; i++)
+		{
+			executors.get(i).awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
 		}
 	}
 }
