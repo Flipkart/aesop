@@ -25,7 +25,7 @@ import com.linkedin.databus2.schemas.SchemaRegistryService;
 /**
  * Created by nikhil.bafna on 1/27/15.
  */
-public abstract class AbstractEventProducer implements EventProducer
+public abstract class BlockingEventProducer implements EventProducer
 {
 	protected BootstrapConfig bootstrapConfig;
 	protected List<String> interestedSourceList;
@@ -92,5 +92,10 @@ public abstract class AbstractEventProducer implements EventProducer
 	public void setSourceEventConsumer(SourceEventConsumer sourceEventConsumer)
 	{
 		this.sourceEventConsumer = sourceEventConsumer;
+	}
+
+	public void registerConsumer(SourceEventConsumer consumer)
+	{
+		this.sourceEventConsumer = consumer;
 	}
 }

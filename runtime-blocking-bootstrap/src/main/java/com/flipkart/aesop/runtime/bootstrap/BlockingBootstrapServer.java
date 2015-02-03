@@ -16,18 +16,25 @@ package com.flipkart.aesop.runtime.bootstrap;
 import java.io.IOException;
 import java.nio.ByteOrder;
 
+import org.trpr.platform.core.impl.logging.LogFactory;
+import org.trpr.platform.core.spi.logging.Logger;
+
+import com.flipkart.aesop.runtime.bootstrap.consumer.SourceEventConsumer;
+import com.flipkart.aesop.runtime.bootstrap.producer.BlockingEventProducer;
 import com.linkedin.databus.container.netty.HttpRelay;
 import com.linkedin.databus2.core.DatabusException;
 import com.linkedin.databus2.core.container.monitoring.mbean.DatabusComponentAdmin;
 import com.linkedin.databus2.core.container.netty.ServerContainer;
-import com.linkedin.databus2.producers.EventProducer;
 
 /**
  * Created by nikhil.bafna on 1/28/15.
  */
 public class BlockingBootstrapServer extends ServerContainer
 {
-	private EventProducer producer;
+	public static final Logger LOGGER = LogFactory.getLogger(BlockingBootstrapServer.class);
+
+	private BlockingEventProducer producer;
+	private SourceEventConsumer consumer;
 
 	public BlockingBootstrapServer(StaticConfig staticConfig) throws DatabusException, IOException
 	{
@@ -64,6 +71,7 @@ public class BlockingBootstrapServer extends ServerContainer
 	protected void doStart()
 	{
 		super.doStart();
+		producer.registerConsumer(consumer);
 		producer.start(0);
 	}
 
@@ -72,10 +80,16 @@ public class BlockingBootstrapServer extends ServerContainer
 	{
 		super.doShutdown();
 		producer.shutdown();
+		consumer.shutdown();
 	}
 
-	public void registerProducer(EventProducer producer)
+	public void registerProducer(BlockingEventProducer producer)
 	{
 		this.producer = producer;
+	}
+
+	public void registerConsumer(SourceEventConsumer consumer)
+	{
+		this.consumer = consumer;
 	}
 }

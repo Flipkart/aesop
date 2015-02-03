@@ -22,5 +22,5 @@ public interface SourceEventConsumer
 {
 	public void onEvent(AbstractEvent event);
 
-	public void shutdown() throws InterruptedException;
+	public void shutdown();
 }

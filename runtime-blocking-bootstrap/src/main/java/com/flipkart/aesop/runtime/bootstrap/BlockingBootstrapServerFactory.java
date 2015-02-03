@@ -16,9 +16,10 @@ package com.flipkart.aesop.runtime.bootstrap;
 import org.springframework.beans.factory.FactoryBean;
 
 import com.flipkart.aesop.runtime.bootstrap.configs.BootstrapConfig;
+import com.flipkart.aesop.runtime.bootstrap.consumer.SourceEventConsumer;
+import com.flipkart.aesop.runtime.bootstrap.producer.BlockingEventProducer;
 import com.linkedin.databus.core.util.ConfigLoader;
 import com.linkedin.databus2.core.container.netty.ServerContainer;
-import com.linkedin.databus2.producers.EventProducer;
 
 /**
  * Created by nikhil.bafna on 2/2/15.
@@ -26,7 +27,8 @@ import com.linkedin.databus2.producers.EventProducer;
 public class BlockingBootstrapServerFactory implements FactoryBean<BlockingBootstrapServer>
 {
 	private BootstrapConfig bootstrapConfig;
-	private EventProducer producer;
+	private BlockingEventProducer producer;
+	private SourceEventConsumer consumer;
 
 	@Override
 	public BlockingBootstrapServer getObject() throws Exception
@@ -39,6 +41,7 @@ public class BlockingBootstrapServerFactory implements FactoryBean<BlockingBoots
 		        configLoader.loadConfig(this.bootstrapConfig.getBootstrapProperties());
 		BlockingBootstrapServer bootstrapServer = new BlockingBootstrapServer(staticConfig);
 		bootstrapServer.registerProducer(producer);
+		bootstrapServer.registerConsumer(consumer);
 		return bootstrapServer;
 	}
 
@@ -59,8 +62,13 @@ public class BlockingBootstrapServerFactory implements FactoryBean<BlockingBoots
 		this.bootstrapConfig = bootstrapConfig;
 	}
 
-	public void setProducer(EventProducer producer)
+	public void setProducer(BlockingEventProducer producer)
 	{
 		this.producer = producer;
+	}
+
+	public void setConsumer(SourceEventConsumer consumer)
+	{
+		this.consumer = consumer;
 	}
 }

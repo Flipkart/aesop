@@ -22,14 +22,14 @@ import org.trpr.platform.core.spi.logging.Logger;
 import com.flipkart.aesop.bootstrap.mysql.configs.OpenReplicatorConfig;
 import com.flipkart.aesop.bootstrap.mysql.eventlistener.OpenReplicationListener;
 import com.flipkart.aesop.bootstrap.mysql.eventprocessor.BinLogEventProcessor;
-import com.flipkart.aesop.runtime.bootstrap.producer.AbstractEventProducer;
+import com.flipkart.aesop.runtime.bootstrap.producer.BlockingEventProducer;
 import com.google.code.or.OpenReplicator;
 import com.linkedin.databus2.schemas.FileSystemSchemaRegistryService;
 
 /**
  * Created by nikhil.bafna on 1/27/15.
  */
-public class MysqlEventProducer extends AbstractEventProducer
+public class MysqlEventProducer extends BlockingEventProducer
 {
 	public static final Logger LOGGER = LogFactory.getLogger(MysqlEventProducer.class);
 	private static Long startTime = System.nanoTime();
@@ -119,7 +119,6 @@ public class MysqlEventProducer extends AbstractEventProducer
 		{
 			LOGGER.info("Shutdown has been requested. MYSQLEventProducer shutting down");
 			this.openReplicator.stop(5, TimeUnit.SECONDS);
-			sourceEventConsumer.shutdown();
 			LOGGER.info("### Bootstrap Process completed successfully ###");
 			LOGGER.info("Time Taken:" + (System.nanoTime() - startTime));
 		}

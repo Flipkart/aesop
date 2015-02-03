@@ -61,16 +61,23 @@ public class DefaultBlockingEventConsumer implements SourceEventConsumer
 		executors.get(partitionNumber).submit(new SourceEventProcessor(sourceEvent, eventConsumer));
 	}
 
-	public void shutdown() throws InterruptedException
+	public void shutdown()
 	{
 		for (int i = 0; i < numberOfPartition; i++)
 		{
 			executors.get(i).shutdown();
 		}
 
-		for (int i = 0; i < numberOfPartition; i++)
+		try
 		{
-			executors.get(i).awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+			for (int i = 0; i < numberOfPartition; i++)
+			{
+				executors.get(i).awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+			}
+		}
+		catch (InterruptedException e)
+		{
+			LOGGER.error("Error while stopping bootstrap consumer", e);
 		}
 	}
 }

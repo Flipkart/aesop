@@ -25,7 +25,7 @@ import com.linkedin.databus.client.pub.ConsumerCallbackResult;
  */
 public class SourceEventProcessor implements Runnable
 {
-	public static final Logger LOGGER = LogFactory.getLogger(DefaultBlockingEventConsumer.class);
+	public static final Logger LOGGER = LogFactory.getLogger(SourceEventProcessor.class);
 
 	private final AbstractEvent sourceEvent;
 	private final AbstractEventConsumer consumer;
