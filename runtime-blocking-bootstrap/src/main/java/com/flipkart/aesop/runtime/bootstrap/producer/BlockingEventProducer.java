@@ -16,7 +16,6 @@ package com.flipkart.aesop.runtime.bootstrap.producer;
 import java.util.List;
 import java.util.Map;
 
-import com.flipkart.aesop.eventconsumer.EventConsumerFactoryBean;
 import com.flipkart.aesop.runtime.bootstrap.configs.BootstrapConfig;
 import com.flipkart.aesop.runtime.bootstrap.consumer.SourceEventConsumer;
 import com.linkedin.databus2.producers.EventProducer;
@@ -31,7 +30,6 @@ public abstract class BlockingEventProducer implements EventProducer
 	protected List<String> interestedSourceList;
 	protected Map<String, String> tableUriToSrcNameMap;
 	protected SchemaRegistryService schemaRegistryService;
-	protected EventConsumerFactoryBean eventConsumerFactory;
 	protected SourceEventConsumer sourceEventConsumer;
 
 	public BootstrapConfig getBootstrapConfig()
@@ -72,26 +70,6 @@ public abstract class BlockingEventProducer implements EventProducer
 	public void setSchemaRegistryService(SchemaRegistryService schemaRegistryService)
 	{
 		this.schemaRegistryService = schemaRegistryService;
-	}
-
-	public EventConsumerFactoryBean getEventConsumerFactory()
-	{
-		return eventConsumerFactory;
-	}
-
-	public void setEventConsumerFactory(EventConsumerFactoryBean eventConsumerFactory)
-	{
-		this.eventConsumerFactory = eventConsumerFactory;
-	}
-
-	public SourceEventConsumer getSourceEventConsumer()
-	{
-		return sourceEventConsumer;
-	}
-
-	public void setSourceEventConsumer(SourceEventConsumer sourceEventConsumer)
-	{
-		this.sourceEventConsumer = sourceEventConsumer;
 	}
 
 	public void registerConsumer(SourceEventConsumer consumer)

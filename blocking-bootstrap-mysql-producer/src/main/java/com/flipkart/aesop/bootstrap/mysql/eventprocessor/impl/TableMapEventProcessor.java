@@ -32,6 +32,5 @@ public class TableMapEventProcessor extends AbstractBinLogEventProcessor
 		                + tableMapEvent.getTableName().toString().toLowerCase();
 		Long newTableId = tableMapEvent.getTableId();
 		listener.getTableIdtoNameMapping().put(newTableId, newTableName);
-		listener.getSourceEventConsumer().shutdown();
 	}
 }

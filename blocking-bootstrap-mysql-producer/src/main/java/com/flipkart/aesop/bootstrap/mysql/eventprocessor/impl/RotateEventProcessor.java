@@ -43,6 +43,7 @@ public class RotateEventProcessor implements BinLogEventProcessor
 		if (fileNumber.equals(listener.getEndFileNum()))
 		{
 			LOGGER.info("Bootstrap Process completed successfully !!!");
+			listener.getSourceEventConsumer().shutdown();
 			listener.shutdown();
 		}
 	}
