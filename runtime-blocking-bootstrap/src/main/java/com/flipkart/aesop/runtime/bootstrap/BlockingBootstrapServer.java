@@ -73,14 +73,15 @@ public class BlockingBootstrapServer extends ServerContainer
 		super.doStart();
 		producer.registerConsumer(consumer);
 		producer.start(0);
+		this.registerShutdownHook();
 	}
 
 	@Override
 	protected void doShutdown()
 	{
-		super.doShutdown();
 		producer.shutdown();
 		consumer.shutdown();
+		super.doShutdown();
 	}
 
 	public void registerProducer(BlockingEventProducer producer)
