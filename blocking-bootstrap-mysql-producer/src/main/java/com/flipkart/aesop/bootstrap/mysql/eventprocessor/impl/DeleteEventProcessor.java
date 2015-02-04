@@ -20,6 +20,7 @@ import com.flipkart.aesop.bootstrap.mysql.eventprocessor.AbstractBinLogEventProc
 import com.flipkart.aesop.event.AbstractEvent;
 import com.google.code.or.binlog.BinlogEventV4;
 import com.google.code.or.binlog.impl.event.DeleteRowsEvent;
+import com.linkedin.databus.core.DbusOpcode;
 
 /**
  * The <code>DeleteEventProcessor</code> processes DeleteRowsEvent from source. This event is received if there is any
@@ -32,7 +33,8 @@ public class DeleteEventProcessor extends AbstractBinLogEventProcessor
 	public void process(BinlogEventV4 event, OpenReplicationListener listener)
 	{
 		DeleteRowsEvent deleteEvent = (DeleteRowsEvent) event;
-		List<AbstractEvent> sourceEvents = map(deleteEvent.getTableId(), deleteEvent.getRows(), listener);
+		List<AbstractEvent> sourceEvents =
+		        map(deleteEvent.getTableId(), deleteEvent.getRows(), listener, DbusOpcode.DELETE);
 		for (AbstractEvent sourceEvent : sourceEvents)
 		{
 			listener.getSourceEventConsumer().onEvent(sourceEvent);

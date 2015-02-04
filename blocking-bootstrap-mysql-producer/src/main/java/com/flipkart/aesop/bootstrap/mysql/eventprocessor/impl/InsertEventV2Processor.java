@@ -20,6 +20,7 @@ import com.flipkart.aesop.bootstrap.mysql.eventprocessor.AbstractBinLogEventProc
 import com.flipkart.aesop.event.AbstractEvent;
 import com.google.code.or.binlog.BinlogEventV4;
 import com.google.code.or.binlog.impl.event.WriteRowsEventV2;
+import com.linkedin.databus.core.DbusOpcode;
 
 /**
  * The <code>InsertEventV2Processor</code> processes WriteRowsEventV2 from source. This event is received if there is
@@ -32,7 +33,7 @@ public class InsertEventV2Processor extends AbstractBinLogEventProcessor
 	public void process(BinlogEventV4 event, OpenReplicationListener listener)
 	{
 		WriteRowsEventV2 wre = (WriteRowsEventV2) event;
-		List<AbstractEvent> sourceEvents = map(wre.getTableId(), wre.getRows(), listener);
+		List<AbstractEvent> sourceEvents = map(wre.getTableId(), wre.getRows(), listener, DbusOpcode.UPSERT);
 		for (AbstractEvent sourceEvent : sourceEvents)
 		{
 			listener.getSourceEventConsumer().onEvent(sourceEvent);

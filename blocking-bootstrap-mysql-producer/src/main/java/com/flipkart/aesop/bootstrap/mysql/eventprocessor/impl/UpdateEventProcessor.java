@@ -23,6 +23,7 @@ import com.google.code.or.binlog.BinlogEventV4;
 import com.google.code.or.binlog.impl.event.UpdateRowsEvent;
 import com.google.code.or.common.glossary.Pair;
 import com.google.code.or.common.glossary.Row;
+import com.linkedin.databus.core.DbusOpcode;
 
 /**
  * The <code>UpdateEventProcessor</code> processes UpdateRowsEvent from source. This event is received if there is any
@@ -44,7 +45,7 @@ public class UpdateEventProcessor extends AbstractBinLogEventProcessor
 			rowList.add(row);
 		}
 
-		List<AbstractEvent> sourceEvents = map(updateRowsEvent.getTableId(), rowList, listener);
+		List<AbstractEvent> sourceEvents = map(updateRowsEvent.getTableId(), rowList, listener, DbusOpcode.UPSERT);
 		for (AbstractEvent sourceEvent : sourceEvents)
 		{
 			listener.getSourceEventConsumer().onEvent(sourceEvent);

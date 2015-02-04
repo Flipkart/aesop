@@ -34,14 +34,15 @@ public abstract class AbstractBinLogEventProcessor implements BinLogEventProcess
 {
 	public static final Logger LOGGER = LogFactory.getLogger(AbstractBinLogEventProcessor.class);
 
-	protected List<AbstractEvent> map(long tableId, List<Row> rowList, OpenReplicationListener listener)
+	protected List<AbstractEvent> map(long tableId, List<Row> rowList, OpenReplicationListener listener,
+	        DbusOpcode dbusOpcode)
 	{
 		String tableName = listener.getTableIdtoNameMapping().get(tableId);
-		return map(tableName, rowList, listener);
+		return map(tableName, rowList, listener, dbusOpcode);
 	}
 
 	protected List<AbstractEvent> map(String tableName, List<Row> rowList,
-	        OpenReplicationListener openReplicationListener)
+	        OpenReplicationListener openReplicationListener, DbusOpcode dbusOpcode)
 	{
 		List<AbstractEvent> sourceEvents = new ArrayList<AbstractEvent>();
 
@@ -57,7 +58,7 @@ public abstract class AbstractBinLogEventProcessor implements BinLogEventProcess
 				{
 					AbstractEvent abstractEvent =
 					        openReplicationListener.getBinLogEventMapper().mapBinLogEvent(row, schema.getSchema(),
-					                DbusOpcode.UPSERT);
+					                dbusOpcode);
 					sourceEvents.add(abstractEvent);
 				}
 			}
