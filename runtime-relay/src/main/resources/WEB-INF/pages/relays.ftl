@@ -15,16 +15,28 @@
 				    <table class="kv" cellspacing=0 cellpadding=0>
 				        <tr><td class="k">ID</td><td class="v">${relay.getpSourceId()}</td></tr>
 				        <tr><td class="k">Name</td><td class="v">${relay.getpSourceName()}</td></tr>
-				        <tr><td class="k">URI</td><td class="v">${relay.getpSourceURI()}</td></tr>
+				     <!--   <tr><td class="k">URI</td><td class="v">${relay.getpSourceURI()}</td></tr> -->
 				    </table>
 				</td>
+				<#if (relay.lSourceInfos?size > 0)>
 				<td>
 				    <table class="kv" cellspacing=0 cellpadding=0>
-				        <tr><td class="k">ID</td><td class="v">${relay.getlSourceId()}</td></tr>
-				        <tr><td class="k">Name</td><td class="v">${relay.getlSourceName()}</td></tr>
-				        <tr><td class="k">URI</td><td class="v">${relay.getlSourceURI()}</td></tr>
+				    <#list relay.lSourceInfos as lSourceInfo>
+				        <tr>
+				            <td style="border-right: 1px solid #b8c885">
+				            <table class="kv" cellspacing=0 cellpadding=0>
+				                <tr><td class="k">ID</td><td class="v">${lSourceInfo.getLSourceId()}</td></tr>
+				                <tr><td class="k">Name</td><td class="v">${lSourceInfo.getLSourceName()}</td></tr>
+				                <tr><td class="k">URI</td><td class="v">${lSourceInfo.getLSourceURI()}</td></tr>
+                            </table>
+                            </td>
+                        </tr>
+				    </#list>
 				    </table>
 				</td>
+				<#else>
+                      <td>None</td>
+                </#if>
 				<td>
 				    <table class="kv" cellspacing=0 cellpadding=0>
 				        <tr><td class="k">Name</td><td class="v">${relay.getProducerName()}</td></tr>

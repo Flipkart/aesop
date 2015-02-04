@@ -80,12 +80,15 @@ public class RelayController {
                 for (ProducerRegistration producerRegistration : relay.getProducerRegistrationList()){
                     RelayInfo relayInfo = new RelayInfo(producerRegistration.getPhysicalSourceConfig().getId(),
                             producerRegistration.getPhysicalSourceConfig().getName(), producerRegistration.getPhysicalSourceConfig().getUri());
-                    if (producerRegistration.getPhysicalSourceConfig().getSources().size() > 0) {
-                        // take only the first logical source that the producer will be registered with
-                        relayInfo.setlSourceId(producerRegistration.getPhysicalSourceConfig().getSources().get(0).getId());
-                        relayInfo.setlSourceName(producerRegistration.getPhysicalSourceConfig().getSources().get(0).getName());
-                        relayInfo.setlSourceURI(producerRegistration.getPhysicalSourceConfig().getSources().get(0).getUri());
+
+                    // take all the logical source that the producer will be registered with
+                    RelayInfo.LSourceInfo[] lSourceInfos = new RelayInfo.LSourceInfo[producerRegistration.getPhysicalSourceConfig().getSources().size()];
+                    for (int i=0;i<lSourceInfos.length;i++) {
+                        lSourceInfos[i] = new RelayInfo.LSourceInfo(producerRegistration.getPhysicalSourceConfig().getSources().get(i).getId());
+                        lSourceInfos[i].setLSourceName(producerRegistration.getPhysicalSourceConfig().getSources().get(i).getName());
+                        lSourceInfos[i].setLSourceURI(producerRegistration.getPhysicalSourceConfig().getSources().get(i).getUri());
                     }
+
                     relayInfo.setProducerName(producerRegistration.getEventProducer().getName());
                     relayInfo.setProducerSinceSCN(String.valueOf(producerRegistration.getEventProducer().getSCN()));
                     // now add connected clients details
@@ -97,6 +100,7 @@ public class RelayController {
                                 peers.get(i)).getMaxStreamWinScn()));
                     }
                     relayInfo.setClientInfos(clientInfos);
+                    relayInfo.setlSourceInfos(lSourceInfos);
                     relayInfos.add(relayInfo);
                 }
             }
