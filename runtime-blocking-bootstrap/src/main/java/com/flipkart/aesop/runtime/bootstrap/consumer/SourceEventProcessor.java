@@ -21,7 +21,8 @@ import com.flipkart.aesop.eventconsumer.AbstractEventConsumer;
 import com.linkedin.databus.client.pub.ConsumerCallbackResult;
 
 /**
- * Created by nikhil.bafna on 1/25/15.
+ * <code>SourceEventProcessor</code> processes the source event by invoking the registered event consumer.
+ * @author nrbafna
  */
 public class SourceEventProcessor implements Runnable
 {

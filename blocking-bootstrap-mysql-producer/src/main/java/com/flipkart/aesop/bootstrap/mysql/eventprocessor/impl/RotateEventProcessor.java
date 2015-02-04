@@ -22,7 +22,10 @@ import com.google.code.or.binlog.BinlogEventV4;
 import com.google.code.or.binlog.impl.event.RotateEvent;
 
 /**
- * Created by nikhil.bafna on 1/27/15.
+ * The <code>RotateEventProcessor</code> processes RotateEvent from source. Rotate Event is called whenever the bin log
+ * file rotates. Bin log file gets rotated when the log file size exceeds the configured size or log file is older than
+ * the configured number of days.
+ * @author nrbafna
  */
 public class RotateEventProcessor implements BinLogEventProcessor
 {

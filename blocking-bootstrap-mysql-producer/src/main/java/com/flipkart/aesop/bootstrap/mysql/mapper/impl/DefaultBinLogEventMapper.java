@@ -36,7 +36,8 @@ import com.linkedin.databus2.core.DatabusException;
 import com.linkedin.databus2.schemas.utils.SchemaHelper;
 
 /**
- * Created by nikhil.bafna on 1/22/15.
+ * <code>DefaultBinLogEventMapper</code> maps binlog events to {@link AbstractEvent}
+ * @author nrbanfa
  */
 public class DefaultBinLogEventMapper implements BinLogEventMapper<AbstractEvent>
 {

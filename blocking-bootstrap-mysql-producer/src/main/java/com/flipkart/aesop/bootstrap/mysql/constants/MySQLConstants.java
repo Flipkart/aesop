@@ -13,7 +13,8 @@
 package com.flipkart.aesop.bootstrap.mysql.constants;
 
 /**
- * Created by nikhil.bafna on 1/27/15.
+ * <code>MySQLConstants</code> defines different bin log event ids supported as per MySQL documentation
+ * @author nrbafna
  */
 public class MySQLConstants
 {

@@ -42,22 +42,15 @@ import com.google.code.or.common.glossary.column.TimeColumn;
 import com.google.code.or.common.glossary.column.TimestampColumn;
 import com.google.code.or.common.glossary.column.TinyColumn;
 import com.google.code.or.common.glossary.column.YearColumn;
-import com.linkedin.databus2.core.DatabusException;
 
 /**
+ * <code>ORToMysqlMapper</code> provides mapping of data from open replicator data type to mysql data type
  * @author yogesh.dahiya
  */
-
 public class ORToMysqlMapper
 {
 	public static final Logger LOGGER = LogFactory.getLogger(MysqlEventProducer.class);
 
-	/**
-	 * Provides mapping of data from open replicator data type to mysql data type
-	 * @param column column of Open replicator type
-	 * @return returns the column of avro type
-	 * @throws DatabusException Generic databus exception
-	 */
 	public Object orToMysqlType(Column column) throws Exception
 	{
 		if (column instanceof BitColumn)

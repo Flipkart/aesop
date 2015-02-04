@@ -27,7 +27,9 @@ import com.google.code.or.OpenReplicator;
 import com.linkedin.databus2.schemas.FileSystemSchemaRegistryService;
 
 /**
- * Created by nikhil.bafna on 1/27/15.
+ * <code>MysqlEventProducer</code> starts OpenReplicator bin log event listener to listen to MySQL events & registers an
+ * instance of {@link OpenReplicationListener} to process the events
+ * @author nrbafna
  */
 public class MysqlEventProducer extends BlockingEventProducer
 {

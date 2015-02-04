@@ -19,7 +19,9 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Created by nikhil.bafna on 2/2/15.
+ * <code>WaitPolicy</code> is a waiting implementation of {@link RejectedExecutionHandler}. It tries to put the runnable
+ * into the queue in loop, breaking when the executor is shutdown
+ * @author nrbafna
  */
 public class WaitPolicy implements RejectedExecutionHandler
 {

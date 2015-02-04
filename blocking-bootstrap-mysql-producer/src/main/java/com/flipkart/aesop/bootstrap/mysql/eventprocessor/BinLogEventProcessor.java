@@ -17,7 +17,9 @@ import com.flipkart.aesop.bootstrap.mysql.eventlistener.OpenReplicationListener;
 import com.google.code.or.binlog.BinlogEventV4;
 
 /**
- * Created by nikhil.bafna on 1/27/15.
+ * The <code>BinLogEventProcessor</code> is the interface for all bin log event processors such as
+ * InsertEventProcessor, UpdateEventProcessor etc
+ * @author nrbafna
  */
 public interface BinLogEventProcessor
 {

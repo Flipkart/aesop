@@ -28,6 +28,11 @@ import com.flipkart.aesop.event.AbstractEvent;
 import com.flipkart.aesop.eventconsumer.AbstractEventConsumer;
 import com.google.common.base.Joiner;
 
+/**
+ * <code>DefaultBlockingEventConsumer</code> is the default blocking implementation for {@link SourceEventConsumer}. It
+ * submits the events to the appropriate thread pool.
+ * @author nrbafna
+ */
 public class DefaultBlockingEventConsumer implements SourceEventConsumer
 {
 	public static final Logger LOGGER = LogFactory.getLogger(DefaultBlockingEventConsumer.class);

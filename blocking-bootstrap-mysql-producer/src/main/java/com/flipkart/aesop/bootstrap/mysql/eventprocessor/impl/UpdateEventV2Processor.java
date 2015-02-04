@@ -25,7 +25,9 @@ import com.google.code.or.common.glossary.Pair;
 import com.google.code.or.common.glossary.Row;
 
 /**
- * Created by nikhil.bafna on 1/27/15.
+ * The <code>UpdateEventV2Processor</code> processes UpdateRowsEventV2 from source. This event is received if there is
+ * any update operation on the source.
+ * @author nrbafna
  */
 public class UpdateEventV2Processor extends AbstractBinLogEventProcessor
 {

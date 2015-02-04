@@ -27,7 +27,9 @@ import com.linkedin.databus2.core.container.monitoring.mbean.DatabusComponentAdm
 import com.linkedin.databus2.core.container.netty.ServerContainer;
 
 /**
- * Created by nikhil.bafna on 1/28/15.
+ * The <code>BlockingBootstrapServer</code> class defines behavior of a blocking bootstrap server i.e. serves
+ * change data snapshots that may be used to bootstrap slow consumers
+ * @author nrbafna
  */
 public class BlockingBootstrapServer extends ServerContainer
 {

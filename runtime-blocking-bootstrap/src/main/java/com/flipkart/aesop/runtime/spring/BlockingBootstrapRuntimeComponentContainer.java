@@ -12,9 +12,15 @@
  */
 package com.flipkart.aesop.runtime.spring;
 
-public class BootstrapRuntimeComponentContainer extends RuntimeComponentContainer
+/**
+ * The <code>BlockingBootstrapRuntimeComponentContainer</code> class is a concrete subtype of the
+ * {@link RuntimeComponentContainer} used for managing blocking databus bootstrap instances that serve change event
+ * snapshots.
+ * @see org.trpr.platform.runtime.spi.component.ComponentContainer
+ * @author nrbafna
+ */
+public class BlockingBootstrapRuntimeComponentContainer extends RuntimeComponentContainer
 {
-
 	/**
 	 * The file name containing Http Client beans
 	 */
@@ -31,7 +37,7 @@ public class BootstrapRuntimeComponentContainer extends RuntimeComponentContaine
 	 */
 	public String getRuntimeConfigFileName()
 	{
-		return BootstrapRuntimeComponentContainer.BOOTSTRAP_CONFIG_FILE;
+		return BlockingBootstrapRuntimeComponentContainer.BOOTSTRAP_CONFIG_FILE;
 	}
 
 	/**
@@ -40,7 +46,7 @@ public class BootstrapRuntimeComponentContainer extends RuntimeComponentContaine
 	 */
 	public String getRuntimeModuleName()
 	{
-		return BootstrapRuntimeComponentContainer.RUNTIME_MODULE_NAME;
+		return BlockingBootstrapRuntimeComponentContainer.RUNTIME_MODULE_NAME;
 	}
 
 }

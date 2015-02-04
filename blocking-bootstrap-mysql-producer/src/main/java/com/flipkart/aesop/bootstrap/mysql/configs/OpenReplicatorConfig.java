@@ -14,7 +14,8 @@
 package com.flipkart.aesop.bootstrap.mysql.configs;
 
 /**
- * Created by nikhil.bafna on 1/27/15.
+ * <code>OpenReplicatorConfig</code> holds the configuration data for {@link com.google.code.or.OpenReplicator}
+ * @author nrbafna
  */
 public class OpenReplicatorConfig
 {

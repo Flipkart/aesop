@@ -26,7 +26,9 @@ import com.linkedin.databus.core.DbusOpcode;
 import com.linkedin.databus2.schemas.VersionedSchema;
 
 /**
- * Created by nikhil.bafna on 1/27/15.
+ * <code>AbstractBinLogEventProcessor</code> provides utility to map bin log events to list of
+ * {@link com.flipkart.aesop.event.AbstractEvent}
+ * @author nrbafna
  */
 public abstract class AbstractBinLogEventProcessor implements BinLogEventProcessor
 {

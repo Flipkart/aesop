@@ -19,7 +19,9 @@ import com.google.code.or.binlog.BinlogEventV4;
 import com.google.code.or.binlog.impl.event.TableMapEvent;
 
 /**
- * Created by nikhil.bafna on 1/27/15.
+ * The <code>TableMapEventProcessor</code> processes TableMapEvent from source. This event gives table related details
+ * for the started transaction.
+ * @author nrbafna
  */
 public class TableMapEventProcessor extends AbstractBinLogEventProcessor
 {

@@ -22,7 +22,9 @@ import com.linkedin.databus2.producers.EventProducer;
 import com.linkedin.databus2.schemas.SchemaRegistryService;
 
 /**
- * Created by nikhil.bafna on 1/27/15.
+ * <code>BlockingEventProducer</code> produces list of {@link com.flipkart.aesop.event.AbstractEvent}, filters them
+ * using registered interested sources & submits to the registered event consumer.
+ * @author nrbafna
  */
 public abstract class BlockingEventProducer implements EventProducer
 {

@@ -22,7 +22,8 @@ import com.linkedin.databus.core.util.ConfigLoader;
 import com.linkedin.databus2.core.container.netty.ServerContainer;
 
 /**
- * Created by nikhil.bafna on 2/2/15.
+ * The Spring factory bean for creating {@link BlockingBootstrapServer} instances based on configured properties
+ * @author nrbafna
  */
 public class BlockingBootstrapServerFactory implements FactoryBean<BlockingBootstrapServer>
 {

@@ -16,7 +16,8 @@ package com.flipkart.aesop.runtime.bootstrap.configs;
 import java.util.Properties;
 
 /**
- * Created by nikhil.bafna on 1/26/15.
+ * <code>BootstrapConfig</code> holds configuration properties for blocking bootstrap server
+ * @author nrbafna
  */
 public class BootstrapConfig
 {

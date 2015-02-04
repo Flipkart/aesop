@@ -20,7 +20,9 @@ import com.google.code.or.common.glossary.Row;
 import com.linkedin.databus.core.DbusOpcode;
 
 /**
- * Created by nikhil.bafna on 1/22/15.
+ * <code>BinLogEventMapper</code> maps the specified bin log event details such as event header, mutated row and
+ * operation code to an appropriate instance of the {@link com.flipkart.aesop.event.AbstractEvent} sub-type T.
+ * @author nrbanfa
  */
 public interface BinLogEventMapper<T extends AbstractEvent>
 {

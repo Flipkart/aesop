@@ -22,7 +22,9 @@ import com.google.code.or.binlog.BinlogEventV4;
 import com.google.code.or.binlog.impl.event.WriteRowsEventV2;
 
 /**
- * Created by nikhil.bafna on 1/27/15.
+ * The <code>InsertEventV2Processor</code> processes WriteRowsEventV2 from source. This event is received if there is
+ * any insert operation on the source.
+ * @author nrbafna
  */
 public class InsertEventV2Processor extends AbstractBinLogEventProcessor
 {

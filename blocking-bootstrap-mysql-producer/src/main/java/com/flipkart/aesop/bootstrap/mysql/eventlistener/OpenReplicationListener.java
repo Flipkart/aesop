@@ -32,9 +32,10 @@ import com.linkedin.databus2.producers.EventProducer;
 import com.linkedin.databus2.schemas.SchemaRegistryService;
 
 /**
- * @author yogesh.dahiya
+ * The <OpenReplicationListener> is a binary log callback implementation of {@link BinlogEventListener}.
+ * <a href="https://code.google.com/p/open-replicator/">OpenReplicator</a> provides callback to this implementation.
+ * @author nrbafna
  */
-
 public class OpenReplicationListener implements BinlogEventListener
 {
 	public static final Logger LOGGER = LogFactory.getLogger(OpenReplicationListener.class);
