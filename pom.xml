@@ -91,6 +91,7 @@
         <module>diff-producer</module>
         <module>sample-memory-relay</module>
         <module>sample-hbase-relay</module>
+        <module>sample-mysql-mysql-blocking-bootstrap</module>
         <module>sample-client</module>
         <module>sample-client-cluster</module>
         <module>sample-client-bootstrap-producer</module>

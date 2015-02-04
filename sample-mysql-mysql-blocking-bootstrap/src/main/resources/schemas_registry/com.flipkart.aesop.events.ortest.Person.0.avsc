@@ -1,0 +1,28 @@
+{
+  "name" : "Person",
+  "doc" : "Auto-generated Avro schema for sy$person. Generated at Dec 04, 2012 05:07:05 PM PST",
+  "type" : "record",
+  "meta" : "dbFieldName=person;pk=id;",
+  "namespace" : "or_test",
+  "fields" : [ {
+    "name" : "id",
+    "type" : [ "long", "null" ],
+    "meta" : "dbFieldName=ID;dbFieldPosition=0;dbFieldType=bigint"
+  }, {
+    "name" : "firstName",
+    "type" : [ "string", "null" ],
+    "meta" : "dbFieldName=FIRST_NAME;dbFieldPosition=1;dbFieldType=varchar"
+  }, {
+    "name" : "lastName",
+    "type" : [ "string", "null" ],
+    "meta" : "dbFieldName=LAST_NAME;dbFieldPosition=2;dbFieldType=varchar"
+  }, {
+    "name" : "birthDate",
+    "type" : [ "long", "null" ],
+    "meta" : "dbFieldName=BIRTH_DATE;dbFieldPosition=3;dbFieldType=timestamp"
+  }, {
+    "name" : "deleted",
+    "type" : [ "string", "null" ],
+    "meta" : "dbFieldName=DELETED;dbFieldPosition=4;dbFieldType=varchar"
+  } ]
+}
