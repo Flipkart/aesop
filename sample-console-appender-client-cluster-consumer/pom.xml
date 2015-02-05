@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>com.flipkart.aesop</groupId>
 		<artifactId>aesop</artifactId>
-		<version>1.0.10-SNAPSHOT</version>
+		<version>1.0.11-SNAPSHOT</version>
 	</parent>
 	<artifactId>sample-console-appender-client-cluster-consumer</artifactId>
 	<name>Sample Console Appender Client Cluster</name>
@@ -17,13 +17,13 @@
 		<dependency>
 			<groupId>com.flipkart.aesop</groupId>
 			<artifactId>runtime-client-cluster</artifactId>
-			<version>1.0.10-SNAPSHOT</version>
+			<version>1.0.11-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
 			<groupId>com.flipkart.aesop</groupId>
 			<artifactId>data-layer-console-appender</artifactId>
-			<version>1.0.10-SNAPSHOT</version>
+			<version>1.0.11-SNAPSHOT</version>
 		</dependency>
 
 	</dependencies>

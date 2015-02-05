@@ -6,12 +6,12 @@
 	<parent>
 		<groupId>com.flipkart.aesop</groupId>
 		<artifactId>aesop</artifactId>
-		<version>1.0.10-SNAPSHOT</version>
+		<version>1.0.11-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>runtime-blocking-bootstrap</artifactId>
 	<name>Bootstrap Blocking Runtime</name>
-	<version>1.0.10-SNAPSHOT</version>
+	<version>1.0.11-SNAPSHOT</version>
 	<description>Blocking Bootstrap Runtime</description>
 
 	<properties>
@@ -53,7 +53,7 @@
 		<dependency>
 			<groupId>com.flipkart.aesop</groupId>
 			<artifactId>runtime</artifactId>
-			<version>1.0.10-SNAPSHOT</version>
+			<version>1.0.11-SNAPSHOT</version>
 		</dependency>
 		<!-- Databus dependencies -->
 		<dependency>

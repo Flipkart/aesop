@@ -7,12 +7,12 @@
     <parent>
         <groupId>com.flipkart.aesop</groupId>
         <artifactId>aesop</artifactId>
-        <version>1.0.10-SNAPSHOT</version>
+        <version>1.0.11-SNAPSHOT</version>
     </parent>
 
     <groupId>com.flipkart.aesop</groupId>
     <artifactId>sample-bootstrap-server</artifactId>
-    <version>1.0.10-SNAPSHOT</version>
+    <version>1.0.11-SNAPSHOT</version>
     <name>Sample Bootstrap Server</name>
     <description>Sample Bootstrap Server</description>
 
@@ -50,7 +50,7 @@
         <dependency>
             <groupId>com.flipkart.aesop</groupId>
             <artifactId>runtime-bootstrap</artifactId>
-            <version>1.0.10-SNAPSHOT</version>
+            <version>1.0.11-SNAPSHOT</version>
         </dependency>    
     </dependencies>
 
