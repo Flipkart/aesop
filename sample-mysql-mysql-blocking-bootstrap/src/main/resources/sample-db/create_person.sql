@@ -7,6 +7,14 @@ CREATE TABLE `person` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8;
 
+CREATE TABLE `PERSONPARALLEL` (
+  `pid` bigint(20) NOT NULL AUTO_INCREMENT,
+  `firstname` varchar(120) DEFAULT NULL,
+  `lastname` varchar(120) DEFAULT NULL,
+  `birthdate` date DEFAULT NULL,
+  `deleted` varchar(5) DEFAULT 'false',
+  PRIMARY KEY (`pid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 INSERT INTO `person` (`id`, `first_name`, `last_name`, `birth_date`, `deleted`)
 VALUES
