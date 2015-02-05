@@ -22,7 +22,7 @@ import com.linkedin.databus.core.DbusOpcode;
 /**
  * <code>BinLogEventMapper</code> maps the specified bin log event details such as event header, mutated row and
  * operation code to an appropriate instance of the {@link com.flipkart.aesop.event.AbstractEvent} sub-type T.
- * @author nrbanfa
+ * @author nrbafna
  */
 public interface BinLogEventMapper<T extends AbstractEvent>
 {

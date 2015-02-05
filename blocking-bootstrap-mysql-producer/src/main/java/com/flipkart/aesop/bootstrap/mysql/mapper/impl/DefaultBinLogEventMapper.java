@@ -37,7 +37,7 @@ import com.linkedin.databus2.schemas.utils.SchemaHelper;
 
 /**
  * <code>DefaultBinLogEventMapper</code> maps binlog events to {@link AbstractEvent}
- * @author nrbanfa
+ * @author nrbafna
  */
 public class DefaultBinLogEventMapper implements BinLogEventMapper<AbstractEvent>
 {
