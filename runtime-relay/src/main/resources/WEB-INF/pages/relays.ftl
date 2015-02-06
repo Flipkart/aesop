@@ -24,11 +24,6 @@
 				    <#list relay.lSourceInfos as lSourceInfo>
 				        <tr>
 				            <td style="border-right: 1px solid #b8c885">
-				            <table class="kv" cellspacing=0 cellpadding=0>
-				                <tr><td class="k">ID</td><td class="v">${lSourceInfo.getLSourceId()}</td></tr>
-				                <tr><td class="k">Name</td><td class="v">${lSourceInfo.getLSourceName()}</td></tr>
-				                <tr><td class="k">URI</td><td class="v">${lSourceInfo.getLSourceURI()}</td></tr>
-                            </table>
                             </td>
                         </tr>
 				    </#list>
