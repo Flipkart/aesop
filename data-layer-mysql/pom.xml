@@ -3,7 +3,7 @@
       <parent>
         <groupId>com.flipkart.aesop</groupId>
         <artifactId>aesop</artifactId>
-        <version>1.0.11-SNAPSHOT</version>
+        <version>1.0.12-SNAPSHOT</version>
     </parent>
   <artifactId>data-layer-mysql</artifactId>
   <name>MySQL Data Layer</name>
@@ -19,12 +19,12 @@
         <dependency>
             <groupId>com.flipkart.aesop</groupId>
             <artifactId>runtime-client-cluster</artifactId>
-            <version>1.0.11-SNAPSHOT</version>
+            <version>1.0.12-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.flipkart.aesop</groupId>
             <artifactId>client-event-consumer</artifactId>
-            <version>1.0.11-SNAPSHOT</version>
+            <version>1.0.12-SNAPSHOT</version>
         </dependency>
   </dependencies>
 </project>
