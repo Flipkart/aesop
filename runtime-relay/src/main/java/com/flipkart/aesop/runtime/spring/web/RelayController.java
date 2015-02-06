@@ -97,7 +97,7 @@ public class RelayController {
                     for (int i=0; i<clientInfos.length;i++) {
                         clientInfos[i] = new RelayInfo.ClientInfo(peers.get(i));
                         clientInfos[i].setClientSinceSCN(String.valueOf(relay.getHttpStatisticsCollector().getPeerStats(
-                                peers.get(i)).getMaxStreamWinScn()));
+                                peers.get(i)).getMinStreamWinScn()));
                     }
                     relayInfo.setClientInfos(clientInfos);
                     relayInfo.setlSourceInfos(lSourceInfos);
