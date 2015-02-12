@@ -80,5 +80,9 @@ public class ElasticSearchUpsertDataLayer extends UpsertDestinationStoreOperatio
     public void setElasticSearchClient(ElasticSearchClient elasticSearchClient) {
         this.elasticSearchClient = elasticSearchClient;
     }
+
+    public ElasticSearchClient getElasticSearchClient() {
+        return this.elasticSearchClient;
+    }
     /* Getters and Setters end */
 }
