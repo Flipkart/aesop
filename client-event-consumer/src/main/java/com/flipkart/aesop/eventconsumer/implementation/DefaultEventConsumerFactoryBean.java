@@ -10,7 +10,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *  
+ *
  *******************************************************************************/
 
 package com.flipkart.aesop.eventconsumer.implementation;
@@ -23,10 +23,14 @@ import com.flipkart.aesop.eventconsumer.EventConsumerFactoryBean;
  */
 public class DefaultEventConsumerFactoryBean extends EventConsumerFactoryBean<DefaultEventConsumerImpl>
 {
-	@Override
-	public DefaultEventConsumerImpl getEventConsumerObject()
-	{
-		return new DefaultEventConsumerImpl.Builder(sourceEventFactory, mapper, destStoreOperationsMap)
-		        .destinationGroupSet(destinationGroupSet).build();
-	}
+    @Override
+    public DefaultEventConsumerImpl getEventConsumerObject()
+    {
+        return new DefaultEventConsumerImpl.
+                Builder(sourceEventFactory, mapper, destinationProcessorMap)
+                .withPreMappingTransformer(preMappingPreMappingTransformer)
+                .withPostMappingTransformer(postMappingPreMappingTransformer)
+                .withDestinationGroupSet(destinationGroupSet)
+                .build();
+    }
 }

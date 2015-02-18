@@ -10,25 +10,30 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *  
+ *
  *******************************************************************************/
-
-package com.flipkart.aesop.destinationoperation;
-
-import javax.naming.OperationNotSupportedException;
+package com.flipkart.aesop.transformer;
 
 import com.flipkart.aesop.event.AbstractEvent;
+import com.flipkart.aesop.event.implementation.SourceEvent;
 
 /**
- * Topmost class which is to be implemented by any class performing any type of Destination Store Operation.
- * @author Prakhar Jain
+ * PreMappingTransformer Interface to be implemented by the {@link com.flipkart.aesop.eventconsumer.AbstractEventConsumer}
+ * This can be used to transform source events {@link com.flipkart.aesop.event.implementation.SourceEvent} in
+ * the pre mapping phase
+ *
+ * Use-cases :
+ *  Users may want to add or remove some  fields statically or by calling an external API.
+ *  As an example
+ *  adding date fields with some default values to your source events.
+ *
  */
-public interface DestinationStoreOperation
+public interface PreMappingTransformer
 {
-	/**
-	 * Function to be called to perform any destination store operation.
-	 * @param event
-	 * @throws OperationNotSupportedException
+    /**
+     * This will be called to transform events both in the pre-mapping phase
+	 * @param event The event
+	 * @return {@link com.flipkart.aesop.event.implementation.DestinationEvent}
 	 */
-	public void execute(AbstractEvent event) throws OperationNotSupportedException;
+	SourceEvent transform(AbstractEvent event);
 }

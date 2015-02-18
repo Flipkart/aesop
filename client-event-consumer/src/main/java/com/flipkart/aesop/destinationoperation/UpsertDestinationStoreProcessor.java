@@ -15,18 +15,19 @@
 
 package com.flipkart.aesop.destinationoperation;
 
-import javax.naming.OperationNotSupportedException;
-
 import com.flipkart.aesop.event.AbstractEvent;
+import com.flipkart.aesop.processor.DestinationEventProcessor;
 import com.linkedin.databus.core.DbusOpcode;
 
+import javax.naming.OperationNotSupportedException;
+
 /**
- * Upsert Destination Operation Layer which consumes Upsert Events.
+ * Upsert Destination Operation Processor which processes Upsert Events.
  * @author Prakhar Jain
  */
-public abstract class UpsertDestinationStoreOperation implements DestinationStoreOperation
+public abstract class UpsertDestinationStoreProcessor implements DestinationEventProcessor
 {
-	public void execute(AbstractEvent event) throws OperationNotSupportedException
+	public void processDestinationEvent(AbstractEvent event) throws OperationNotSupportedException
 	{
 		if (event.getEventType() == DbusOpcode.UPSERT)
 		{
@@ -36,7 +37,7 @@ public abstract class UpsertDestinationStoreOperation implements DestinationStor
 		{
 			throw new OperationNotSupportedException();
 		}
-	}
+    }
 
 	/**
 	 * Delete function to be implemented by the class extending this class.

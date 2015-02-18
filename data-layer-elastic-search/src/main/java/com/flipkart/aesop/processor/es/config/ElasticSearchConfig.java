@@ -12,7 +12,7 @@
  * limitations under the License.
  *
  *******************************************************************************/
-package com.flipkart.aesop.elasticsearchdatalayer.config;
+package com.flipkart.aesop.processor.es.config;
 
 /**
  * Passes ElasticSearchConfig filename
@@ -37,7 +37,6 @@ public class ElasticSearchConfig implements  InitializingBean
         return this.config;
     }
 
-    @Override
     public void afterPropertiesSet() throws Exception {
         /* Assert if filename is ot empty */
         Assert.notNull(this.config,"'ElasticSearchConfig' cannot be null. This Databus Client will not be initialized");

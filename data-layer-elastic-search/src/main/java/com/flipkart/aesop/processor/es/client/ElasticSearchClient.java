@@ -12,9 +12,9 @@
  * limitations under the License.
  *
  *******************************************************************************/
-package com.flipkart.aesop.elasticsearchdatalayer.elasticsearchclient;
+package com.flipkart.aesop.processor.es.client;
 
-import com.flipkart.aesop.elasticsearchdatalayer.config.ElasticSearchConfig;
+import com.flipkart.aesop.processor.es.config.ElasticSearchConfig;
 import com.typesafe.config.Config;
 import org.elasticsearch.client.Client;
 import org.springframework.beans.factory.InitializingBean;

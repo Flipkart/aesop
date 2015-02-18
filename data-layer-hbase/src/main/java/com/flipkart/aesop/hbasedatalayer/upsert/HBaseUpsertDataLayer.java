@@ -14,25 +14,24 @@
  *******************************************************************************/
 package com.flipkart.aesop.hbasedatalayer.upsert;
 
-import java.util.Map;
-
+import com.flipkart.aesop.destinationoperation.JDBCDataLayer;
+import com.flipkart.aesop.destinationoperation.UpsertDestinationStoreProcessor;
+import com.flipkart.aesop.destinationoperation.utils.DataLayerConstants;
+import com.flipkart.aesop.event.AbstractEvent;
+import com.flipkart.aesop.hbasedatalayer.delete.HBaseDeleteDataLayer;
+import com.linkedin.databus.core.DbusOpcode;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.trpr.platform.core.impl.logging.LogFactory;
 import org.trpr.platform.core.spi.logging.Logger;
 
-import com.flipkart.aesop.hbasedatalayer.delete.HBaseDeleteDataLayer;
-import com.flipkart.aesop.destinationoperation.JDBCDataLayer;
-import com.flipkart.aesop.destinationoperation.UpsertDestinationStoreOperation;
-import com.flipkart.aesop.destinationoperation.utils.DataLayerConstants;
-import com.flipkart.aesop.event.AbstractEvent;
-import com.linkedin.databus.core.DbusOpcode;
+import java.util.Map;
 
 /**
  * HBase Update Data Layer. Persists {@link DbusOpcode#UPSERT} events to HBase through Phoenix.
  * @author Prakhar Jain
  * @see HBaseDeleteDataLayer
  */
-public class HBaseUpsertDataLayer extends UpsertDestinationStoreOperation implements JDBCDataLayer
+public class HBaseUpsertDataLayer extends UpsertDestinationStoreProcessor implements JDBCDataLayer
 {
 	/** Logger for this class. */
 	public static final Logger LOGGER = LogFactory.getLogger(HBaseUpsertDataLayer.class);

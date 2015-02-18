@@ -14,7 +14,7 @@
 	<bean id="defaultEventConsumerFactory"
 		class="com.flipkart.aesop.eventconsumer.implementation.DefaultEventConsumerFactoryBean">
 		<property name="mapper" ref="defaultMapperImpl" />
-		<property name="destStoreOperationsMap">
+		<property name="destinationProcessorMap">
 			<map>
 				<entry key-ref="upsertDbusOpCode" value-ref="hBaseUpsertDataLayer" />
 				<entry key-ref="deleteDbusOpCode" value-ref="hBaseDeleteDataLayer" />

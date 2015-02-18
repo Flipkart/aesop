@@ -14,26 +14,25 @@
  *******************************************************************************/
 package com.flipkart.aesop.hbasedatalayer.delete;
 
-import java.util.Map;
-
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.trpr.platform.core.impl.logging.LogFactory;
-import org.trpr.platform.core.spi.logging.Logger;
-
-import com.flipkart.aesop.hbasedatalayer.upsert.HBaseUpsertDataLayer;
-import com.flipkart.aesop.destinationoperation.DeleteDestinationStoreOperation;
+import com.flipkart.aesop.destinationoperation.DeleteDestinationStoreProcessor;
 import com.flipkart.aesop.destinationoperation.JDBCDataLayer;
 import com.flipkart.aesop.destinationoperation.utils.DataLayerConstants;
 import com.flipkart.aesop.destinationoperation.utils.DataLayerHelper;
 import com.flipkart.aesop.event.AbstractEvent;
+import com.flipkart.aesop.hbasedatalayer.upsert.HBaseUpsertDataLayer;
 import com.linkedin.databus.core.DbusOpcode;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.trpr.platform.core.impl.logging.LogFactory;
+import org.trpr.platform.core.spi.logging.Logger;
+
+import java.util.Map;
 
 /**
  * HBase Delete Data Layer. Persists {@link DbusOpcode#DELETE} events to HBase through Phoenix.
  * @author Prakhar Jain
  * @see HBaseUpsertDataLayer
  */
-public class HBaseDeleteDataLayer extends DeleteDestinationStoreOperation implements JDBCDataLayer
+public class HBaseDeleteDataLayer extends DeleteDestinationStoreProcessor implements JDBCDataLayer
 {
 	/** Logger for this class. */
 	public static final Logger LOGGER = LogFactory.getLogger(HBaseUpsertDataLayer.class);
@@ -43,7 +42,7 @@ public class HBaseDeleteDataLayer extends DeleteDestinationStoreOperation implem
 
 	/**
 	 * Field Constructor.
-	 * @param jdbcTemplateMap
+	 * @param jdbcTemplateMap jdbcTemplateMap
 	 */
 	public HBaseDeleteDataLayer(Map<String, NamedParameterJdbcTemplate> jdbcTemplateMap)
 	{
@@ -68,7 +67,7 @@ public class HBaseDeleteDataLayer extends DeleteDestinationStoreOperation implem
 	/**
 	 * Generates Delete Query using {@link #buildQuery(String, String, StringBuilder, StringBuilder)} and
 	 * {@link #populateQueryParts(Map, StringBuilder, StringBuilder)} helper functions.
-	 * @param event
+	 * @param event event
 	 * @return Delete Query.
 	 */
 	private String generateDeleteQuery(AbstractEvent event)
@@ -85,10 +84,10 @@ public class HBaseDeleteDataLayer extends DeleteDestinationStoreOperation implem
 
 	/**
 	 * Helper function for {@link #generateDeleteQuery(AbstractEvent)}.
-	 * @param namespace
-	 * @param entity
-	 * @param columnNameStringBuilder
-	 * @param placeholderStringBuilder
+	 * @param namespace namespace
+	 * @param entity entity
+	 * @param columnNameStringBuilder columnNameStringBuilder
+	 * @param placeholderStringBuilder placeholderStringBuilder
 	 * @return Delete Query
 	 */
 	private String buildQuery(String namespace, String entity, StringBuilder columnNameStringBuilder,

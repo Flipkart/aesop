@@ -15,26 +15,25 @@
 
 package com.flipkart.aesop.eventconsumer;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.trpr.platform.core.impl.logging.LogFactory;
-import org.trpr.platform.core.spi.logging.Logger;
-
-import com.flipkart.aesop.destinationoperation.DestinationStoreOperation;
 import com.flipkart.aesop.event.AbstractEvent;
 import com.flipkart.aesop.event.EventFactory;
 import com.flipkart.aesop.event.implementation.SourceEvent;
 import com.flipkart.aesop.eventconsumer.implementation.DefaultEventConsumerImpl;
 import com.flipkart.aesop.mapper.Mapper;
+import com.flipkart.aesop.processor.DestinationEventProcessor;
 import com.linkedin.databus.client.consumer.AbstractDatabusCombinedConsumer;
 import com.linkedin.databus.client.pub.ConsumerCallbackResult;
 import com.linkedin.databus.client.pub.DbusEventDecoder;
 import com.linkedin.databus.core.DbusEvent;
 import com.linkedin.databus.core.DbusOpcode;
 import com.linkedin.databus2.core.DatabusException;
+import org.trpr.platform.core.impl.logging.LogFactory;
+import org.trpr.platform.core.spi.logging.Logger;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Extend this class to implement your Event Consumer, or use {@link DefaultEventConsumerImpl}.
@@ -51,10 +50,12 @@ public abstract class AbstractEventConsumer extends AbstractDatabusCombinedConsu
 	protected EventFactory sourceEventFactory;
 	/** Maps {@link SourceEvent} to {@link List of DestinationEvent}. */
 	protected Mapper mapper;
-	/** Map from {@link DbusOpcode} to the corresponding {@link DestinationStoreOperation} implementation. */
-	protected Map<DbusOpcode, ? extends DestinationStoreOperation> destinationOperationsMap;
-	/** Set of Group Ids which the event consumer should consume. */
-	protected Set<Integer> destinationGroupSet;
+
+    /** Map from {@link com.linkedin.databus.core.DbusOpcode} to the corresponding {@link DestinationEventProcessor} implementation. */
+    protected Map<DbusOpcode, ? extends DestinationEventProcessor> destinationProcessorMap;
+
+    /** Set of Group Ids which the event consumer should consume. */
+    protected Set<Integer> destinationGroupSet;
 	/**
 	 * Total Destination Groups. This is used in case Group Id is not specified in the HOCON-config and hence, group id
 	 * is figured out using the {@link SourceEvent} and this number.
@@ -69,17 +70,15 @@ public abstract class AbstractEventConsumer extends AbstractDatabusCombinedConsu
 	{
 		protected EventFactory sourceEventFactory;
 		protected Mapper mapper;
-		protected Map<DbusOpcode, ? extends DestinationStoreOperation> destinationOperationsMap;
-
+        protected Map<DbusOpcode, ? extends DestinationEventProcessor> destinationProcessorMap;
 		protected Set<Integer> destinationGroupSet = new HashSet<Integer>();
 		protected Integer totalDestinationGroups = 1;
 
-		public Builder(EventFactory sourceEventFactory, Mapper mapper,
-		        Map<DbusOpcode, ? extends DestinationStoreOperation> destinationOperationsMap)
+		public Builder(EventFactory sourceEventFactory, Mapper mapper, Map<DbusOpcode, ? extends DestinationEventProcessor> destinationProcessorMap)
 		{
 			this.sourceEventFactory = sourceEventFactory;
 			this.mapper = mapper;
-			this.destinationOperationsMap = destinationOperationsMap;
+			this.destinationProcessorMap = destinationProcessorMap;
 		}
 
 		public EventFactory getSourceEventFactory()
@@ -92,9 +91,9 @@ public abstract class AbstractEventConsumer extends AbstractDatabusCombinedConsu
 			return mapper;
 		}
 
-		public Map<DbusOpcode, ? extends DestinationStoreOperation> getDestinationOperationsMap()
+        public Map<DbusOpcode, ? extends DestinationEventProcessor> getDestinationProcessorMap()
 		{
-			return destinationOperationsMap;
+			return destinationProcessorMap;
 		}
 
 		public Set<Integer> getDestinationGroupSet()
@@ -107,24 +106,24 @@ public abstract class AbstractEventConsumer extends AbstractDatabusCombinedConsu
 			return totalDestinationGroups;
 		}
 
-		public Builder<T> destinationGroupSet(Set<Integer> destinationGroupSet)
+		public Builder<T> withDestinationGroupSet(Set<Integer> destinationGroupSet)
 		{
 			this.destinationGroupSet = destinationGroupSet;
 			return this;
 		}
 
-		public Builder<T> totalDestinationGroups(Integer totalDestinationGroups)
+		public Builder<T> withTotalDestinationGroups(Integer totalDestinationGroups)
 		{
 			this.totalDestinationGroups = totalDestinationGroups;
 			return this;
 		}
 
 		public abstract T build();
-	}
+    }
 
 	/**
 	 * Overridden superclass method. Returns the result of calling
-	 * {@link DefaultEventConsumer#processEvent(DbusEvent, DbusEventDecoder)}
+	 * {@link AbstractEventConsumer#processEvent(DbusEvent, DbusEventDecoder)}
 	 * @see com.linkedin.databus.client.consumer.AbstractDatabusCombinedConsumer#onDataEvent(com.linkedin.databus.core.DbusEvent,
 	 *      com.linkedin.databus.client.pub.DbusEventDecoder)
 	 */
@@ -135,7 +134,7 @@ public abstract class AbstractEventConsumer extends AbstractDatabusCombinedConsu
 
 	/**
 	 * Overridden superclass method. Returns the result of calling
-	 * {@link DefaultEventConsumer#processEvent(DbusEvent, DbusEventDecoder)}
+	 * {@link AbstractEventConsumer#processEvent(DbusEvent, DbusEventDecoder)}
 	 * @see com.linkedin.databus.client.consumer.AbstractDatabusCombinedConsumer#onBootstrapEvent(com.linkedin.databus.core.DbusEvent,
 	 *      com.linkedin.databus.client.pub.DbusEventDecoder)
 	 */
@@ -146,7 +145,7 @@ public abstract class AbstractEventConsumer extends AbstractDatabusCombinedConsu
 
 	/**
 	 * Helper method that prints out the attributes of the change event.
-	 * @param event the Databus change event
+	 * @param dbusEvent the Databus change event
 	 * @param eventDecoder the Event decoder
 	 * @return {@link ConsumerCallbackResult#SUCCESS} if successful and {@link ConsumerCallbackResult#ERROR} in case of
 	 *         exceptions/errors
@@ -155,7 +154,7 @@ public abstract class AbstractEventConsumer extends AbstractDatabusCombinedConsu
 	{
 
 		LOGGER.debug("Source Id is " + dbusEvent.getSourceId());
-		AbstractEvent event = null;
+		AbstractEvent event;
 		try
 		{
 			event = decodeSourceEvent(dbusEvent, eventDecoder);
@@ -171,10 +170,10 @@ public abstract class AbstractEventConsumer extends AbstractDatabusCombinedConsu
 
 	/**
 	 * Decodes the {@link DbusEvent} to {@link SourceEvent} using {@link DbusEventDecoder}
-	 * @param event
-	 * @param eventDecoder
+	 * @param event :   databus event
+	 * @param eventDecoder  : databus Event Decoder
 	 * @return Source Event
-	 * @throws DatabusException
+	 * @throws DatabusException : dataBus Exception thrown
 	 */
 	public abstract AbstractEvent decodeSourceEvent(DbusEvent event, DbusEventDecoder eventDecoder)
 	        throws DatabusException;
@@ -182,7 +181,7 @@ public abstract class AbstractEventConsumer extends AbstractDatabusCombinedConsu
 	/**
 	 * Processes source event. Ideal implementation, firstly, maps the {@link SourceEvent} to {@link List of
 	 * DestinationEvent} and then passes each {@code DestinationEvent} to the corresponding
-	 * {@link DestinationStoreOperation}.
+	 * {@link DestinationEventProcessor}.
 	 * @param event Source Event
 	 * @return {@link ConsumerCallbackResult#SUCCESS} if successful and {@link ConsumerCallbackResult#ERROR} in case of
 	 *         exceptions/errors

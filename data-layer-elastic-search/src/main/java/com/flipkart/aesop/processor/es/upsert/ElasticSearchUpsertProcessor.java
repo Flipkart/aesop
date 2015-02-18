@@ -12,27 +12,27 @@
  * limitations under the License.
  *
  *******************************************************************************/
-package com.flipkart.aesop.elasticsearchdatalayer.upsert;
+package com.flipkart.aesop.processor.es.upsert;
 
-import com.flipkart.aesop.elasticsearchdatalayer.elasticsearchclient.ElasticSearchClient;
-import org.trpr.platform.core.impl.logging.LogFactory;
-import org.trpr.platform.core.spi.logging.Logger;
-import com.flipkart.aesop.destinationoperation.UpsertDestinationStoreOperation;
+import com.flipkart.aesop.destinationoperation.UpsertDestinationStoreProcessor;
+import com.flipkart.aesop.processor.es.client.ElasticSearchClient;
 import com.flipkart.aesop.event.AbstractEvent;
 import com.linkedin.databus.core.DbusOpcode;
 import org.elasticsearch.action.index.IndexResponse;
+import org.trpr.platform.core.impl.logging.LogFactory;
+import org.trpr.platform.core.spi.logging.Logger;
 
 import java.util.Map;
 
 /**
  * ElasticSearch Upsert Data Layer. Persists {@link DbusOpcode#UPSERT} events to Logs.
  * @author Pratyay Banerjee
- * @see com.flipkart.aesop.elasticsearchdatalayer.delete.ElasticSearchDeleteDataLayer
+ * @see com.flipkart.aesop.processor.es.delete.ElasticSearchDeleteProcessor
  */
-public class ElasticSearchUpsertDataLayer extends UpsertDestinationStoreOperation
+public class ElasticSearchUpsertProcessor extends UpsertDestinationStoreProcessor
 {
     /** Logger for this class*/
-    private static final Logger LOGGER = LogFactory.getLogger(ElasticSearchUpsertDataLayer.class);
+    private static final Logger LOGGER = LogFactory.getLogger(ElasticSearchUpsertProcessor.class);
 
     /* ES Initializer Client. */
     private ElasticSearchClient elasticSearchClient;

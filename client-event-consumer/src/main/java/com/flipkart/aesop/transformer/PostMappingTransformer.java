@@ -10,29 +10,30 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *  
+ *
  *******************************************************************************/
+package com.flipkart.aesop.transformer;
 
-package com.flipkart.aesop.destinationoperation.implementation;
-
-import com.flipkart.aesop.destinationoperation.DeleteDestinationStoreProcessor;
 import com.flipkart.aesop.event.AbstractEvent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.flipkart.aesop.event.implementation.DestinationEvent;
 
 /**
- * Default Delete Destination Operation Layer which logs the delete events.
- * @author Prakhar Jain
+ * PreMappingTransformer Interface to be implemented by the {@link com.flipkart.aesop.eventconsumer.AbstractEventConsumer}
+ * This can be used to transform destination events {@link DestinationEvent} in
+ * the post mapping phase
+ *
+ * Use-cases :
+ *  Users may want to add or remove some  fields statically or by calling an external API.
+ *  As an example
+ *  adding date fields with some default values to your destination events.
+ *
  */
-public class DefaultDeleteDataLayer extends DeleteDestinationStoreProcessor
+public interface PostMappingTransformer
 {
-	/** Logger for this class. */
-	public final static Logger LOGGER = LoggerFactory.getLogger(DefaultDeleteDataLayer.class);
-
-	@Override
-	protected void delete(AbstractEvent event)
-	{
-		LOGGER.info("Delete Event Received " + event.toString() + " by Default Delete Data Layer");
-	}
-
+    /**
+     * This will be called to transform events in the post mapping phase
+	 * @param event The event
+	 * @return {@link com.flipkart.aesop.event.implementation.DestinationEvent}
+	 */
+	DestinationEvent transform(AbstractEvent event);
 }

@@ -14,25 +14,24 @@
  *******************************************************************************/
 package com.flipkart.aesop.mysqldatalayer.delete;
 
-import java.util.Map;
-import java.util.Set;
-
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-
-import com.flipkart.aesop.mysqldatalayer.upsert.MySQLUpsertDataLayer;
-import com.flipkart.aesop.destinationoperation.DeleteDestinationStoreOperation;
+import com.flipkart.aesop.destinationoperation.DeleteDestinationStoreProcessor;
 import com.flipkart.aesop.destinationoperation.JDBCDataLayer;
 import com.flipkart.aesop.destinationoperation.utils.DataLayerConstants;
 import com.flipkart.aesop.destinationoperation.utils.DataLayerHelper;
 import com.flipkart.aesop.event.AbstractEvent;
+import com.flipkart.aesop.mysqldatalayer.upsert.MySQLUpsertDataLayer;
 import com.linkedin.databus.core.DbusOpcode;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+
+import java.util.Map;
+import java.util.Set;
 
 /**
  * MySQL Delete Data Layer. Persists {@link DbusOpcode#DELETE} events to MySQL.
  * @author Prakhar Jain
  * @see MySQLUpsertDataLayer
  */
-public class MySQLDeleteDataLayer extends DeleteDestinationStoreOperation implements JDBCDataLayer
+public class MySQLDeleteDataLayer extends DeleteDestinationStoreProcessor implements JDBCDataLayer
 {
 	/** JDBC Template Map, with Namespace name as key and the corresponding JDBC template as value. */
 	private Map<String, NamedParameterJdbcTemplate> jdbcTemplateMap;
