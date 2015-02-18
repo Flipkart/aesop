@@ -15,14 +15,12 @@
 package com.flipkart.aesop.processor.es.upsert;
 
 import com.flipkart.aesop.destinationoperation.UpsertDestinationStoreProcessor;
-import com.flipkart.aesop.processor.es.client.ElasticSearchClient;
 import com.flipkart.aesop.event.AbstractEvent;
+import com.flipkart.aesop.processor.es.client.ElasticSearchClient;
 import com.linkedin.databus.core.DbusOpcode;
 import org.elasticsearch.action.index.IndexResponse;
 import org.trpr.platform.core.impl.logging.LogFactory;
 import org.trpr.platform.core.spi.logging.Logger;
-
-import java.util.Map;
 
 /**
  * ElasticSearch Upsert Data Layer. Persists {@link DbusOpcode#UPSERT} events to Logs.
@@ -54,7 +52,7 @@ public class ElasticSearchUpsertProcessor extends UpsertDestinationStoreProcesso
             //create the new id
             IndexResponse response = elasticSearchClient.getClient().prepareIndex(elasticSearchClient.getIndex(),
                     elasticSearchClient.getType(), id)
-                    .setSource(transform(event.getFieldMapPair()))
+                    .setSource(event.getFieldMapPair())
                     .execute()
                     .get();
             if(!response.isCreated())  {
@@ -65,15 +63,6 @@ public class ElasticSearchUpsertProcessor extends UpsertDestinationStoreProcesso
             LOGGER.info("Server Connection Lost/Create Error" + e);
             throw new RuntimeException("Create Failure");
         }
-    }
-
-    /**  transform() converts the Input data to Target Data Map, which can be customised as per user's need
-     *
-     * @param input
-     * @return
-     */
-    protected  Map<String,Object> transform(Map<String,Object> input) {
-        return input;
     }
 
     /* Getters and Setters start */
