@@ -203,9 +203,11 @@ public class MapperHelper
 			{
 				ConfigValue sourceColumnConfig = columnMappingConfigObject.get(sourceColumnName);
 				String destinationColumn = sourceColumnConfig.unwrapped().toString();
+                /*Check if Destination Column is of type Column.NestedField*/
                 if (destinationColumn.contains("."))
                 {
                     String destinationNestedField[] = destinationColumn.split("\\.");
+                    /*destinationNestedField[0] has Column, destinationNestedField[1] has NestedField*/
                     Map<String,Object> destinationFieldMap = (destinationColumnMap.containsKey(destinationNestedField[0]) ?
                             (Map<String,Object>)destinationColumnMap.get(destinationNestedField[0]) : new HashMap<String,Object>() );
                     destinationFieldMap.put(destinationNestedField[1],sourceColumnValue);
