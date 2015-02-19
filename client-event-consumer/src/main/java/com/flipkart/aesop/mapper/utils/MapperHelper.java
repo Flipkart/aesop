@@ -203,8 +203,18 @@ public class MapperHelper
 			{
 				ConfigValue sourceColumnConfig = columnMappingConfigObject.get(sourceColumnName);
 				String destinationColumn = sourceColumnConfig.unwrapped().toString();
-
-				destinationColumnMap.put(destinationColumn, sourceColumnValue);
+                if (destinationColumn.contains("."))
+                {
+                    String destinationNestedField[] = destinationColumn.split("\\.");
+                    Map<String,Object> destinationFieldMap = (destinationColumnMap.containsKey(destinationNestedField[0]) ?
+                            (Map<String,Object>)destinationColumnMap.get(destinationNestedField[0]) : new HashMap<String,Object>() );
+                    destinationFieldMap.put(destinationNestedField[1],sourceColumnValue);
+                    destinationColumnMap.put(destinationNestedField[0],destinationFieldMap);
+                }
+                else
+                {
+                    destinationColumnMap.put(destinationColumn, sourceColumnValue);
+                }
 			}
 			else if (mapAll == MapAllValues.TRUE && !exclusionSet.contains(sourceColumnName))
 			{
