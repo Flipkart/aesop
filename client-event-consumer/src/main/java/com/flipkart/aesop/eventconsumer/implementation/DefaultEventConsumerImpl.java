@@ -137,7 +137,9 @@ public class DefaultEventConsumerImpl extends AbstractEventConsumer
             /* Process Destination Event */
 			try
 			{
-				destinationEventProcessor.processDestinationEvent(destinationEvent);
+                if(destinationEventProcessor != null) {
+				    destinationEventProcessor.processDestinationEvent(destinationEventAfterTransformation);
+                }
 			}
 			catch (OperationNotSupportedException e)
 			{

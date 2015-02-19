@@ -35,5 +35,5 @@ public interface PostMappingTransformer
 	 * @param event The event
 	 * @return {@link com.flipkart.aesop.event.implementation.DestinationEvent}
 	 */
-	DestinationEvent transform(AbstractEvent event);
+	AbstractEvent transform(AbstractEvent event);
 }

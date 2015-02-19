@@ -35,5 +35,5 @@ public interface PreMappingTransformer
 	 * @param event The event
 	 * @return {@link com.flipkart.aesop.event.implementation.DestinationEvent}
 	 */
-	SourceEvent transform(AbstractEvent event);
+	AbstractEvent transform(AbstractEvent event);
 }

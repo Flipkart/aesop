@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>com.flipkart.aesop</groupId>
 		<artifactId>aesop</artifactId>
-		<version>1.0.12-SNAPSHOT</version>
+		<version>1.1.0-SNAPSHOT</version>
 	</parent>
 	<artifactId>sample-hbase-client-cluster-consumer</artifactId>
 	<name>Sample HBase Client Cluster Consumer</name>
@@ -47,7 +47,7 @@
 		<dependency>
 			<groupId>com.flipkart.aesop</groupId>
 			<artifactId>runtime-client-cluster</artifactId>
-			<version>1.0.12-SNAPSHOT</version>
+			<version>1.1.0-SNAPSHOT</version>
 			<exclusions>
 				<exclusion>
 					<artifactId>log4j-over-slf4j</artifactId>
@@ -63,7 +63,7 @@
 		<dependency>
 			<groupId>com.flipkart.aesop</groupId>
 			<artifactId>data-layer-hbase</artifactId>
-			<version>1.0.12-SNAPSHOT</version>
+			<version>1.1.0-SNAPSHOT</version>
 			<exclusions>
 				<exclusion>
 					<artifactId>guava</artifactId>
