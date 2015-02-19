@@ -15,17 +15,16 @@
 
 package com.flipkart.aesop.destinationoperation.implementation;
 
+import com.flipkart.aesop.destinationoperation.UpsertDestinationStoreProcessor;
+import com.flipkart.aesop.event.AbstractEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.flipkart.aesop.destinationoperation.UpsertDestinationStoreOperation;
-import com.flipkart.aesop.event.AbstractEvent;
 
 /**
  * Default Upsert Destination Operation Layer which logs the delete events.
  * @author Prakhar Jain
  */
-public class DefaultUpsertDataLayer extends UpsertDestinationStoreOperation
+public class DefaultUpsertDataLayer extends UpsertDestinationStoreProcessor
 {
 	/** Logger for this class. */
 	final static Logger LOGGER = LoggerFactory.getLogger(DefaultUpsertDataLayer.class);

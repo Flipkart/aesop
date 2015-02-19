@@ -12,27 +12,25 @@
  * limitations under the License.
  *
  *******************************************************************************/
-package com.flipkart.aesop.elasticsearchdatalayer.upsert;
+package com.flipkart.aesop.processor.es.upsert;
 
-import com.flipkart.aesop.elasticsearchdatalayer.elasticsearchclient.ElasticSearchClient;
-import org.trpr.platform.core.impl.logging.LogFactory;
-import org.trpr.platform.core.spi.logging.Logger;
-import com.flipkart.aesop.destinationoperation.UpsertDestinationStoreOperation;
+import com.flipkart.aesop.destinationoperation.UpsertDestinationStoreProcessor;
 import com.flipkart.aesop.event.AbstractEvent;
+import com.flipkart.aesop.processor.es.client.ElasticSearchClient;
 import com.linkedin.databus.core.DbusOpcode;
 import org.elasticsearch.action.index.IndexResponse;
-
-import java.util.Map;
+import org.trpr.platform.core.impl.logging.LogFactory;
+import org.trpr.platform.core.spi.logging.Logger;
 
 /**
  * ElasticSearch Upsert Data Layer. Persists {@link DbusOpcode#UPSERT} events to Logs.
  * @author Pratyay Banerjee
- * @see com.flipkart.aesop.elasticsearchdatalayer.delete.ElasticSearchDeleteDataLayer
+ * @see com.flipkart.aesop.processor.es.delete.ElasticSearchDeleteProcessor
  */
-public class ElasticSearchUpsertDataLayer extends UpsertDestinationStoreOperation
+public class ElasticSearchUpsertProcessor extends UpsertDestinationStoreProcessor
 {
     /** Logger for this class*/
-    private static final Logger LOGGER = LogFactory.getLogger(ElasticSearchUpsertDataLayer.class);
+    private static final Logger LOGGER = LogFactory.getLogger(ElasticSearchUpsertProcessor.class);
 
     /* ES Initializer Client. */
     private ElasticSearchClient elasticSearchClient;
@@ -54,7 +52,7 @@ public class ElasticSearchUpsertDataLayer extends UpsertDestinationStoreOperatio
             //create the new id
             IndexResponse response = elasticSearchClient.getClient().prepareIndex(elasticSearchClient.getIndex(),
                     elasticSearchClient.getType(), id)
-                    .setSource(transform(event.getFieldMapPair()))
+                    .setSource(event.getFieldMapPair())
                     .execute()
                     .get();
             if(!response.isCreated())  {
@@ -65,15 +63,6 @@ public class ElasticSearchUpsertDataLayer extends UpsertDestinationStoreOperatio
             LOGGER.info("Server Connection Lost/Create Error" + e);
             throw new RuntimeException("Create Failure");
         }
-    }
-
-    /**  transform() converts the Input data to Target Data Map, which can be customised as per user's need
-     *
-     * @param input
-     * @return
-     */
-    protected  Map<String,Object> transform(Map<String,Object> input) {
-        return input;
     }
 
     /* Getters and Setters start */

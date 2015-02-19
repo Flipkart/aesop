@@ -92,7 +92,7 @@
 	<bean id="defaultEventConsumerFactory"
 		  class="com.flipkart.aesop.eventconsumer.implementation.DefaultEventConsumerFactoryBean">
 		<property name="mapper" ref="defaultMapperImpl" />
-		<property name="destStoreOperationsMap">
+		<property name="destinationProcessorMap">
 			<map>
 				<entry key-ref="upsertDbusOpCode" value-ref="mysqlUpsertDataLayer" />
 				<entry key-ref="deleteDbusOpCode" value-ref="mysqlDeleteDataLayer" />

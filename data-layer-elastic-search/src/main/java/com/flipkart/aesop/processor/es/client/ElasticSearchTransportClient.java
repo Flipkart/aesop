@@ -12,25 +12,26 @@
  * limitations under the License.
  *
  *******************************************************************************/
-package com.flipkart.aesop.elasticsearchdatalayer.elasticsearchclient;
+package com.flipkart.aesop.processor.es.client;
 
+import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
+import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.ImmutableSettings;
-import org.elasticsearch.node.Node;
+import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.trpr.platform.core.impl.logging.LogFactory;
 import org.trpr.platform.core.spi.logging.Logger;
 import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import static org.elasticsearch.node.NodeBuilder.nodeBuilder;
 
 /**
- * Initiates ElasticSearchUnicast Client , uses the UnicastClient of elasticSearch master server discovery
+ * Initiates ElasticSearchTransport Client , uses the TransportClient of elasticSearch master server discovery
  * @author Pratyay Banerjee
  */
-public class ElasticSearchUnicastClient extends ElasticSearchClient {
+public class ElasticSearchTransportClient extends ElasticSearchClient {
 
-    private static final Logger LOGGER = LogFactory.getLogger(ElasticSearchUnicastClient.class);
+    private static final Logger LOGGER = LogFactory.getLogger(ElasticSearchTransportClient.class);
 
     @Override
     void init() {
@@ -50,12 +51,15 @@ public class ElasticSearchUnicastClient extends ElasticSearchClient {
                 .put("network.host", hostname)
                 .put("node.data",false)
                 .put("node.local",false)
-                .put("discovery.zen.ping.multicast.enabled", false)
-                .put("discovery.zen.ping.unicast.hosts", config.getString("hosts"))
-                .put("network.host", hostname);
+                .put("network.host", hostname)
+                .put("client.transport.sniff", config.getString("isTransportSniff"));
 
-        Node node = nodeBuilder().clusterName(config.getString("cluster.name")).client(true).local(false).settings(settings).node();
-        node.start();
-        this.client = node.client();
+        TransportClient client = new TransportClient(settings);
+
+        for(Config confItem : config.getConfigList("transport.hosts"))
+        {
+             client.addTransportAddress(new InetSocketTransportAddress(confItem.getString("host"),confItem.getInt("port")));
+        }
+        this.client=client;
     }
 }
