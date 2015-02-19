@@ -10,29 +10,28 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *  
+ *
  *******************************************************************************/
+package com.flipkart.aesop.processor;
 
-package com.flipkart.aesop.destinationoperation.implementation;
-
-import com.flipkart.aesop.destinationoperation.DeleteDestinationStoreProcessor;
 import com.flipkart.aesop.event.AbstractEvent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import javax.naming.OperationNotSupportedException;
 
 /**
- * Default Delete Destination Operation Layer which logs the delete events.
- * @author Prakhar Jain
+ * DestinationEventProcessor interface needs to be implemented by the {@link com.flipkart.aesop.eventconsumer.AbstractEventConsumer}
+ * for processing destination Events.
+ * This provides the users the flexibility to process destination events as per their work-flow.
+ * Example Use-case :
+ * Users can write their own destinationEvent processor which adapts the {@link AbstractEvent} to some other POJO and send  the
+ * adapted POJO to the next layer.
+ *
  */
-public class DefaultDeleteDataLayer extends DeleteDestinationStoreProcessor
+public interface DestinationEventProcessor
 {
-	/** Logger for this class. */
-	public final static Logger LOGGER = LoggerFactory.getLogger(DefaultDeleteDataLayer.class);
-
-	@Override
-	protected void delete(AbstractEvent event)
-	{
-		LOGGER.info("Delete Event Received " + event.toString() + " by Default Delete Data Layer");
-	}
-
+    /**
+     *  method to process destination Event
+     * @param destinationEvent of type {@link AbstractEvent}
+     */
+     public void processDestinationEvent(AbstractEvent destinationEvent) throws OperationNotSupportedException;
 }

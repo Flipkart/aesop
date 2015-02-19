@@ -10,37 +10,35 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *  
+ *
  *******************************************************************************/
-
-package com.flipkart.aesop.destinationoperation;
-
-import javax.naming.OperationNotSupportedException;
-
-import com.flipkart.aesop.event.AbstractEvent;
-import com.linkedin.databus.core.DbusOpcode;
+package com.flipkart.aesop.processor.es.config;
 
 /**
- * Upsert Destination Operation Layer which consumes Upsert Events.
- * @author Prakhar Jain
+ * Passes ElasticSearchConfig filename
+ * @author Pratyay Banerjee
  */
-public abstract class UpsertDestinationStoreOperation implements DestinationStoreOperation
-{
-	public void execute(AbstractEvent event) throws OperationNotSupportedException
-	{
-		if (event.getEventType() == DbusOpcode.UPSERT)
-		{
-			upsert(event);
-		}
-		else
-		{
-			throw new OperationNotSupportedException();
-		}
-	}
 
-	/**
-	 * Delete function to be implemented by the class extending this class.
-	 * @param event
-	 */
-	abstract protected void upsert(AbstractEvent event);
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.util.Assert;
+
+public class ElasticSearchConfig implements  InitializingBean
+{
+    public String config;
+
+    public ElasticSearchConfig(String config)
+    {
+        this.config=config;
+    }
+    public void setConfig(String config){
+        this.config  = config;
+    }
+    public String getConfig(){
+        return this.config;
+    }
+
+    public void afterPropertiesSet() throws Exception {
+        /* Assert if filename is ot empty */
+        Assert.notNull(this.config,"'ElasticSearchConfig' cannot be null. This Databus Client will not be initialized");
+    }
 }

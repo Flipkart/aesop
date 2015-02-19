@@ -12,7 +12,7 @@
  * limitations under the License.
  *
  *******************************************************************************/
-package com.flipkart.aesop.elasticsearchdatalayer.elasticsearchclient;
+package com.flipkart.aesop.processor.es.client;
 
 import com.typesafe.config.ConfigFactory;
 import org.elasticsearch.common.settings.ImmutableSettings;
@@ -25,12 +25,12 @@ import java.net.UnknownHostException;
 import static org.elasticsearch.node.NodeBuilder.nodeBuilder;
 
 /**
- * Initiates ElasticSearchMulticast Client , uses the MulticastClient of elasticSearch master server discovery
+ * Initiates ElasticSearchUnicast Client , uses the UnicastClient of elasticSearch master server discovery
  * @author Pratyay Banerjee
  */
-public class ElasticSearchMulticastClient extends ElasticSearchClient {
+public class ElasticSearchUnicastClient extends ElasticSearchClient {
 
-    private static final Logger LOGGER = LogFactory.getLogger(ElasticSearchMulticastClient.class);
+    private static final Logger LOGGER = LogFactory.getLogger(ElasticSearchUnicastClient.class);
 
     @Override
     void init() {
@@ -44,22 +44,15 @@ public class ElasticSearchMulticastClient extends ElasticSearchClient {
             LOGGER.info("Unknown HostException Thrown - UpsertDatalayer");
             throw new RuntimeException("FATAL Error: Unable To get Host Information");
         }
-
         ImmutableSettings.Builder settings = ImmutableSettings.settingsBuilder()
                 .put("cluster.name", config.getString("cluster.name"))
                 .put("node.name", hostname.replace('.', '-'))
                 .put("network.host", hostname)
                 .put("node.data",false)
                 .put("node.local",false)
-                .put("discovery.zen.ping.multicast.group", config.getString("multicast.groupHost"))
-                .put("discovery.zen.ping.multicast.port", config.getInt("multicast.groupPort"))
-                .put("discovery.zen.ping.multicast.ttl", 10)
-                .put("discovery.zen.ping.multicast.address", hostname)
-                .put("discovery.zen.fd.ping_interval", 3)
-                .put("discovery.zen.fd.ping_timeout", 5)
-                .put("discovery.zen.fd.ping_retries", 100)
+                .put("discovery.zen.ping.multicast.enabled", false)
+                .put("discovery.zen.ping.unicast.hosts", config.getString("hosts"))
                 .put("network.host", hostname);
-
 
         Node node = nodeBuilder().clusterName(config.getString("cluster.name")).client(true).local(false).settings(settings).node();
         node.start();

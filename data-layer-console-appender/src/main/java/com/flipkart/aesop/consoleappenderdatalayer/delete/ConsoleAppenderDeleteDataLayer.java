@@ -1,19 +1,18 @@
 package com.flipkart.aesop.consoleappenderdatalayer.delete;
 
-import org.trpr.platform.core.impl.logging.LogFactory;
-import org.trpr.platform.core.spi.logging.Logger;
-
 import com.flipkart.aesop.consoleappenderdatalayer.upsert.ConsoleAppenderUpsertDataLayer;
-import com.flipkart.aesop.destinationoperation.DeleteDestinationStoreOperation;
+import com.flipkart.aesop.destinationoperation.DeleteDestinationStoreProcessor;
 import com.flipkart.aesop.event.AbstractEvent;
 import com.linkedin.databus.core.DbusOpcode;
+import org.trpr.platform.core.impl.logging.LogFactory;
+import org.trpr.platform.core.spi.logging.Logger;
 
 /**
  * Sample Delete Data Layer. Persists {@link DbusOpcode#DELETE} events to Log File.
  * @author Jagadeesh Huliyar
  * @see ConsoleAppenderUpsertDataLayer
  */
-public class ConsoleAppenderDeleteDataLayer extends DeleteDestinationStoreOperation
+public class ConsoleAppenderDeleteDataLayer extends DeleteDestinationStoreProcessor
 {
 	
 	/** Logger for this class*/

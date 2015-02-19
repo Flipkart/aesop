@@ -1,4 +1,4 @@
-package com.flipkart.aesop.elasticsearchdatalayer.config;
+package com.flipkart.aesop.processor.es.config;
 
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
@@ -73,7 +73,6 @@ public class ElasticSearchDataLayerClient implements InitializingBean
         this.client = node.client();
     }
 
-    @Override
     public void afterPropertiesSet() throws Exception {
        init();
     }

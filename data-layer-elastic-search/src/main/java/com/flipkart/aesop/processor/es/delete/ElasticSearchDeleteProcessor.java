@@ -12,27 +12,26 @@
  * limitations under the License.
  *
  *******************************************************************************/
-package com.flipkart.aesop.elasticsearchdatalayer.delete;
+package com.flipkart.aesop.processor.es.delete;
 
-import com.flipkart.aesop.elasticsearchdatalayer.elasticsearchclient.ElasticSearchClient;
+import com.flipkart.aesop.destinationoperation.DeleteDestinationStoreProcessor;
+import com.flipkart.aesop.processor.es.client.ElasticSearchClient;
+import com.flipkart.aesop.event.AbstractEvent;
+import com.linkedin.databus.core.DbusOpcode;
 import org.elasticsearch.action.get.GetResponse;
 import org.trpr.platform.core.impl.logging.LogFactory;
 import org.trpr.platform.core.spi.logging.Logger;
-
-import com.flipkart.aesop.destinationoperation.DeleteDestinationStoreOperation;
-import com.flipkart.aesop.event.AbstractEvent;
-import com.linkedin.databus.core.DbusOpcode;
 
 
 /**
  * ElasticSearch Delete Data Layer. Persists {@link DbusOpcode#DELETE} events to Log File.
  * @author Pratyay Banerjee
- * @see com.flipkart.aesop.elasticsearchdatalayer.upsert.ElasticSearchUpsertDataLayer
+ * @see com.flipkart.aesop.processor.es.upsert.ElasticSearchUpsertProcessor
  */
-public class ElasticSearchDeleteDataLayer extends DeleteDestinationStoreOperation
+public class ElasticSearchDeleteProcessor extends DeleteDestinationStoreProcessor
 {
     /** Logger for this class*/
-    private static final Logger LOGGER = LogFactory.getLogger(ElasticSearchDeleteDataLayer.class);
+    private static final Logger LOGGER = LogFactory.getLogger(ElasticSearchDeleteProcessor.class);
 
     /* ES Data Layer Client. */
     private ElasticSearchClient elasticSearchClient;
@@ -44,8 +43,8 @@ public class ElasticSearchDeleteDataLayer extends DeleteDestinationStoreOperatio
         LOGGER.info("Field Map Pair : " + event.getFieldMapPair().toString());
 
         String id = String.valueOf(event.getFieldMapPair().get("id"));
-        /* Prepare Delete Request and execute */
 
+        /* Prepare Delete Request and execute */
         elasticSearchClient.getClient().prepareDelete(elasticSearchClient.getIndex(),
              elasticSearchClient.getType(), id)
              .execute()

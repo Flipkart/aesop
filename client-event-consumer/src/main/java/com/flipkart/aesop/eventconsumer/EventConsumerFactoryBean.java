@@ -10,19 +10,21 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *  
+ *
  *******************************************************************************/
 
 package com.flipkart.aesop.eventconsumer;
 
-import java.util.Map;
-import java.util.Set;
-
-import com.flipkart.aesop.destinationoperation.DestinationStoreOperation;
+import com.flipkart.aesop.processor.DestinationEventProcessor;
 import com.flipkart.aesop.event.implementation.SourceEventFactory;
 import com.flipkart.aesop.eventconsumer.implementation.DefaultEventConsumerImpl;
 import com.flipkart.aesop.mapper.Mapper;
+import com.flipkart.aesop.transformer.PostMappingTransformer;
+import com.flipkart.aesop.transformer.PreMappingTransformer;
 import com.linkedin.databus.core.DbusOpcode;
+
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Abstract Factory to be extended by Factory classes which generate Event Consumers.
@@ -32,69 +34,89 @@ import com.linkedin.databus.core.DbusOpcode;
  */
 public abstract class EventConsumerFactoryBean<T extends AbstractEventConsumer>
 {
-	protected Mapper mapper;
-	protected Map<DbusOpcode, ? extends DestinationStoreOperation> destStoreOperationsMap;
-	protected SourceEventFactory sourceEventFactory;
-	protected Set<Integer> destinationGroupSet;
-	protected Integer totalDestinationGroups;
+    protected Mapper mapper;
+    protected Map<DbusOpcode, ? extends DestinationEventProcessor> destinationProcessorMap;
+    protected SourceEventFactory sourceEventFactory;
+    protected Set<Integer> destinationGroupSet;
+    protected Integer totalDestinationGroups;
+    protected PreMappingTransformer preMappingPreMappingTransformer;
+    protected PostMappingTransformer postMappingPreMappingTransformer;
 
-	/**
-	 * Get Event Consumer Object
-	 * @return Event Consumer Object
-	 */
-	public T getObject()
-	{
-		return getEventConsumerObject();
-	}
+    /**
+     * Get Event Consumer Object
+     * @return Event Consumer Object
+     */
+    public T getObject()
+    {
+        return getEventConsumerObject();
+    }
 
-	/**
-	 * Returns actual Event consumer Implementation instance.
-	 * @return Event consumer Object
-	 */
-	public abstract T getEventConsumerObject();
+    /**
+     * Returns actual Event consumer Implementation instance.
+     * @return Event consumer Object
+     */
+    public abstract T getEventConsumerObject();
 
-	/**
-	 * Set Mapper to be used by the Event Consumer.
-	 * @param mapper
-	 */
-	public void setMapper(Mapper mapper)
-	{
-		this.mapper = mapper;
-	}
+    /**
+     * Set Mapper to be used by the Event Consumer.
+     * @param mapper mapper
+     */
+    public void setMapper(Mapper mapper)
+    {
+        this.mapper = mapper;
+    }
 
-	/**
-	 * Sets Destination Store Map to be used by the Event Consumer.
-	 * @param destStoreOperationsMap
-	 */
-	public void setDestStoreOperationsMap(Map<DbusOpcode, DestinationStoreOperation> destStoreOperationsMap)
-	{
-		this.destStoreOperationsMap = destStoreOperationsMap;
-	}
+    /**
+     * Sets the Source Event Factory to be used by the Event Consumer.
+     * @param sourceEventFactory sourceEventFactory
+     */
+    public void setSourceEventFactory(SourceEventFactory sourceEventFactory)
+    {
+        this.sourceEventFactory = sourceEventFactory;
+    }
 
-	/**
-	 * Sets the Source Event Factory to be used by the Event Consumer.
-	 * @param sourceEventFactory
-	 */
-	public void setSourceEventFactory(SourceEventFactory sourceEventFactory)
-	{
-		this.sourceEventFactory = sourceEventFactory;
-	}
+    /**
+     * Sets the Destination Group Set to be used by the Event Consumer.
+     * @param destinationGroupSet destinationGroupSet
+     */
+    public void setDestinationGroupSet(Set<Integer> destinationGroupSet)
+    {
+        this.destinationGroupSet = destinationGroupSet;
+    }
 
-	/**
-	 * Sets the Destination Group Set to be used by the Event Consumer.
-	 * @param destinationGroupSet
-	 */
-	public void setDestinationGroupSet(Set<Integer> destinationGroupSet)
-	{
-		this.destinationGroupSet = destinationGroupSet;
-	}
+    /**
+     * Sets the Total Number of Destination Groups to be used by the Event Consumer.
+     * @param totalDestinationGroups totalDestinationGroups
+     */
+    public void setTotalDestinationGroups(Integer totalDestinationGroups)
+    {
+        this.totalDestinationGroups = totalDestinationGroups;
+    }
 
-	/**
-	 * Sets the Total Number of Destination Groups to be used by the Event Consumer.
-	 * @param totalDestinationGroups
-	 */
-	public void setTotalDestinationGroups(Integer totalDestinationGroups)
-	{
-		this.totalDestinationGroups = totalDestinationGroups;
-	}
+    /**
+     * Sets the preMapping PreMappingTransformer to be used by the Event Consumer.
+     * @param preMappingPreMappingTransformer  preMappingPreMappingTransformer
+     */
+    public void setPreMappingPreMappingTransformer(PreMappingTransformer preMappingPreMappingTransformer)
+    {
+        this.preMappingPreMappingTransformer = preMappingPreMappingTransformer;
+    }
+
+    /**
+     * Sets the postMappingPreMappingTransformer PreMappingTransformer to be used by the Event Consumer.
+     * @param postMappingPreMappingTransformer  postMappingPreMappingTransformer
+     */
+    public void setPostMappingPreMappingTransformer(PostMappingTransformer postMappingPreMappingTransformer)
+    {
+        this.postMappingPreMappingTransformer = postMappingPreMappingTransformer;
+    }
+
+    /**
+     * Sets the DestinationProcessorMap to be used by the Event Consumer.
+     * @param destinationProcessorMap destinationProcessorMap
+     */
+    public void setDestinationProcessorMap(Map<DbusOpcode, ? extends DestinationEventProcessor> destinationProcessorMap)
+    {
+        this.destinationProcessorMap = destinationProcessorMap;
+    }
 }

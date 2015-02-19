@@ -14,10 +14,10 @@
 	<bean id="defaultEventConsumerFactory"
 		class="com.flipkart.aesop.eventconsumer.implementation.DefaultEventConsumerFactoryBean">
 		<property name="mapper" ref="defaultMapperImpl" />
-		<property name="destStoreOperationsMap">
+		<property name="destinationProcessorMap">
 			<map>
-				<entry key-ref="upsertDbusOpCode" value-ref="elasticSearchUpsertDataLayer" />
-				<entry key-ref="deleteDbusOpCode" value-ref="elasticSearchDeleteDataLayer" />
+				<entry key-ref="upsertDbusOpCode" value-ref="elasticSearchUpsertProcessor" />
+				<entry key-ref="deleteDbusOpCode" value-ref="elasticSearchDeleteProcessor" />
 			</map>
 		</property>
 		<property name="sourceEventFactory" ref="sourceEventFactory" />
@@ -71,21 +71,21 @@
 	<bean id="sourceEventFactory"
 		class="com.flipkart.aesop.event.implementation.SourceEventFactory" />
 
-	<bean id="elasticSearchUpsertDataLayer"
-		class="com.flipkart.aesop.elasticsearchdatalayer.upsert.ElasticSearchUpsertDataLayerFactory">
+	<bean id="elasticSearchUpsertProcessor"
+		class="com.flipkart.aesop.processor.es.upsert.ElasticSearchUpsertProcessor">
         <property name="elasticSearchClient" ref="elasticSearchClient"/>
 	</bean>
 
-	<bean id="elasticSearchDeleteDataLayer"
-		class="com.flipkart.aesop.elasticsearchdatalayer.delete.ElasticSearchDeleteDataLayerFactory">
+	<bean id="elasticSearchDeleteProcessor"
+		class="com.flipkart.aesop.processor.es.delete.ElasticSearchDeleteProcessor">
         <property name="elasticSearchClient" ref="elasticSearchClient"/>
 	</bean>
 
-    <bean id="elasticSearchClient" class="com.flipkart.aesop.elasticsearchdatalayer.elasticsearchclient.ElasticSearchTransportClient">
+    <bean id="elasticSearchClient" class="com.flipkart.aesop.processor.es.client.ElasticSearchTransportClient">
         <property name="elasticSearchConfig" ref="elasticSearchConfig"/>
     </bean>
 
-    <bean id="elasticSearchConfig" class="com.flipkart.aesop.elasticsearchdatalayer.config.ElasticSearchConfig">
+    <bean id="elasticSearchConfig" class="com.flipkart.aesop.processor.es.config.ElasticSearchConfig">
         <constructor-arg value="config.infra.es.conf" />
     </bean>
 

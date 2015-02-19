@@ -15,20 +15,33 @@
 
 package com.flipkart.aesop.destinationoperation;
 
+import com.flipkart.aesop.event.AbstractEvent;
+import com.flipkart.aesop.processor.DestinationEventProcessor;
+import com.linkedin.databus.core.DbusOpcode;
+
 import javax.naming.OperationNotSupportedException;
 
-import com.flipkart.aesop.event.AbstractEvent;
-
 /**
- * Topmost class which is to be implemented by any class performing any type of Destination Store Operation.
+ * Delete Destination Operation Processor which processes Delete Events.
  * @author Prakhar Jain
  */
-public interface DestinationStoreOperation
+public abstract class DeleteDestinationStoreProcessor implements DestinationEventProcessor
 {
+	public void processDestinationEvent(AbstractEvent event) throws OperationNotSupportedException
+	{
+		if (event.getEventType() == DbusOpcode.DELETE)
+		{
+			delete(event);
+		}
+		else
+		{
+			throw new OperationNotSupportedException();
+		}
+	}
+
 	/**
-	 * Function to be called to perform any destination store operation.
+	 * Delete function to be implemented by the class extending this class.
 	 * @param event
-	 * @throws OperationNotSupportedException
 	 */
-	public void execute(AbstractEvent event) throws OperationNotSupportedException;
+	protected abstract void delete(AbstractEvent event);
 }
