@@ -203,8 +203,35 @@ public class MapperHelper
 			{
 				ConfigValue sourceColumnConfig = columnMappingConfigObject.get(sourceColumnName);
 				String destinationColumn = sourceColumnConfig.unwrapped().toString();
+                /*Check if Destination Column is of type Column...NestedField*/
+                if (destinationColumn.contains("."))
+                {
+                    String destinationNestedField[] = destinationColumn.split("\\.");
+                    /*destinationNestedField[0] has Column, destinationNestedField[1] has NestedField1,
+                    destinationNestedField[2] has NestedField2 ... */
+                    Map<String,Object> destinationFieldMap = destinationColumnMap; /* has reference to higherup field map*/
+                    Map<String,Object> nestedFieldMap;                             /* has reference to nested field map */
+                    for(int i=0; i<destinationNestedField.length-1;i++)
+                    {
+                        /*get current field if already exists, else create new field*/
+                        nestedFieldMap = (destinationFieldMap.containsKey(destinationNestedField[i]) ?
+                                (Map<String,Object>)destinationFieldMap.get(destinationNestedField[i])  : new HashMap<String,Object>());
+                        if(nestedFieldMap.isEmpty()) {
+                            /*insert in higherup field if empty*/
+                            destinationFieldMap.put(destinationNestedField[i],nestedFieldMap);
+                        }
 
-				destinationColumnMap.put(destinationColumn, sourceColumnValue);
+                        destinationFieldMap=nestedFieldMap;  /*point higherup field map to current nestedFieldMap*/
+                        if(i==destinationNestedField.length-2) {
+                            /*if 1 level up then lowest level, put the lowest level in current fieldmap*/
+                            nestedFieldMap.put(destinationNestedField[destinationNestedField.length-1],sourceColumnValue);
+                        }
+                    }
+                }
+                else
+                {
+                    destinationColumnMap.put(destinationColumn, sourceColumnValue);
+                }
 			}
 			else if (mapAll == MapAllValues.TRUE && !exclusionSet.contains(sourceColumnName))
 			{
