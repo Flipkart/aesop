@@ -84,7 +84,7 @@
         <module>producers/mysql-producer</module>
         <module>producers/diff-producer</module>
         <module>consumers/client-event-consumer</module>
-        <module>util/avro-schema-generator</module>
+        <module>utilities/avro-schema-generator</module>
         <module>data-layers/data-layer-hbase</module>
         <module>data-layers/data-layer-mysql</module>
         <module>data-layers/data-layer-console-appender</module>
