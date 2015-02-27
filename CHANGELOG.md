@@ -26,4 +26,6 @@
   - Renamed destination data layer to DestinationEventProcessor
   - Grouped modules under appropriate directories
   - Better Wiki and Java Docs
+  ** Bug Fixes**
+  - Aesop Dashboard UI Bug fix for Consumer SCN
 <br />
