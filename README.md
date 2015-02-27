@@ -7,6 +7,7 @@ building Eventually Consistent data sources and systems.
 | Release | Date | Description |
 |:------------|:----------------|:------------|
 | Version 1.0.7-SNAPSHOT    | July 2014      |    First GA release
+| Version 1.1.0-SNAPSHOT    | Feb 2015       |
 
 ## Changelog
 Changelog can be viewed in CHANGELOG.md file (https://github.com/Flipkart/aesop/blob/master/CHANGELOG.md)
@@ -51,6 +52,7 @@ Aesop is licensed under : The Apache Software License, Version 2.0. Here is a co
 * Regunath B ([@regunathb](http://twitter.com/RegunathB))
 * Shoury ([@Shoury](https://github.com/Shoury))
 * Yogesh Dahiya ([@yogeshdfk](https://github.com/yogeshdfk))
+* Arya Ketan ([@aryaKetan](https://github.com/aryaKetan))
 
 ## Aesop users
 * [PayZippy](https://www.payzippy.com/) : The payment processing system uses a MySQL data store for holding transactional data. This data is

@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="
+    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+    http://www.springframework.org/schema/util
+	http://www.springframework.org/schema/util/spring-util-2.5.xsd">
+
+    <bean id="defaultEventConsumerFactory"
+          class="com.flipkart.aesop.eventconsumer.implementation.DefaultEventConsumerFactoryBean">
+        <property name="mapper" ref="defaultMapperImpl" />
+        <property name="preMappingTransformer" ref="preMappingTransformer" />
+        <property name="postMappingTransformer" ref="postMappingTransformer" />
+        <property name="destinationProcessorMap">
+            <map>
+                <entry key-ref="upsertDbusOpCode" value-ref="consoleProcessorUpsert" />
+                <entry key-ref="deleteDbusOpCode" value-ref="consoleProcessorDelete" />
+            </map>
+        </property>
+        <property name="sourceEventFactory" ref="sourceEventFactory" />
+        <property name="destinationGroupSet">
+            <list>
+                <value>1</value>
+            </list>
+        </property>
+        <property name="totalDestinationGroups" value="1" />
+    </bean>
+
+    <bean id="consoleProcessorUpsert"
+          class="com.flipkart.aesop.sample.client.processor.ConsoleProcessor">
+    </bean>
+
+    <bean id="consoleProcessorDelete"
+          class="com.flipkart.aesop.sample.client.processor.ConsoleProcessor">
+    </bean>
+
+    <bean id="preMappingTransformer"
+          class="com.flipkart.aesop.sample.client.transformer.SourceEventDateAppenderTransformer">
+    </bean>
+
+    <bean id="postMappingTransformer"
+          class="com.flipkart.aesop.sample.client.transformer.DestinationEventDateAppenderTransformer">
+    </bean>
+
+    <bean id="defaultMapperImpl"
+          class="com.flipkart.aesop.mapper.implementation.DefaultMapperImpl">
+        <property name="configFilePath" value="../resources/application.conf" />
+        <property name="configRoot" value="MAPPER_CONFIG" />
+        <property name="mapperConfig" ref="mapperConfig" />
+        <property name="mapperTypeList">
+            <list>
+                <ref bean="noNamespaceEntityMapperType" />
+                <ref bean="noEntityMapperType" />
+                <ref bean="namespaceEntityMapperType" />
+            </list>
+        </property>
+        <property name="eventGroupFinder" ref="defaultEventGroupFinder" />
+        <property name="destinationEventFactory" ref="destinationEventFactory" />
+    </bean>
+
+    <util:constant id="upsertDbusOpCode"
+                   static-field="com.linkedin.databus.core.DbusOpcode.UPSERT" />
+    <util:constant id="deleteDbusOpCode"
+                   static-field="com.linkedin.databus.core.DbusOpcode.DELETE" />
+
+    <bean id="mapperConfig"
+          class="com.flipkart.aesop.mapper.config.implementation.MapperConfigImpl"
+          factory-method="getInstance" />
+
+    <util:constant id="noNamespaceEntityMapperType"
+                   static-field="com.flipkart.aesop.mapper.implementation.MapperType.MAP_WITHOUT_SOURCE_NAMESPACE_ENTITY_CONFIG" />
+    <util:constant id="noEntityMapperType"
+                   static-field="com.flipkart.aesop.mapper.implementation.MapperType.MAP_WITHOUT_SOURCE_ENTITY_CONFIG" />
+    <util:constant id="namespaceEntityMapperType"
+                   static-field="com.flipkart.aesop.mapper.implementation.MapperType.MAP_WITH_SOURCE_ENTITY_CONFIG" />
+
+    <bean id="defaultEventGroupFinder"
+          class="com.flipkart.aesop.mapper.eventGroupFilter.implementation.DefaultEventGroupFinderImpl"
+          factory-method="getInstance" />
+
+    <bean id="destinationEventFactory"
+          class="com.flipkart.aesop.event.implementation.DestinationEventFactory" />
+
+    <bean id="sourceEventFactory"
+          class="com.flipkart.aesop.event.implementation.SourceEventFactory" />
+
+   <bean id="sampleClient"
+		class="com.flipkart.aesop.runtime.clusterclient.DefaultClusterClientFactory">
+		<property name="clientClusterConfig" ref="clientClusterConfig" />
+		<property name="clusterRegistrations">
+			<list>
+				<bean class="com.flipkart.aesop.runtime.config.ClusterRegistration">
+					<property name="clusterName" value="Person_Cluster" />
+					<property name="consumerFactory">
+						<bean class="com.flipkart.aesop.eventconsumer.ConsumerFactory">
+                            <property name="eventConsumerFactoryList">
+                                <list>
+                                    <ref bean="defaultEventConsumerFactory" />
+                                </list>
+                            </property>
+                            <property name="totalDestinationGroups" value="1" />
+                        </bean>
+					</property>
+					<property name="logicalSources">
+						<list value-type="java.lang.String">
+							<value>com.flipkart.aesop.events.ortest.Person</value>
+						</list>
+					</property>
+				</bean>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="clientClusterConfig" class="com.flipkart.aesop.runtime.config.ClientClusterConfig">
+		<property name="clientProperties">
+			<bean id="clientPropertiesFactory"
+				class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+				<property name="singleton" value="true" />
+				<property name="properties">
+					<props>
+						<prop key="databus.client.container.httpPort">11125</prop>
+						<prop key="databus.client.container.jmx.rmiEnabled">false</prop>
+						<prop key="databus.client.connectionDefaults.pullerRetries.initSleep">1</prop>
+						<prop key="databus.client.checkpointPersistence.clearBeforeUse">false</prop>
+						<prop
+							key="databus.client.connectionDefaults.enablePullerMessageQueueLogging">false</prop>
+					</props>
+				</property>
+			</bean>
+		</property>
+		<property name="relayClientConfigs">
+			<list>
+				<bean class="com.flipkart.aesop.runtime.config.RelayClientConfig">
+					<property name="relayId" value="1" />
+					<property name="relayHost" value="localhost" />
+					<property name="relayPort" value="25021" />
+					<property name="relayLogicalSourceNames">
+						<list value-type="java.lang.String">
+							<value>com.flipkart.aesop.events.ortest.Person</value>
+						</list>
+					</property>
+				</bean>
+			</list>
+		</property>
+		<property name="clusterInfoConfigs">
+			<list>
+				<bean class="com.flipkart.aesop.runtime.config.ClusterInfoConfig">
+					<property name="id" value="1" />
+					<property name="clusterName" value="Person_Cluster" />
+					<property name="zkAddr" value="localhost:2181" />
+					<property name="numPartitions" value="2" />
+					<property name="quorum" value="1" />
+					<property name="zkSessionTimeoutMs" value="3000" />
+					<property name="zkConnectionTimeoutMs" value="3000" />
+					<property name="checkpointIntervalMs" value="300000" />
+				</bean>
+			</list>
+		</property>
+
+		<property name="checkpointDirectoryLocation" value="../../../sandbox/client_checkpoint_directory" /> <!-- This is relative to projects root -->
+	</bean>
+</beans>
+

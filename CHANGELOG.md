@@ -11,3 +11,19 @@
   - Support for MOD based default Partition handler. Any other partition handler can be plugged in
   - Sample Producers, Consumers for getting started
 <br />
+
+## 1.1.0-SNAPSHOT (July 10, 2014)
+- **New features:**
+  - Support for transforming source event before mapping
+  - Support for transforming destination event after mapping
+  - Support for nesting columns during the mapping phase
+  - Support for Adapters to adapt the Destination Event to your custom object
+  - Support for Blocking Bootstrap Mysql Producer
+  - Support for Elastic Search Data Layer
+  - Sample Mapper, Processor and Nesting module with example configs
+  - Sample Elastic Search Consumer Data Layer module with example configs
+  **Re Org:**
+  - Renamed destination data layer to DestinationEventProcessor
+  - Grouped modules under appropriate directories
+  - Better Wiki and Java Docs
+<br />
