@@ -55,9 +55,10 @@ Aesop is licensed under : The Apache Software License, Version 2.0. Here is a co
 * Arya Ketan ([@aryaKetan](https://github.com/aryaKetan))
 
 ## Aesop users
-* [PayZippy](https://www.payzippy.com/) : The payment processing system uses a MySQL data store for holding transactional data. This data is
-needed in de-normalized form in the reconciliation data store(MySQL again) and an archive data store (HBase - coming shortly). 
+* Flipkart Payments : The payment processing system uses a MySQL data store for holding transactional data. This data is
+needed in de-normalized form in the reconciliation data store(MySQL again) and an archive data store (HBase). 
 Data changes need to reflect in the reconciliation and archive stores almost instantaneously. Aesop is used to do this.
-This system is in production and has processed a peak throughput of 5200 events per second and sustained throughput of 1000 events per second
-on a single relay.
+This system is in production and has processed thousands of events per second with insert rates of about 30K per second on HBase.
+* Flipkart User data : The Aesop relay is used to propagate changes on Flipkart user accounts to the central analysis data system. 
+* Flipkart User Wishlist : The Aesop relay is used to propagate changes on Flipkart user wishlists to an Elastic Search secondary index used in searches.
 
