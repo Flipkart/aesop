@@ -57,6 +57,9 @@ public class RelayStatisticsCollectingHandler extends SimpleChannelHandler {
 
     /** relay instance */
     private DefaultRelay relay;
+    
+    /** the client reference*/
+    private String client = null;
 
 	public RelayStatisticsCollectingHandler(DefaultRelay relay) {
         this.relay = relay;
@@ -70,14 +73,12 @@ public class RelayStatisticsCollectingHandler extends SimpleChannelHandler {
 		if (null != outEventStatsCollector || null != outHttpStatsCollector) {
 			//Opening a new connection
 			Object value = e.getValue();
-			String client = null;
 			if (value instanceof InetSocketAddress){
 				InetSocketAddress inetAddress = (InetSocketAddress)value;
-				client = inetAddress.getAddress().isLoopbackAddress() ?
-						"localhost" :
-							inetAddress.getAddress().getHostAddress();
+				this.client = inetAddress.getAddress().isLoopbackAddress() ?
+						"localhost" : inetAddress.getAddress().getHostAddress();
 			} else {
-				client = e.getValue().toString();
+				this.client = e.getValue().toString();
 			}
 			if (null != outEventStatsCollector){
 				connOutEventStatsCollector = outEventStatsCollector.createForPeerConnection(client);
@@ -85,6 +86,8 @@ public class RelayStatisticsCollectingHandler extends SimpleChannelHandler {
 				connOutHttpStatsCollector = outHttpStatsCollector.createForClientConnection(client);
 			}
 		}
+		// Inform the Relay of a client connection, for stats tracking
+		this.relay.firePeerConnect(this.client);		
 		super.channelConnected(ctx, e);
 	}
 
@@ -136,6 +139,8 @@ public class RelayStatisticsCollectingHandler extends SimpleChannelHandler {
 			connOutHttpStatsCollector = null;
 		}
 		latestDbusRequest = null;
+		// Inform the Relay of a client disconnect, for stats tracking
+		this.relay.firePeerDisconnect(this.client);
 		super.channelClosed(ctx, e);
 	}
 

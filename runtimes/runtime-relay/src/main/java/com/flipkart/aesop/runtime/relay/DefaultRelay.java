@@ -17,13 +17,14 @@ package com.flipkart.aesop.runtime.relay;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
-import com.flipkart.aesop.runtime.metrics.MetricsCollector;
 import org.trpr.platform.core.impl.logging.LogFactory;
 import org.trpr.platform.core.spi.logging.Logger;
 
 import com.flipkart.aesop.runtime.config.ProducerRegistration;
+import com.flipkart.aesop.runtime.metrics.MetricsCollector;
 import com.flipkart.aesop.runtime.producer.AbstractEventProducer;
 import com.flipkart.aesop.runtime.relay.netty.HttpRelayPipelineFactory;
 import com.linkedin.databus.container.netty.HttpRelay;
@@ -62,6 +63,9 @@ public class DefaultRelay extends HttpRelay {
 
     /** metrics collector */
     private MetricsCollector metricsCollector;
+    
+    /** List of disconnected peers*/
+    private List<String> disconnectedPeers = new LinkedList<String>();
     
 	/**
 	 * Constructor for this class. Invokes constructor of the super-type with the passed-in arguments
@@ -102,6 +106,34 @@ public class DefaultRelay extends HttpRelay {
     		producerRegistration.getEventProducer().shutdown();
     	}    	
     }  
+    
+    /**
+     * Gets a list of all known connected peers
+     * @return List of peer names
+     */
+    public List<String> getPeers() {
+    	List<String> allPeers = getHttpStatisticsCollector().getPeers();
+    	for (String disconnectedPeer : this.disconnectedPeers) {
+    		allPeers.remove(disconnectedPeer);
+    	}
+    	return allPeers;
+    }
+
+    /**
+     * Informs this Relay of a peer connection
+     * @param peer the connected peer
+     */
+    public void firePeerConnect(String peer) {
+    	this.disconnectedPeers.remove(peer);
+    }
+    
+    /**
+     * Informs this Relay of a disconnected peer
+     * @param peer the disconnected peer
+     */
+    public void firePeerDisconnect(String peer) {
+    	this.disconnectedPeers.add(peer);
+    }
 
     /**
      * Overriden superclass method. Creates and uses the Aesop {@link HttpRelayPipelineFactory} instead of the Databus 

@@ -51,9 +51,6 @@ public class RelayController {
     /** max connections for the stream */
     private static final int MAX_CONNECTIONS = 5;
 
-    /** refresh interval */
-    private static final int REFRESH_INTERVAL_SECONDS = 5;
-
     private static Logger logger = LoggerFactory.getLogger(RelayController.class);
 
     /** The ServerContainerRegsitry instance for accessing all deployed Relay instances*/
@@ -91,8 +88,8 @@ public class RelayController {
 
                     relayInfo.setProducerName(producerRegistration.getEventProducer().getName());
                     relayInfo.setProducerSinceSCN(String.valueOf(producerRegistration.getEventProducer().getSCN()));
-                    // now add connected clients details
-                    List<String> peers = relay.getHttpStatisticsCollector().getPeers();
+                    // now add connected clients details by getting the known connected clients from the Relay
+                    List<String> peers = relay.getPeers();
                     RelayInfo.ClientInfo[] clientInfos = new RelayInfo.ClientInfo[peers.size()];
                     for (int i=0; i<clientInfos.length;i++) {
                         clientInfos[i] = new RelayInfo.ClientInfo(peers.get(i));

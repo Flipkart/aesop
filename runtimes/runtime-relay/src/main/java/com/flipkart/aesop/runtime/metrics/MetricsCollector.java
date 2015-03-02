@@ -1,5 +1,6 @@
 package com.flipkart.aesop.runtime.metrics;
 
+import com.flipkart.aesop.runtime.relay.DefaultRelay;
 import com.linkedin.databus.container.netty.HttpRelay;
 import com.linkedin.databus.core.monitoring.mbean.DbusEventsTotalStats;
 import com.linkedin.databus2.core.container.monitoring.mbean.DbusHttpTotalStats;
@@ -20,6 +21,9 @@ public class MetricsCollector {
     /** Default refresh interval */
     private static final int DEFAULT_REFRESH_INTERVAL = 1;
 
+    /** relay instance */
+    private DefaultRelay relay;
+    
     /** Scheduler for doing the encoding */
     private ScheduledExecutorService scheduledExecutorService;
 
@@ -45,8 +49,9 @@ public class MetricsCollector {
      * Constructor
      * @param relay     HTTP relay instance
      */
-    public MetricsCollector(HttpRelay relay) {
+    public MetricsCollector(DefaultRelay relay) {
 
+    	this.relay = relay;
         // stats collectors
         this.httpTotalStats = relay.getHttpStatisticsCollector().getTotalStats();
         this.inboundTotalStats = relay.getInboundEventStatisticsCollector().getTotalStats();
@@ -115,7 +120,12 @@ public class MetricsCollector {
         public void run() {
             Map<String,Object> map = new HashMap<String,Object>();
             map.put("producer",this.collector.producerSCN);
-            map.put("client",this.collector.clientSCN);
+            // we want stats of only connected clients as known to the Relay
+            Map<String,Long> connectedClientSCN = new HashMap<String,Long>();
+            for (String client : relay.getPeers()) {
+            	connectedClientSCN.put(client, this.collector.clientSCN.get(client));
+            }
+            map.put("client",connectedClientSCN);
             map.put("http",this.collector.httpTotalStats);
             map.put("inbound",this.collector.inboundTotalStats);
             map.put("outbound",this.collector.outboundTotalStats);
