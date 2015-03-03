@@ -29,7 +29,7 @@
 		    	<property name="singleton" value="true"/>
 		    	<property name="properties">
 		    		<props>
-			        	<prop key="databus.client.container.httpPort">11127</prop>
+			        	<prop key="databus.client.container.httpPort">11126</prop>
 						<prop key="databus.client.container.jmx.rmiEnabled">false</prop>
 						<prop key="databus.client.connectionDefaults.pullerRetries.initSleep">1</prop>
 						<prop key="databus.client.checkpointPersistence.clearBeforeUse">false</prop>
@@ -69,7 +69,7 @@
 			</list>
 		</property>
  -->		
- 	<property name="checkpointDirectoryLocation" value="../../../sandbox/client_checkpoint_directory"/> <!-- This is relative to projects root -->
+ 	<property name="checkpointDirectoryLocation" value="../../../../sandbox/client_checkpoint_directory"/> <!-- This is relative to projects root -->
     </bean>
 
 </beans>
