@@ -77,6 +77,7 @@ public class RelayStatisticsCollectingHandler extends SimpleChannelHandler {
 				InetSocketAddress inetAddress = (InetSocketAddress)value;
 				this.client = inetAddress.getAddress().isLoopbackAddress() ?
 						"localhost" : inetAddress.getAddress().getHostAddress();
+				this.client = this.client + ":" + inetAddress.getPort();
 			} else {
 				this.client = e.getValue().toString();
 			}
