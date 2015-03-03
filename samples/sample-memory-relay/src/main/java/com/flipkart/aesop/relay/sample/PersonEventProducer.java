@@ -43,7 +43,7 @@ public class PersonEventProducer extends AbstractEventProducer {
 	private static final Logger LOGGER = LogFactory.getLogger(PersonEventProducer.class);
 
 	/** The default number of events to produce in a single run*/
-	private static final int NUM_EVENTS = 1000;
+	private static final int NUM_EVENTS = 10;
 	
 	/** Member variables related to events production an handling*/
 	private int numberOfEventsPerRun = NUM_EVENTS;

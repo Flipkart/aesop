@@ -58,8 +58,8 @@
 	    	</bean>    	
     	</property>
 		<property name="schemaRegistryLocation" value="schemas_registry"/>
-		<property name="mmappedDirectoryLocation" value="../../../sandbox/mmapped_directory"/> <!-- This is relative to projects root -->
-		<property name="maxScnDirectoryLocation" value="../../../sandbox/maxscn_directory"/> <!-- This is relative to projects root -->
+		<property name="mmappedDirectoryLocation" value="../../../../sandbox/mmapped_directory"/> <!-- This is relative to projects root -->
+		<property name="maxScnDirectoryLocation" value="../../../../sandbox/maxscn_directory"/> <!-- This is relative to projects root -->
     </bean>
 
 </beans>
