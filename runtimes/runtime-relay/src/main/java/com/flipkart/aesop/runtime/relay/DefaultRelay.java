@@ -125,6 +125,7 @@ public class DefaultRelay extends HttpRelay {
      */
     public void firePeerConnect(String peer) {
     	this.disconnectedPeers.remove(peer);
+    	LOGGER.debug("Disconnected peers in 'firePeerConnect'" + this.disconnectedPeers);
     }
     
     /**
@@ -133,6 +134,7 @@ public class DefaultRelay extends HttpRelay {
      */
     public void firePeerDisconnect(String peer) {
     	this.disconnectedPeers.add(peer);
+    	LOGGER.debug("Disconnected peers in 'firePeerDisconnect'" + this.disconnectedPeers);
     }
 
     /**
