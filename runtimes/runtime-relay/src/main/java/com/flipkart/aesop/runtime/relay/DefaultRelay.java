@@ -17,8 +17,8 @@ package com.flipkart.aesop.runtime.relay;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.trpr.platform.core.impl.logging.LogFactory;
 import org.trpr.platform.core.spi.logging.Logger;
@@ -64,8 +64,8 @@ public class DefaultRelay extends HttpRelay {
     /** metrics collector */
     private MetricsCollector metricsCollector;
     
-    /** List of disconnected peers*/
-    private List<String> disconnectedPeers = new LinkedList<String>();
+    /** List of disconnected peers. We'll use a copy on write list to deal with concurrency. writes are low on this list*/
+    private List<String> disconnectedPeers = new CopyOnWriteArrayList<String>();
     
 	/**
 	 * Constructor for this class. Invokes constructor of the super-type with the passed-in arguments
