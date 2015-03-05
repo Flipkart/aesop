@@ -66,7 +66,7 @@ public class RelayController {
     private static AtomicInteger concurrentConnections = new AtomicInteger(0);
 
     /**
-     * Controller for relays page
+     * Request handling for relays page
      */
     @RequestMapping(value = {"/relays","/"}, method = RequestMethod.GET)
     public String relays(ModelMap model, HttpServletRequest request) {
@@ -115,7 +115,7 @@ public class RelayController {
     }
 
     /**
-     * Controller for relays page
+     * Request handling for metrics stream
      */
     @RequestMapping(value = {"/metrics-stream"}, method = RequestMethod.GET)
     public @ResponseBody void metricsStream(HttpServletRequest request, HttpServletResponse response) {
@@ -164,7 +164,7 @@ public class RelayController {
     }
 
     /**
-     * Controller for relays page
+     * Request handling for metrics snapshot
      */
     @RequestMapping(value = {"/metrics-json"}, method = RequestMethod.GET)
     public @ResponseBody void metricsJSON(HttpServletRequest request, HttpServletResponse response) {
