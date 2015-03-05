@@ -15,9 +15,13 @@
  */
 package com.flipkart.aesop.runtime.relay.netty;
 
-import java.net.InetSocketAddress;
-
 import com.flipkart.aesop.runtime.relay.DefaultRelay;
+import com.linkedin.databus.container.request.ReadEventsRequestProcessor;
+import com.linkedin.databus.core.Checkpoint;
+import com.linkedin.databus.core.monitoring.mbean.DbusEventsStatisticsCollector;
+import com.linkedin.databus2.core.container.monitoring.mbean.DbusHttpTotalStats;
+import com.linkedin.databus2.core.container.monitoring.mbean.HttpStatisticsCollector;
+import com.linkedin.databus2.core.container.request.DatabusRequest;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.MessageEvent;
@@ -27,12 +31,7 @@ import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.trpr.platform.core.impl.logging.LogFactory;
 import org.trpr.platform.core.spi.logging.Logger;
 
-import com.linkedin.databus.container.request.ReadEventsRequestProcessor;
-import com.linkedin.databus.core.Checkpoint;
-import com.linkedin.databus.core.monitoring.mbean.DbusEventsStatisticsCollector;
-import com.linkedin.databus2.core.container.monitoring.mbean.DbusHttpTotalStats;
-import com.linkedin.databus2.core.container.monitoring.mbean.HttpStatisticsCollector;
-import com.linkedin.databus2.core.container.request.DatabusRequest;
+import java.net.InetSocketAddress;
 
 /**
  * The <code>RelayStatisticsCollectingHandler</code> class is code port of the Databus {@link com.linkedin.databus.container.netty.RelayStatisticsCollectingHandler} that
@@ -77,7 +76,7 @@ public class RelayStatisticsCollectingHandler extends SimpleChannelHandler {
 				InetSocketAddress inetAddress = (InetSocketAddress)value;
 				this.client = inetAddress.getAddress().isLoopbackAddress() ?
 						"localhost" : inetAddress.getAddress().getHostAddress();
-				this.client = this.client + ":" + inetAddress.getPort();
+				this.client = this.client + "-" + inetAddress.getPort();
 			} else {
 				this.client = e.getValue().toString();
 			}
