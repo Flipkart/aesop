@@ -10,10 +10,15 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
+ *  
  *******************************************************************************/
 
 package com.flipkart.aesop.mapper.utils;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import com.flipkart.aesop.event.AbstractEvent;
 import com.flipkart.aesop.mapper.enums.MapAllValues;
@@ -21,9 +26,6 @@ import com.flipkart.aesop.mapper.implementation.DefaultMapperImpl;
 import com.flipkart.aesop.mapper.implementation.MapperType;
 import com.typesafe.config.ConfigObject;
 import com.typesafe.config.ConfigValue;
-
-import java.util.*;
-import java.util.Map.Entry;
 
 /**
  * Provides static functions to be used in Mapper Logic in {@link DefaultMapperImpl}, {@link MapperType}.
@@ -39,7 +41,7 @@ public class MapperHelper
 	public static String getNamespaceMapAllPath(String configRoot)
 	{
 		String namespaceMapAllPath =
-				configRoot + MapperConstants.CONFIG_PATH_SEPARATOR + MapperConstants.MAP_ALL_FIELD_NAME;
+		        configRoot + MapperConstants.CONFIG_PATH_SEPARATOR + MapperConstants.MAP_ALL_FIELD_NAME;
 		return namespaceMapAllPath;
 	}
 
@@ -52,8 +54,8 @@ public class MapperHelper
 	public static String getColumnMapAllPath(String configRoot, AbstractEvent sourceEvent)
 	{
 		String columnMapAllPath =
-				getEntityPath(configRoot, sourceEvent) + MapperConstants.CONFIG_PATH_SEPARATOR
-						+ MapperConstants.MAP_ALL_FIELD_NAME;
+		        getEntityPath(configRoot, sourceEvent) + MapperConstants.CONFIG_PATH_SEPARATOR
+		                + MapperConstants.MAP_ALL_FIELD_NAME;
 		return columnMapAllPath;
 	}
 
@@ -66,8 +68,8 @@ public class MapperHelper
 	public static String getColumnExclusionListPath(String configRoot, AbstractEvent sourceEvent)
 	{
 		String columnExclusionListPath =
-				getEntityPath(configRoot, sourceEvent) + MapperConstants.CONFIG_PATH_SEPARATOR
-						+ MapperConstants.EXCLUSION_LIST_FIELD_NAME;
+		        getEntityPath(configRoot, sourceEvent) + MapperConstants.CONFIG_PATH_SEPARATOR
+		                + MapperConstants.EXCLUSION_LIST_FIELD_NAME;
 		return columnExclusionListPath;
 	}
 
@@ -80,8 +82,8 @@ public class MapperHelper
 	public static String getEntityMapAllPath(String configRoot, AbstractEvent event)
 	{
 		String entityMapAllPath =
-				getNamespacePath(configRoot, event) + MapperConstants.CONFIG_PATH_SEPARATOR
-						+ MapperConstants.MAP_ALL_FIELD_NAME;
+		        getNamespacePath(configRoot, event) + MapperConstants.CONFIG_PATH_SEPARATOR
+		                + MapperConstants.MAP_ALL_FIELD_NAME;
 		return entityMapAllPath;
 	}
 
@@ -94,8 +96,8 @@ public class MapperHelper
 	public static String getEntityExclusionListPath(String configRoot, AbstractEvent event)
 	{
 		String entityExclusionListPath =
-				getNamespacePath(configRoot, event) + MapperConstants.CONFIG_PATH_SEPARATOR
-						+ MapperConstants.EXCLUSION_LIST_FIELD_NAME;
+		        getNamespacePath(configRoot, event) + MapperConstants.CONFIG_PATH_SEPARATOR
+		                + MapperConstants.EXCLUSION_LIST_FIELD_NAME;
 		return entityExclusionListPath;
 	}
 
@@ -107,7 +109,7 @@ public class MapperHelper
 	public static String getNamespaceExclusionListPath(String configRoot)
 	{
 		String namespaceExclusionListPath =
-				configRoot + MapperConstants.CONFIG_PATH_SEPARATOR + MapperConstants.EXCLUSION_LIST_FIELD_NAME;
+		        configRoot + MapperConstants.CONFIG_PATH_SEPARATOR + MapperConstants.EXCLUSION_LIST_FIELD_NAME;
 		return namespaceExclusionListPath;
 	}
 
@@ -132,7 +134,7 @@ public class MapperHelper
 	public static String getEntityPath(String configRoot, AbstractEvent event)
 	{
 		String entityPath =
-				getNamespacePath(configRoot, event) + MapperConstants.CONFIG_PATH_SEPARATOR + event.getEntityName();
+		        getNamespacePath(configRoot, event) + MapperConstants.CONFIG_PATH_SEPARATOR + event.getEntityName();
 		return entityPath;
 	}
 
@@ -145,8 +147,8 @@ public class MapperHelper
 	public static String getEntityGroupNoPath(String configRoot, AbstractEvent event)
 	{
 		String entityPath =
-				getEntityPath(configRoot, event) + MapperConstants.CONFIG_PATH_SEPARATOR
-						+ MapperConstants.DESTINATION_ENTITY_GROUP_NO_FIELD_NAME;
+		        getEntityPath(configRoot, event) + MapperConstants.CONFIG_PATH_SEPARATOR
+		                + MapperConstants.DESTINATION_ENTITY_GROUP_NO_FIELD_NAME;
 		return entityPath;
 	}
 
@@ -159,8 +161,8 @@ public class MapperHelper
 	public static String getColumnMapPath(String configRoot, AbstractEvent event)
 	{
 		String entityPath =
-				getEntityPath(configRoot, event) + MapperConstants.CONFIG_PATH_SEPARATOR
-						+ MapperConstants.DESTINATION_COLUMN_MAPPING;
+		        getEntityPath(configRoot, event) + MapperConstants.CONFIG_PATH_SEPARATOR
+		                + MapperConstants.DESTINATION_COLUMN_MAPPING;
 		return entityPath;
 	}
 
@@ -173,8 +175,8 @@ public class MapperHelper
 	public static String getPrimaryKeyListPath(String configRoot, AbstractEvent event)
 	{
 		String entityPath =
-				getEntityPath(configRoot, event) + MapperConstants.CONFIG_PATH_SEPARATOR
-						+ MapperConstants.DESTINATION_PRIMARY_KEY_LIST;
+		        getEntityPath(configRoot, event) + MapperConstants.CONFIG_PATH_SEPARATOR
+		                + MapperConstants.DESTINATION_PRIMARY_KEY_LIST;
 		return entityPath;
 	}
 
@@ -188,7 +190,7 @@ public class MapperHelper
 	 * @return Destination Event Column Mapping
 	 */
 	public static Map<String, Object> getDestinationEventColumnMapping(Map<String, Object> sourceEventColumnMap,
-																	   ConfigObject columnMappingConfigObject, MapAllValues mapAll, Set<String> exclusionSet)
+	        ConfigObject columnMappingConfigObject, MapAllValues mapAll, Set<String> exclusionSet)
 	{
 		Map<String, Object> destinationColumnMap = new HashMap<String, Object>();
 
@@ -202,160 +204,38 @@ public class MapperHelper
 				ConfigValue sourceColumnConfig = columnMappingConfigObject.get(sourceColumnName);
 				String destinationColumn = sourceColumnConfig.unwrapped().toString();
                 /*Check if Destination Column is of type Column...NestedField*/
-				if (destinationColumn.contains("."))
-				{
-					String destinationNestedField[] = destinationColumn.split("\\.");
+                if (destinationColumn.contains("."))
+                {
+                    String destinationNestedField[] = destinationColumn.split("\\.");
                     /*destinationNestedField[0] has Column, destinationNestedField[1] has NestedField1,
                     destinationNestedField[2] has NestedField2 ... */
-					Map<String,Object> destinationFieldMap = destinationColumnMap; /* has reference to higherup field map*/
-					Map<String,Object> nestedFieldMap;                             /* has reference to nested field map */
-					for(int i=0; i<destinationNestedField.length-1;i++)
-					{
+                    Map<String,Object> destinationFieldMap = destinationColumnMap; /* has reference to higherup field map*/
+                    Map<String,Object> nestedFieldMap;                             /* has reference to nested field map */
+                    for(int i=0; i<destinationNestedField.length-1;i++)
+                    {
                         /*get current field if already exists, else create new field*/
-						nestedFieldMap = (destinationFieldMap.containsKey(destinationNestedField[i]) ?
-								(Map<String,Object>)destinationFieldMap.get(destinationNestedField[i])  : new HashMap<String,Object>());
-						if(nestedFieldMap.isEmpty()) {
+                        nestedFieldMap = (destinationFieldMap.containsKey(destinationNestedField[i]) ?
+                                (Map<String,Object>)destinationFieldMap.get(destinationNestedField[i])  : new HashMap<String,Object>());
+                        if(nestedFieldMap.isEmpty()) {
                             /*insert in higherup field if empty*/
-							destinationFieldMap.put(destinationNestedField[i],nestedFieldMap);
-						}
+                            destinationFieldMap.put(destinationNestedField[i],nestedFieldMap);
+                        }
 
-						destinationFieldMap=nestedFieldMap;  /*point higherup field map to current nestedFieldMap*/
-						if(i==destinationNestedField.length-2) {
+                        destinationFieldMap=nestedFieldMap;  /*point higherup field map to current nestedFieldMap*/
+                        if(i==destinationNestedField.length-2) {
                             /*if 1 level up then lowest level, put the lowest level in current fieldmap*/
-							nestedFieldMap.put(destinationNestedField[destinationNestedField.length-1],sourceColumnValue);
-						}
-					}
-				}
-				else
-				{
-					destinationColumnMap.put(destinationColumn, sourceColumnValue);
-				}
+                            nestedFieldMap.put(destinationNestedField[destinationNestedField.length-1],sourceColumnValue);
+                        }
+                    }
+                }
+                else
+                {
+                    destinationColumnMap.put(destinationColumn, sourceColumnValue);
+                }
 			}
 			else if (mapAll == MapAllValues.TRUE && !exclusionSet.contains(sourceColumnName))
 			{
 				destinationColumnMap.put(sourceColumnName, sourceColumnValue);
-			}
-		}
-
-		return destinationColumnMap;
-	}
-
-	/**
-	 * Generates destination event column mapping using <code>columnMappingConfig</code>, <code>exclusionSet</code> and <code>mapAll</code>.<br>
-	 * Allows mapping source fields to any r-th level destination list field.
-	 * @param sourceEventColumnMap k-v map of source event attributes
-	 * @param columnMappingConfigObject HOCON config for mapping src event to destination event.
-	 * @param mapAll flag whether as-is src to dest event field mapping should be used
-	 * @param exclusionSet set of src fields which needs to be excluded if <code>mapAll</code> is set to MapAllValues.TRUE
-	 * @return destination event field mapping
-	 */
-	public static Map<String, Object> getGenericEventColumnMapping(Map<String, Object> sourceEventColumnMap, ConfigObject columnMappingConfigObject,
-																   MapAllValues mapAll, Set<String> exclusionSet) {
-
-		Map<String, Object> destinationColumnMap = new HashMap<String, Object>();
-
-		for(String sourceColumn: sourceEventColumnMap.keySet()) {
-			if(null != columnMappingConfigObject && columnMappingConfigObject.containsKey(sourceColumn)) {
-
-				String sourceColumnConfig = columnMappingConfigObject.get(sourceColumn).unwrapped().toString();
-				Object sourceColumnValue = sourceEventColumnMap.get(sourceColumn);
-
-				if(sourceColumnConfig.contains(".")) {
-					String destinationNestedFields[] = sourceColumnConfig.split("\\.");
-
-					List<Object> nestedFieldList = null;
-					Map<String, Object> nestedFieldMap = destinationColumnMap;
-					boolean currLevelMap = true;
-
-					for(int w = 0; w < destinationNestedFields.length ; ++w) {
-
-						final String wLevelField = destinationNestedFields[w];
-						if(wLevelField.endsWith("[]")) {
-
-							String fieldName = wLevelField.replace("[]", "");
-							if(currLevelMap) {
-
-								List<Object> wthLevelFieldList = nestedFieldMap.containsKey(fieldName) ?
-										(ArrayList<Object>)nestedFieldMap.get(fieldName) : new ArrayList<Object>();
-
-								if(destinationNestedFields.length-1 == w)
-									wthLevelFieldList.add(sourceColumnValue);
-
-								nestedFieldMap.put(fieldName, wthLevelFieldList);
-								nestedFieldList = wthLevelFieldList;
-							} else {
-
-								Map<String, Object> wthLevelFieldMap = nestedFieldList.iterator().hasNext() ?
-										(HashMap<String, Object>)nestedFieldList.iterator().next() : new HashMap<String, Object>();
-
-								nestedFieldList.clear();
-								nestedFieldList.add(wthLevelFieldMap);
-
-								List<Object> innerFieldSet = wthLevelFieldMap.containsKey(fieldName) ? (ArrayList<Object>)wthLevelFieldMap.get(fieldName) : new ArrayList<Object>();
-
-								if(destinationNestedFields.length-1 == w)
-									innerFieldSet.add(sourceColumnValue);
-
-								wthLevelFieldMap.put(fieldName, innerFieldSet);
-								nestedFieldList = innerFieldSet;
-							}
-
-							currLevelMap = false;
-						} else {
-
-							if(currLevelMap) {
-
-								if(destinationNestedFields.length-1 == w) {
-									nestedFieldMap.put(wLevelField, sourceColumnValue);
-									break;
-								}
-
-								Map<String, Object> wthLevelFieldMap = nestedFieldMap.containsKey(wLevelField) ?
-										(Map<String, Object>)nestedFieldMap.get(wLevelField) : new HashMap<String, Object>();
-								nestedFieldMap.put(wLevelField, wthLevelFieldMap);
-								nestedFieldMap = wthLevelFieldMap;
-
-							} else {
-
-								HashMap<String, Object> wthLevelFieldMap = (nestedFieldList.iterator().hasNext()) ?
-										(HashMap<String, Object>) nestedFieldList.iterator().next() :
-										new HashMap<String, Object>();
-
-								nestedFieldList.clear();
-								nestedFieldList.add(wthLevelFieldMap);
-
-								if(destinationNestedFields.length-1 == w) {
-									wthLevelFieldMap.put(wLevelField, sourceColumnValue);
-									break;
-								}
-
-								HashMap<String, Object> innerFieldMap = (wthLevelFieldMap.containsKey(wLevelField)) ?
-										(HashMap<String, Object>) wthLevelFieldMap.get(wLevelField) : new HashMap<String, Object>();
-
-								wthLevelFieldMap.put(wLevelField, innerFieldMap);
-								nestedFieldMap = innerFieldMap;
-							}
-
-							currLevelMap = true;
-						}
-					}
-
-				} else {
-					if(sourceColumnConfig.endsWith("[]")) {
-
-						String columnName = sourceColumnConfig.replace("[]", "");
-						List<Object> fieldValues = (destinationColumnMap.containsKey(columnName)) ? (ArrayList<Object>) destinationColumnMap.get(columnName) : new ArrayList<Object>();
-						fieldValues.add(sourceColumnValue);
-						destinationColumnMap.put(columnName, fieldValues);
-					} else {
-
-						destinationColumnMap.put(sourceColumnConfig, sourceColumnValue);
-					}
-
-				}
-
-			} else if (MapAllValues.TRUE == mapAll && !exclusionSet.contains(sourceColumn)){
-				destinationColumnMap.put(sourceColumn, sourceEventColumnMap.get(sourceColumn));
 			}
 		}
 
