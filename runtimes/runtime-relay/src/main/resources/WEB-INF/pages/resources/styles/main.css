@@ -6,18 +6,14 @@
 }
 body {
 	background: #DFDFDF;
-	padding: 10px;
 	font-size: 13px;
 }
 .header {
-    background: #1F83A9;
+    background: #3a63a0;
 	color: white;
-	border-bottom: 3px solid #02567A;
 	padding: 10px 20px;
 }
 .footer {
-	border-top: 3px solid #02567A;
-	background: #EEE;
 	color: #999;
 	padding: 8px;
 }
@@ -28,13 +24,13 @@ body {
     color: #888;
 }
 .footer .links a:hover {
-    color: #EEE;
+    color: #000;
     text-decoration: underline;
 }
 
 .menu {
     overflow: hidden;
-    background: #9BD9F4;
+    background: #1c304e;
 }
 .menu ul {
     list-style-type: none;
@@ -44,15 +40,15 @@ body {
     display: inline;
 }
 .menu ul li a {
-    color: black;
+    color: white;
+    font-size: 14px;
     display: block;
-    padding: 5px 10px;
-    border-right: #2A95C3;
+    padding: 10px 20px;
     text-decoration: none;
-    font-weight: bold;
+    font-weight: normal;
 }
 .menu ul li a:hover {
-    background: #2A95C3;
+    background: #3a63a0;
     color: white;
 }
 
@@ -66,20 +62,24 @@ h1 {
 	font-weight: bold;
 }
 table.relays {
-	border: 1px solid #02567A;
-	margin: 10px;
+	border: 1px solid #1c304e;
+    border-collapse: collapse;
+	margin: 10px auto;
+    width: 95%;
 }
 table.relays td, table.relays th {
-	border: 1px solid #02567A;
-    padding: 3px 5px;
+	border: 1px solid #1c304e;
+    padding: 5px;
 }
 table.relays th {
     font-weight: bold;
-    background: #75bad4;
+    background: #e5e5e5;
     color: black;
     text-align: center;
 }
 table.consumers {
+    border-collapse: collapse;
+    width: 100%;
     border: 1px solid #555;
 }
 table.consumers td, table.consumers th {
@@ -90,7 +90,7 @@ table.kv {
     border: 0;
 }
 table.kv td.k {
-    color: #1F83A9;
+    color: #3f7dd8;
     border: 0;
     padding: 2px;
     padding-right: 10px;
@@ -101,13 +101,13 @@ table.kv td.v {
     padding: 2px;
 }
 .section {
-    padding: 10px 0;
+    padding: 10px 0 10px;
     overflow: hidden;
+    border-bottom: 1px solid #ccc;
 }
 .section h2 {
-    font-size: 16px;
-    background: #C6E6F5;
-    padding: 3px 10px 3px 10px;
-    border-bottom: 2px solid #1F83A9;
-    margin-bottom: 5px;
+    font-size: 20px;
+    font-weight: normal;
+    margin: 10px auto;
+    width: 95%;
 }
