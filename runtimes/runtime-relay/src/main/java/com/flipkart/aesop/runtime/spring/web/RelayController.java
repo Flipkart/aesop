@@ -22,7 +22,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.avro.data.Json;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -70,11 +72,15 @@ public class RelayController {
      */
     @RequestMapping(value = {"/relays","/"}, method = RequestMethod.GET)
     public String relays(ModelMap model, HttpServletRequest request) {
+
+        // list of all relays and connected clients
     	List<RelayInfo> relayInfos = new LinkedList<RelayInfo>();
         for (ServerContainer serverContainer : this.runtimeRegistry.getRuntimes()) {
             if (DefaultRelay.class.isAssignableFrom(serverContainer.getClass())) {
                 DefaultRelay relay = (DefaultRelay) serverContainer;
+                // get all producers
                 for (ProducerRegistration producerRegistration : relay.getProducerRegistrationList()){
+
                     RelayInfo relayInfo = new RelayInfo(producerRegistration.getPhysicalSourceConfig().getId(),
                             producerRegistration.getPhysicalSourceConfig().getName(), producerRegistration.getPhysicalSourceConfig().getUri());
 
@@ -88,29 +94,74 @@ public class RelayController {
 
                     relayInfo.setProducerName(producerRegistration.getEventProducer().getName());
                     relayInfo.setProducerSinceSCN(String.valueOf(producerRegistration.getEventProducer().getSCN()));
+
                     // now add connected clients details by getting the known connected clients from the Relay
                     List<String> peers = relay.getPeers();
                     RelayInfo.ClientInfo[] clientInfos = new RelayInfo.ClientInfo[peers.size()];
-                    for (int i=0; i<clientInfos.length;i++) {
+                    for (int i=0; i<clientInfos.length; i++) {
                         clientInfos[i] = new RelayInfo.ClientInfo(peers.get(i));
-                        clientInfos[i].setClientSinceSCN(String.valueOf(relay.getHttpStatisticsCollector().getPeerStats(
-                                peers.get(i)).getMaxStreamWinScn()));
+                        clientInfos[i].setClientSinceSCN(relay.getHttpStatisticsCollector()
+                                .getPeerStats(peers.get(i))
+                                .getMaxStreamWinScn());
                     }
+
+                    // set all clients for the relay
                     relayInfo.setClientInfos(clientInfos);
+                    // group the clients with their minimum SCN
+                    relayInfo.setMinGroupedClient();
+
                     relayInfo.setlSourceInfos(lSourceInfos);
                     relayInfos.add(relayInfo);
                 }
             }
         }
-        model.addAttribute("relayInfos",relayInfos.toArray(new RelayInfo[0]));
+
+        model.addAttribute("relayInfos", relayInfos.toArray(new RelayInfo[0]));
         if (request.getServletPath().endsWith(".json")) {
             return "relays-json";
         }
+
+        // create Map object for json string required in the view
+        JSONObject relayClientGrouped = this.getRelayClientGroupedJson(relayInfos);
+
+
+        // JSON to show expanded view of clients
+        model.addAttribute("relayClientGrouped", relayClientGrouped.toString());
+
         return "relays";
     }
 
     @RequestMapping(value = {"/metrics"}, method = RequestMethod.GET)
-    public String metrics() {
+    public String metrics(ModelMap model, HttpServletRequest request) {
+        DefaultRelay relay = null;
+        List<Map> relayList = new ArrayList<Map>();
+        for (ServerContainer serverContainer : this.runtimeRegistry.getRuntimes()) {
+            relay = (DefaultRelay) serverContainer;
+            // get all producers
+            for (ProducerRegistration producerRegistration : relay.getProducerRegistrationList()) {
+
+                RelayInfo relayInfo = new RelayInfo(producerRegistration.getPhysicalSourceConfig().getId(),
+                        producerRegistration.getPhysicalSourceConfig().getName(), producerRegistration.getPhysicalSourceConfig().getUri());
+
+                if (DefaultRelay.class.isAssignableFrom(serverContainer.getClass())) {
+                    Map<String, String> sourceInfo = new HashMap<String, String>();
+                    sourceInfo.put(
+                            "pId" , String.valueOf(relayInfo.getpSourceId())
+                    );
+                    sourceInfo.put(
+                            "name" , relayInfo.getpSourceName()
+                    );
+                    sourceInfo.put(
+                            "producer" , producerRegistration.getEventProducer().getName()
+                    );
+
+                    relayList.add(sourceInfo);
+                }
+            }
+        }
+
+        model.addAttribute("relayList", relayList.toArray());
+
         return "metrics";
     }
 
@@ -119,6 +170,10 @@ public class RelayController {
      */
     @RequestMapping(value = {"/metrics-stream"}, method = RequestMethod.GET)
     public @ResponseBody void metricsStream(HttpServletRequest request, HttpServletResponse response) {
+
+        String producerId = request.getParameter("pId");
+        logger.info(" SHOW PRODUCER ID " + producerId);
+
         try {
             // restrict max concurrency
             if (concurrentConnections.incrementAndGet() > MAX_CONNECTIONS) {
@@ -127,12 +182,28 @@ public class RelayController {
             } else {
                 // find the relay
                 DefaultRelay relay = null;
+                DefaultRelay currRelay = null;
+                List<DefaultRelay> relayList = new ArrayList<DefaultRelay>();
                 for (ServerContainer serverContainer : this.runtimeRegistry.getRuntimes()) {
                     if (DefaultRelay.class.isAssignableFrom(serverContainer.getClass())) {
-                        relay = (DefaultRelay) serverContainer;
-                        break;
+                        currRelay = (DefaultRelay) serverContainer;
+                        relayList.add(currRelay);
+
+                        if ( producerId != null && relay == null) {
+                            for(ProducerRegistration producer : currRelay.getProducerRegistrationList()) {
+                                if(Integer.parseInt(producerId) == producer.getPhysicalSourceConfig().getId()) {
+                                    relay = currRelay;
+                                    break;
+                                }
+                            }
+                        }
                     }
                 }
+
+                if(relay == null && !relayList.isEmpty()) {
+                    relay = relayList.get(0);
+                }
+
                 if (relay != null) {
                     logger.info("Client connected: " + request.getSession().getId());
                     // set appropriate headers for a stream
@@ -185,7 +256,7 @@ public class RelayController {
                     Map<String,Object> map = new HashMap<String, Object>();
                     map.put("inbound", relay.getInboundEventStatisticsCollector());
                     map.put("outbound", relay.getOutboundEventStatisticsCollector());
-                    map.put("http",relay.getHttpStatisticsCollector());
+                    map.put("http", relay.getHttpStatisticsCollector());
                     response.getWriter().print(mapper.writeValueAsString(map));
                 } else {
                     response.getWriter().print(relay.getMetricsCollector().getJson());
@@ -215,4 +286,39 @@ public class RelayController {
 		this.configService = configService;
 	}
 
+    /**
+     * Returns JSON structure required for UI to show expanded view of client partitions per client host
+     * Structure of JSON { pId => { clientHost : [ { clientPartition : clienSCN }  ] } }
+     * @param relayInfoList List of RelayInfo class
+     * @return JSONObject grouped structure
+     */
+    private JSONObject getRelayClientGroupedJson(List<RelayInfo> relayInfoList) {
+        Map<Integer, Map> relayClientGrouped = new HashMap<Integer,Map>();
+        for(RelayInfo relay : relayInfoList) {
+
+            Map<String, Map> relayClientInfo = relayClientGrouped.get(relay.getpSourceId());
+            if (  relayClientInfo == null ) {
+                relayClientInfo = new HashMap<String, Map>();
+            }
+
+            RelayInfo.ClientInfo[] clientInfos = relay.getClientInfos();
+            for(RelayInfo.ClientInfo clientInfo : clientInfos) {
+                String hostName = clientInfo.getClientHost();
+
+                if(relayClientInfo.get(hostName) == null) {
+                    relayClientInfo.put(
+                            hostName , new HashMap<String, Long>()
+                    );
+                }
+
+                relayClientInfo.get(hostName).put(
+                        clientInfo.getClientName(), clientInfo.getClientSinceSCN()
+                );
+            }
+
+            relayClientGrouped.put(relay.getpSourceId(), relayClientInfo);
+        }
+
+        return new JSONObject(relayClientGrouped);
+    }
 }

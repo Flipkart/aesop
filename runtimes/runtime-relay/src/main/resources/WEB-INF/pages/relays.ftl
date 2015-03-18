@@ -43,13 +43,13 @@
                                 Host
                             </th>
                             <th>
-                                Last SCN
+                                Worst SCN
                             </th>
                         </tr>
-                    <#list relay.clientInfos as clientInfo>
+                    <#list relay.minGroupedClient?keys as clientHost>
                         <tr>
-                            <td>${clientInfo.getClientName()}</td>
-                            <td>${clientInfo.getClientSinceSCN()}</td>
+                            <td><a class="client" href="#" data-id="${relay.getpSourceId()}" data-clientHost="${ clientHost }">${ clientHost }</a></td>
+                            <td>${ relay.minGroupedClient[clientHost]?c }</td>
                         </tr>
                     </#list>
                     </table>
@@ -62,5 +62,12 @@
 	</table>
 	</div>
 
+    <div id="overlay"></div>
+    <div id="modal">
+        <div id="modalContent"></div>
+    </div>
 
+    <script type="text/javascript">
+        Relay.Client_SCN = ${ relayClientGrouped };
+    </script>
 <#include "footer.ftl">

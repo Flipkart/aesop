@@ -217,7 +217,7 @@ public class MysqlEventProducer extends AbstractEventProducer implements Initial
 	@Override
 	public String getName()
 	{
-		return this.getClass().getName();
+		return this.name;
 	}
 
 	/**

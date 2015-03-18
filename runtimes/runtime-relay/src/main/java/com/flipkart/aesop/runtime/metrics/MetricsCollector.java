@@ -118,17 +118,34 @@ public class MetricsCollector {
          */
         @Override
         public void run() {
+
             Map<String,Object> map = new HashMap<String,Object>();
             map.put("producer",this.collector.producerSCN);
             // we want stats of only connected clients as known to the Relay
             Map<String,Long> connectedClientSCN = new HashMap<String,Long>();
+            Map<String,Long> hostClientMinSCN = new HashMap<String,Long>();
+
+            Long clientSCN = null;
+            String clientHost = null;
+
             for (String client : relay.getPeers()) {
-            	connectedClientSCN.put(client, this.collector.clientSCN.get(client));
+                clientSCN = this.collector.clientSCN.get(client);
+                clientHost = client.replaceAll("(.*)-(\\d+)", "$1");
+
+                // record minimum client per client Host
+                if(hostClientMinSCN.get(clientHost) == null || hostClientMinSCN.get(clientHost) > clientSCN) {
+                    hostClientMinSCN.put(clientHost, clientSCN);
+                }
+
+                connectedClientSCN.put(client, clientSCN);
             }
-            map.put("client",connectedClientSCN);
-            map.put("http",this.collector.httpTotalStats);
-            map.put("inbound",this.collector.inboundTotalStats);
-            map.put("outbound",this.collector.outboundTotalStats);
+
+            map.put("clientHost", hostClientMinSCN);
+            map.put("client", connectedClientSCN);
+            map.put("http", this.collector.httpTotalStats);
+            map.put("inbound", this.collector.inboundTotalStats);
+            map.put("outbound", this.collector.outboundTotalStats);
+
             try {
                 this.collector.json = this.collector.objectMapper.writeValueAsString(map);
             } catch (Exception e) {

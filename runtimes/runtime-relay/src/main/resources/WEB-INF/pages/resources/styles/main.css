@@ -65,7 +65,7 @@ table.relays {
 	border: 1px solid #1c304e;
     border-collapse: collapse;
 	margin: 10px auto;
-    width: 95%;
+    width: 100%;
 }
 table.relays td, table.relays th {
 	border: 1px solid #1c304e;
@@ -101,7 +101,7 @@ table.kv td.v {
     padding: 2px;
 }
 .section {
-    padding: 10px 0 10px;
+    padding: 10px 2% 10px;
     overflow: hidden;
     border-bottom: 1px solid #ccc;
 }
@@ -109,5 +109,38 @@ table.kv td.v {
     font-size: 20px;
     font-weight: normal;
     margin: 10px auto;
-    width: 95%;
+}
+
+
+#overlay {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    background: rgba( 0, 0, 0, 0.3);
+    z-index: 9;
+    display: none;
+}
+
+#modal {
+    position: fixed;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    top: 15%;
+    height: 60%;
+    background: #fff;
+    padding: 20px;
+    border: #ccc;
+    border-radius: 3px;
+    width: 450px;
+    z-index: 10;
+    display: none;
+}
+
+#modalContent {
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
 }

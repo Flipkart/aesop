@@ -1,3 +1,4 @@
+
 package com.flipkart.aesop.sample.client.common.consumer;
 
 import org.trpr.platform.core.impl.logging.LogFactory;
@@ -17,7 +18,7 @@ public class ConsoleAppenderEventConsumer extends AbstractMySqlEventConsumer
 	@Override
     public ConsumerCallbackResult processEvent(MysqlBinLogEvent mysqlBinLogEvent)
     {
-		LOGGER.debug("Event : " + mysqlBinLogEvent.toString());
-	    return ConsumerCallbackResult.SUCCESS;
+		LOGGER.info ("Event : " + mysqlBinLogEvent.toString());
+        return ConsumerCallbackResult.SUCCESS;
     }
 }
