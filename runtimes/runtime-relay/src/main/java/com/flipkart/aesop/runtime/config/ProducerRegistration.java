@@ -48,6 +48,7 @@ public class ProducerRegistration implements InitializingBean {
 	public void afterPropertiesSet() throws Exception {
 		Assert.notNull(this.eventProducer,"'eventProducer' cannot be null. An EventProducer must be specified");
 		Assert.notNull(this.physicalSourceConfig,"'physicalSourceConfig' cannot be null. A PhysicalSourceConfig must be specified");
+		Assert.notNull(this.initScn,"'initScn' cannot be null. It must be provided per producer");
 	}
 
 	/** Getter/Setter methods*/

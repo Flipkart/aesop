@@ -27,6 +27,7 @@ import com.flipkart.aesop.runtime.config.ProducerRegistration;
 import com.flipkart.aesop.runtime.config.RelayConfig;
 import com.flipkart.aesop.runtime.producer.AbstractEventProducer;
 import com.flipkart.aesop.runtime.producer.ProducerEventBuffer;
+import com.flipkart.aesop.runtime.relay.DefaultRelay;
 import com.linkedin.databus.container.netty.HttpRelay;
 import com.linkedin.databus.core.DbusEventBufferAppendable;
 import com.linkedin.databus.core.util.ConfigLoader;
@@ -95,10 +96,12 @@ public class DefaultRelayFactory  implements FactoryBean<DefaultRelay>, Initiali
 				staticConfigList[i] = staticConfigLoader.loadConfig(this.relayConfig.getRelayProperties());
 				SequenceNumberHandlerFactory handlerFactory = staticConfigList[i].getDataSources().getSequenceNumbersHandler().createFactory();
 				this.maxScnReaderWriters.put(this.producerRegistrationList.get(i).getPhysicalSourceConfig().getName(), new MultiServerSequenceNumberHandler(handlerFactory));
-			}
-			relay = new DefaultRelay(staticConfigList[0],pStaticConfigs,SourceIdNameRegistry.createFromIdNamePairs(staticConfigList[0].getSourceIds()),schemaRegistryService);
-			//relay.setMaxScnReaderWriters(this.maxScnReaderWriters.get(this.producerRegistrationList.get(0)));
+			}	
+			
 		}
+		relay = new DefaultRelay(staticConfigList[0],pStaticConfigs,SourceIdNameRegistry.createFromIdNamePairs(staticConfigList[0].getSourceIds()),schemaRegistryService);
+		//relay.setMaxScnReaderWriters(this.maxScnReaderWriters.get(this.producerRegistrationList.get(0)));
+		
 		// now set all the Relay initialized services on the producers, if they are of type AbstractEventProducer
 		for (int i=0; i < this.producerRegistrationList.size(); i++) {
 			ProducerRegistration producerRegistration = this.producerRegistrationList.get(i);
