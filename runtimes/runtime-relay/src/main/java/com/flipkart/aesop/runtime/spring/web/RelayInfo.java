@@ -36,7 +36,7 @@ public class RelayInfo {
 
 	private RelayInfo.ClientInfo[] clientInfos;
     private RelayInfo.LSourceInfo[] lSourceInfos;
-    private Map<String,Long> minGroupedClient;
+    private Map<String,Map> hostGroupedClient;
 	
 	/** Constructor with only physical source attributes*/
 	public RelayInfo(int pSourceId, String pSourceName, String pSourceURI) {
@@ -82,9 +82,9 @@ public class RelayInfo {
         this.lSourceInfos = lSourceInfos;
     }
 
-    public Map getMinGroupedClient() { return this.minGroupedClient; }
-    public void setMinGroupedClient() {
-        Map<String, Long> resultClient = new HashMap<String, Long>();
+    public Map getHostGroupedClient() { return this.hostGroupedClient; }
+    public void setHostGroupedClient() {
+        this.hostGroupedClient = new HashMap<String, Map>();
 
         Long clientSCN;
         String clientHost;
@@ -94,13 +94,24 @@ public class RelayInfo {
 
             clientHost = clientInfo.getClientHost();
 
-            if(resultClient.get(clientHost) == null || resultClient.get(clientHost) > clientSCN) {
-                resultClient.put(clientHost, clientSCN);
+            Map<String, Long> clientHostSCN = this.hostGroupedClient.get(clientHost);
+
+            if(clientHostSCN == null) {
+                clientHostSCN = new HashMap<String, Long>();
             }
 
-        }
+            if(clientHostSCN.get("MIN") == null || clientHostSCN.get("MIN") > clientSCN) {
+                clientHostSCN.put("MIN", clientSCN);
+            }
 
-        minGroupedClient = resultClient;
+            if(clientHostSCN.get("MAX") == null || clientHostSCN.get("MAX") < clientSCN) {
+                clientHostSCN.put("MAX", clientSCN);
+            }
+
+            this.hostGroupedClient.put(
+                    clientHost, clientHostSCN
+            );
+        }
     }
 	/** End Getter/Setter methods*/
 

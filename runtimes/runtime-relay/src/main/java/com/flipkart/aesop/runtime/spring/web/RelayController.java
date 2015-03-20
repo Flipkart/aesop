@@ -22,6 +22,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.linkedin.databus2.relay.config.LogicalSourceConfig;
 import org.apache.avro.data.Json;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.json.JSONObject;
@@ -81,17 +82,17 @@ public class RelayController {
                 // get all producers
                 for (ProducerRegistration producerRegistration : relay.getProducerRegistrationList()){
 
-                    RelayInfo relayInfo = new RelayInfo(producerRegistration.getPhysicalSourceConfig().getId(),
-                            producerRegistration.getPhysicalSourceConfig().getName(), producerRegistration.getPhysicalSourceConfig().getUri());
+                    RelayInfo relayInfo = new RelayInfo(
+                            producerRegistration.getPhysicalSourceConfig().getId(),
+                            producerRegistration.getPhysicalSourceConfig().getName(),
+                            producerRegistration.getPhysicalSourceConfig().getUri()
+                    );
 
-                    // take all the logical source that the producer will be registered with
-                    RelayInfo.LSourceInfo[] lSourceInfos = new RelayInfo.LSourceInfo[producerRegistration.getPhysicalSourceConfig().getSources().size()];
-                    for (int i=0;i<lSourceInfos.length;i++) {
-                        lSourceInfos[i] = new RelayInfo.LSourceInfo(producerRegistration.getPhysicalSourceConfig().getSources().get(i).getId());
-                        lSourceInfos[i].setLSourceName(producerRegistration.getPhysicalSourceConfig().getSources().get(i).getName());
-                        lSourceInfos[i].setLSourceURI(producerRegistration.getPhysicalSourceConfig().getSources().get(i).getUri());
-                    }
+                    // get all logical sources for the registered producer
+                    RelayInfo.LSourceInfo[] lSourceInfos = this.getLogicalSourcerForProducer(producerRegistration.getPhysicalSourceConfig().getSources());
+                    relayInfo.setlSourceInfos(lSourceInfos);
 
+                    // set producer name & SCN
                     relayInfo.setProducerName(producerRegistration.getEventProducer().getName());
                     relayInfo.setProducerSinceSCN(String.valueOf(producerRegistration.getEventProducer().getSCN()));
 
@@ -99,6 +100,7 @@ public class RelayController {
                     List<String> peers = relay.getPeers();
                     RelayInfo.ClientInfo[] clientInfos = new RelayInfo.ClientInfo[peers.size()];
                     for (int i=0; i<clientInfos.length; i++) {
+
                         clientInfos[i] = new RelayInfo.ClientInfo(peers.get(i));
                         clientInfos[i].setClientSinceSCN(relay.getHttpStatisticsCollector()
                                 .getPeerStats(peers.get(i))
@@ -108,9 +110,8 @@ public class RelayController {
                     // set all clients for the relay
                     relayInfo.setClientInfos(clientInfos);
                     // group the clients with their minimum SCN
-                    relayInfo.setMinGroupedClient();
+                    relayInfo.setHostGroupedClient();
 
-                    relayInfo.setlSourceInfos(lSourceInfos);
                     relayInfos.add(relayInfo);
                 }
             }
@@ -121,11 +122,8 @@ public class RelayController {
             return "relays-json";
         }
 
-        // create Map object for json string required in the view
+        // create Map object for json string required in the view to show expanded view of clients
         JSONObject relayClientGrouped = this.getRelayClientGroupedJson(relayInfos);
-
-
-        // JSON to show expanded view of clients
         model.addAttribute("relayClientGrouped", relayClientGrouped.toString());
 
         return "relays";
@@ -133,35 +131,6 @@ public class RelayController {
 
     @RequestMapping(value = {"/metrics"}, method = RequestMethod.GET)
     public String metrics(ModelMap model, HttpServletRequest request) {
-        DefaultRelay relay = null;
-        List<Map> relayList = new ArrayList<Map>();
-        for (ServerContainer serverContainer : this.runtimeRegistry.getRuntimes()) {
-            relay = (DefaultRelay) serverContainer;
-            // get all producers
-            for (ProducerRegistration producerRegistration : relay.getProducerRegistrationList()) {
-
-                RelayInfo relayInfo = new RelayInfo(producerRegistration.getPhysicalSourceConfig().getId(),
-                        producerRegistration.getPhysicalSourceConfig().getName(), producerRegistration.getPhysicalSourceConfig().getUri());
-
-                if (DefaultRelay.class.isAssignableFrom(serverContainer.getClass())) {
-                    Map<String, String> sourceInfo = new HashMap<String, String>();
-                    sourceInfo.put(
-                            "pId" , String.valueOf(relayInfo.getpSourceId())
-                    );
-                    sourceInfo.put(
-                            "name" , relayInfo.getpSourceName()
-                    );
-                    sourceInfo.put(
-                            "producer" , producerRegistration.getEventProducer().getName()
-                    );
-
-                    relayList.add(sourceInfo);
-                }
-            }
-        }
-
-        model.addAttribute("relayList", relayList.toArray());
-
         return "metrics";
     }
 
@@ -320,5 +289,23 @@ public class RelayController {
         }
 
         return new JSONObject(relayClientGrouped);
+    }
+
+    private RelayInfo.LSourceInfo[] getLogicalSourcerForProducer(List<LogicalSourceConfig> lSources) {
+        // take all the logical source that the producer will be registered with
+        RelayInfo.LSourceInfo[] lSourceInfos = new RelayInfo.LSourceInfo[lSources.size()];
+        for (int i=0;i<lSourceInfos.length;i++) {
+            lSourceInfos[i] = new RelayInfo.LSourceInfo(
+                    lSources.get(i).getId()
+            );
+            lSourceInfos[i].setLSourceName(
+                    lSources.get(i).getName()
+            );
+            lSourceInfos[i].setLSourceURI(
+                    lSources.get(i).getUri()
+            );
+        }
+
+        return lSourceInfos;
     }
 }

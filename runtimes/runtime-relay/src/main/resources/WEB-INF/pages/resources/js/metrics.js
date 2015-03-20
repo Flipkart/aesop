@@ -245,11 +245,6 @@ Dashboard = {
     init: function(ele) {
 
         var eventSourceUri = "/metrics-stream";
-        var id = $.QueryString['producer'];
-        if (id) {
-            eventSourceUri += "?pId="+id;
-        }
-
         // start events stream
         this.es = new EventSource(eventSourceUri);
         this.es.addEventListener('message', function(evt) {
