@@ -260,6 +260,7 @@ public class MapperHelper
 				String sourceColumnConfig = columnMappingConfigObject.get(sourceColumn).unwrapped().toString();
 				Object sourceColumnValue = sourceEventColumnMap.get(sourceColumn);
 
+				//Check if destination column type is nested
 				if(sourceColumnConfig.contains(".")) {
 					String destinationNestedFields[] = sourceColumnConfig.split("\\.");
 
@@ -270,9 +271,13 @@ public class MapperHelper
 					for(int w = 0; w < destinationNestedFields.length ; ++w) {
 
 						final String wLevelField = destinationNestedFields[w];
+
+						//Check if destination current w-th level field is a list mapping
 						if(wLevelField.endsWith("[]")) {
 
 							String fieldName = wLevelField.replace("[]", "");
+							//Check if previous level under which current w-th level field is
+							//contained is a map
 							if(currLevelMap) {
 
 								List<Object> wthLevelFieldList = nestedFieldMap.containsKey(fieldName) ?
@@ -283,6 +288,9 @@ public class MapperHelper
 
 								nestedFieldMap.put(fieldName, wthLevelFieldList);
 								nestedFieldList = wthLevelFieldList;
+
+							//Alternatively previous level under which current w-th level field is
+							//contained is a list
 							} else {
 
 								Map<String, Object> wthLevelFieldMap = nestedFieldList.iterator().hasNext() ?
@@ -301,8 +309,11 @@ public class MapperHelper
 							}
 
 							currLevelMap = false;
+						//If otherwise the current destination w-th level field is a non list-mapping
 						} else {
 
+							//Check if previous level under which current w-th level field is
+							//contained is a map
 							if(currLevelMap) {
 
 								if(destinationNestedFields.length-1 == w) {
@@ -315,6 +326,8 @@ public class MapperHelper
 								nestedFieldMap.put(wLevelField, wthLevelFieldMap);
 								nestedFieldMap = wthLevelFieldMap;
 
+							//Alternatively previous level under which current w-th level field is
+							//contained is a list
 							} else {
 
 								HashMap<String, Object> wthLevelFieldMap = (nestedFieldList.iterator().hasNext()) ?
@@ -340,13 +353,17 @@ public class MapperHelper
 						}
 					}
 
+				//Check if destination column type is non-nested
 				} else {
+					//destination column is a list mapping
 					if(sourceColumnConfig.endsWith("[]")) {
 
 						String columnName = sourceColumnConfig.replace("[]", "");
 						List<Object> fieldValues = (destinationColumnMap.containsKey(columnName)) ? (ArrayList<Object>) destinationColumnMap.get(columnName) : new ArrayList<Object>();
 						fieldValues.add(sourceColumnValue);
 						destinationColumnMap.put(columnName, fieldValues);
+
+					//destination column is a map
 					} else {
 
 						destinationColumnMap.put(sourceColumnConfig, sourceColumnValue);
