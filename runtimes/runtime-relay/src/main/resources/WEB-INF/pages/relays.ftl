@@ -2,7 +2,7 @@
 
     <div class="section">
 	<h2>Registered Relays</h2>
-        <div style="width: 50%; float: left;">
+        <div class="col-2">
             <table cellspacing=0 cellpadding=0 class="relays">
                 <tr>
                     <th colspan="2">Physical Source</th>
@@ -35,7 +35,7 @@
             </table>
         </div>
         <#if relayInfos?size gt 0 >
-        <div style="width: 45%; float: right;">
+        <div class="col-2">
             <table cellspacing=0 cellpadding=0 class="relays">
                 <tr>
                     <th colspan="3">Consumers</th>
@@ -64,7 +64,7 @@
             </table>
         </div>
         </#if>
-        <div style="clear:both;"></div>
+        <div class="clearfix"></div>
 
 	</div>
 

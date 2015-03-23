@@ -130,17 +130,20 @@ public class RelayInfo {
 		/** Getter/Setter methods*/
 		public String getClientName() { return this.clientName; }
 
+        public String getClientHost() { return this.clientHost; }
+
 		public void setClientSinceSCN(Long clientSinceSCN) {
 			this.clientSinceSCN = clientSinceSCN;
 		}
 
-        public String getClientHost() { return this.clientHost; }
-
-		public Long getClientSinceSCN() {
-			return clientSinceSCN;
-		}
+		public Long getClientSinceSCN() { return clientSinceSCN; }
 		/** End Getter/Setter methods*/
 
+        /**
+         * ClientName is of the format 'host-port'. Remove the port
+         * @param clientName
+         * @return
+         */
         public static String parseHostFromClientName(String clientName) {
             return clientName.replaceAll("(.*)-(\\d+)", "$1");
         }

@@ -8,6 +8,16 @@ body {
 	background: #DFDFDF;
 	font-size: 13px;
 }
+
+.col-2 {
+    width: 48%;
+    float: left;
+    margin-right: 2%;
+}
+.clearfix {
+    clear:both;
+}
+
 .header {
     background: #3a63a0;
 	color: white;

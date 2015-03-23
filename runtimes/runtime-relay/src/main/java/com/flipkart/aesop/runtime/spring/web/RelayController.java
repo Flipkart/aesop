@@ -89,7 +89,7 @@ public class RelayController {
                     );
 
                     // get all logical sources for the registered producer
-                    RelayInfo.LSourceInfo[] lSourceInfos = this.getLogicalSourcerForProducer(producerRegistration.getPhysicalSourceConfig().getSources());
+                    RelayInfo.LSourceInfo[] lSourceInfos = this.getLogicalSourceForProducer(producerRegistration.getPhysicalSourceConfig().getSources());
                     relayInfo.setlSourceInfos(lSourceInfos);
 
                     // set producer name & SCN
@@ -107,9 +107,9 @@ public class RelayController {
                                 .getMaxStreamWinScn());
                     }
 
-                    // set all clients for the relay
+                    // set all connected clients for the relay
                     relayInfo.setClientInfos(clientInfos);
-                    // group the clients with their minimum SCN
+                    // group the clients with their leading/trailing SCN
                     relayInfo.setHostGroupedClient();
 
                     relayInfos.add(relayInfo);
@@ -130,7 +130,7 @@ public class RelayController {
     }
 
     @RequestMapping(value = {"/metrics"}, method = RequestMethod.GET)
-    public String metrics(ModelMap model, HttpServletRequest request) {
+    public String metrics() {
         return "metrics";
     }
 
@@ -140,9 +140,6 @@ public class RelayController {
     @RequestMapping(value = {"/metrics-stream"}, method = RequestMethod.GET)
     public @ResponseBody void metricsStream(HttpServletRequest request, HttpServletResponse response) {
 
-        String producerId = request.getParameter("pId");
-        logger.info(" SHOW PRODUCER ID " + producerId);
-
         try {
             // restrict max concurrency
             if (concurrentConnections.incrementAndGet() > MAX_CONNECTIONS) {
@@ -151,26 +148,11 @@ public class RelayController {
             } else {
                 // find the relay
                 DefaultRelay relay = null;
-                DefaultRelay currRelay = null;
-                List<DefaultRelay> relayList = new ArrayList<DefaultRelay>();
                 for (ServerContainer serverContainer : this.runtimeRegistry.getRuntimes()) {
                     if (DefaultRelay.class.isAssignableFrom(serverContainer.getClass())) {
-                        currRelay = (DefaultRelay) serverContainer;
-                        relayList.add(currRelay);
-
-                        if ( producerId != null && relay == null) {
-                            for(ProducerRegistration producer : currRelay.getProducerRegistrationList()) {
-                                if(Integer.parseInt(producerId) == producer.getPhysicalSourceConfig().getId()) {
-                                    relay = currRelay;
-                                    break;
-                                }
-                            }
-                        }
+                        relay = (DefaultRelay) serverContainer;
+                        break;
                     }
-                }
-
-                if(relay == null && !relayList.isEmpty()) {
-                    relay = relayList.get(0);
                 }
 
                 if (relay != null) {
@@ -291,19 +273,18 @@ public class RelayController {
         return new JSONObject(relayClientGrouped);
     }
 
-    private RelayInfo.LSourceInfo[] getLogicalSourcerForProducer(List<LogicalSourceConfig> lSources) {
+    /**
+     * Create a list of LSourceInfo objects for the given lSources
+     * @param lSources
+     * @return
+     */
+    private RelayInfo.LSourceInfo[] getLogicalSourceForProducer(List<LogicalSourceConfig> lSources) {
         // take all the logical source that the producer will be registered with
         RelayInfo.LSourceInfo[] lSourceInfos = new RelayInfo.LSourceInfo[lSources.size()];
-        for (int i=0;i<lSourceInfos.length;i++) {
-            lSourceInfos[i] = new RelayInfo.LSourceInfo(
-                    lSources.get(i).getId()
-            );
-            lSourceInfos[i].setLSourceName(
-                    lSources.get(i).getName()
-            );
-            lSourceInfos[i].setLSourceURI(
-                    lSources.get(i).getUri()
-            );
+        for (int i=0; i < lSourceInfos.length; i++) {
+            lSourceInfos[i] = new RelayInfo.LSourceInfo(lSources.get(i).getId());
+            lSourceInfos[i].setLSourceName(lSources.get(i).getName());
+            lSourceInfos[i].setLSourceURI(lSources.get(i).getUri());
         }
 
         return lSourceInfos;

@@ -1,3 +1,4 @@
+// Jquery Plugins to fetch query format from get params & hash string
 (function($) {
     $.HashString = (function(a) {
         if (a == "") return {};
@@ -23,6 +24,7 @@
         return b;
     })(window.location.search.substr(1).split('&'))
 })(jQuery);
+
 
 Relay = {};
 
@@ -82,7 +84,6 @@ Relay.Dashboard = {
         });
     },
     handleClientDetailClick: function(elem){
-        console.log(elem);
         var pId = elem.data('id');
         var clientHost = elem.data('clienthost');
         window.location.hash = "#id="+pId+"&clientHost="+clientHost;

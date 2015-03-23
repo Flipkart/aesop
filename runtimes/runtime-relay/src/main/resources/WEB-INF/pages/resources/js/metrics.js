@@ -249,7 +249,6 @@ Dashboard = {
         this.es = new EventSource(eventSourceUri);
         this.es.addEventListener('message', function(evt) {
             var data = $.parseJSON(evt.data);
-            console.log(data);
             Dashboard.refresh(data);
         }, false);
 

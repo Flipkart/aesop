@@ -13,12 +13,12 @@ import com.linkedin.databus.client.pub.ConsumerCallbackResult;
 
 public class ConsoleAppenderEventConsumer extends AbstractMySqlEventConsumer
 {
-	public static final Logger LOGGER = LogFactory.getLogger(ConsoleAppenderEventConsumer.class);
+    public static final Logger LOGGER = LogFactory.getLogger(ConsoleAppenderEventConsumer.class);
 
-	@Override
+    @Override
     public ConsumerCallbackResult processEvent(MysqlBinLogEvent mysqlBinLogEvent)
     {
-		LOGGER.info ("Event : " + mysqlBinLogEvent.toString());
+        LOGGER.debug("Event : " + mysqlBinLogEvent.toString());
         return ConsumerCallbackResult.SUCCESS;
     }
 }
