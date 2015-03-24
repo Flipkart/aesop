@@ -15,7 +15,8 @@
  */
 package com.flipkart.aesop.runtime.spring.web;
 
-
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * <code>RelayInfo</code> holds information for rendering Relay details.
@@ -35,6 +36,7 @@ public class RelayInfo {
 
 	private RelayInfo.ClientInfo[] clientInfos;
     private RelayInfo.LSourceInfo[] lSourceInfos;
+    private Map<String,Map> hostGroupedClient;
 	
 	/** Constructor with only physical source attributes*/
 	public RelayInfo(int pSourceId, String pSourceName, String pSourceURI) {
@@ -79,26 +81,72 @@ public class RelayInfo {
     public void setlSourceInfos(RelayInfo.LSourceInfo[] lSourceInfos) {
         this.lSourceInfos = lSourceInfos;
     }
+
+    public Map getHostGroupedClient() { return this.hostGroupedClient; }
+    public void setHostGroupedClient() {
+        this.hostGroupedClient = new HashMap<String, Map>();
+
+        Long clientSCN;
+        String clientHost;
+        for(RelayInfo.ClientInfo clientInfo : this.clientInfos) {
+
+            clientSCN = clientInfo.getClientSinceSCN();
+
+            clientHost = clientInfo.getClientHost();
+
+            Map<String, Long> clientHostSCN = this.hostGroupedClient.get(clientHost);
+
+            if(clientHostSCN == null) {
+                clientHostSCN = new HashMap<String, Long>();
+            }
+
+            if(clientHostSCN.get("MIN") == null || clientHostSCN.get("MIN") > clientSCN) {
+                clientHostSCN.put("MIN", clientSCN);
+            }
+
+            if(clientHostSCN.get("MAX") == null || clientHostSCN.get("MAX") < clientSCN) {
+                clientHostSCN.put("MAX", clientSCN);
+            }
+
+            this.hostGroupedClient.put(
+                    clientHost, clientHostSCN
+            );
+        }
+    }
 	/** End Getter/Setter methods*/
 
-	public static class ClientInfo {
+    public static class ClientInfo {
 		private String clientName;
-		private String clientSinceSCN;
-		/** Constructor with only client name */
+        private String clientHost;
+		private Long   clientSinceSCN;
+
+        /** Constructor with only client name */
 		public ClientInfo(String clientName) {
 			this.clientName = clientName;
-		}				
+            // remove the partition id from the client name to retrieve the host
+            this.clientHost = ClientInfo.parseHostFromClientName(this.clientName);
+		}
+
 		/** Getter/Setter methods*/
-		public String getClientName() {
-			return clientName;
-		}		
-		public void setClientSinceSCN(String clientSinceSCN) {
+		public String getClientName() { return this.clientName; }
+
+        public String getClientHost() { return this.clientHost; }
+
+		public void setClientSinceSCN(Long clientSinceSCN) {
 			this.clientSinceSCN = clientSinceSCN;
 		}
-		public String getClientSinceSCN() {
-			return clientSinceSCN;
-		}
+
+		public Long getClientSinceSCN() { return clientSinceSCN; }
 		/** End Getter/Setter methods*/
+
+        /**
+         * ClientName is of the format 'host-port'. Remove the port
+         * @param clientName
+         * @return
+         */
+        public static String parseHostFromClientName(String clientName) {
+            return clientName.replaceAll("(.*)-(\\d+)", "$1");
+        }
 	}
 
     public static class LSourceInfo {

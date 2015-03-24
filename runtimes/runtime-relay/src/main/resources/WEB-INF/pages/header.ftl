@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="/resources/styles/metrics.css?v=3" type="text/css"></link>
     <script src="/resources/js/jquery-1.8.2.min.js" type="text/javascript"></script>
 	<script src="/resources/js/jquery.flot.js"></script>
+	<script src="/resources/js/relay.js?v=3"></script>
 	<script src="/resources/js/metrics.js?v=3"></script>
 </head>
 <body>

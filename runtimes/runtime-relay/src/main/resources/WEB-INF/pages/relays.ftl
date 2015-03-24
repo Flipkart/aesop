@@ -2,65 +2,78 @@
 
     <div class="section">
 	<h2>Registered Relays</h2>
-	<table cellspacing=0 cellpadding=0 class="relays">
-		<tr>
-			<th>Physical Source</th>
-			<th>Logical Source</th>
-			<th>Producer</th>
-			<th>Consumers</th>
-		</tr>
-		<#list relayInfos as relay>
-			<tr>
-				<td>
-				    <table class="kv" cellspacing=0 cellpadding=0>
-				        <tr><td class="k">ID</td><td class="v">${relay.getpSourceId()}</td></tr>
-				        <tr><td class="k">Name</td><td class="v">${relay.getpSourceName()}</td></tr>
-				     <!--   <tr><td class="k">URI</td><td class="v">${relay.getpSourceURI()}</td></tr> -->
-				    </table>
-				</td>
-				<#if (relay.lSourceInfos?size > 0)>
-				<td>
-				    <table class="kv" cellspacing=0 cellpadding=0>
-				    <#list relay.lSourceInfos as lSourceInfo>
-				        <tr>
-				            <td style="border-right: 1px solid #b8c885">
-                            </td>
-                        </tr>
-				    </#list>
-				    </table>
-				</td>
-				<#else>
-                      <td>None</td>
-                </#if>
-				<td>
-				    <table class="kv" cellspacing=0 cellpadding=0>
-				        <tr><td class="k">Name</td><td class="v">${relay.getProducerName()}</td></tr>
-				        <tr><td class="k">Consumers</td><td class="v">${relay.clientInfos?size}</td></tr>
-				        <tr><td class="k">Last SCN</td><td class="v">${relay.getProducerSinceSCN()}</td></tr>
-				    </table>
-				</td>
-				<#if (relay.clientInfos?size > 0)>
-				<td>
-				    <table cellspacing=0 cellpadding=0 class="consumers">
-                    <#list relay.clientInfos as clientInfo>
-                        <tr>
-                            <td style="border-right: 1px solid #b8c885">
-                                <table class="kv" cellspacing=0 cellpadding=0>
-                                    <tr><td class="k">Host</td><td class="v">${clientInfo.getClientName()}</td></tr>
-                                    <tr><td class="k">Last SCN</td><td class="v">${clientInfo.getClientSinceSCN()}</td></tr>
-                                </table>
-                            </td>
-                        </tr>
-                    </#list>
-                    </table>
-                </td>
-                <#else>
-                    <td>None</td>
-                </#if>
-			</tr>		
-		</#list>		
-	</table>
+        <div class="col-2">
+            <table cellspacing=0 cellpadding=0 class="relays">
+                <tr>
+                    <th colspan="2">Physical Source</th>
+                    <th rowspan="2">Logical Source</th>
+                    <th colspan="2">Producer</th>
+                </tr>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Consumers</th>
+                    <th>Last SCN</th>
+                </tr>
+            <#list relayInfos as relay>
+                <tr>
+                    <td >${relay.getpSourceId()}</td>
+                    <td >${relay.getpSourceName()}</td>
+                    <#if (relay.lSourceInfos?size > 0)>
+                        <td>
+                        ${relay.lSourceInfos?size}
+                        </td>
+                    <#else>
+                        <td>
+                            None
+                        </td>
+                    </#if>
+                    <td class="v">${relay.clientInfos?size}</td>
+                    <td class="v">${relay.getProducerSinceSCN()}</td>
+                </tr>
+            </#list>
+            </table>
+        </div>
+        <#if relayInfos?size gt 0 >
+        <div class="col-2">
+            <table cellspacing=0 cellpadding=0 class="relays">
+                <tr>
+                    <th colspan="3">Consumers</th>
+                </tr>
+                <tr>
+                    <th>
+                    Host
+                </th>
+                    <th>
+                    Trailing SCN
+                </th>
+                    <th>
+                    Leading SCN
+                </th>
+                </tr>
+
+                <#list relayInfos[0].hostGroupedClient?keys as clientHost>
+                <tr>
+                    <td>
+                        <a class="client" href="#" data-id="${relayInfos[0].getpSourceId()}" data-clientHost="${ clientHost }">${ clientHost }</a>
+                    </td>
+                    <td>${ relayInfos[0].hostGroupedClient[clientHost]["MIN"]?c }</td>
+                    <td>${ relayInfos[0].hostGroupedClient[clientHost]["MAX"]?c }</td>
+                </tr>
+                </#list>
+            </table>
+        </div>
+        </#if>
+        <div class="clearfix"></div>
+
 	</div>
 
+    <div id="overlay"></div>
+    <div id="modal">
+        <div id="modalContent"></div>
+    </div>
 
+    <script type="text/javascript">
+        Relay.Client_SCN = ${ relayClientGrouped };
+    </script>
 <#include "footer.ftl">
