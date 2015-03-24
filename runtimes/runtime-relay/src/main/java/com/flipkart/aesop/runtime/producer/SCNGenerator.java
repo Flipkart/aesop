@@ -23,7 +23,7 @@ import com.linkedin.databus2.producers.EventProducer;
  * increasing SCNs and also preserve ordering of updates.
  *
  * @author Regunath B
- * @version 1.0, 17 Jan 2014
+ * @version 1.0, 23 Mar 2015
  */
 public interface SCNGenerator {
 	
