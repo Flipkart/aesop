@@ -32,6 +32,7 @@ import com.flipkart.aesop.runtime.producer.eventlistener.OpenReplicationListener
 import com.flipkart.aesop.runtime.producer.eventprocessor.BinLogEventProcessor;
 import com.flipkart.aesop.runtime.producer.mapper.BinLogEventMapper;
 import com.flipkart.aesop.runtime.producer.schema.eventprocessor.SchemaChangeEventProcessor;
+import com.flipkart.aesop.runtime.producer.spi.SCNGenerator;
 import com.flipkart.aesop.runtime.producer.txnprocessor.MysqlTransactionManager;
 import com.flipkart.aesop.runtime.producer.txnprocessor.impl.MysqlTransactionManagerImpl;
 import com.flipkart.aesop.runtime.producer.txnprocessor.impl.NaiveSCNGenerator;
@@ -220,7 +221,7 @@ public class MysqlEventProducer extends AbstractEventProducer implements Initial
 	@Override
 	public String getName()
 	{
-		return this.getClass().getName();
+		return this.name;
 	}
 
 	/**

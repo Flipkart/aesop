@@ -15,6 +15,14 @@
  */
 package com.flipkart.aesop.runtime.metrics;
 
+
+import com.flipkart.aesop.runtime.relay.DefaultRelay;
+import com.flipkart.aesop.runtime.spring.web.RelayInfo;
+import com.linkedin.databus.container.netty.HttpRelay;
+import com.linkedin.databus.core.monitoring.mbean.DbusEventsTotalStats;
+import com.linkedin.databus2.core.container.monitoring.mbean.DbusHttpTotalStats;
+import org.codehaus.jackson.map.ObjectMapper;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Executors;
@@ -24,6 +32,7 @@ import java.util.concurrent.TimeUnit;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import com.flipkart.aesop.runtime.relay.DefaultRelay;
+import com.flipkart.aesop.runtime.spring.web.RelayInfo;
 import com.linkedin.databus.core.monitoring.mbean.DbusEventsTotalStats;
 import com.linkedin.databus2.core.container.monitoring.mbean.DbusHttpTotalStats;
 
@@ -134,17 +143,41 @@ public class MetricsCollector {
          */
         @Override
         public void run() {
+
             Map<String,Object> map = new HashMap<String,Object>();
             map.put("producer",this.collector.producerSCN);
             // we want stats of only connected clients as known to the Relay
             Map<String,Long> connectedClientSCN = new HashMap<String,Long>();
+            Map<String,Long> groupHostClient = new HashMap<String,Long>();
+
+            Long clientSCN = null;
+            String clientHost = null;
+
             for (String client : relay.getPeers()) {
-            	connectedClientSCN.put(client, this.collector.clientSCN.get(client));
+                clientSCN = this.collector.clientSCN.get(client);
+                clientHost = RelayInfo.ClientInfo.parseHostFromClientName(client);
+
+                // record minimum client per client Host
+                String clientHostMinKey = clientHost + "-min";
+                if(groupHostClient.get(clientHostMinKey) == null || groupHostClient.get(clientHostMinKey) >= clientSCN) {
+                    groupHostClient.put(clientHostMinKey, clientSCN);
+                }
+
+                // record maximum client per client Host
+                String clientHostMaxKey = clientHost + "-max";
+                if(groupHostClient.get(clientHostMaxKey) == null || groupHostClient.get(clientHostMaxKey) < clientSCN) {
+                    groupHostClient.put(clientHostMaxKey, clientSCN);
+                }
+
+                connectedClientSCN.put(client, clientSCN);
             }
-            map.put("client",connectedClientSCN);
-            map.put("http",this.collector.httpTotalStats);
-            map.put("inbound",this.collector.inboundTotalStats);
-            map.put("outbound",this.collector.outboundTotalStats);
+
+            map.put("clientHost", groupHostClient);
+            map.put("client", connectedClientSCN);
+            map.put("http", this.collector.httpTotalStats);
+            map.put("inbound", this.collector.inboundTotalStats);
+            map.put("outbound", this.collector.outboundTotalStats);
+
             try {
                 this.collector.json = this.collector.objectMapper.writeValueAsString(map);
             } catch (Exception e) {
