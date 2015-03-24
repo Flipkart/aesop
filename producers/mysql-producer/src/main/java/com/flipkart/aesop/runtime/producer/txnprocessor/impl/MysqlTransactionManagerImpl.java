@@ -22,6 +22,7 @@ import org.trpr.platform.core.impl.logging.LogFactory;
 import org.trpr.platform.core.spi.logging.Logger;
 
 import com.flipkart.aesop.runtime.producer.MysqlEventProducer;
+import com.flipkart.aesop.runtime.producer.SCNGenerator;
 import com.flipkart.aesop.runtime.producer.avro.MysqlAvroEventManager;
 import com.flipkart.aesop.runtime.producer.mapper.BinLogEventMapper;
 import com.flipkart.aesop.runtime.producer.txnprocessor.MysqlTransactionManager;
@@ -91,6 +92,8 @@ public class MysqlTransactionManagerImpl implements MysqlTransactionManager
 	/** mysqlTableId to tableName mapping */
 	private Map<Long, String> mysqlTableIdToTableNameMap;
 	private MysqlEventProducer mySqlEventProducer; 
+	/** The SCN generator implementation to use*/
+	private SCNGenerator scnGenerator;
 	
 	private volatile AtomicBoolean shutdownRequested = new AtomicBoolean(false);
 
@@ -101,8 +104,8 @@ public class MysqlTransactionManagerImpl implements MysqlTransactionManager
 	        final Map<Integer, MysqlAvroEventManager> eventManagerMap, final int currFileNum,
 	        final Map<String, Short> tableUriToSrcIdMap, final Map<String, String> tableUriToSrcNameMap,
 	        final SchemaRegistryService schemaRegistryService, final AtomicLong sinceSCN,
-	        Map<Integer, BinLogEventMapper> binLogEventMappers, MysqlEventProducer mySqlEventProducer)
-	{
+	        Map<Integer, BinLogEventMapper> binLogEventMappers, SCNGenerator scnGenerator,
+	        MysqlEventProducer mySqlEventProducer){
 		this.eventBuffer = eventBuffer;
 		this.maxSCNReaderWriter = maxSCNReaderWriter;
 		this.dbusEventsStatisticsCollector = dbusEventsStatisticsCollector;
@@ -114,6 +117,7 @@ public class MysqlTransactionManagerImpl implements MysqlTransactionManager
 		this.sinceSCN = sinceSCN;
 		this.binLogEventMappers = binLogEventMappers;
 		this.mysqlTableIdToTableNameMap = new HashMap<Long, String>();
+		this.scnGenerator = scnGenerator;
 		this.mySqlEventProducer = mySqlEventProducer;
 	}
 
@@ -286,7 +290,8 @@ public class MysqlTransactionManagerImpl implements MysqlTransactionManager
 				List<DbChangeEntry> entries =
 				        eventManagerMap.get(Integer.valueOf(tableUriToSrcIdMap.get(currTableName))).frameAvroRecord(
 				                eventHeader, rowList, databusOpcode, binLogEventMappers, schema.getSchema(),
-				                frameSCN(currFileNum, (int) eventHeader.getPosition()));
+				                this.scnGenerator.getSCN(frameSCN(currFileNum, (int) eventHeader.getPosition()),
+				                		this.mySqlEventProducer.getBinLogHost()));
 				for (DbChangeEntry entry : entries)
 				{
 					perSourceTransaction.mergeDbChangeEntrySet(entry);

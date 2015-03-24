@@ -34,6 +34,7 @@ import com.flipkart.aesop.runtime.producer.mapper.BinLogEventMapper;
 import com.flipkart.aesop.runtime.producer.schema.eventprocessor.SchemaChangeEventProcessor;
 import com.flipkart.aesop.runtime.producer.txnprocessor.MysqlTransactionManager;
 import com.flipkart.aesop.runtime.producer.txnprocessor.impl.MysqlTransactionManagerImpl;
+import com.flipkart.aesop.runtime.producer.txnprocessor.impl.NaiveSCNGenerator;
 import com.google.code.or.OpenReplicator;
 import com.linkedin.databus.core.UnsupportedKeyException;
 import com.linkedin.databus.core.util.InvalidConfigException;
@@ -71,6 +72,8 @@ public class MysqlEventProducer extends AbstractEventProducer implements Initial
 	protected Map<Integer, BinLogEventProcessor> eventsMap;
 	/** Schema Change Event Processor */
 	protected SchemaChangeEventProcessor schemaChangeEventProcessor;
+	/** The SCN generator implementation, initialized to the default simple implementation*/
+	protected SCNGenerator scnGenerator = new NaiveSCNGenerator();
 
 	/**
 	 * Interface method implementation. Checks for mandatory dependencies and creates the Open Replicator
@@ -135,7 +138,7 @@ public class MysqlEventProducer extends AbstractEventProducer implements Initial
 			mysqlTxnManager =
 			        new MysqlTransactionManagerImpl(eventBuffer, maxScnReaderWriter, dbusEventsStatisticsCollector,
 			                eventManagersMap, logid, tableUriToSrcIdMap, tableUriToSrcNameMap, schemaRegistryService,
-			                this.sinceSCN, binLogEventMappers, this);
+			                this.sinceSCN, binLogEventMappers, scnGenerator, this);
 			mysqlTxnManager.setShutdownRequested(false);
 			OpenReplicationListener orl =
 			        new OpenReplicationListener(mysqlTxnManager, eventsMap, schemaChangeEventProcessor,
@@ -276,6 +279,14 @@ public class MysqlEventProducer extends AbstractEventProducer implements Initial
 		}
 		LOGGER.info("MYSQLEventProducer shutdown completed");
 	}
+	
+	/**
+	 * Returns the host from where the bin log is being read
+	 * @return the bin log host name
+	 */
+	public String getBinLogHost() {
+		return this.openReplicator.getHost();
+	}
 
 	/** Methods that are not supported and therefore throw {@link UnsupportedOperationException} */
 	public void pause()
@@ -299,44 +310,35 @@ public class MysqlEventProducer extends AbstractEventProducer implements Initial
 	}
 
 	/** Getters and Setters for this class */
-	public Map<Integer, BinLogEventMapper> getBinLogEventMappers()
-	{
+	public Map<Integer, BinLogEventMapper> getBinLogEventMappers(){
 		return binLogEventMappers;
 	}
-
-	public void setBinLogEventMappers(Map<Integer, BinLogEventMapper> binLogEventMapper)
-	{
+	public void setBinLogEventMappers(Map<Integer, BinLogEventMapper> binLogEventMapper){
 		this.binLogEventMappers = binLogEventMapper;
 	}
-
-	public MysqlTransactionManager getMysqlTxnManager()
-	{
+	public MysqlTransactionManager getMysqlTxnManager(){
 		return mysqlTxnManager;
 	}
-
-	public void setMysqlTxnManager(MysqlTransactionManager mysqlTxnManager)
-	{
+	public void setMysqlTxnManager(MysqlTransactionManager mysqlTxnManager){
 		this.mysqlTxnManager = mysqlTxnManager;
 	}
-
-	public Map<Integer, BinLogEventProcessor> getEventsMap()
-	{
+	public Map<Integer, BinLogEventProcessor> getEventsMap(){
 		return eventsMap;
 	}
-
-	public void setEventsMap(Map<Integer, BinLogEventProcessor> eventsMap)
-	{
+	public void setEventsMap(Map<Integer, BinLogEventProcessor> eventsMap){
 		this.eventsMap = eventsMap;
 	}
-
-	public SchemaChangeEventProcessor getSchemaChangeEventProcessor()
-	{
+	public SchemaChangeEventProcessor getSchemaChangeEventProcessor(){
 		return schemaChangeEventProcessor;
 	}
-
-	public void setSchemaChangeEventProcessor(SchemaChangeEventProcessor schemaChangeEventProcessor)
-	{
+	public void setSchemaChangeEventProcessor(SchemaChangeEventProcessor schemaChangeEventProcessor){
 		this.schemaChangeEventProcessor = schemaChangeEventProcessor;
+	}
+	public SCNGenerator getScnGenerator() {
+		return scnGenerator;
+	}
+	public void setScnGenerator(SCNGenerator scnGenerator) {
+		this.scnGenerator = scnGenerator;
 	}
 
 	/**
