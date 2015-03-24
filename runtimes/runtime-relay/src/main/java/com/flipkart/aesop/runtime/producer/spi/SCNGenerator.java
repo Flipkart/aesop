@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.flipkart.aesop.runtime.producer;
+package com.flipkart.aesop.runtime.producer.spi;
 
 import com.linkedin.databus2.producers.EventProducer;
 

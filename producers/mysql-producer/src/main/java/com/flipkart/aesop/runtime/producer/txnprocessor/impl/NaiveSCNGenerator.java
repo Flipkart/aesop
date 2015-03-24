@@ -15,7 +15,7 @@
  */
 package com.flipkart.aesop.runtime.producer.txnprocessor.impl;
 
-import com.flipkart.aesop.runtime.producer.SCNGenerator;
+import com.flipkart.aesop.runtime.producer.spi.SCNGenerator;
 
 /**
  * <code>NaiveSCNGenerator</code> is a simple implementation of the {@link SCNGenerator} that returns the local SCN. 
