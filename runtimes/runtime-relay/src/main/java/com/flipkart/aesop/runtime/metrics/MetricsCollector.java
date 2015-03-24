@@ -16,13 +16,6 @@
 package com.flipkart.aesop.runtime.metrics;
 
 
-import com.flipkart.aesop.runtime.relay.DefaultRelay;
-import com.flipkart.aesop.runtime.spring.web.RelayInfo;
-import com.linkedin.databus.container.netty.HttpRelay;
-import com.linkedin.databus.core.monitoring.mbean.DbusEventsTotalStats;
-import com.linkedin.databus2.core.container.monitoring.mbean.DbusHttpTotalStats;
-import org.codehaus.jackson.map.ObjectMapper;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Executors;
