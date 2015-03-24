@@ -59,7 +59,7 @@ public class DefaultRelayFactory  implements FactoryBean<DefaultRelay>, Initiali
 	/** The event producers registry*/
     private RelayEventProducersRegistry producersRegistry;	
 	
-    /** The SCN reader-writer*/
+    /** The SCN reader-writer. This is a map between a particular producer and the @MultiServerSequenceNumberHandler associated with it*/
     private HashMap<String, MultiServerSequenceNumberHandler> maxScnReaderWriters;
 	
     /**
@@ -79,6 +79,7 @@ public class DefaultRelayFactory  implements FactoryBean<DefaultRelay>, Initiali
 			}			
 		}
 		
+		//Making this a list to initialise each producer seperately with initial SCN
 		HttpRelay.StaticConfig[] staticConfigList = new HttpRelay.StaticConfig[this.producerRegistrationList.size()];  
 		DefaultRelay relay = null;
 
@@ -91,15 +92,24 @@ public class DefaultRelayFactory  implements FactoryBean<DefaultRelay>, Initiali
 		if (this.maxScnReaderWriters == null) {
 			this.maxScnReaderWriters = new HashMap<String,MultiServerSequenceNumberHandler>();
 			for (int i=0; i < this.producerRegistrationList.size(); i++) {
+				//Getting initial SCN per producer
 				String initScn = this.producerRegistrationList.get(i).getInitScn();
 				this.relayConfig.getRelayProperties().put("databus.relay.dataSources.sequenceNumbersHandler.file.initVal", initScn);
+				
+				//Loading a list of static configs 
 				staticConfigList[i] = staticConfigLoader.loadConfig(this.relayConfig.getRelayProperties());
+
+				//Making a handlerFactory per producer.
 				SequenceNumberHandlerFactory handlerFactory = staticConfigList[i].getDataSources().getSequenceNumbersHandler().createFactory();
 				this.maxScnReaderWriters.put(this.producerRegistrationList.get(i).getPhysicalSourceConfig().getName(), new MultiServerSequenceNumberHandler(handlerFactory));
 			}	
 			
 		}
+		//Initialising relay. Only passing the first static config as everything else apart from 
+		// initial SCN per producer is the same. Initial SCN per producer has already been set
 		relay = new DefaultRelay(staticConfigList[0],pStaticConfigs,SourceIdNameRegistry.createFromIdNamePairs(staticConfigList[0].getSourceIds()),schemaRegistryService);
+		
+		//Commenting out this line. The {@link #getMaxScnReaderWriters() getMaxScnReaderWriters} is not used anywhere.
 		//relay.setMaxScnReaderWriters(this.maxScnReaderWriters.get(this.producerRegistrationList.get(0)));
 		
 		// now set all the Relay initialized services on the producers, if they are of type AbstractEventProducer
@@ -110,6 +120,8 @@ public class DefaultRelayFactory  implements FactoryBean<DefaultRelay>, Initiali
 				AbstractEventProducer producer = (AbstractEventProducer)producerRegistration.getEventProducer();
                 DbusEventBufferAppendable eb = relay.getEventBuffer().getDbusEventBufferAppendable(pStaticConfig.getSources()[0].getId());
 				producer.setEventBuffer(new ProducerEventBuffer(producer.getName(), eb, relay.getMetricsCollector())); // here we assume single event buffer is shared among all logical sources
+				
+				//Setting the maxScnReaderWriter per producer as initialised above.
 				producer.setMaxScnReaderWriter(this.maxScnReaderWriters.get(producerRegistration.getPhysicalSourceConfig().getName()).getOrCreateHandler(pStaticConfig.getPhysicalPartition()));
 				producer.setSchemaRegistryService(relay.getSchemaRegistryService());
 				producer.setDbusEventsStatisticsCollector(relay.getInboundEventStatisticsCollector());
