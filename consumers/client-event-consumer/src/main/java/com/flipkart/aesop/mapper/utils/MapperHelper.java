@@ -15,17 +15,15 @@
 
 package com.flipkart.aesop.mapper.utils;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-
 import com.flipkart.aesop.event.AbstractEvent;
 import com.flipkart.aesop.mapper.enums.MapAllValues;
 import com.flipkart.aesop.mapper.implementation.DefaultMapperImpl;
 import com.flipkart.aesop.mapper.implementation.MapperType;
 import com.typesafe.config.ConfigObject;
 import com.typesafe.config.ConfigValue;
+
+import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * Provides static functions to be used in Mapper Logic in {@link DefaultMapperImpl}, {@link MapperType}.
@@ -236,6 +234,145 @@ public class MapperHelper
 			else if (mapAll == MapAllValues.TRUE && !exclusionSet.contains(sourceColumnName))
 			{
 				destinationColumnMap.put(sourceColumnName, sourceColumnValue);
+			}
+		}
+
+		return destinationColumnMap;
+	}
+
+	/**
+	 * Generates destination event column mapping using <code>columnMappingConfig</code>, <code>exclusionSet</code> and <code>mapAll</code>.<br>
+	 * Allows mapping source fields to any r-th level destination list field.
+	 * @param sourceEventColumnMap k-v map of source event attributes
+	 * @param columnMappingConfigObject HOCON config for mapping src event to destination event.
+	 * @param mapAll flag whether as-is src to dest event field mapping should be used
+	 * @param exclusionSet set of src fields which needs to be excluded if <code>mapAll</code> is set to MapAllValues.TRUE
+	 * @return destination event field mapping
+	 */
+	public static Map<String, Object> getEventColumnMapping(Map<String, Object> sourceEventColumnMap, ConfigObject columnMappingConfigObject,
+															MapAllValues mapAll, Set<String> exclusionSet) {
+
+		Map<String, Object> destinationColumnMap = new HashMap<String, Object>();
+
+		for(String sourceColumn: sourceEventColumnMap.keySet()) {
+			if(null != columnMappingConfigObject && columnMappingConfigObject.containsKey(sourceColumn)) {
+
+				String sourceColumnConfig = columnMappingConfigObject.get(sourceColumn).unwrapped().toString();
+				Object sourceColumnValue = sourceEventColumnMap.get(sourceColumn);
+
+				//Check if destination column type is nested
+				if(sourceColumnConfig.contains(".")) {
+					String destinationNestedFields[] = sourceColumnConfig.split("\\.");
+
+					List<Object> nestedFieldList = null;
+					Map<String, Object> nestedFieldMap = destinationColumnMap;
+					boolean currLevelMap = true;
+
+					for(int w = 0; w < destinationNestedFields.length ; ++w) {
+
+						final String wLevelField = destinationNestedFields[w];
+
+						//Check if destination current w-th level field is a list mapping
+						if(wLevelField.endsWith("[]")) {
+
+							String fieldName = wLevelField.replace("[]", "");
+							//Check if previous level under which current w-th level field is
+							//contained is a map
+							if(currLevelMap) {
+
+								List<Object> wthLevelFieldList = nestedFieldMap.containsKey(fieldName) ?
+										(ArrayList<Object>)nestedFieldMap.get(fieldName) : new ArrayList<Object>();
+
+								if(destinationNestedFields.length-1 == w)
+									wthLevelFieldList.add(sourceColumnValue);
+
+								nestedFieldMap.put(fieldName, wthLevelFieldList);
+								nestedFieldList = wthLevelFieldList;
+
+							//Alternatively previous level under which current w-th level field is
+							//contained is a list
+							} else {
+
+								Map<String, Object> wthLevelFieldMap = nestedFieldList.iterator().hasNext() ?
+										(HashMap<String, Object>)nestedFieldList.iterator().next() : new HashMap<String, Object>();
+
+								nestedFieldList.clear();
+								nestedFieldList.add(wthLevelFieldMap);
+
+								List<Object> innerFieldSet = wthLevelFieldMap.containsKey(fieldName) ? (ArrayList<Object>)wthLevelFieldMap.get(fieldName) : new ArrayList<Object>();
+
+								if(destinationNestedFields.length-1 == w)
+									innerFieldSet.add(sourceColumnValue);
+
+								wthLevelFieldMap.put(fieldName, innerFieldSet);
+								nestedFieldList = innerFieldSet;
+							}
+
+							currLevelMap = false;
+						//If otherwise the current destination w-th level field is a non list-mapping
+						} else {
+
+							//Check if previous level under which current w-th level field is
+							//contained is a map
+							if(currLevelMap) {
+
+								if(destinationNestedFields.length-1 == w) {
+									nestedFieldMap.put(wLevelField, sourceColumnValue);
+									break;
+								}
+
+								Map<String, Object> wthLevelFieldMap = nestedFieldMap.containsKey(wLevelField) ?
+										(HashMap<String, Object>)nestedFieldMap.get(wLevelField) : new HashMap<String, Object>();
+								nestedFieldMap.put(wLevelField, wthLevelFieldMap);
+								nestedFieldMap = wthLevelFieldMap;
+
+							//Alternatively previous level under which current w-th level field is
+							//contained is a list
+							} else {
+
+								HashMap<String, Object> wthLevelFieldMap = (nestedFieldList.iterator().hasNext()) ?
+										(HashMap<String, Object>) nestedFieldList.iterator().next() :
+										new HashMap<String, Object>();
+
+								nestedFieldList.clear();
+								nestedFieldList.add(wthLevelFieldMap);
+
+								if(destinationNestedFields.length-1 == w) {
+									wthLevelFieldMap.put(wLevelField, sourceColumnValue);
+									break;
+								}
+
+								HashMap<String, Object> innerFieldMap = (wthLevelFieldMap.containsKey(wLevelField)) ?
+										(HashMap<String, Object>) wthLevelFieldMap.get(wLevelField) : new HashMap<String, Object>();
+
+								wthLevelFieldMap.put(wLevelField, innerFieldMap);
+								nestedFieldMap = innerFieldMap;
+							}
+
+							currLevelMap = true;
+						}
+					}
+
+				//Check if destination column type is non-nested
+				} else {
+					//destination column is a list mapping
+					if(sourceColumnConfig.endsWith("[]")) {
+
+						String columnName = sourceColumnConfig.replace("[]", "");
+						List<Object> fieldValues = (destinationColumnMap.containsKey(columnName)) ? (ArrayList<Object>) destinationColumnMap.get(columnName) : new ArrayList<Object>();
+						fieldValues.add(sourceColumnValue);
+						destinationColumnMap.put(columnName, fieldValues);
+
+					//destination column is a map
+					} else {
+
+						destinationColumnMap.put(sourceColumnConfig, sourceColumnValue);
+					}
+
+				}
+
+			} else if (MapAllValues.TRUE == mapAll && !exclusionSet.contains(sourceColumn)){
+				destinationColumnMap.put(sourceColumn, sourceEventColumnMap.get(sourceColumn));
 			}
 		}
 
