@@ -12,6 +12,7 @@
     		<list>
     			<bean class="com.flipkart.aesop.runtime.config.ProducerRegistration">
     				<property name="eventProducer" ref="mysqlPersonProducer"/>
+    				<property name="initScn" value="4294967300"/>
     				<property name="physicalSourceConfig" ref="physicalSourceConfig"/>
     			</bean>
     		</list>
@@ -92,7 +93,7 @@
 						<prop key="databus.relay.eventBuffer.readBufferSize">10240</prop>
 						<prop key="databus.relay.eventBuffer.scnIndexSize">10240000</prop>
 						<prop key="databus.relay.eventBuffer.restoreMMappedBuffers">true</prop>
-						<prop key ="databus.relay.dataSources.sequenceNumbersHandler.file.initVal">4294967300</prop>
+						<!--<prop key ="databus.relay.dataSources.sequenceNumbersHandler.file.initVal">4294967300</prop>-->
 			        </props>
 			    </property>    
 	    	</bean>    	
