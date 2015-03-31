@@ -15,27 +15,42 @@
  */
 package com.flipkart.aesop.runtime.producer.impl;
 
+import java.io.File;
+
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.util.Assert;
 
 import com.flipkart.aesop.runtime.producer.spi.SCNGenerator;
 import com.linkedin.databus.client.pub.CheckpointPersistenceProvider;
+import com.linkedin.databus.client.pub.FileSystemCheckpointPersistenceProvider;
 
 /**
- * The Spring factory bean for creating {@link CheckpointPersistenceProvider}. Used by relay producer implementations for creating {@link SCNGenerator} instances.
+ * The Spring factory bean for creating file based {@link CheckpointPersistenceProvider}. Used by relay producer implementations for 
+ * creating {@link SCNGenerator} instances.
  * 
  * @author Regunath B
  * @version 1.0, 30 Mar 2015
  */
 
-public class CheckpointPersistenceProviderFactory implements FactoryBean<CheckpointPersistenceProvider>, InitializingBean {
+public class FileSystemCPProviderFactory implements FactoryBean<CheckpointPersistenceProvider>, InitializingBean {
+	
+	/** Properties for the file based checkpoint provider*/
+	private static final int DEFAULT_PROTOCOL_VERSION = 2;	
+	private String checkpointDir;
+	private int maxHistorySize = FileSystemCheckpointPersistenceProvider.RuntimeConfigBuilder.MAX_HISTORY_SIZE;
 
     /**
      * Interface method implementation. Creates and returns a {@link CheckpointPersistenceProvider} instance
      * @see org.springframework.beans.factory.FactoryBean#getObject()
      */
 	public CheckpointPersistenceProvider getObject() throws Exception {
-		return null;
+		FileSystemCheckpointPersistenceProvider.Config config = new FileSystemCheckpointPersistenceProvider.Config();
+	    config.setRootDirectory(new File(this.checkpointDir).getAbsolutePath());
+	    config.getRuntime().setHistoryEnabled(true);
+	    config.getRuntime().setHistorySize(this.maxHistorySize);
+	    FileSystemCheckpointPersistenceProvider checkpointProvider = new FileSystemCheckpointPersistenceProvider(config, DEFAULT_PROTOCOL_VERSION);		 
+		return checkpointProvider;
 	}
 	
 	/**
@@ -59,6 +74,21 @@ public class CheckpointPersistenceProviderFactory implements FactoryBean<Checkpo
 	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
 	 */
 	public void afterPropertiesSet() throws Exception {
+		Assert.notNull(this.checkpointDir,"'checkpointDir' cannot be null. This file based checkpoint provider will not be initialized");
 	}
+
+	/** Setter/Getter methods */
+	public String getCheckpointDir() {
+		return checkpointDir;
+	}
+	public void setCheckpointDir(String checkpointDir) {
+		this.checkpointDir = checkpointDir;
+	}
+	public int getMaxHistorySize() {
+		return maxHistorySize;
+	}
+	public void setMaxHistorySize(int maxHistorySize) {
+		this.maxHistorySize = maxHistorySize;
+	}	
 	
 }

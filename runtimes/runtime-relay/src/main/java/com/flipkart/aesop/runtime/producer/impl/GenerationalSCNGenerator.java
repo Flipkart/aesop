@@ -15,8 +15,19 @@
  */
 package com.flipkart.aesop.runtime.producer.impl;
 
+import java.io.IOException;
+import java.util.Arrays;
+
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.util.Assert;
+import org.trpr.platform.core.impl.logging.LogFactory;
+import org.trpr.platform.core.spi.logging.Logger;
+
 import com.flipkart.aesop.runtime.producer.spi.SCNGenerator;
+import com.linkedin.databus.client.pub.CheckpointPersistenceProvider;
 import com.linkedin.databus.core.Checkpoint;
+import com.linkedin.databus.core.DatabusRuntimeException;
+import com.linkedin.databus.core.DbusClientMode;
 
 /**
  * <code>GenerationalSCNGenerator</code> is an implementation of the {@link SCNGenerator} that handles mastership change 
@@ -34,7 +45,10 @@ import com.linkedin.databus.core.Checkpoint;
  * @author Regunath B
  * @version 1.0, 25 Mar 2015
  */
-public class GenerationalSCNGenerator implements SCNGenerator {
+public class GenerationalSCNGenerator implements SCNGenerator,InitializingBean {
+	
+	/** Logger for this class*/
+	private static final Logger LOGGER = LogFactory.getLogger(GenerationalSCNGenerator.class);
 	
 	/** Invariants for no current generation and host*/
 	private static final int NO_GENERATION = -1;
@@ -44,15 +58,48 @@ public class GenerationalSCNGenerator implements SCNGenerator {
 	private int currentGeneration = NO_GENERATION;	
 	/** The current host identifier*/
 	private String currentHostId = NO_HOST;	
+	
+	/** The checkpoint persistence provider*/
+	private CheckpointPersistenceProvider checkpointPersistenceProvider;
+	
+	/** The logical source name to identify the event stream*/
+	private String relayLogicalSourceName;
 
+	/**
+	 * Interface method implementation. Checks for mandatory dependencies 
+	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
+	 */
+	public void afterPropertiesSet() throws Exception {
+		Assert.notNull(this.relayLogicalSourceName,"'relayLogicalSourceName' cannot be null. This SCN generator will not be initialized");
+		Assert.notNull(this.checkpointPersistenceProvider,"'checkpointPersistenceProvider' cannot be null. This SCN generator will not be initialized");
+		Checkpoint cp = this.checkpointPersistenceProvider.loadCheckpoint(Arrays.asList(this.relayLogicalSourceName));
+		if (cp != null) {
+			this.currentGeneration = cp.getBootstrapSinceScn().intValue();
+			this.currentHostId = cp.getBootstrapServerInfo();
+		}
+	}
+	
 	/**
 	 * 
 	 * @see com.flipkart.aesop.runtime.producer.SCNGenerator#getSCN(long, java.lang.String)
 	 */
 	public long getSCN(long localSCN, String hostId) {
 		if (!hostId.equalsIgnoreCase(this.currentHostId) || this.currentGeneration == NO_GENERATION) {
+			this.currentHostId = hostId;
 			this.currentGeneration += 1;
+			// we'll use a databus client checkpoint with appropriate(overloaded meaning) fields to store the generation and host name
 			Checkpoint cp = new Checkpoint();
+			cp.setConsumptionMode(DbusClientMode.BOOTSTRAP_SNAPSHOT);
+			cp.setBootstrapSinceScn(Long.valueOf(this.currentGeneration));
+			cp.setBootstrapServerInfo(this.currentHostId);
+			cp.setTsNsecs(System.nanoTime());
+			try {
+				this.checkpointPersistenceProvider.storeCheckpoint(Arrays.asList(this.relayLogicalSourceName),cp);
+			} catch (IOException e) {
+				LOGGER.error("Get SCN failed. Error storing checkpoint for : " + this.relayLogicalSourceName, e);
+				// throw a Runtime exception so that the relay producer can handle it and stop generating more events
+				throw new DatabusRuntimeException("Get SCN failed. Error storing checkpoint for : " + this.relayLogicalSourceName,e);
+			}
 		}
 		long fileId = localSCN >> 32;
 		long mask = (long)Integer.MAX_VALUE;
@@ -64,5 +111,14 @@ public class GenerationalSCNGenerator implements SCNGenerator {
 		scn |= offset;
 		return scn;
 	}
+
+	/** Setter/Getter methods */
+	public CheckpointPersistenceProvider getCheckpointPersistenceProvider() {
+		return checkpointPersistenceProvider;
+	}
+	public void setCheckpointPersistenceProvider(
+			CheckpointPersistenceProvider checkpointPersistenceProvider) {
+		this.checkpointPersistenceProvider = checkpointPersistenceProvider;
+	}	
 	
 }
