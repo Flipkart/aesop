@@ -213,7 +213,6 @@ public class MysqlTransactionManagerImpl implements MysqlTransactionManager
 				return;
 			}
 			perSourceTransaction = new PerSourceTransaction(srcId);
-			transaction.mergePerSourceTransaction(perSourceTransaction);
 		}
 		else
 		{
@@ -296,6 +295,12 @@ public class MysqlTransactionManagerImpl implements MysqlTransactionManager
 				{
 					perSourceTransaction.mergeDbChangeEntrySet(entry);
 				}
+                /**
+                 * This is added here, because, if the mergePersource TXN is called during setSource,
+                 * then , in the scenario where-in MysqlTransactionManagerImpl#perSourceTxn needs to be recycled,
+                 * the DBEntry obtained above are not yet added to the new Instance of perSourceTransaction
+                 */
+                transaction.mergePerSourceTransaction(perSourceTransaction);
 			}
 			else
 			{

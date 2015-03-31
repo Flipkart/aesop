@@ -37,6 +37,9 @@ public class ProducerRegistration implements InitializingBean {
 	
 	/** The physical databus source configuration*/
 	private PhysicalSourceConfig physicalSourceConfig;
+	
+	/** The initial value to be read from the datasource*/
+	private String initScn;
 
 	/**
 	 * Interface method implementation. Ensures that a EventProducer and PhysicalSourceConfig is set
@@ -45,6 +48,7 @@ public class ProducerRegistration implements InitializingBean {
 	public void afterPropertiesSet() throws Exception {
 		Assert.notNull(this.eventProducer,"'eventProducer' cannot be null. An EventProducer must be specified");
 		Assert.notNull(this.physicalSourceConfig,"'physicalSourceConfig' cannot be null. A PhysicalSourceConfig must be specified");
+		Assert.notNull(this.initScn,"'initScn' cannot be null. It must be provided per producer");
 	}
 
 	/** Getter/Setter methods*/
@@ -59,6 +63,13 @@ public class ProducerRegistration implements InitializingBean {
 	}
 	public void setPhysicalSourceConfig(PhysicalSourceConfig physicalSourceConfig) {
 		this.physicalSourceConfig = physicalSourceConfig;
+	}
+	public String getInitScn() {
+		return initScn;
+	}
+
+	public void setInitScn(String initScn) {
+		this.initScn = initScn;
 	}
 		
 }

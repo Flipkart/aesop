@@ -15,13 +15,6 @@
 
 package com.flipkart.aesop.mapper.implementation;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import com.flipkart.aesop.event.AbstractEvent;
 import com.flipkart.aesop.event.implementation.DestinationEventFactory;
 import com.flipkart.aesop.event.implementation.SourceEvent;
@@ -36,6 +29,8 @@ import com.typesafe.config.Config;
 import com.typesafe.config.ConfigList;
 import com.typesafe.config.ConfigObject;
 import com.typesafe.config.ConfigValue;
+
+import java.util.*;
 
 /**
  * Implements the logic of mapping from {@link SourceEvent} to {@link List <DestinationEvent>} for various
@@ -237,14 +232,14 @@ public enum MapperType
 			                ConfigObject.class);
 
 			destinationEventColumnMap =
-			        MapperHelper.getDestinationEventColumnMapping(sourceEvent.getFieldMapPair(),
-			                columnMappingConfigObject, mapAll, exclusionSet);
+			        MapperHelper.getEventColumnMapping(sourceEvent.getFieldMapPair(),
+							columnMappingConfigObject, mapAll, exclusionSet);
 		}
 		else
 		{
 			destinationEventColumnMap =
-			        MapperHelper.getDestinationEventColumnMapping(sourceEvent.getFieldMapPair(), null, mapAll,
-			                exclusionSet);
+			        MapperHelper.getEventColumnMapping(sourceEvent.getFieldMapPair(), null, mapAll,
+							exclusionSet);
 		}
 		return destinationEventColumnMap;
 	}
