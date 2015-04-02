@@ -36,6 +36,7 @@ import org.springframework.util.Assert;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * The Spring factory bean for creating {@link DefaultRelay} instances based on configured properties
@@ -90,14 +91,16 @@ public class DefaultRelayFactory  implements FactoryBean<DefaultRelay>, Initiali
         if (this.maxScnReaderWriters == null) {
             this.maxScnReaderWriters = new HashMap<String,MultiServerSequenceNumberHandler>();
             for (int i=0; i < this.producerRegistrationList.size(); i++) {
-                //Getting initial SCN per producer
-                String initScn = this.producerRegistrationList.get(i).getInitScn();
-                if(initScn != null) {
-                    this.relayConfig.getRelayProperties().put("databus.relay.dataSources.sequenceNumbersHandler.file.initVal", initScn);
+                //Get Properties from Relay Config
+                Properties properties = new Properties(this.relayConfig.getRelayProperties());
+
+                // Obtain Properties from Product Registration if it exists
+                if(producerRegistrationList.get(i).getProperties() != null) {
+                    properties.putAll(producerRegistrationList.get(i).getProperties());
                 }
 
                 //Loading a list of static configs
-                staticConfigList[i] = staticConfigLoader.loadConfig(this.relayConfig.getRelayProperties());
+                staticConfigList[i] = staticConfigLoader.loadConfig(properties);
 
                 //Making a handlerFactory per producer.
                 SequenceNumberHandlerFactory handlerFactory = staticConfigList[i].getDataSources().getSequenceNumbersHandler().createFactory();

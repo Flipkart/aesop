@@ -5,6 +5,7 @@
 distribution
 .idea/
 *.iml
+*.ipr
 *.iws
 
 *.pydevproject
