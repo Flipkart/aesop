@@ -27,10 +27,10 @@ import com.linkedin.databus.core.DbusOpcode;
  * any insert operation on the source.
  * @author nrbafna
  */
-public class InsertEventV2Processor extends AbstractBinLogEventProcessor
+public class InsertEventV2Processor<T extends AbstractEvent> extends AbstractBinLogEventProcessor<T>
 {
 	@Override
-	public void process(BinlogEventV4 event, OpenReplicationListener listener)
+	public void process(BinlogEventV4 event, OpenReplicationListener<T> listener)
 	{
 		WriteRowsEventV2 wre = (WriteRowsEventV2) event;
 		List<AbstractEvent> sourceEvents = map(wre.getTableId(), wre.getRows(), listener, DbusOpcode.UPSERT);

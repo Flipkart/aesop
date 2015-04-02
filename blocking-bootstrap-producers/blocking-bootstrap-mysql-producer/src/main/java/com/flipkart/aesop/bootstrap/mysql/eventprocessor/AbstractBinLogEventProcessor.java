@@ -30,11 +30,11 @@ import com.linkedin.databus2.schemas.VersionedSchema;
  * {@link com.flipkart.aesop.event.AbstractEvent}
  * @author nrbafna
  */
-public abstract class AbstractBinLogEventProcessor implements BinLogEventProcessor
+public abstract class AbstractBinLogEventProcessor<T extends AbstractEvent> implements BinLogEventProcessor<T>
 {
 	public static final Logger LOGGER = LogFactory.getLogger(AbstractBinLogEventProcessor.class);
 
-	protected List<AbstractEvent> map(long tableId, List<Row> rowList, OpenReplicationListener listener,
+	protected List<AbstractEvent> map(long tableId, List<Row> rowList, OpenReplicationListener<T> listener,
 	        DbusOpcode dbusOpcode)
 	{
 		String tableName = listener.getTableIdtoNameMapping().get(tableId);
@@ -42,7 +42,7 @@ public abstract class AbstractBinLogEventProcessor implements BinLogEventProcess
 	}
 
 	protected List<AbstractEvent> map(String tableName, List<Row> rowList,
-	        OpenReplicationListener openReplicationListener, DbusOpcode dbusOpcode)
+	        OpenReplicationListener<T> openReplicationListener, DbusOpcode dbusOpcode)
 	{
 		List<AbstractEvent> sourceEvents = new ArrayList<AbstractEvent>();
 

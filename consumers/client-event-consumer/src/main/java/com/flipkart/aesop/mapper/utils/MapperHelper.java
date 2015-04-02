@@ -187,6 +187,7 @@ public class MapperHelper
 	 * @param exclusionSet
 	 * @return Destination Event Column Mapping
 	 */
+	@SuppressWarnings("unchecked")
 	public static Map<String, Object> getDestinationEventColumnMapping(Map<String, Object> sourceEventColumnMap,
 	        ConfigObject columnMappingConfigObject, MapAllValues mapAll, Set<String> exclusionSet)
 	{
@@ -249,6 +250,7 @@ public class MapperHelper
 	 * @param exclusionSet set of src fields which needs to be excluded if <code>mapAll</code> is set to MapAllValues.TRUE
 	 * @return destination event field mapping
 	 */
+	@SuppressWarnings("unchecked")
 	public static Map<String, Object> getEventColumnMapping(Map<String, Object> sourceEventColumnMap, ConfigObject columnMappingConfigObject,
 															MapAllValues mapAll, Set<String> exclusionSet) {
 

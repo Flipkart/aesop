@@ -16,14 +16,15 @@
 package com.flipkart.aesop.runtime.spring.web;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.linkedin.databus2.relay.config.LogicalSourceConfig;
-import org.apache.avro.data.Json;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -32,13 +33,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.flipkart.aesop.runtime.config.ProducerRegistration;
 import com.flipkart.aesop.runtime.impl.registry.ServerContainerRegistry;
 import com.flipkart.aesop.runtime.relay.DefaultRelay;
 import com.flipkart.aesop.runtime.spi.admin.RuntimeConfigService;
 import com.linkedin.databus2.core.container.netty.ServerContainer;
-import org.springframework.web.bind.annotation.ResponseBody;
+import com.linkedin.databus2.relay.config.LogicalSourceConfig;
 
 /**
  * The <code>RelayController</code> class is a Spring MVC Controller that displays Relay Metrics. Also provides
@@ -244,29 +246,25 @@ public class RelayController {
      * @return JSONObject grouped structure
      */
     private JSONObject getRelayClientGroupedJson(List<RelayInfo> relayInfoList) {
-        Map<Integer, Map> relayClientGrouped = new HashMap<Integer,Map>();
+        Map<Integer, Map<String, Map<String, Long>>> relayClientGrouped = new HashMap<Integer,Map<String, Map<String, Long>>>();
         for(RelayInfo relay : relayInfoList) {
 
-            Map<String, Map> relayClientInfo = relayClientGrouped.get(relay.getpSourceId());
+            Map<String, Map<String, Long>> relayClientInfo = relayClientGrouped.get(relay.getpSourceId());
             if (  relayClientInfo == null ) {
-                relayClientInfo = new HashMap<String, Map>();
+                relayClientInfo = new HashMap<String, Map<String, Long>>();
             }
-
             RelayInfo.ClientInfo[] clientInfos = relay.getClientInfos();
             for(RelayInfo.ClientInfo clientInfo : clientInfos) {
                 String hostName = clientInfo.getClientHost();
-
                 if(relayClientInfo.get(hostName) == null) {
                     relayClientInfo.put(
                             hostName , new HashMap<String, Long>()
                     );
                 }
-
                 relayClientInfo.get(hostName).put(
                         clientInfo.getClientName(), clientInfo.getClientSinceSCN()
                 );
             }
-
             relayClientGrouped.put(relay.getpSourceId(), relayClientInfo);
         }
 

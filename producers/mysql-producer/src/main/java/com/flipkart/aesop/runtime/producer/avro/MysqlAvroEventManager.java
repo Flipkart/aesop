@@ -64,7 +64,7 @@ import com.linkedin.databus2.schemas.utils.SchemaHelper;
  * @author Shoury B
  * @version 1.0, 07 Mar 2014
  */
-public class MysqlAvroEventManager
+public class MysqlAvroEventManager<T extends GenericRecord>
 {
 	/** Logger for this class */
 	private static final Logger LOGGER = LogFactory.getLogger(MysqlAvroEventManager.class);
@@ -128,7 +128,7 @@ public class MysqlAvroEventManager
 	 * @return List<DbChangeEntry> list of change records
 	 */
 	public List<DbChangeEntry> frameAvroRecord(final BinlogEventV4Header eventHeader, final List<Row> rowList,
-	        final DbusOpcode dbusOpCode, Map<Integer, BinLogEventMapper> binLogEventMappers, final Schema schema,
+	        final DbusOpcode dbusOpCode, Map<Integer, BinLogEventMapper<T>> binLogEventMappers, final Schema schema,
 	        final long scn)
 	{
 		List<DbChangeEntry> entryList = new ArrayList<DbChangeEntry>();
@@ -141,8 +141,8 @@ public class MysqlAvroEventManager
 			{
 				List<Column> columns = row.getColumns();
 				// getting the appropriate bin log mapper for the logicalSource
-				BinLogEventMapper binLogEventMapper =
-				        binLogEventMappers.get(lSourceId) == null ? new DefaultBinLogEventMapper(new ORToAvroMapper())
+				BinLogEventMapper<T> binLogEventMapper =
+				        binLogEventMappers.get(lSourceId) == null ? new DefaultBinLogEventMapper<T>(new ORToAvroMapper())
 				                : binLogEventMappers.get(lSourceId);
 
 				GenericRecord genericRecord = binLogEventMapper.mapBinLogEvent(eventHeader, row, dbusOpCode, schema);

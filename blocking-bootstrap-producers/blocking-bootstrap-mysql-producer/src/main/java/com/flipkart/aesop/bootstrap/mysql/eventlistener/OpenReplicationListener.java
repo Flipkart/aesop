@@ -25,6 +25,7 @@ import com.flipkart.aesop.bootstrap.mysql.eventprocessor.BinLogEventProcessor;
 import com.flipkart.aesop.bootstrap.mysql.mapper.BinLogEventMapper;
 import com.flipkart.aesop.bootstrap.mysql.mapper.impl.DefaultBinLogEventMapper;
 import com.flipkart.aesop.bootstrap.mysql.utils.ORToMysqlMapper;
+import com.flipkart.aesop.event.AbstractEvent;
 import com.flipkart.aesop.runtime.bootstrap.consumer.SourceEventConsumer;
 import com.google.code.or.binlog.BinlogEventListener;
 import com.google.code.or.binlog.BinlogEventV4;
@@ -36,7 +37,7 @@ import com.linkedin.databus2.schemas.SchemaRegistryService;
  * <a href="https://code.google.com/p/open-replicator/">OpenReplicator</a> provides callback to this implementation.
  * @author nrbafna
  */
-public class OpenReplicationListener implements BinlogEventListener
+public class OpenReplicationListener<T extends AbstractEvent> implements BinlogEventListener
 {
 	public static final Logger LOGGER = LogFactory.getLogger(OpenReplicationListener.class);
 
@@ -45,24 +46,24 @@ public class OpenReplicationListener implements BinlogEventListener
 	private SchemaRegistryService schemaRegistryService;
 	private List<String> interestedSourceList;
 	private Map<String, String> tableUriToSrcNameMap;
-	private BinLogEventMapper binLogEventMapper;
+	private BinLogEventMapper<T> binLogEventMapper;
 	private SourceEventConsumer sourceEventConsumer;
-	private Map<Integer, BinLogEventProcessor> processors;
+	private Map<Integer, BinLogEventProcessor<T>> processors;
 	private EventProducer shutdownListener;
 
 	private Map<Long, String> tableIdtoNameMapping = new HashMap<Long, String>();
 
 	public OpenReplicationListener(String binlogPrefix, Long endFileNum, List<String> interestedSourceList,
 	        Map<String, String> tableUriToSrcNameMap, SchemaRegistryService schemaRegistryService,
-	        SourceEventConsumer sourceEventConsumer, Map<Integer, BinLogEventProcessor> eventProcessorMap,
-	        MysqlEventProducer mysqlEventProducer)
+	        SourceEventConsumer sourceEventConsumer, Map<Integer, BinLogEventProcessor<T>> eventProcessorMap,
+	        MysqlEventProducer<T> mysqlEventProducer)
 	{
 		this.binlogPrefix = binlogPrefix;
 		this.endFileNum = endFileNum;
 		this.schemaRegistryService = schemaRegistryService;
 		this.tableUriToSrcNameMap = tableUriToSrcNameMap;
 		this.interestedSourceList = interestedSourceList;
-		this.binLogEventMapper = new DefaultBinLogEventMapper(new ORToMysqlMapper());
+		this.binLogEventMapper = new DefaultBinLogEventMapper<T>(new ORToMysqlMapper());
 		this.sourceEventConsumer = sourceEventConsumer;
 		this.processors = eventProcessorMap;
 		this.shutdownListener = mysqlEventProducer;
@@ -78,7 +79,7 @@ public class OpenReplicationListener implements BinlogEventListener
 		LOGGER.info("Current SCN:" + event.getHeader().getPosition());
 
 		int eventType = event.getHeader().getEventType();
-		BinLogEventProcessor processor = processors.get(eventType);
+		BinLogEventProcessor<T> processor = processors.get(eventType);
 		if (processor != null)
 		{
 			processor.process(event, this);
@@ -124,7 +125,7 @@ public class OpenReplicationListener implements BinlogEventListener
 		return tableIdtoNameMapping;
 	}
 
-	public BinLogEventMapper getBinLogEventMapper()
+	public BinLogEventMapper<T> getBinLogEventMapper()
 	{
 		return binLogEventMapper;
 	}

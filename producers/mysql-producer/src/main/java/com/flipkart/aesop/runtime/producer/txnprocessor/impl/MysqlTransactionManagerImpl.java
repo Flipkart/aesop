@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.apache.avro.generic.GenericRecord;
 import org.trpr.platform.core.impl.logging.LogFactory;
 import org.trpr.platform.core.spi.logging.Logger;
 
@@ -49,7 +50,7 @@ import com.linkedin.databus2.schemas.VersionedSchema;
  * @version 1.0, 07 Mar 2014
  */
 @SuppressWarnings ("rawtypes")
-public class MysqlTransactionManagerImpl implements MysqlTransactionManager
+public class MysqlTransactionManagerImpl<T extends GenericRecord> implements MysqlTransactionManager
 {
 	/** Logger for this class */
 	private static final Logger LOGGER = LogFactory.getLogger(MysqlTransactionManagerImpl.class);
@@ -60,7 +61,7 @@ public class MysqlTransactionManagerImpl implements MysqlTransactionManager
 	/** Databus events statistics collector */
 	private final DbusEventsStatisticsCollector dbusEventsStatisticsCollector;
 	/** Event Manager map containing mapping of source to avro event Manager */
-	private final Map<Integer, MysqlAvroEventManager> eventManagerMap;
+	private final Map<Integer, MysqlAvroEventManager<T>> eventManagerMap;
 	/** SCN tracker */
 	private final AtomicLong sinceSCN;
 	/** table name to source id mapping */
@@ -86,7 +87,7 @@ public class MysqlTransactionManagerImpl implements MysqlTransactionManager
 	/** Current bin log file number */
 	private int currFileNum;
 	/** Bin log event mappers for mapping individual bin log events */
-	private Map<Integer, BinLogEventMapper> binLogEventMappers;
+	private Map<Integer, BinLogEventMapper<T>> binLogEventMappers;
 	/** Schema registry service which maintains currently active schemas */
 	private SchemaRegistryService schemaRegistryService;
 	/** mysqlTableId to tableName mapping */
@@ -101,10 +102,10 @@ public class MysqlTransactionManagerImpl implements MysqlTransactionManager
 	public MysqlTransactionManagerImpl(final DbusEventBufferAppendable eventBuffer,
 	        final MaxSCNReaderWriter maxSCNReaderWriter,
 	        final DbusEventsStatisticsCollector dbusEventsStatisticsCollector,
-	        final Map<Integer, MysqlAvroEventManager> eventManagerMap, final int currFileNum,
+	        final Map<Integer, MysqlAvroEventManager<T>> eventManagerMap, final int currFileNum,
 	        final Map<String, Short> tableUriToSrcIdMap, final Map<String, String> tableUriToSrcNameMap,
 	        final SchemaRegistryService schemaRegistryService, final AtomicLong sinceSCN,
-	        Map<Integer, BinLogEventMapper> binLogEventMappers, SCNGenerator scnGenerator,
+	        Map<Integer, BinLogEventMapper<T>> binLogEventMappers, SCNGenerator scnGenerator,
 	        MysqlEventProducer mySqlEventProducer){
 		this.eventBuffer = eventBuffer;
 		this.maxSCNReaderWriter = maxSCNReaderWriter;
@@ -408,12 +409,12 @@ public class MysqlTransactionManagerImpl implements MysqlTransactionManager
 		return currFileNum;
 	}
 
-	public Map<Integer, BinLogEventMapper> getBinLogEventMappers()
+	public Map<Integer, BinLogEventMapper<T>> getBinLogEventMappers()
 	{
 		return binLogEventMappers;
 	}
 
-	public void setBinLogEventMappers(Map<Integer, BinLogEventMapper> binLogEventMapper)
+	public void setBinLogEventMappers(Map<Integer, BinLogEventMapper<T>> binLogEventMapper)
 	{
 		this.binLogEventMappers = binLogEventMapper;
 	}
@@ -443,7 +444,7 @@ public class MysqlTransactionManagerImpl implements MysqlTransactionManager
 		return dbusEventsStatisticsCollector;
 	}
 
-	public Map<Integer, MysqlAvroEventManager> getEventFactoryMap()
+	public Map<Integer, MysqlAvroEventManager<T>> getEventFactoryMap()
 	{
 		return eventManagerMap;
 	}

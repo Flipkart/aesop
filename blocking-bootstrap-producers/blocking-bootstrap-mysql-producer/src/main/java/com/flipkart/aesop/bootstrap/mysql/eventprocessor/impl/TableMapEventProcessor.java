@@ -15,6 +15,7 @@ package com.flipkart.aesop.bootstrap.mysql.eventprocessor.impl;
 
 import com.flipkart.aesop.bootstrap.mysql.eventlistener.OpenReplicationListener;
 import com.flipkart.aesop.bootstrap.mysql.eventprocessor.AbstractBinLogEventProcessor;
+import com.flipkart.aesop.event.AbstractEvent;
 import com.google.code.or.binlog.BinlogEventV4;
 import com.google.code.or.binlog.impl.event.TableMapEvent;
 
@@ -23,10 +24,10 @@ import com.google.code.or.binlog.impl.event.TableMapEvent;
  * for the started transaction.
  * @author nrbafna
  */
-public class TableMapEventProcessor extends AbstractBinLogEventProcessor
+public class TableMapEventProcessor<T extends AbstractEvent> extends AbstractBinLogEventProcessor<T>
 {
 	@Override
-	public void process(BinlogEventV4 event, OpenReplicationListener listener)
+	public void process(BinlogEventV4 event, OpenReplicationListener<T> listener)
 	{
 		TableMapEvent tableMapEvent = (TableMapEvent) event;
 		String newTableName =

@@ -142,6 +142,7 @@ public class SchemaGeneratorCli
 	 * construct command line options
 	 * @return options
 	 */
+	@SuppressWarnings("static-access")
 	public static Options constructOptions()
 	{
 		final Options gnuOptions = new Options();

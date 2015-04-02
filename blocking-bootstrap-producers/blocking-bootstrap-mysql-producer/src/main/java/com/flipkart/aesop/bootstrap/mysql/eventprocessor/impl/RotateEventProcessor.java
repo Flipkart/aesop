@@ -18,6 +18,7 @@ import org.trpr.platform.core.spi.logging.Logger;
 
 import com.flipkart.aesop.bootstrap.mysql.eventlistener.OpenReplicationListener;
 import com.flipkart.aesop.bootstrap.mysql.eventprocessor.BinLogEventProcessor;
+import com.flipkart.aesop.event.AbstractEvent;
 import com.google.code.or.binlog.BinlogEventV4;
 import com.google.code.or.binlog.impl.event.RotateEvent;
 
@@ -27,12 +28,12 @@ import com.google.code.or.binlog.impl.event.RotateEvent;
  * the configured number of days.
  * @author nrbafna
  */
-public class RotateEventProcessor implements BinLogEventProcessor
+public class RotateEventProcessor<T extends AbstractEvent> implements BinLogEventProcessor<T>
 {
 	public static final Logger LOGGER = LogFactory.getLogger(RotateEventProcessor.class);
 
 	@Override
-	public void process(BinlogEventV4 event, OpenReplicationListener listener)
+	public void process(BinlogEventV4 event, OpenReplicationListener<T> listener)
 	{
 		String binlogPrefix = listener.getBinlogPrefix();
 		RotateEvent rotateEvent = (RotateEvent) event;

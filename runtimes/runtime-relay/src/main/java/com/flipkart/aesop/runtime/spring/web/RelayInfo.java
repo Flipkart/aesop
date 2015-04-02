@@ -36,7 +36,7 @@ public class RelayInfo {
 
 	private RelayInfo.ClientInfo[] clientInfos;
     private RelayInfo.LSourceInfo[] lSourceInfos;
-    private Map<String,Map> hostGroupedClient;
+    private Map<String,Map<String, Long>> hostGroupedClient;
 	
 	/** Constructor with only physical source attributes*/
 	public RelayInfo(int pSourceId, String pSourceName, String pSourceURI) {
@@ -82,9 +82,9 @@ public class RelayInfo {
         this.lSourceInfos = lSourceInfos;
     }
 
-    public Map getHostGroupedClient() { return this.hostGroupedClient; }
+    public Map<String,Map<String, Long>> getHostGroupedClient() { return this.hostGroupedClient; }
     public void setHostGroupedClient() {
-        this.hostGroupedClient = new HashMap<String, Map>();
+        this.hostGroupedClient = new HashMap<String, Map<String, Long>>();
 
         Long clientSCN;
         String clientHost;

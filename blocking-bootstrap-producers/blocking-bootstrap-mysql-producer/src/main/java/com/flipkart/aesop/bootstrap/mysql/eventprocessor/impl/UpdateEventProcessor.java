@@ -30,10 +30,10 @@ import com.linkedin.databus.core.DbusOpcode;
  * update operation on the source.
  * @author nrbafna
  */
-public class UpdateEventProcessor extends AbstractBinLogEventProcessor
+public class UpdateEventProcessor<T extends AbstractEvent> extends AbstractBinLogEventProcessor<T>
 {
 	@Override
-	public void process(BinlogEventV4 event, OpenReplicationListener listener)
+	public void process(BinlogEventV4 event, OpenReplicationListener<T> listener)
 	{
 		UpdateRowsEvent updateRowsEvent = (UpdateRowsEvent) event;
 

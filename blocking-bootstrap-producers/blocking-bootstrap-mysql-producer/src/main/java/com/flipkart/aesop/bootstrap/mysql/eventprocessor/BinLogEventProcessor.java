@@ -14,6 +14,7 @@
 package com.flipkart.aesop.bootstrap.mysql.eventprocessor;
 
 import com.flipkart.aesop.bootstrap.mysql.eventlistener.OpenReplicationListener;
+import com.flipkart.aesop.event.AbstractEvent;
 import com.google.code.or.binlog.BinlogEventV4;
 
 /**
@@ -21,7 +22,7 @@ import com.google.code.or.binlog.BinlogEventV4;
  * InsertEventProcessor, UpdateEventProcessor etc
  * @author nrbafna
  */
-public interface BinLogEventProcessor
+public interface BinLogEventProcessor<T extends AbstractEvent>
 {
-	void process(BinlogEventV4 event, OpenReplicationListener listener);
+	void process(BinlogEventV4 event, OpenReplicationListener<T> listener);
 }

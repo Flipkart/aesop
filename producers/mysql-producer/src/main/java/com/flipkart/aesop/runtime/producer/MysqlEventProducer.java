@@ -51,7 +51,7 @@ import com.linkedin.databus2.relay.config.PhysicalSourceStaticConfig;
  * @author Shoury B
  * @version 1.0, 07 Mar 2014
  */
-public class MysqlEventProducer extends AbstractEventProducer implements InitializingBean
+public class MysqlEventProducer<T extends GenericRecord> extends AbstractEventProducer implements InitializingBean
 {
 	/** Logger for this class */
 	private static final Logger LOGGER = LogFactory.getLogger(MysqlEventProducer.class);
@@ -64,7 +64,7 @@ public class MysqlEventProducer extends AbstractEventProducer implements Initial
 	/** Index of bin log prefix in pattern match group */
 	private static final int BIN_LOG_PREFIX = 2;
 	/** Event mapper which maps bin log events to one of schemas registered */
-	protected Map<Integer, BinLogEventMapper> binLogEventMappers;
+	protected Map<Integer, BinLogEventMapper<T>> binLogEventMappers;
 	/** Open Replicator which listens and parses bin log events from Mysql */
 	protected OpenReplicator openReplicator;
 	/** Mysql transaction manager */
@@ -109,12 +109,12 @@ public class MysqlEventProducer extends AbstractEventProducer implements Initial
 			LOGGER.debug("Bin Log File Name : " + binlogFile);
 			Map<String, Short> tableUriToSrcIdMap = new HashMap<String, Short>();
 			Map<String, String> tableUriToSrcNameMap = new HashMap<String, String>();
-			Map<Integer, MysqlAvroEventManager> eventManagersMap = new HashMap<Integer, MysqlAvroEventManager>();
+			Map<Integer, MysqlAvroEventManager<T>> eventManagersMap = new HashMap<Integer, MysqlAvroEventManager<T>>();
 			for (LogicalSourceStaticConfig sourceConfig : physicalSourceStaticConfig.getSources())
 			{
 				tableUriToSrcIdMap.put(sourceConfig.getUri().toLowerCase(), sourceConfig.getId());
 				tableUriToSrcNameMap.put(sourceConfig.getUri().toLowerCase(), sourceConfig.getName());
-				MysqlAvroEventManager manager = null;
+				MysqlAvroEventManager<T> manager = null;
 				try
 				{
 					manager = buildEventManagers(sourceConfig, physicalSourceStaticConfig);
@@ -137,7 +137,7 @@ public class MysqlEventProducer extends AbstractEventProducer implements Initial
 			}
 
 			mysqlTxnManager =
-			        new MysqlTransactionManagerImpl(eventBuffer, maxScnReaderWriter, dbusEventsStatisticsCollector,
+			        new MysqlTransactionManagerImpl<T>(eventBuffer, maxScnReaderWriter, dbusEventsStatisticsCollector,
 			                eventManagersMap, logid, tableUriToSrcIdMap, tableUriToSrcNameMap, schemaRegistryService,
 			                this.sinceSCN, binLogEventMappers, scnGenerator, this);
 			mysqlTxnManager.setShutdownRequested(false);
@@ -177,11 +177,11 @@ public class MysqlEventProducer extends AbstractEventProducer implements Initial
 	 * @throws UnsupportedKeyException Thrown when the data type of the "key" field is not a supported type
 	 * @throws InvalidConfigException Throws when invalid source config is present in configuration provided
 	 */
-	public MysqlAvroEventManager buildEventManagers(LogicalSourceStaticConfig sourceConfig,
+	public MysqlAvroEventManager<T> buildEventManagers(LogicalSourceStaticConfig sourceConfig,
 	        PhysicalSourceStaticConfig pConfig) throws DatabusException, EventCreationException,
 	        UnsupportedKeyException, InvalidConfigException
 	{
-		MysqlAvroEventManager manager = new MysqlAvroEventManager(sourceConfig.getId(), (short) pConfig.getId());
+		MysqlAvroEventManager<T> manager = new MysqlAvroEventManager<T>(sourceConfig.getId(), (short) pConfig.getId());
 		return manager;
 	}
 
@@ -311,10 +311,10 @@ public class MysqlEventProducer extends AbstractEventProducer implements Initial
 	}
 
 	/** Getters and Setters for this class */
-	public Map<Integer, BinLogEventMapper> getBinLogEventMappers(){
+	public Map<Integer, BinLogEventMapper<T>> getBinLogEventMappers(){
 		return binLogEventMappers;
 	}
-	public void setBinLogEventMappers(Map<Integer, BinLogEventMapper> binLogEventMapper){
+	public void setBinLogEventMappers(Map<Integer, BinLogEventMapper<T>> binLogEventMapper){
 		this.binLogEventMappers = binLogEventMapper;
 	}
 	public MysqlTransactionManager getMysqlTxnManager(){

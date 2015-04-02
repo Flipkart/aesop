@@ -38,7 +38,7 @@ import com.linkedin.databus2.schemas.utils.SchemaHelper;
  * @version 1.0, 26 Mar 2014
  */
 
-public class DefaultBinLogEventMapper implements BinLogEventMapper<GenericRecord>
+public class DefaultBinLogEventMapper<T extends GenericRecord> implements BinLogEventMapper<T>
 {
 	/** Logger for this class */
 	protected static final Logger LOGGER = LogFactory.getLogger(DefaultBinLogEventMapper.class);
@@ -71,8 +71,9 @@ public class DefaultBinLogEventMapper implements BinLogEventMapper<GenericRecord
 	 * {@link BinlogEventV4Header} and {@link DbusOpcode}
 	 * @see org.aesop.runtime.producer.mapper.BinLogEventMapper#mapBinLogEvent(com.google.code.or.binlog.BinlogEventV4Header,com.google.code.or.common.glossary.Row,com.linkedin.databus.core.DbusOpcode)
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
-	public GenericRecord mapBinLogEvent(BinlogEventV4Header header, Row row, DbusOpcode databusCode, Schema schema)
+	public T mapBinLogEvent(BinlogEventV4Header header, Row row, DbusOpcode databusCode, Schema schema)
 	{
 		GenericRecord record = new GenericData.Record(schema);
 		List<Column> columns = row.getColumns();
@@ -101,7 +102,7 @@ public class DefaultBinLogEventMapper implements BinLogEventMapper<GenericRecord
 				cnt++;
 			}
 			LOGGER.info("Mapped GenricRecord for schema " + schema.getName() + " : " + record.toString());
-			return record;
+			return (T)record;
 		}
 		catch (Exception e)
 		{

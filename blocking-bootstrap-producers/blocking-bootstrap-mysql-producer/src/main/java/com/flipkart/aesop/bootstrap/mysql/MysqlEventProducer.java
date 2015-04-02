@@ -22,6 +22,7 @@ import org.trpr.platform.core.spi.logging.Logger;
 import com.flipkart.aesop.bootstrap.mysql.configs.OpenReplicatorConfig;
 import com.flipkart.aesop.bootstrap.mysql.eventlistener.OpenReplicationListener;
 import com.flipkart.aesop.bootstrap.mysql.eventprocessor.BinLogEventProcessor;
+import com.flipkart.aesop.event.AbstractEvent;
 import com.flipkart.aesop.runtime.bootstrap.producer.BlockingEventProducer;
 import com.google.code.or.OpenReplicator;
 import com.linkedin.databus2.schemas.FileSystemSchemaRegistryService;
@@ -31,13 +32,13 @@ import com.linkedin.databus2.schemas.FileSystemSchemaRegistryService;
  * instance of {@link OpenReplicationListener} to process the events
  * @author nrbafna
  */
-public class MysqlEventProducer extends BlockingEventProducer
+public class MysqlEventProducer<T extends AbstractEvent> extends BlockingEventProducer
 {
 	public static final Logger LOGGER = LogFactory.getLogger(MysqlEventProducer.class);
 	private static Long startTime = System.nanoTime();
 
 	private OpenReplicatorConfig openReplicatorConfig;
-	private Map<Integer, BinLogEventProcessor> eventProcessors;
+	private Map<Integer, BinLogEventProcessor<T>> eventProcessors;
 
 	private OpenReplicator openReplicator = new OpenReplicator();
 
@@ -52,8 +53,8 @@ public class MysqlEventProducer extends BlockingEventProducer
 			FileSystemSchemaRegistryService.StaticConfig schemaRegistryServiceConfig = configBuilder.build();
 			schemaRegistryService = FileSystemSchemaRegistryService.build(schemaRegistryServiceConfig);
 
-			OpenReplicationListener orListener =
-			        new OpenReplicationListener(openReplicatorConfig.getBinlogPrefix(),
+			OpenReplicationListener<T> orListener =
+			        new OpenReplicationListener<T>(openReplicatorConfig.getBinlogPrefix(),
 			                openReplicatorConfig.getEndFileNumber(), interestedSourceList, tableUriToSrcNameMap,
 			                schemaRegistryService, sourceEventConsumer, eventProcessors, this);
 
@@ -152,12 +153,12 @@ public class MysqlEventProducer extends BlockingEventProducer
 		this.openReplicatorConfig = openReplicatorConfig;
 	}
 
-	public Map<Integer, BinLogEventProcessor> getEventProcessors()
+	public Map<Integer, BinLogEventProcessor<T>> getEventProcessors()
 	{
 		return eventProcessors;
 	}
 
-	public void setEventProcessors(Map<Integer, BinLogEventProcessor> eventProcessors)
+	public void setEventProcessors(Map<Integer, BinLogEventProcessor<T>> eventProcessors)
 	{
 		this.eventProcessors = eventProcessors;
 	}

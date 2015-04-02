@@ -27,10 +27,10 @@ import com.linkedin.databus.core.DbusOpcode;
  * any delete operation on the source.
  * @author nrbafna
  */
-public class DeleteEventV2Processor extends AbstractBinLogEventProcessor
+public class DeleteEventV2Processor<T extends AbstractEvent> extends AbstractBinLogEventProcessor<T>
 {
 	@Override
-	public void process(BinlogEventV4 event, OpenReplicationListener listener)
+	public void process(BinlogEventV4 event, OpenReplicationListener<T> listener)
 	{
 		DeleteRowsEventV2 deleteEvent = (DeleteRowsEventV2) event;
 		List<AbstractEvent> sourceEvents =

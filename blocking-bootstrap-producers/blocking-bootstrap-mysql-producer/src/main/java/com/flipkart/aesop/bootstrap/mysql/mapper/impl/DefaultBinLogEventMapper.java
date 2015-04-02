@@ -39,7 +39,7 @@ import com.linkedin.databus2.schemas.utils.SchemaHelper;
  * <code>DefaultBinLogEventMapper</code> maps binlog events to {@link AbstractEvent}
  * @author nrbafna
  */
-public class DefaultBinLogEventMapper implements BinLogEventMapper<AbstractEvent>
+public class DefaultBinLogEventMapper<T extends AbstractEvent> implements BinLogEventMapper<T>
 {
 	public static final Logger LOGGER = LogFactory.getLogger(DefaultBinLogEventMapper.class);
 	private static String PK_FIELD_NAME = "pk";
@@ -51,8 +51,9 @@ public class DefaultBinLogEventMapper implements BinLogEventMapper<AbstractEvent
 		this.orToMysqlMapper = orToMysqlMapper;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public AbstractEvent mapBinLogEvent(Row row, Schema schema, DbusOpcode eventType)
+	public T mapBinLogEvent(Row row, Schema schema, DbusOpcode eventType)
 	{
 		Map<String, Object> keyValuePairs = new HashMap<String, Object>();
 		List<Column> columns = row.getColumns();
@@ -84,7 +85,7 @@ public class DefaultBinLogEventMapper implements BinLogEventMapper<AbstractEvent
 				cnt++;
 			}
 
-			return new SourceEvent(keyValuePairs, getPkListFromSchema(schema), schema.getName(), schema.getNamespace(),
+			return (T)new SourceEvent(keyValuePairs, getPkListFromSchema(schema), schema.getName(), schema.getNamespace(),
 			        eventType);
 		}
 		catch (Exception e)
