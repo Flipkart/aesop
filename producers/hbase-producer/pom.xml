@@ -96,7 +96,7 @@
 		<dependency>
 			<groupId>com.ngdata</groupId>
 			<artifactId>hbase-sep-impl</artifactId>
-			<version>1.3-search-1.2.0-hbase0.94-SNAPSHOT</version>
+			<version>1.3-search-1.2.0-hbase0.94</version>
 			<exclusions>      		
 				<!-- Removing servlet-api as we already have it in Jetty -->
 			    <exclusion>
