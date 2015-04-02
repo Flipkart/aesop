@@ -6,6 +6,7 @@ building Eventually Consistent data sources and systems.
 ## Releases
 | Release | Date | Description |
 |:------------|:----------------|:------------|
+| Version 1.1.0             | Apr 2015       |    Feature enhancements and bug fix release
 | Version 1.1.0-SNAPSHOT    | Feb 2015       |    Second GA release
 | Version 1.0.7-SNAPSHOT    | July 2014      |    First GA release
 

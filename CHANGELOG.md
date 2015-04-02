@@ -1,4 +1,7 @@
-## 1.1.0-SNAPSHOT (July 10, 2014)
+## 1.1.0 (Apr 2, 2015)
+- Upgrading snapshot to release
+
+## 1.1.0-SNAPSHOT (Feb 15, 2015)
 - **New features:**
   - Support for transforming source event before mapping
   - Support for transforming destination event after mapping
@@ -8,12 +11,14 @@
   - Support for Elastic Search Data Layer
   - Sample Mapper, Processor and Nesting module with example configs
   - Sample Elastic Search Consumer Data Layer module with example configs
-  **Re Org:**
+  - Partition view for Dashboard UI
+- **Re Org:**
   - Renamed destination data layer to DestinationEventProcessor
   - Grouped modules under appropriate directories
   - Better Wiki and Java Docs
-  ** Bug Fixes**
+- **Bug Fixes**
   - Aesop Dashboard UI Bug fix for Consumer SCN
+  - MySql producer TX interpretation across tables
 <br />
 
 ## 1.0.7-SNAPSHOT (July 10, 2014)
