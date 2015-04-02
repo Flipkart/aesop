@@ -92,15 +92,16 @@ public class DefaultRelayFactory  implements FactoryBean<DefaultRelay>, Initiali
             this.maxScnReaderWriters = new HashMap<String,MultiServerSequenceNumberHandler>();
             for (int i=0; i < this.producerRegistrationList.size(); i++) {
                 //Get Properties from Relay Config
-                Properties properties = new Properties(this.relayConfig.getRelayProperties());
+                Properties mergedProperties = new Properties();
+                mergedProperties.putAll(this.relayConfig.getRelayProperties());
 
                 // Obtain Properties from Product Registration if it exists
                 if(producerRegistrationList.get(i).getProperties() != null) {
-                    properties.putAll(producerRegistrationList.get(i).getProperties());
+                	mergedProperties.putAll(producerRegistrationList.get(i).getProperties());
                 }
 
                 //Loading a list of static configs
-                staticConfigList[i] = staticConfigLoader.loadConfig(properties);
+                staticConfigList[i] = staticConfigLoader.loadConfig(mergedProperties);
 
                 //Making a handlerFactory per producer.
                 SequenceNumberHandlerFactory handlerFactory = staticConfigList[i].getDataSources().getSequenceNumbersHandler().createFactory();
