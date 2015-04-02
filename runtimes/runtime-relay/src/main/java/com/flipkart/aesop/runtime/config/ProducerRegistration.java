@@ -23,6 +23,8 @@ import com.flipkart.aesop.runtime.relay.DefaultRelay;
 import com.linkedin.databus2.producers.EventProducer;
 import com.linkedin.databus2.relay.config.PhysicalSourceConfig;
 
+import java.util.Properties;
+
 /**
  * <code>ProducerRegistration</code> holds information for registering a Databus {@link EventProducer} with the
  * {@link DefaultRelay} against a {@link PhysicalSourceConfig}
@@ -37,10 +39,10 @@ public class ProducerRegistration implements InitializingBean {
 	
 	/** The physical databus source configuration*/
 	private PhysicalSourceConfig physicalSourceConfig;
-	
-	/** The initial value to be read from the datasource*/
-	private String initScn;
 
+    /* Load AdditionalProperties if Its Present */
+    private Properties properties;
+	
 	/**
 	 * Interface method implementation. Ensures that a EventProducer and PhysicalSourceConfig is set
 	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
@@ -63,12 +65,10 @@ public class ProducerRegistration implements InitializingBean {
 	public void setPhysicalSourceConfig(PhysicalSourceConfig physicalSourceConfig) {
 		this.physicalSourceConfig = physicalSourceConfig;
 	}
-	public String getInitScn() {
-		return initScn;
+	public Properties getProperties() {
+		return properties;
 	}
-
-	public void setInitScn(String initScn) {
-		this.initScn = initScn;
+	public void setProperties(Properties properties) {
+		this.properties = properties;
 	}
-		
 }
