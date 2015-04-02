@@ -21,7 +21,8 @@ import com.linkedin.databus2.relay.config.PhysicalSourceConfig;
 import org.springframework.util.Assert;
 
 /**
- * <code>InitBackedProducerRegistration</code> holds information for registering a Databus {@link EventProducer} with the
+ * <code>InitBackedProducerRegistration</code> holds information with init Scn properties 
+ * for registering a Databus {@link EventProducer} with the
  * {@link com.flipkart.aesop.runtime.relay.DefaultRelay } against a {@link PhysicalSourceConfig}
  *
  * @author aryaKetan
