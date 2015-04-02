@@ -29,7 +29,10 @@ snapshot based change detection. For consumers, it provides a unified interface 
 sourced. More on the [Change Propagation Approach](https://github.com/Flipkart/aesop/wiki/Change-Propagation-Approach)
 
 ## Aesop Consoles
+Console showing the relay and all connected consumers with SCN information per partition
 ![Relays](https://github.com/Flipkart/aesop/raw/master/docs/Aesop_Relay_Dashboard_Relays.png)
+
+Live metrics on producer,consumers progress highlighting best and worst performing partition per consumer against producer SCN
 ![Relay Metrics](https://github.com/Flipkart/aesop/raw/master/docs/Aesop_Relay_Dashboard_Metrics.png)
 
 ## Getting Started
