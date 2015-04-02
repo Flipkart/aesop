@@ -92,6 +92,7 @@ public class GenerationalSCNGenerator implements SCNGenerator,InitializingBean {
 			cp.setConsumptionMode(DbusClientMode.BOOTSTRAP_SNAPSHOT);
 			cp.setBootstrapSinceScn(Long.valueOf(this.currentGeneration));
 			cp.setBootstrapServerInfo(this.currentHostId);
+			cp.setBootstrapStartScn(localSCN);
 			cp.setTsNsecs(System.nanoTime());
 			try {
 				this.checkpointPersistenceProvider.storeCheckpoint(Arrays.asList(this.relayLogicalSourceName),cp);
