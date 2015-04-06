@@ -20,6 +20,7 @@ import java.io.File;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
+import org.trpr.platform.runtime.common.RuntimeVariables;
 
 import com.flipkart.aesop.runtime.producer.spi.SCNGenerator;
 import com.linkedin.databus.client.pub.CheckpointPersistenceProvider;
@@ -46,7 +47,7 @@ public class FileSystemCPProviderFactory implements FactoryBean<CheckpointPersis
      */
 	public CheckpointPersistenceProvider getObject() throws Exception {
 		FileSystemCheckpointPersistenceProvider.Config config = new FileSystemCheckpointPersistenceProvider.Config();
-	    config.setRootDirectory(new File(this.checkpointDir).getAbsolutePath());
+	    config.setRootDirectory(new File(RuntimeVariables.getProjectsRoot() + File.separator + this.checkpointDir).getAbsolutePath());
 	    config.getRuntime().setHistoryEnabled(true);
 	    config.getRuntime().setHistorySize(this.maxHistorySize);
 	    FileSystemCheckpointPersistenceProvider checkpointProvider = new FileSystemCheckpointPersistenceProvider(config, DEFAULT_PROTOCOL_VERSION);		 

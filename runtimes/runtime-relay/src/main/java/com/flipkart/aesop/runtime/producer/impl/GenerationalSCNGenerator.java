@@ -114,6 +114,12 @@ public class GenerationalSCNGenerator implements SCNGenerator,InitializingBean {
 	}
 
 	/** Setter/Getter methods */
+	public String getRelayLogicalSourceName() {
+		return relayLogicalSourceName;
+	}
+	public void setRelayLogicalSourceName(String relayLogicalSourceName) {
+		this.relayLogicalSourceName = relayLogicalSourceName;
+	}
 	public CheckpointPersistenceProvider getCheckpointPersistenceProvider() {
 		return checkpointPersistenceProvider;
 	}
