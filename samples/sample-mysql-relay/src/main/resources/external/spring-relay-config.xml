@@ -38,6 +38,19 @@
         </property>
     </bean>
     <bean id="orToAvroMapper" class="com.flipkart.aesop.runtime.producer.mapper.impl.ORToAvroMapper"/>
+    <!-- 
+		A generational SCN generator that can be used with MySQL mastership changes. Checkpoints the mastership change to keep track of host changes.
+		Use this in the MysqlEventProducer to get MySQL mastership change generation aware SCNs. 
+		
+		<bean id="generationalSCNGenerator" class="com.flipkart.aesop.runtime.producer.impl.GenerationalSCNGenerator">
+	    	<property name="relayLogicalSourceName" value="com.flipkart.aesop.events.ortest.Person"/>
+	    	<property name="checkpointPersistenceProvider">
+				<bean id="checkpointPersistenceProviderFactory" class="com.flipkart.aesop.runtime.producer.impl.FileSystemCPProviderFactory">
+			    	<property name="checkpointDir" value="../../../../sandbox/gen_SCN_CP_directory"/>
+			    </bean>
+	    	</property>		    			    	
+	    </bean>
+     -->
 
     <util:map id="eventsMapRef" key-type="java.lang.Integer" value-type="com.flipkart.aesop.runtime.producer.eventprocessor.BinLogEventProcessor">
         <entry key="#{T(com.flipkart.aesop.runtime.producer.constants.MySQLConstants).QUERY_EVENT}" value-ref="mutatingQueryEventProcessor"/>
