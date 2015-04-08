@@ -47,11 +47,11 @@ public class DefaultBlockingEventConsumer implements SourceEventConsumer
 	{
 		this.eventConsumer = eventConsumer;
 		this.numberOfPartition = Math.min(numberOfPartition, Runtime.getRuntime().availableProcessors());
-		BlockingQueue<Runnable> queue = new ArrayBlockingQueue<Runnable>(executorQueueSize);
 
 		LOGGER.info("numberOfPartition used: " + numberOfPartition);
 		for (int i = 0; i < numberOfPartition; i++)
 		{
+			BlockingQueue<Runnable> queue = new ArrayBlockingQueue<Runnable>(executorQueueSize);
 			executors.add(new ThreadPoolExecutor(1, 1, 0, TimeUnit.MILLISECONDS, queue, rejectedExecutionHandler));
 		}
 	}
