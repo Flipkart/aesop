@@ -47,7 +47,6 @@ public class KafkaUpsertProcessor extends UpsertDestinationStoreProcessor
 		try
 		{
 			String id = String.valueOf(event.getFieldMapPair().get("id"));
-			// delete if "id" exists
 			Future<RecordMetadata> response =
 			        kafkaClient.getClient().send(
 			                new ProducerRecord(kafkaClient.getTopic(), SerializationUtils.serialize(event
