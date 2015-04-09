@@ -35,32 +35,6 @@ public class KafkaDeleteProcessor extends DeleteDestinationStoreProcessor
 	@Override
 	protected void delete(AbstractEvent event)
 	{
-		// LOGGER.info("Received Delete Event. Event is " + event);
-		// LOGGER.info("Field Map Pair : " + event.getFieldMapPair().toString());
-		//
-		// String id = String.valueOf(event.getFieldMapPair().get("id"));
-		//
-		// /* Prepare Delete Request and execute */
-		// kafkaClient.getClient().prepareDelete(kafkaClient.getIndex(), kafkaClient.getType(),
-		// id).execute().actionGet();
-		//
-		// /* Check if source still exists */
-		// try
-		// {
-		// GetResponse response =
-		// kafkaClient.getClient().prepareGet(kafkaClient.getIndex(), kafkaClient.getType(), id).execute()
-		// .get();
-		// if (!response.isSourceEmpty())
-		// {
-		// LOGGER.info("Delete Error:" + response);
-		// throw new RuntimeException("Delete Failure");
-		// }
-		// }
-		// catch (Exception e)
-		// {
-		// LOGGER.info("Server Connection Lost/Delete Error" + e);
-		// throw new RuntimeException("Delete Failure");
-		// }
 
 	}
 
