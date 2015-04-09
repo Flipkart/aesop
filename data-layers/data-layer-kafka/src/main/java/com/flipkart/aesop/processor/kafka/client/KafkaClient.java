@@ -57,12 +57,12 @@ public abstract class KafkaClient implements InitializingBean
 		this.kafkaConfig = kafkaConfig;
 	}
 
-	public String getIndex()
-	{
-		return config.getString("bootstrap.servers");
-	}
+//	public String getIndex()
+//	{
+//		return config.getString("bootstrap.servers");
+//	}
 
-	public String getType()
+	public String getTopic()
 	{
 		return config.getString("topic");
 	}

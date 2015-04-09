@@ -14,7 +14,7 @@ import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 
 /**
- * Initiates Kafka Client , reads config from KafkaConfig
+ * Initiates Kafka Data Layer Client , reads config from KafkaConfig
  * @author Ravindra Yadav
  */
 public class KafkaDataLayerClient implements InitializingBean

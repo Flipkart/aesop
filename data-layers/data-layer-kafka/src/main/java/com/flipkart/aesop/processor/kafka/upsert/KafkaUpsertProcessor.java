@@ -12,13 +12,17 @@
  *******************************************************************************/
 package com.flipkart.aesop.processor.kafka.upsert;
 
+import java.util.concurrent.Future;
+
 import org.trpr.platform.core.impl.logging.LogFactory;
 import org.trpr.platform.core.spi.logging.Logger;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.clients.producer.RecordMetadata;
+import org.springframework.util.SerializationUtils;
 
 import com.flipkart.aesop.destinationoperation.UpsertDestinationStoreProcessor;
 import com.flipkart.aesop.event.AbstractEvent;
 import com.flipkart.aesop.processor.kafka.client.KafkaClient;
-import com.linkedin.databus.core.DbusOpcode;
 
 /**
  * Kafka Upsert Data Layer. Persists {@link DbusOpcode#UPSERT} events to Logs.
@@ -44,22 +48,21 @@ public class KafkaUpsertProcessor extends UpsertDestinationStoreProcessor
 		{
 			String id = String.valueOf(event.getFieldMapPair().get("id"));
 			// delete if "id" exists
-			// kafkaClient.getClient().prepareDelete(kafkaClient.getIndex(), kafkaClient.getType(), id).execute()
-			// .actionGet();
-			// // create the new id
-			// IndexResponse response =
-			// kafkaClient.getClient().prepareIndex(kafkaClient.getIndex(), kafkaClient.getType(), id)
-			// .setSource(event.getFieldMapPair()).execute().get();
-			// if (!response.isCreated())
-			// {
-			// LOGGER.info("Create Error : " + response);
-			// throw new RuntimeException("Create Failure");
-			// }
+			Future<RecordMetadata> response =
+			        kafkaClient.getClient().send(
+			                new ProducerRecord(kafkaClient.getTopic(), SerializationUtils.serialize(event
+			                        .getFieldMapPair())));
+
+			if (!response.isDone())
+			{
+				LOGGER.info("Send Error : " + response);
+				throw new RuntimeException("Send Failure");
+			}
 		}
 		catch (Exception e)
 		{
-			LOGGER.info("Server Connection Lost/Create Error" + e);
-			throw new RuntimeException("Create Failure");
+			LOGGER.info("Server Connection Lost/Send Error" + e);
+			throw new RuntimeException("Send Failure");
 		}
 	}
 
