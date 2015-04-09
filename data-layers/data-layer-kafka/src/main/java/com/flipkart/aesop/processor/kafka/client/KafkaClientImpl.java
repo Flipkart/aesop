@@ -16,61 +16,33 @@ import org.springframework.beans.factory.InitializingBean;
 
 import com.flipkart.aesop.processor.kafka.config.KafkaConfig;
 import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
+import org.trpr.platform.core.impl.logging.LogFactory;
+import org.trpr.platform.core.spi.logging.Logger;
 import org.apache.kafka.clients.producer.KafkaProducer;
+import java.util.Properties;
+import java.io.File;
+
 
 /**
- * Initiates Kafka Client , reads config from KafkaConfig
+ * Initiates Kafka Client Impl 
  * @author Ravindra Yadav
  */
-public abstract class KafkaClientImpl extends KafkaClient
+public class KafkaClientImpl extends KafkaClient
 {
-
-	/* Kafka Config set by spring-beans */
-	protected KafkaConfig kafkaConfig;
-
-	/* Aesop Config Instance */
-	protected Config config;
-
-	/* This variable denotes the Kafka server client */
-	 protected KafkaProducer client;
-
-	/**
-	 * This method is called from {@link org.springframework.beans.factory.InitializingBean#afterPropertiesSet()} to
-	 * initialize the Kafka Client
-	 */
-	abstract void init();
+	private static final Logger LOGGER = LogFactory.getLogger(KafkaClientImpl.class);
 
 	 @Override
-	 public void afterPropertiesSet() throws Exception
-	 {
-		 init();
-	 }
+	    void init() {
+	        this.config = ConfigFactory.parseFile(new File(kafkaConfig.getConfig()));
+	        
+	        Properties props = new Properties();
+			props.put("zk.connect", config.getString("zk.connect"));
+			props.put("serializer.class", config.getString("serializer.class"));
+			props.put("zk.connectiontimeout.ms", config.getString("zk.connectiontimeout.ms"));
+			props.put("bootstrap.servers", config.getString("bootstrap.servers"));
 
-	/* Getters and Setters Start */
-	public KafkaConfig getKafkaConfig()
-	{
-		return kafkaConfig;
-	}
-
-	public void setKafkaConfig(KafkaConfig kafkaConfig)
-	{
-		this.kafkaConfig = kafkaConfig;
-	}
-
-	public String getIndex()
-	{
-		return config.getString("bootstrap.servers");
-	}
-
-	public String getType()
-	{
-		return config.getString("topic");
-	}
-
-	 public KafkaProducer getClient()
-	 {
-		 return client;
-	 }
-	/* Getters and Setters End */
-
+	        KafkaProducer client = new KafkaProducer(props);
+	        this.client = client;
+	    }
 }
