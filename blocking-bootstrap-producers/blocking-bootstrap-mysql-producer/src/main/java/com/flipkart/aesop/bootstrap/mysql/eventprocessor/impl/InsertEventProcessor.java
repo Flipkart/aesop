@@ -10,33 +10,41 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.flipkart.aesop.bootstrap.mysql.eventprocessor.impl;
 
-import java.util.List;
-
 import com.flipkart.aesop.bootstrap.mysql.eventlistener.OpenReplicationListener;
-import com.flipkart.aesop.bootstrap.mysql.eventprocessor.AbstractBinLogEventProcessor;
-import com.flipkart.aesop.event.AbstractEvent;
+import com.flipkart.aesop.bootstrap.mysql.eventprocessor.BinLogEventProcessor;
 import com.google.code.or.binlog.BinlogEventV4;
 import com.google.code.or.binlog.impl.event.WriteRowsEvent;
 import com.linkedin.databus.core.DbusOpcode;
+import org.trpr.platform.core.impl.logging.LogFactory;
+import org.trpr.platform.core.spi.logging.Logger;
 
 /**
- * The <code>InsertEventProcessor</code> processes WriteRowsEvent from source. This event is received if there is any
- * insert operation on the source.
- * @author nrbafna
+ * The <code>InsertEventProcessor</code> processes WriteRowsEvent from source. This event is received whenever insertion
+ * operation happens at the source.
+ * @author Shoury B
+ * @version 1.0, 07 Mar 2014
  */
-public class InsertEventProcessor<T extends AbstractEvent> extends AbstractBinLogEventProcessor<T>
+public class InsertEventProcessor implements BinLogEventProcessor
 {
+	/** Logger for this class */
+	private static final Logger LOGGER = LogFactory.getLogger(InsertEventProcessor.class);
+
 	@Override
-	public void process(BinlogEventV4 event, OpenReplicationListener<T> listener)
+	public void process(BinlogEventV4 event, OpenReplicationListener listener) throws Exception
 	{
-		WriteRowsEvent wre = (WriteRowsEvent) event;
-		List<AbstractEvent> sourceEvents = map(wre.getTableId(), wre.getRows(), listener, DbusOpcode.UPSERT);
-		for (AbstractEvent sourceEvent : sourceEvents)
+		if (!listener.getMysqlTransactionManager().isBeginTxnSeen())
 		{
-			listener.getSourceEventConsumer().onEvent(sourceEvent);
+			LOGGER.warn("Skipping event (" + event + ") as this is before the start of first transaction");
+			return;
 		}
+		LOGGER.debug("Insert Event Received : " + event);
+		WriteRowsEvent wre = (WriteRowsEvent) event;
+		listener.getMysqlTransactionManager().performChanges(wre.getTableId(), wre.getHeader(), wre.getRows(),
+		        DbusOpcode.UPSERT);
+		LOGGER.debug("Insertion Successful for  " + event.getHeader().getEventLength() + " . Data inserted : "
+		        + wre.getRows());
 	}
+
 }

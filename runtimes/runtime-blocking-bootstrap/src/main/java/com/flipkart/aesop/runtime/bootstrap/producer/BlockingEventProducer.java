@@ -13,13 +13,17 @@
 
 package com.flipkart.aesop.runtime.bootstrap.producer;
 
-import java.util.List;
-import java.util.Map;
-
 import com.flipkart.aesop.runtime.bootstrap.configs.BootstrapConfig;
 import com.flipkart.aesop.runtime.bootstrap.consumer.SourceEventConsumer;
+import com.flipkart.aesop.runtime.bootstrap.metrics.MetricsCollector;
+import com.linkedin.databus.core.monitoring.mbean.DbusEventsStatisticsCollector;
+import com.linkedin.databus2.core.seq.MaxSCNReaderWriter;
 import com.linkedin.databus2.producers.EventProducer;
+import com.linkedin.databus2.relay.config.PhysicalSourceConfig;
+import com.linkedin.databus2.relay.config.PhysicalSourceStaticConfig;
 import com.linkedin.databus2.schemas.SchemaRegistryService;
+
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * <code>BlockingEventProducer</code> produces list of {@link com.flipkart.aesop.event.AbstractEvent}, filters them
@@ -28,54 +32,70 @@ import com.linkedin.databus2.schemas.SchemaRegistryService;
  */
 public abstract class BlockingEventProducer implements EventProducer
 {
-	protected BootstrapConfig bootstrapConfig;
-	protected List<String> interestedSourceList;
-	protected Map<String, String> tableUriToSrcNameMap;
-	protected SchemaRegistryService schemaRegistryService;
-	protected SourceEventConsumer sourceEventConsumer;
+    /** Name of this event producer*/
+    protected String name;
+    /* Bootstrap Producer Configs */
+    protected BootstrapConfig bootstrapConfig;
 
-	public BootstrapConfig getBootstrapConfig()
-	{
-		return bootstrapConfig;
-	}
+    /** Source related member variables*/
+    protected PhysicalSourceConfig physicalSourceConfig;
+    protected PhysicalSourceStaticConfig physicalSourceStaticConfig;
+    protected SchemaRegistryService schemaRegistryService;
 
-	public void setBootstrapConfig(BootstrapConfig bootstrapConfig)
-	{
-		this.bootstrapConfig = bootstrapConfig;
-	}
+    /* Source Event Consumer */
+    protected SourceEventConsumer sourceEventConsumer;
 
-	public List<String> getInterestedSourceList()
-	{
-		return interestedSourceList;
-	}
+    /* Max SCN Writer */
+    protected MaxSCNReaderWriter maxScnReaderWriter;
 
-	public void setInterestedSourceList(List<String> interestedSourceList)
-	{
-		this.interestedSourceList = interestedSourceList;
-	}
+    /* DB Event Stats Collector */
+    protected DbusEventsStatisticsCollector dbusEventsStatisticsCollector;
 
-	public Map<String, String> getTableUriToSrcNameMap()
-	{
-		return tableUriToSrcNameMap;
-	}
+    /* Metrics Collector */
+    protected MetricsCollector metricsCollector;
 
-	public void setTableUriToSrcNameMap(Map<String, String> tableUriToSrcNameMap)
-	{
-		this.tableUriToSrcNameMap = tableUriToSrcNameMap;
-	}
+    /** Event-handling related member variables*/
+    protected AtomicLong sinceSCN = new AtomicLong(-1); // This is the previous SCN to which it was read.
 
-	public SchemaRegistryService getSchemaRegistryService()
-	{
-		return schemaRegistryService;
-	}
+    public BootstrapConfig getBootstrapConfig() {
+        return bootstrapConfig;
+    }
 
-	public void setSchemaRegistryService(SchemaRegistryService schemaRegistryService)
-	{
-		this.schemaRegistryService = schemaRegistryService;
-	}
+    public void setBootstrapConfig(BootstrapConfig bootstrapConfig) {
+        this.bootstrapConfig = bootstrapConfig;
+    }
 
-	public void registerConsumer(SourceEventConsumer consumer)
-	{
-		this.sourceEventConsumer = consumer;
+    /** Getter/Setter methods */
+    public String getName() {
+        return this.name;
+    }
+    public long getSCN() {
+        return this.sinceSCN.get();
+    }
+    public void setSchemaRegistryService(SchemaRegistryService schemaRegistryService) throws Exception {
+        this.schemaRegistryService = schemaRegistryService;
+        this.physicalSourceStaticConfig = this.physicalSourceConfig.build();
+    }
+    public void setPhysicalSourceConfig(PhysicalSourceConfig physicalSourceConfig) {
+        this.physicalSourceConfig = physicalSourceConfig;
+        this.name = this.physicalSourceConfig.getName();
+    }
+    public PhysicalSourceStaticConfig getPhysicalSourceStaticConfig() {
+        return physicalSourceStaticConfig;
+    }
+    public void registerConsumer(SourceEventConsumer consumer) {
+        this.sourceEventConsumer = consumer;
+    }
+	public MaxSCNReaderWriter getMaxScnReaderWriter() {
+		return maxScnReaderWriter;
 	}
+    public void setMaxScnReaderWriter(MaxSCNReaderWriter maxScnReaderWriter) {
+		this.maxScnReaderWriter = maxScnReaderWriter;
+	}
+    public void setDbusEventsStatisticsCollector(DbusEventsStatisticsCollector dbusEventsStatisticsCollector) {
+		this.dbusEventsStatisticsCollector = dbusEventsStatisticsCollector;
+	}
+     public void registerMetricsCollector(MetricsCollector metricsCollector) {
+        this.metricsCollector = metricsCollector;
+    }
 }

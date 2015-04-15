@@ -11,8 +11,20 @@
         <property name="producerRegistrationList">
             <list>
                 <bean class="com.flipkart.aesop.runtime.config.InitBackedProducerRegistration">
+                    <property name="properties">
+                        <bean id="productRegistrationPropertiesFactory1" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+                            <property name="singleton" value="true"/>
+                            <property name="properties">
+                                <props>
+                                    <prop key="databus.relay.dataSources.sequenceNumbersHandler.file.initVal">4294967300</prop>
+                                </props>
+                            </property>
+                        </bean>
+                    </property>
                     <property name="eventProducer" ref="mysqlPersonProducer"/>
                     <property name="physicalSourceConfig" ref="physicalSourceConfig"/>
+                </bean>
+                <bean class="com.flipkart.aesop.runtime.config.ProducerRegistration">
                     <property name="properties">
                         <bean id="productRegistrationPropertiesFactory" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
                             <property name="singleton" value="true"/>
@@ -23,11 +35,12 @@
                             </property>
                         </bean>
                     </property>
+                    <property name="eventProducer" ref="mysqlPersonProducer1"/>
+                    <property name="physicalSourceConfig" ref="physicalSourceConfig1"/>
                 </bean>
             </list>
         </property>
     </bean>
-
 
     <bean id="mysqlPersonProducer" class="com.flipkart.aesop.runtime.producer.MysqlEventProducer">
         <property name="physicalSourceConfig" ref="physicalSourceConfig"/>
@@ -36,21 +49,17 @@
         <property name="schemaChangeEventProcessor">
             <bean class="com.flipkart.aesop.runtime.producer.schema.eventprocessor.impl.NopSchemaChangeEventProcessor" />
         </property>
-    	<!-- 
-		A generational SCN generator that can be used with MySQL mastership changes. Checkpoints the mastership change to keep track of host changes.
-		Use this in the MysqlEventProducer to get MySQL mastership change generation aware SCNs. 
-    	<property name="scnGenerator">
-			<bean id="generationalSCNGeneratorFactory" class="com.flipkart.aesop.runtime.producer.impl.GenerationalSCNGenerator">
-		    	<property name="relayLogicalSourceName" value="com.flipkart.aesop.events.ortest.Person"/>
-		    	<property name="checkpointPersistenceProvider">
-					<bean id="checkpointPersistenceProviderFactory" class="com.flipkart.aesop.runtime.producer.impl.FileSystemCPProviderFactory">
-				    	<property name="checkpointDir" value="../../../../sandbox/gen_SCN_CP_directory"/>
-				    </bean>
-		    	</property>		    			    	
-		    </bean>
-    	</property>		
-     	-->        
     </bean>
+
+    <bean id="mysqlPersonProducer1" class="com.flipkart.aesop.runtime.producer.MysqlEventProducer">
+        <property name="physicalSourceConfig" ref="physicalSourceConfig1"/>
+        <property name="eventsMap" ref="eventsMapRef"/>
+        <property name="binLogEventMappers" ref="binLogEventMappersRef"/>
+        <property name="schemaChangeEventProcessor">
+            <bean class="com.flipkart.aesop.runtime.producer.schema.eventprocessor.impl.NopSchemaChangeEventProcessor" />
+        </property>
+    </bean>
+
     <bean id="orToAvroMapper" class="com.flipkart.aesop.runtime.producer.mapper.impl.ORToAvroMapper"/>
 
     <util:map id="eventsMapRef" key-type="java.lang.Integer" value-type="com.flipkart.aesop.runtime.producer.eventprocessor.BinLogEventProcessor">
@@ -84,14 +93,31 @@
         <property name="orToAvroMapper" ref="orToAvroMapper"/>
     </bean>
 
-    <bean id="physicalSourceConfig" class="com.linkedin.databus2.relay.config.PhysicalSourceConfig">
+    <bean id="physicalSourceConfig1" class="com.linkedin.databus2.relay.config.PhysicalSourceConfig">
         <property name="id" value="1"/>
-        <property name="name" value="personPhysicalSource"/>
+        <property name="name" value="personPhysicalSource1"/>
         <property name="uri" value="mysql://or_test%2For_test@localhost:3306/3306/mysql-bin"/>
+        <!-- <property name="databus.relay.dataSources.sequenceNumbersHandler.file.initVal" value=""/> -->
         <property name="sources">
             <list>
                 <bean id="logicalSourceConfig1" class="com.linkedin.databus2.relay.config.LogicalSourceConfig">
                     <property name="id" value="40"/>
+                    <property name="name" value="pz.subscription_service.user_subscription"/>
+                    <property name="uri" value="subscription_service.user_subscription"/>
+                    <property name="partitionFunction" value="constant:1"/>
+                </bean>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="physicalSourceConfig" class="com.linkedin.databus2.relay.config.PhysicalSourceConfig">
+        <property name="id" value="2"/>
+        <property name="name" value="personPhysicalSource"/>
+        <property name="uri" value="mysql://or_test%2For_test@localhost:3307/3307/mysql-bin"/>
+        <property name="sources">
+            <list>
+                <bean id="logicalSourceConfig" class="com.linkedin.databus2.relay.config.LogicalSourceConfig">
+                    <property name="id" value="41"/>
                     <property name="name" value="com.flipkart.aesop.events.ortest.Person"/>
                     <property name="uri" value="or_test.person"/>
                     <property name="partitionFunction" value="constant:1"/>
@@ -117,14 +143,14 @@
                         <prop key="databus.relay.eventBuffer.readBufferSize">10240</prop>
                         <prop key="databus.relay.eventBuffer.scnIndexSize">10240000</prop>
                         <prop key="databus.relay.eventBuffer.restoreMMappedBuffers">true</prop>
-                        <!--<prop key ="databus.relay.dataSources.sequenceNumbersHandler.file.initVal">4294967300</prop>-->
+                        <!-- <prop key ="databus.relay.dataSources.sequenceNumbersHandler.file.initVal">4294967300</prop> -->
                     </props>
                 </property>
             </bean>
         </property>
         <property name="schemaRegistryLocation" value="schemas_registry"/>
-        <property name="mmappedDirectoryLocation" value="../../../sandbox/mmapped_directory"/> <!-- This is relative to projects root -->
-        <property name="maxScnDirectoryLocation" value="../../../sandbox/maxscn_directory"/> <!-- This is relative to projects root -->
+        <property name="mmappedDirectoryLocation" value="/tmp/sandbox/mmapped_directory"/> <!-- This is relative to projects root -->
+        <property name="maxScnDirectoryLocation" value="/tmp/sandbox/maxscn_directory"/> <!-- This is relative to projects root -->
     </bean>
 
 </beans>
