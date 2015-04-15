@@ -40,41 +40,37 @@ public class SourceEventProcessor implements Runnable
         this.timer =timer;
     }
 
+    @Override
     public void run()
     {
-        try
-        {
-            LOGGER.info("Processing :" + sourceEvent.getPrimaryKeyValues() + ":" + sourceEvent.getNamespaceName() + ""
-                    + sourceEvent.getEntityName());
-            process();
+        LOGGER.info("Processing :" + sourceEvent.getPrimaryKeyValues() + ":" + sourceEvent.getNamespaceName() + ""
+                + sourceEvent.getEntityName());
+        process();
+    }
+
+    private void process() {
+        try {
+            ConsumerCallbackResult consumerCallbackResult = consumer.processSourceEvent(sourceEvent);
+            switch (consumerCallbackResult) {
+                case ERROR:
+                    /* Since there is an Error. Back Off and Retry After Some time*/
+                    this.timer.backoffAndSleep();
+                    process();
+                    break;
+                case SUCCESS:
+                case SKIP_CHECKPOINT:
+                    break;
+                case  ERROR_FATAL:
+                    throw new RuntimeException("Fatal Failure for Source Event : " + sourceEvent);
+            }
+            LOGGER.info(consumerCallbackResult.toString());
         }
         catch (Exception e)
         {
             LOGGER.error("Exception occurred while processing event " + e.getMessage(), e);
-            throw new RuntimeException(e);
+            this.timer.backoffAndSleep();
+            process();
         }
-    }
-
-    private void process() {
-        ConsumerCallbackResult consumerCallbackResult = consumer.processSourceEvent(sourceEvent);
-        switch (consumerCallbackResult) {
-            case ERROR:
-                /* Since there is an Error. Back Off and Retry After Some time*/
-                if(this.timer.getRemainingRetriesNum() > 0) {
-                    this.timer.backoffAndSleep();
-                process();
-                }
-                else {
-                    throw new RuntimeException("No more remaining attempts for Source Event : " + sourceEvent);
-                }
-                break;
-            case SUCCESS:
-            case SKIP_CHECKPOINT:
-                break;
-            case  ERROR_FATAL:
-                throw new RuntimeException("Fatal Failure for Source Event : " + sourceEvent);
-        }
-        LOGGER.info(consumerCallbackResult.toString());
     }
 
 }

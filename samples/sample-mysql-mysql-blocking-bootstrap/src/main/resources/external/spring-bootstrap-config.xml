@@ -24,31 +24,12 @@
                         </bean>
                     </property>
                 </bean>
-                   <bean class="com.flipkart.aesop.runtime.bootstrap.producer.registeration.InitBackedProducerRegistration">
-                    <property name="properties">
-                        <bean id="productRegistrationPropertiesFactory1" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
-                            <property name="singleton" value="true"/>
-                            <property name="properties">
-                                <props>
-                                    <prop key="databus.bootstrap.dataSources.sequenceNumbersHandler.file.initVal">4294967300</prop>
-                                </props>
-                            </property>
-                        </bean>
-                    </property>
-                    <property name="eventProducer" ref="mysqlPersonProducer1"/>
-                    <property name="physicalSourceConfig" ref="physicalSourceConfig1"/>
-                </bean>
             </list>
         </property>
         <property name="consumer" ref="defaultBlockingConsumer"/>
     </bean>
 
     <bean id="mysqlEventProducer" class="com.flipkart.aesop.bootstrap.mysql.MysqlEventProducer">
-        <property name="bootstrapConfig" ref="bootstrapConfig"/>
-        <property name="eventsMap" ref="eventsMapRef"/>
-    </bean>
-
-    <bean id="mysqlPersonProducer1" class="com.flipkart.aesop.bootstrap.mysql.MysqlEventProducer">
         <property name="bootstrapConfig" ref="bootstrapConfig"/>
         <property name="eventsMap" ref="eventsMapRef"/>
     </bean>
@@ -61,22 +42,6 @@
             <list>
                 <bean id="logicalSourceConfig" class="com.linkedin.databus2.relay.config.LogicalSourceConfig">
                     <property name="id" value="41"/>
-                    <property name="name" value="com.flipkart.aesop.events.ortest.Person"/>
-                    <property name="uri" value="or_test.person"/>
-                    <property name="partitionFunction" value="constant:1"/>
-                </bean>
-            </list>
-        </property>
-    </bean>
-
-    <bean id="physicalSourceConfig1" class="com.linkedin.databus2.relay.config.PhysicalSourceConfig">
-        <property name="id" value="1"/>
-        <property name="name" value="personPhysicalSource"/>
-        <property name="uri" value="mysql://or_test%2For_test@172.20.202.117:3306/3306/mysql-bin"/>
-        <property name="sources">
-            <list>
-                <bean id="logicalSourceConfig2" class="com.linkedin.databus2.relay.config.LogicalSourceConfig">
-                    <property name="id" value="42"/>
                     <property name="name" value="com.flipkart.aesop.events.ortest.Person"/>
                     <property name="uri" value="or_test.person"/>
                     <property name="partitionFunction" value="constant:1"/>
