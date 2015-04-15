@@ -174,7 +174,7 @@
 
     <bean id="defaultMapperImpl"
           class="com.flipkart.aesop.mapper.implementation.DefaultMapperImpl">
-        <property name="configFilePath" value="/Users/arya.ketan/github/newAesop/samples/sample-mysql-mysql-blocking-bootstrap/distribution/resources/external/application.conf" />
+        <property name="configFilePath" value="resources/external/application.conf" />
         <property name="configRoot" value="MYSQL_CONFIG" />
         <property name="mapperConfig" ref="mapperConfig" />
         <property name="mapperTypeList">
