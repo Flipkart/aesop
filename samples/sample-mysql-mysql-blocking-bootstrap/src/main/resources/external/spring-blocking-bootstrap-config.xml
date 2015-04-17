@@ -67,11 +67,11 @@
     </bean>
 
     <bean id="defaultBlockingConsumer" class="com.flipkart.aesop.runtime.bootstrap.consumer.DefaultBlockingEventConsumer">
-        <constructor-arg index="0" value="5"/>
-        <constructor-arg index="1" value="50"/>
-        <constructor-arg index="2" value="#{defaultEventConsumerFactory.eventConsumerObject}"/>
-        <constructor-arg index="3" ref="waitPolicy"/>
-        <constructor-arg index="4" ref="backOffTimer"/>
+        <property name="numberOfPartition" value="5"/>
+        <property name="executorQueueSize" value="50"/>
+        <property name="eventConsumer" value="#{defaultEventConsumerFactory.eventConsumerObject}"/>
+        <property name="rejectedExecutionHandler" ref="waitPolicy"/>
+        <property name="backoffTimer" ref="backOffTimer"/>
     </bean>
 
     <bean id="waitPolicy" class="com.flipkart.aesop.runtime.bootstrap.consumer.WaitPolicy">
