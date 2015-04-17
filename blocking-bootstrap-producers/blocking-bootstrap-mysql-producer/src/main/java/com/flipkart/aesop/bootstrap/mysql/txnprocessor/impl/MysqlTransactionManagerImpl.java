@@ -25,7 +25,6 @@ import com.google.code.or.common.glossary.Row;
 import com.linkedin.databus.core.DatabusRuntimeException;
 import com.linkedin.databus.core.DbusOpcode;
 import com.linkedin.databus2.core.DatabusException;
-import com.linkedin.databus2.core.seq.MaxSCNReaderWriter;
 import com.linkedin.databus2.schemas.SchemaRegistryService;
 import com.linkedin.databus2.schemas.VersionedSchema;
 import org.trpr.platform.core.impl.logging.LogFactory;
@@ -239,7 +238,8 @@ public class MysqlTransactionManagerImpl<T extends AbstractEvent> implements Mys
                  * then , in the scenario where-in MysqlTransactionManagerImpl#perSourceTxn needs to be recycled,
                  * the DBEntry obtained above are not yet added to the new Instance of perSourceTransaction
                  */
-                transaction.mergePerSourceTransaction(perSourceTransaction);
+                if(!perSourceTransaction.equals(transaction.getPerSourceTransaction(perSourceTransaction.getSrcId())))
+                    transaction.mergePerSourceTransaction(perSourceTransaction);
             }
             else
             {
@@ -279,6 +279,7 @@ public class MysqlTransactionManagerImpl<T extends AbstractEvent> implements Mys
                 return;
             }
             perSourceTransaction = new PerSourceTransaction(srcId);
+            transaction.mergePerSourceTransaction(perSourceTransaction);
         }
         else
         {
@@ -324,18 +325,18 @@ public class MysqlTransactionManagerImpl<T extends AbstractEvent> implements Mys
     }
 
     /**
-	 * Frames SCN from logid and offset. Lower 32 bits are offset and higher 32 bits are logid
-	 * @param logId bin log file number
-	 * @param offset position in bin log file to start retrieval from
-	 * @return scn system change number
-	 */
-	private long frameSCN(int logId, int offset)
-	{
-		long scn = logId;
-		scn <<= 32;
-		scn |= offset;
-		return scn;
-	}
+     * Frames SCN from logid and offset. Lower 32 bits are offset and higher 32 bits are logid
+     * @param logId bin log file number
+     * @param offset position in bin log file to start retrieval from
+     * @return scn system change number
+     */
+    private long frameSCN(int logId, int offset)
+    {
+        long scn = logId;
+        scn <<= 32;
+        scn |= offset;
+        return scn;
+    }
 
     /** Getters/Setters for the members */
     @Override
