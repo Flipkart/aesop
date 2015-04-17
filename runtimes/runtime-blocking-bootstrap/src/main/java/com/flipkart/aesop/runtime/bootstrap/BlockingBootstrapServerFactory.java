@@ -29,7 +29,6 @@ import com.linkedin.databus2.schemas.SourceIdNameRegistry;
 import org.springframework.beans.factory.FactoryBean;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 
@@ -44,9 +43,6 @@ public class BlockingBootstrapServerFactory implements FactoryBean<BlockingBoots
     private SourceEventConsumer consumer;
     /** The ProducerRegistration list for the Relay*/
     private List<ProducerRegistration> producerRegistrationList = new ArrayList<ProducerRegistration>();
-
-    /** The SCN reader-writer. This is a map between a particular producer and the @MultiServerSequenceNumberHandler associated with it*/
-    private HashMap<String, MultiServerSequenceNumberHandler> maxScnReaderWriters;
 
     @Override
     public BlockingBootstrapServer getObject() throws Exception
@@ -68,8 +64,6 @@ public class BlockingBootstrapServerFactory implements FactoryBean<BlockingBoots
         FileSystemSchemaRegistryService schemaRegistryService = FileSystemSchemaRegistryService.build(schemaRegistryServiceConfig);
 
         /* MAX SCN READER WRITER */
-        if (this.maxScnReaderWriters == null) {
-            this.maxScnReaderWriters = new HashMap<String,MultiServerSequenceNumberHandler>();
             for (int i=0; i < this.producerRegistrationList.size(); i++) {
                 //Get Properties from Relay Config
                 Properties mergedProperties = new Properties();
@@ -81,17 +75,13 @@ public class BlockingBootstrapServerFactory implements FactoryBean<BlockingBoots
                 }
                 staticConfigList[i] = staticConfigLoader.loadConfig(mergedProperties);
                 pStaticConfigs[i] = this.producerRegistrationList.get(i).getPhysicalSourceConfig().build();
-                //Making a handlerFactory per producer.
-                SequenceNumberHandlerFactory handlerFactory = staticConfigList[i].getDataSources().getSequenceNumbersHandler().createFactory();
-                this.maxScnReaderWriters.put(this.producerRegistrationList.get(i).getPhysicalSourceConfig().getName(),
-                        new MultiServerSequenceNumberHandler(handlerFactory));
             }
-        }
 
         /* Setting relevant details into the Blocking Event Producer */
-          BlockingBootstrapServer bootstrapServer = new BlockingBootstrapServer(staticConfigList[0],pStaticConfigs,
+        BlockingBootstrapServer bootstrapServer = new BlockingBootstrapServer(staticConfigList[0],pStaticConfigs,
                 SourceIdNameRegistry.createFromIdNamePairs(staticConfigList[0].getSourceIds()),schemaRegistryService);
 
+        int i=0;
         for (ProducerRegistration producerRegistration :  this.producerRegistrationList) {
 
             EventProducer producer = producerRegistration.getEventProducer();
@@ -101,9 +91,6 @@ public class BlockingBootstrapServerFactory implements FactoryBean<BlockingBoots
                 blockingEventProducer.registerConsumer(consumer);
                 blockingEventProducer.setPhysicalSourceConfig(producerRegistration.getPhysicalSourceConfig());
                 blockingEventProducer.setSchemaRegistryService(schemaRegistryService);
-                blockingEventProducer.setMaxScnReaderWriter(this.maxScnReaderWriters.get(producerRegistration.getPhysicalSourceConfig().
-                        getName()).getOrCreateHandler(blockingEventProducer.getPhysicalSourceStaticConfig().getPhysicalPartition()));
-
 
                 /* Setting Http Config Source Name */
                 for (LogicalSourceConfig logicalSourceConfig :producerRegistration.getPhysicalSourceConfig().getSources()) {

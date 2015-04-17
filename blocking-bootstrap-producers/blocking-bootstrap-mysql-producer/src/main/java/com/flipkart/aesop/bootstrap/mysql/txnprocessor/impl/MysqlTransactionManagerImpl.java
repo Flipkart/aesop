@@ -73,8 +73,6 @@ public class MysqlTransactionManagerImpl<T extends AbstractEvent> implements Mys
 
     /* ========================= Aesop Producer =============================*/
 
-    /** Max SCN Reader Writter to persist max SCN */
-    private final MaxSCNReaderWriter maxSCNReaderWriter;
     /** Bin log event mappers for mapping individual bin log events */
     private final BinLogEventMapper<T> binLogEventMapper;
     /** Current active transaction */
@@ -91,13 +89,11 @@ public class MysqlTransactionManagerImpl<T extends AbstractEvent> implements Mys
 
 
     public MysqlTransactionManagerImpl(final int currFileNum,
-                                       final MaxSCNReaderWriter maxSCNReaderWriter,
                                        final Map<String, Short> tableUriToSrcIdMap, final Map<String, String> tableUriToSrcNameMap,
                                        final SchemaRegistryService schemaRegistryService,
                                        final MysqlEventProducer mysqlEventProducer,
                                        SourceEventConsumer sourceEventConsumer){
         this.currFileNum = currFileNum;
-        this.maxSCNReaderWriter = maxSCNReaderWriter;
         this.tableUriToSrcIdMap = tableUriToSrcIdMap;
         this.tableUriToSrcNameMap = tableUriToSrcNameMap;
         this.schemaRegistryService = schemaRegistryService;
@@ -309,7 +305,6 @@ public class MysqlTransactionManagerImpl<T extends AbstractEvent> implements Mys
     private void onEndTransaction(Transaction txn) throws DatabusException
     {
         sendEventsToSourceEventConsumer(txn);
-        maxSCNReaderWriter.saveMaxScn(txn.getScn());
         mySqlEventProducer.updateSCN(txn.getScn());
     }
 

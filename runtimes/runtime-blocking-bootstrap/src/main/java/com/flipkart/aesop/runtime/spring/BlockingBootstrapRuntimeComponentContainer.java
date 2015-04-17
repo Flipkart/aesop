@@ -24,7 +24,7 @@ public class BlockingBootstrapRuntimeComponentContainer extends RuntimeComponent
 	/**
 	 * The file name containing Http Client beans
 	 */
-	public static final String BOOTSTRAP_CONFIG_FILE = "spring-bootstrap-config.xml";
+	public static final String BOOTSTRAP_CONFIG_FILE = "spring-blocking-bootstrap-config.xml";
 
 	/**
 	 * The runtime module name

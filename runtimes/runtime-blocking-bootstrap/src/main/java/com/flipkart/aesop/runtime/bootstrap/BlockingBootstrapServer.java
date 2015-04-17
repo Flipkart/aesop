@@ -15,7 +15,6 @@ package com.flipkart.aesop.runtime.bootstrap;
 
 import com.flipkart.aesop.runtime.bootstrap.consumer.SourceEventConsumer;
 import com.flipkart.aesop.runtime.bootstrap.metrics.MetricsCollector;
-import com.flipkart.aesop.runtime.bootstrap.producer.BlockingEventProducer;
 import com.flipkart.aesop.runtime.bootstrap.producer.registeration.ProducerRegistration;
 import com.linkedin.databus.container.netty.HttpRelay;
 import com.linkedin.databus2.core.DatabusException;
@@ -95,14 +94,8 @@ public class BlockingBootstrapServer extends HttpRelay
 
         for (ProducerRegistration producerRegistration : this.producerRegistrationList) {
             EventProducer producer = producerRegistration.getEventProducer();
-            long startScn = -1;
-            	try {
-    				startScn = ((BlockingEventProducer)producer).getMaxScnReaderWriter().getMaxScn();
-    			} catch(Exception e) {
-    				LOGGER.error("Error starting producer : '" + producer.getName() + "'. Producer not started.", e);
-    				continue;
-    			}
-            producer.start(startScn);
+            producer.start(Long.valueOf(String.valueOf(producerRegistration.getProperties().
+                    get("databus.bootstrap.dataSources.sequenceNumbersHandler.file.initVal"))));
         }
         this.registerShutdownHook();
     }

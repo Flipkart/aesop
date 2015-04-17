@@ -57,7 +57,6 @@
                 <property name="properties">
                     <props>
                         <prop key="databus.bootstrap.container.jmx.rmiEnabled">false</prop>
-                        <prop key="databus.bootstrap.schemaRegistry.type">FILE_SYSTEM</prop>
                     </props>
                 </property>
             </bean>
@@ -65,7 +64,6 @@
         <property name="executorQueueSize" value="50"/>
         <property name="numberOfPartitions" value="10"/>
         <property name="schemaRegistryLocation" value="schemas_registry"/>
-        <property name="maxScnDirectoryLocation" value="/tmp/sandbox/maxscn_directory"/>
     </bean>
 
     <bean id="defaultBlockingConsumer" class="com.flipkart.aesop.runtime.bootstrap.consumer.DefaultBlockingEventConsumer">

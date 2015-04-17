@@ -84,7 +84,7 @@ public class MysqlEventProducer<T extends AbstractEvent> extends BlockingEventPr
             }
 
             mysqlTxnManager =
-                    new MysqlTransactionManagerImpl<T>(logid, maxScnReaderWriter,tableUriToSrcIdMap, tableUriToSrcNameMap, schemaRegistryService,
+                    new MysqlTransactionManagerImpl<T>(logid,tableUriToSrcIdMap, tableUriToSrcNameMap, schemaRegistryService,
                             this,sourceEventConsumer);
             mysqlTxnManager.setShutdownRequested(false);
             OpenReplicationListener orl =

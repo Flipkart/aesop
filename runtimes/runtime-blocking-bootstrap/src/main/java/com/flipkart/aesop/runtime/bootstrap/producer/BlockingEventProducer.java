@@ -45,9 +45,6 @@ public abstract class BlockingEventProducer implements EventProducer
     /* Source Event Consumer */
     protected SourceEventConsumer sourceEventConsumer;
 
-    /* Max SCN Writer */
-    protected MaxSCNReaderWriter maxScnReaderWriter;
-
     /* DB Event Stats Collector */
     protected DbusEventsStatisticsCollector dbusEventsStatisticsCollector;
 
@@ -86,12 +83,6 @@ public abstract class BlockingEventProducer implements EventProducer
     public void registerConsumer(SourceEventConsumer consumer) {
         this.sourceEventConsumer = consumer;
     }
-	public MaxSCNReaderWriter getMaxScnReaderWriter() {
-		return maxScnReaderWriter;
-	}
-    public void setMaxScnReaderWriter(MaxSCNReaderWriter maxScnReaderWriter) {
-		this.maxScnReaderWriter = maxScnReaderWriter;
-	}
     public void setDbusEventsStatisticsCollector(DbusEventsStatisticsCollector dbusEventsStatisticsCollector) {
 		this.dbusEventsStatisticsCollector = dbusEventsStatisticsCollector;
 	}
