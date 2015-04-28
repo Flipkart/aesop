@@ -15,6 +15,7 @@
 package com.flipkart.aesop.processor;
 
 import com.flipkart.aesop.event.AbstractEvent;
+import com.linkedin.databus.client.pub.ConsumerCallbackResult;
 
 import javax.naming.OperationNotSupportedException;
 
@@ -33,5 +34,5 @@ public interface DestinationEventProcessor
      *  method to process destination Event
      * @param destinationEvent of type {@link AbstractEvent}
      */
-     public void processDestinationEvent(AbstractEvent destinationEvent) throws OperationNotSupportedException;
+     public ConsumerCallbackResult processDestinationEvent(AbstractEvent destinationEvent) throws OperationNotSupportedException;
 }

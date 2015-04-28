@@ -17,6 +17,7 @@ package com.flipkart.aesop.destinationoperation.implementation;
 
 import com.flipkart.aesop.destinationoperation.UpsertDestinationStoreProcessor;
 import com.flipkart.aesop.event.AbstractEvent;
+import com.linkedin.databus.client.pub.ConsumerCallbackResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,9 +31,10 @@ public class DefaultUpsertDataLayer extends UpsertDestinationStoreProcessor
 	final static Logger LOGGER = LoggerFactory.getLogger(DefaultUpsertDataLayer.class);
 
 	@Override
-	protected void upsert(AbstractEvent event)
+	protected ConsumerCallbackResult upsert(AbstractEvent event)
 	{
 		LOGGER.info("Upsert Event Received " + event.toString() + " by Default Upsert Data Layer");
+        return ConsumerCallbackResult.SUCCESS;
 	}
 
 }

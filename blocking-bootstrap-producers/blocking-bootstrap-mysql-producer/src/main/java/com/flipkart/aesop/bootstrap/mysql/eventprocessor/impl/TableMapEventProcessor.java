@@ -10,30 +10,44 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.flipkart.aesop.bootstrap.mysql.eventprocessor.impl;
 
 import com.flipkart.aesop.bootstrap.mysql.eventlistener.OpenReplicationListener;
-import com.flipkart.aesop.bootstrap.mysql.eventprocessor.AbstractBinLogEventProcessor;
-import com.flipkart.aesop.event.AbstractEvent;
+import com.flipkart.aesop.bootstrap.mysql.eventprocessor.BinLogEventProcessor;
+import com.flipkart.aesop.bootstrap.mysql.txnprocessor.MysqlTransactionManager;
 import com.google.code.or.binlog.BinlogEventV4;
 import com.google.code.or.binlog.impl.event.TableMapEvent;
+import org.trpr.platform.core.impl.logging.LogFactory;
+import org.trpr.platform.core.spi.logging.Logger;
 
 /**
  * The <code>TableMapEventProcessor</code> processes TableMapEvent from source. This event gives table related details
  * for the started transaction.
- * @author nrbafna
+ * @author Shoury B
+ * @version 1.0, 07 Mar 2014
  */
-public class TableMapEventProcessor<T extends AbstractEvent> extends AbstractBinLogEventProcessor<T>
+public class TableMapEventProcessor implements BinLogEventProcessor
 {
+	/** Logger for this class */
+	private static final Logger LOGGER = LogFactory.getLogger(TableMapEventProcessor.class);
+
 	@Override
-	public void process(BinlogEventV4 event, OpenReplicationListener<T> listener)
+	public void process(BinlogEventV4 event, OpenReplicationListener listener) throws Exception
 	{
+		MysqlTransactionManager manager = listener.getMysqlTransactionManager();
+		if (!manager.isBeginTxnSeen())
+		{
+			LOGGER.warn("Skipping event (" + event + ") as this is before the start of first transaction");
+			return;
+		}
 		TableMapEvent tableMapEvent = (TableMapEvent) event;
 		String newTableName =
 		        tableMapEvent.getDatabaseName().toString().toLowerCase() + "."
 		                + tableMapEvent.getTableName().toString().toLowerCase();
 		Long newTableId = tableMapEvent.getTableId();
-		listener.getTableIdtoNameMapping().put(newTableId, newTableName);
+
+		// storing the tableId to tableName mapping
+		manager.getMysqlTableIdToTableNameMap().put(newTableId, newTableName);
+
 	}
 }

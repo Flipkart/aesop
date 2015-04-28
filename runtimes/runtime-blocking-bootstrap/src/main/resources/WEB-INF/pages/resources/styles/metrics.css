@@ -1,0 +1,51 @@
+.unit-pair {
+    overflow: hidden;
+    margin-right: 10px;
+    float:left;
+    margin: 0 10px 10px 0;
+}
+.unit-pair .title {
+    font-size: 14px;
+    font-weight: bold;
+    padding: 3px 10px;
+    background: #EEE;
+}
+.unit-pair .left, .unit-pair .right {
+    overflow: none;
+    float:left;
+}
+.unit-pair .unit {
+    margin: 5px;
+}
+
+.unit {
+	padding: 8px;
+	width: 260px;
+	overflow: hidden;
+	float: left;
+}
+.unit .name {
+	padding: 0 8px;
+	font-weight: bold;
+	font-size: 13px;
+}
+.unit .plot {
+	height: 125px;
+	width: 250px;
+}
+
+.combo {
+    width: 650px;
+    margin: 12px;
+	overflow: hidden;
+	float: left;
+}
+.combo .name {
+	font-weight: bold;
+	font-size: 16px;
+}
+.combo .plot {
+    height: 300px;
+    width: 600px;
+}
+

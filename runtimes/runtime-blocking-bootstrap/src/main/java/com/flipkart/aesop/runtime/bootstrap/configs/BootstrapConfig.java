@@ -13,6 +13,10 @@
 
 package com.flipkart.aesop.runtime.bootstrap.configs;
 
+import org.trpr.platform.runtime.common.RuntimeVariables;
+import org.trpr.platform.runtime.impl.config.FileLocator;
+
+import java.io.File;
 import java.util.Properties;
 
 /**
@@ -24,6 +28,12 @@ public class BootstrapConfig
 	/** The property name prefix for all Databus bootstrap properties */
 	public static final String BOOTSTRAP_PROPERTIES_PREFIX = "databus.bootstrap.";
 	private Properties bootstrapProperties = new Properties();
+
+    /** The MaxSCN information file location property name */
+	public static final String MAXSCN_DIR_PROPERTY = "dataSources.sequenceNumbersHandler.file.scnDir";
+
+    /** The MAX SCN file directory location */
+	private String maxScnDirectoryLocation;
 
 	private int numberOfPartitions;
 	private int executorQueueSize;
@@ -66,6 +76,26 @@ public class BootstrapConfig
 
 	public void setSchemaRegistryLocation(String schemaRegistryLocation)
 	{
-		this.schemaRegistryLocation = schemaRegistryLocation;
+		File[] foundFiles = FileLocator.findDirectories(schemaRegistryLocation,
+                null);
+		if (foundFiles.length > 0) {
+			this.schemaRegistryLocation = foundFiles[0].getAbsolutePath();
+		} else {
+			this.schemaRegistryLocation = schemaRegistryLocation;
+		}
+	}
+
+    public String getMaxScnDirectoryLocation() {
+		return maxScnDirectoryLocation;
+	}
+	public void setMaxScnDirectoryLocation(String maxScnDirectoryLocation) {
+		this.maxScnDirectoryLocation = maxScnDirectoryLocation;
+		// add the Max SCN file directory location to the properties specified
+		// for the Relay.
+		// The Max SCN directory is relative to projects root
+		this.getBootstrapProperties().put(
+				BOOTSTRAP_PROPERTIES_PREFIX + MAXSCN_DIR_PROPERTY,
+				new File(RuntimeVariables.getProjectsRoot() + File.separator
+						+ this.maxScnDirectoryLocation).getAbsolutePath());
 	}
 }

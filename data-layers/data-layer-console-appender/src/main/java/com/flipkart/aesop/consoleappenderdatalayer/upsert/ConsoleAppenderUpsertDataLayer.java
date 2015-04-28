@@ -3,6 +3,7 @@ package com.flipkart.aesop.consoleappenderdatalayer.upsert;
 import com.flipkart.aesop.consoleappenderdatalayer.delete.ConsoleAppenderDeleteDataLayer;
 import com.flipkart.aesop.destinationoperation.UpsertDestinationStoreProcessor;
 import com.flipkart.aesop.event.AbstractEvent;
+import com.linkedin.databus.client.pub.ConsumerCallbackResult;
 import com.linkedin.databus.core.DbusOpcode;
 import org.trpr.platform.core.impl.logging.LogFactory;
 import org.trpr.platform.core.spi.logging.Logger;
@@ -18,8 +19,9 @@ public class ConsoleAppenderUpsertDataLayer extends UpsertDestinationStoreProces
 	private static final Logger LOGGER = LogFactory.getLogger(ConsoleAppenderUpsertDataLayer.class);
 
 	@Override
-	protected void upsert(AbstractEvent event)
+	protected ConsumerCallbackResult upsert(AbstractEvent event)
 	{
-		LOGGER.info("Received Upsert Event. Event is " + event);
+		LOGGER.info("DESTINATION_EVENT:UPSERT: Event is " + event);
+        return ConsumerCallbackResult.SUCCESS;
 	}
 }

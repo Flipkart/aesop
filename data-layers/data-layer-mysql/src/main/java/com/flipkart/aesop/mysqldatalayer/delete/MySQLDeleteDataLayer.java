@@ -20,6 +20,7 @@ import com.flipkart.aesop.destinationoperation.utils.DataLayerConstants;
 import com.flipkart.aesop.destinationoperation.utils.DataLayerHelper;
 import com.flipkart.aesop.event.AbstractEvent;
 import com.flipkart.aesop.mysqldatalayer.upsert.MySQLUpsertDataLayer;
+import com.linkedin.databus.client.pub.ConsumerCallbackResult;
 import com.linkedin.databus.core.DbusOpcode;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
@@ -51,13 +52,14 @@ public class MySQLDeleteDataLayer extends DeleteDestinationStoreProcessor implem
 	}
 
 	@Override
-	protected void delete(AbstractEvent event)
+	protected ConsumerCallbackResult delete(AbstractEvent event)
 	{
 		String deleteQuery = getDeleteQuery(event);
 		NamedParameterJdbcTemplate jdbcTemplate = jdbcTemplateMap.get(event.getNamespaceName());
 		Map<String, Object> nullValueColumnMapping =
 		        DataLayerHelper.generateColumnMappingWithNullValues(event.getFieldMapPair(), event.getPrimaryKeySet());
 		jdbcTemplate.update(deleteQuery, nullValueColumnMapping);
+        return ConsumerCallbackResult.SUCCESS;
 	}
 
 	/**

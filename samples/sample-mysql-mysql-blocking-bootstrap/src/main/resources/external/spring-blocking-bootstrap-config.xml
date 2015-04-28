@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="
+    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+    http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd">
+
+    <bean id="mysqlMysqlBootstap" class="com.flipkart.aesop.runtime.bootstrap.BlockingBootstrapServerFactory">
+        <property name="bootstrapConfig" ref="bootstrapConfig"/>
+        <property name="producerRegistrationList">
+            <list>
+                <bean class="com.flipkart.aesop.runtime.bootstrap.producer.registeration.InitBackedProducerRegistration">
+                    <property name="eventProducer" ref="mysqlEventProducer"/>
+                    <property name="physicalSourceConfig" ref="physicalSourceConfig"/>
+                    <property name="properties">
+                        <bean id="productRegistrationPropertiesFactory" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+                            <property name="singleton" value="true"/>
+                            <property name="properties">
+                                <props>
+                                    <prop key="databus.bootstrap.dataSources.sequenceNumbersHandler.file.initVal">4294967300</prop>
+                                </props>
+                            </property>
+                        </bean>
+                    </property>
+                </bean>
+            </list>
+        </property>
+        <property name="consumer" ref="defaultBlockingConsumer"/>
+    </bean>
+
+    <bean id="mysqlEventProducer" class="com.flipkart.aesop.bootstrap.mysql.MysqlEventProducer">
+        <property name="bootstrapConfig" ref="bootstrapConfig"/>
+        <property name="eventsMap" ref="eventsMapRef"/>
+    </bean>
+
+    <bean id="physicalSourceConfig" class="com.linkedin.databus2.relay.config.PhysicalSourceConfig">
+        <property name="id" value="1"/>
+        <property name="name" value="personPhysicalSource"/>
+        <property name="uri" value="mysql://or_test%2For_test@localhost:3306/3306/mysql-bin"/>
+        <property name="sources">
+            <list>
+                <bean id="logicalSourceConfig" class="com.linkedin.databus2.relay.config.LogicalSourceConfig">
+                    <property name="id" value="41"/>
+                    <property name="name" value="com.flipkart.aesop.events.ortest.Person"/>
+                    <property name="uri" value="or_test.person"/>
+                    <property name="partitionFunction" value="constant:1"/>
+                </bean>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="bootstrapConfig" class="com.flipkart.aesop.runtime.bootstrap.configs.BootstrapConfig">
+        <property name="bootstrapProperties">
+            <bean id="bootstrapPropertiesFactory" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+                <property name="singleton" value="true"/>
+                <property name="properties">
+                    <props>
+                        <prop key="databus.bootstrap.container.jmx.rmiEnabled">false</prop>
+                    </props>
+                </property>
+            </bean>
+        </property>
+        <property name="executorQueueSize" value="50"/>
+        <property name="numberOfPartitions" value="10"/>
+        <property name="schemaRegistryLocation" value="schemas_registry"/>
+    </bean>
+
+    <bean id="defaultBlockingConsumer" class="com.flipkart.aesop.runtime.bootstrap.consumer.DefaultBlockingEventConsumer">
+        <property name="numberOfPartition" value="5"/>
+        <property name="executorQueueSize" value="50"/>
+        <property name="eventConsumer" value="#{defaultEventConsumerFactory.eventConsumerObject}"/>
+        <property name="rejectedExecutionHandler" ref="waitPolicy"/>
+        <property name="backoffTimer" ref="backOffTimer"/>
+    </bean>
+
+    <bean id="waitPolicy" class="com.flipkart.aesop.runtime.bootstrap.consumer.WaitPolicy">
+        <constructor-arg index="0" value="5"/>
+        <constructor-arg index="1" value="SECONDS"/>
+    </bean>
+
+    <bean id="backOffTimer" class="com.linkedin.databus2.core.BackoffTimer">
+        <constructor-arg index="0" value="sourceEventBackOffTimer"/>
+        <constructor-arg index="1" ref="backOffTimerConfig"/>
+    </bean>
+
+    <bean id="backOffTimerConfig" class="com.linkedin.databus2.core.BackoffTimerStaticConfig">
+        <constructor-arg index="0" value="1000"/>
+        <constructor-arg index="1" value="5000"/>
+        <constructor-arg index="2" value="5000"/>
+        <constructor-arg index="3" value="5000"/>
+        <constructor-arg index="4" value="10"/>
+    </bean>
+
+    <util:map id="eventsMapRef" key-type="java.lang.Integer" value-type="com.flipkart.aesop.bootstrap.mysql.eventprocessor.BinLogEventProcessor">
+        <entry key="#{T(com.flipkart.aesop.bootstrap.mysql.constants.MySQLConstants).QUERY_EVENT}" value-ref="mutatingQueryEventProcessor"/>
+        <entry key="#{T(com.flipkart.aesop.bootstrap.mysql.constants.MySQLConstants).ROTATE_EVENT}" value-ref="rotateEventProcessor"/>
+        <entry key="#{T(com.flipkart.aesop.bootstrap.mysql.constants.MySQLConstants).XID_EVENT}" value-ref="commitEventProcessor"/>
+        <entry key="#{T(com.flipkart.aesop.bootstrap.mysql.constants.MySQLConstants).TABLE_MAP_EVENT}" value-ref="tableMapEventProcessor"/>
+        <entry key="#{T(com.flipkart.aesop.bootstrap.mysql.constants.MySQLConstants).WRITE_ROWS_EVENT}" value-ref="insertEventProcessor"/>
+        <entry key="#{T(com.flipkart.aesop.bootstrap.mysql.constants.MySQLConstants).UPDATE_ROWS_EVENT}" value-ref="updateEventProcessor"/>
+        <entry key="#{T(com.flipkart.aesop.bootstrap.mysql.constants.MySQLConstants).DELETE_ROWS_EVENT}" value-ref="deleteEventProcessor"/>
+        <entry key="#{T(com.flipkart.aesop.bootstrap.mysql.constants.MySQLConstants).WRITE_ROWS_EVENT_V2}" value-ref="insertEventV2Processor"/>
+        <entry key="#{T(com.flipkart.aesop.bootstrap.mysql.constants.MySQLConstants).UPDATE_ROWS_EVENT_V2}" value-ref="updateEventV2Processor"/>
+        <entry key="#{T(com.flipkart.aesop.bootstrap.mysql.constants.MySQLConstants).DELETE_ROWS_EVENT_V2}" value-ref="deleteEventV2Processor"/>
+    </util:map>
+
+    <bean id="mutatingQueryEventProcessor" class="com.flipkart.aesop.bootstrap.mysql.eventprocessor.impl.MutatingQueryEventProcessor"/>
+    <bean id="rotateEventProcessor" class="com.flipkart.aesop.bootstrap.mysql.eventprocessor.impl.RotateEventProcessor"/>
+    <bean id="commitEventProcessor" class="com.flipkart.aesop.bootstrap.mysql.eventprocessor.impl.CommitEventProcessor"/>
+    <bean id="tableMapEventProcessor" class="com.flipkart.aesop.bootstrap.mysql.eventprocessor.impl.TableMapEventProcessor"/>
+    <bean id="insertEventProcessor" class="com.flipkart.aesop.bootstrap.mysql.eventprocessor.impl.InsertEventProcessor"/>
+    <bean id="updateEventProcessor" class="com.flipkart.aesop.bootstrap.mysql.eventprocessor.impl.UpdateEventProcessor"/>
+    <bean id="deleteEventProcessor" class="com.flipkart.aesop.bootstrap.mysql.eventprocessor.impl.DeleteEventProcessor"/>
+    <bean id="insertEventV2Processor" class="com.flipkart.aesop.bootstrap.mysql.eventprocessor.impl.InsertEventV2Processor"/>
+    <bean id="updateEventV2Processor" class="com.flipkart.aesop.bootstrap.mysql.eventprocessor.impl.UpdateEventV2Processor"/>
+    <bean id="deleteEventV2Processor" class="com.flipkart.aesop.bootstrap.mysql.eventprocessor.impl.DeleteEventV2Processor"/>
+
+
+    <bean id="defaultEventConsumerFactory"
+          class="com.flipkart.aesop.eventconsumer.implementation.DefaultEventConsumerFactoryBean">
+        <property name="mapper" ref="defaultMapperImpl" />
+        <property name="destinationProcessorMap">
+            <map>
+                <entry key-ref="upsertDbusOpCode" value-ref="upsertConsole" />
+                <entry key-ref="deleteDbusOpCode" value-ref="deleteConsole" />
+            </map>
+        </property>
+        <property name="sourceEventFactory" ref="sourceEventFactory" />
+        <property name="destinationGroupSet">
+            <set>
+                <value>1</value>
+            </set>
+        </property>
+        <property name="totalDestinationGroups" value="1" />
+    </bean>
+
+    <bean id="defaultMapperImpl"
+          class="com.flipkart.aesop.mapper.implementation.DefaultMapperImpl">
+        <property name="configFilePath" value="resources/external/application.conf" />
+        <property name="configRoot" value="MYSQL_CONFIG" />
+        <property name="mapperConfig" ref="mapperConfig" />
+        <property name="mapperTypeList">
+            <list>
+                <ref bean="noNamespaceEntityMapperType" />
+                <ref bean="noEntityMapperType" />
+                <ref bean="namespaceEntityMapperType" />
+            </list>
+        </property>
+        <property name="eventGroupFinder" ref="defaultEventGroupFinder" />
+        <property name="destinationEventFactory" ref="destinationEventFactory" />
+    </bean>
+
+    <util:constant id="upsertDbusOpCode"
+                   static-field="com.linkedin.databus.core.DbusOpcode.UPSERT" />
+    <util:constant id="deleteDbusOpCode"
+                   static-field="com.linkedin.databus.core.DbusOpcode.DELETE" />
+
+    <bean id="mapperConfig"
+          class="com.flipkart.aesop.mapper.config.implementation.MapperConfigImpl"
+          factory-method="getInstance" />
+
+    <util:constant id="noNamespaceEntityMapperType"
+                   static-field="com.flipkart.aesop.mapper.implementation.MapperType.MAP_WITHOUT_SOURCE_NAMESPACE_ENTITY_CONFIG" />
+    <util:constant id="noEntityMapperType"
+                   static-field="com.flipkart.aesop.mapper.implementation.MapperType.MAP_WITHOUT_SOURCE_ENTITY_CONFIG" />
+    <util:constant id="namespaceEntityMapperType"
+                   static-field="com.flipkart.aesop.mapper.implementation.MapperType.MAP_WITH_SOURCE_ENTITY_CONFIG" />
+
+    <bean id="defaultEventGroupFinder"
+          class="com.flipkart.aesop.mapper.eventGroupFilter.implementation.DefaultEventGroupFinderImpl"
+          factory-method="getInstance" />
+
+    <bean id="destinationEventFactory"
+          class="com.flipkart.aesop.event.implementation.DestinationEventFactory" />
+
+    <bean id="sourceEventFactory"
+          class="com.flipkart.aesop.event.implementation.SourceEventFactory" />
+
+    <bean id="upsertConsole"
+          class="com.flipkart.aesop.consoleappenderdatalayer.upsert.ConsoleAppenderUpsertDataLayer ">
+    </bean>
+
+    <bean id="deleteConsole"
+          class="com.flipkart.aesop.consoleappenderdatalayer.delete.ConsoleAppenderDeleteDataLayer">
+    </bean>
+</beans>

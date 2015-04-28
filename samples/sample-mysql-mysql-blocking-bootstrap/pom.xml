@@ -48,6 +48,11 @@
 			<artifactId>data-layer-mysql</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+         <dependency>
+            <groupId>com.flipkart.aesop</groupId>
+            <artifactId>data-layer-console-appender</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 	</dependencies>
 
 	<build>
