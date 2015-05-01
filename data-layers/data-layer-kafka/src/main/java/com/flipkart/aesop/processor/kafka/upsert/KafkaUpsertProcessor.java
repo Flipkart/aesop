@@ -12,8 +12,13 @@
  *******************************************************************************/
 package com.flipkart.aesop.processor.kafka.upsert;
 
+import java.util.List;
 import java.util.concurrent.Future;
 
+import com.flipkart.aesop.processor.kafka.client.KafkaClient;
+import com.flipkart.aesop.processor.kafka.config.KafkaConfig;
+import com.flipkart.aesop.processor.kafka.preprocessor.KafkaUpsertPreprocessor;
+import org.apache.kafka.clients.producer.KafkaProducer;
 import org.trpr.platform.core.impl.logging.LogFactory;
 import org.trpr.platform.core.spi.logging.Logger;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -22,20 +27,20 @@ import org.springframework.util.SerializationUtils;
 
 import com.flipkart.aesop.destinationoperation.UpsertDestinationStoreProcessor;
 import com.flipkart.aesop.event.AbstractEvent;
-import com.flipkart.aesop.processor.kafka.client.KafkaClient;
+
 
 /**
  * Kafka Upsert Data Layer. Persists {@link DbusOpcode#UPSERT} events to Logs.
  * @author Ravindra Yadav
  * @see com.flipkart.aesop.processor.kafka.delete.KafkaDeleteProcessor
  */
-public class KafkaUpsertProcessor extends UpsertDestinationStoreProcessor
+public class KafkaUpsertProcessor extends KafkaUpsertPreprocessor
 {
 	/** Logger for this class */
 	private static final Logger LOGGER = LogFactory.getLogger(KafkaUpsertProcessor.class);
 
-	/* Kafka Initializer Client. */
-	private KafkaClient kafkaClient;
+
+
 
 	@Override
 	protected void upsert(AbstractEvent event)
@@ -47,10 +52,10 @@ public class KafkaUpsertProcessor extends UpsertDestinationStoreProcessor
 		try
 		{
 			String id = String.valueOf(event.getFieldMapPair().get("id"));
-			Future<RecordMetadata> response =
-			        kafkaClient.getClient().send(
-			                new ProducerRecord(kafkaClient.getTopic(), SerializationUtils.serialize(event
-			                        .getFieldMapPair())));
+			ProducerRecord record = createProducerRecord(event);
+			KafkaClient kafkaClient = getKafkaClient();
+
+			Future<RecordMetadata> response = kafkaClient.getClient().send(record);
 
 			if (!response.isDone())
 			{
@@ -65,15 +70,4 @@ public class KafkaUpsertProcessor extends UpsertDestinationStoreProcessor
 		}
 	}
 
-	/* Getters and Setters start */
-	public void setKafkaClient(KafkaClient kafkaClient)
-	{
-		this.kafkaClient = kafkaClient;
-	}
-
-	public KafkaClient getKafkaClient()
-	{
-		return this.kafkaClient;
-	}
-	/* Getters and Setters end */
 }

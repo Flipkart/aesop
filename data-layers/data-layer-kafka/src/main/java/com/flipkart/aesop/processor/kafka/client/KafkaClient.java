@@ -12,17 +12,23 @@
  *******************************************************************************/
 package com.flipkart.aesop.processor.kafka.client;
 
+import com.typesafe.config.ConfigFactory;
+import org.apache.kafka.clients.producer.KafkaProducer;
 import org.springframework.beans.factory.InitializingBean;
 
 import com.flipkart.aesop.processor.kafka.config.KafkaConfig;
 import com.typesafe.config.Config;
-import org.apache.kafka.clients.producer.KafkaProducer;
+import org.trpr.platform.core.impl.logging.LogFactory;
+import org.trpr.platform.core.spi.logging.Logger;
+
+import java.io.File;
+import java.util.Properties;
 
 /**
  * Initiates Kafka Client , reads config from KafkaConfig
  * @author Ravindra Yadav
  */
-public abstract class KafkaClient implements InitializingBean
+public class KafkaClient implements InitializingBean
 {
 
 	/* Kafka Config set by spring-beans */
@@ -38,7 +44,22 @@ public abstract class KafkaClient implements InitializingBean
 	 * This method is called from {@link org.springframework.beans.factory.InitializingBean#afterPropertiesSet()} to
 	 * initialize the Kafka Client
 	 */
-	abstract void init();
+	private static final Logger LOGGER = LogFactory.getLogger(KafkaClient.class);
+
+	void init()
+	{
+		this.config = ConfigFactory.parseFile(new File(kafkaConfig.getConfig()));
+
+		Properties props = new Properties();
+		props.put("zk.connect", config.getString("zk.connect"));
+		props.put("value.serializer", config.getString("value.serializer"));
+		props.put("key.serializer", config.getString("key.serializer"));
+		props.put("zk.connectiontimeout.ms", config.getString("zk.connectiontimeout.ms"));
+		props.put("bootstrap.servers", config.getString("bootstrap.servers"));
+
+		KafkaProducer client = new KafkaProducer(props);
+		this.client = client;
+	}
 
 	 @Override
 	 public void afterPropertiesSet() throws Exception
@@ -57,9 +78,9 @@ public abstract class KafkaClient implements InitializingBean
 		this.kafkaConfig = kafkaConfig;
 	}
 
-	public String getTopic()
+	public String getTopic(String entityName)
 	{
-		return config.getString("topic");
+		return config.getString(entityName+".topic");
 	}
 
 	 public KafkaProducer getClient()
