@@ -17,6 +17,7 @@ package com.flipkart.aesop.processor.es.upsert;
 import com.flipkart.aesop.destinationoperation.UpsertDestinationStoreProcessor;
 import com.flipkart.aesop.event.AbstractEvent;
 import com.flipkart.aesop.processor.es.client.ElasticSearchClient;
+import com.linkedin.databus.client.pub.ConsumerCallbackResult;
 import com.linkedin.databus.core.DbusOpcode;
 import org.elasticsearch.action.index.IndexResponse;
 import org.trpr.platform.core.impl.logging.LogFactory;
@@ -36,7 +37,7 @@ public class ElasticSearchUpsertProcessor extends UpsertDestinationStoreProcesso
     private ElasticSearchClient elasticSearchClient;
 
     @Override
-    protected void upsert(AbstractEvent event)
+    protected ConsumerCallbackResult upsert(AbstractEvent event)
     {
 
         LOGGER.info("Received Upsert Event. Event is " + event);
@@ -63,6 +64,7 @@ public class ElasticSearchUpsertProcessor extends UpsertDestinationStoreProcesso
             LOGGER.info("Server Connection Lost/Create Error" + e);
             throw new RuntimeException("Create Failure");
         }
+        return ConsumerCallbackResult.SUCCESS;
     }
 
     /* Getters and Setters start */

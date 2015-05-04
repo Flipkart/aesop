@@ -1,0 +1,156 @@
+
+* {
+	font-family: Arial, 'Lucida Grande', sans-serif;
+	padding: 0;
+	margin: 0;
+}
+body {
+	background: #DFDFDF;
+	font-size: 13px;
+}
+
+.col-2 {
+    width: 48%;
+    float: left;
+    margin-right: 2%;
+}
+.clearfix {
+    clear:both;
+}
+
+.header {
+    background: #3a63a0;
+	color: white;
+	padding: 10px 20px;
+}
+.footer {
+	color: #999;
+	padding: 8px;
+}
+.footer .links {
+    float: right;
+}
+.footer .links a {
+    color: #888;
+}
+.footer .links a:hover {
+    color: #000;
+    text-decoration: underline;
+}
+
+.menu {
+    overflow: hidden;
+    background: #1c304e;
+}
+.menu ul {
+    list-style-type: none;
+}
+.menu ul li {
+    float: left;
+    display: inline;
+}
+.menu ul li a {
+    color: white;
+    font-size: 14px;
+    display: block;
+    padding: 10px 20px;
+    text-decoration: none;
+    font-weight: normal;
+}
+.menu ul li a:hover {
+    background: #3a63a0;
+    color: white;
+}
+
+.container {
+	background: white;
+	min-height: 300px;
+}
+
+h1 {
+	font-size: 25px;
+	font-weight: bold;
+}
+table.relays {
+	border: 1px solid #1c304e;
+    border-collapse: collapse;
+	margin: 10px auto;
+    width: 100%;
+}
+table.relays td, table.relays th {
+	border: 1px solid #1c304e;
+    padding: 5px;
+}
+table.relays th {
+    font-weight: bold;
+    background: #e5e5e5;
+    color: black;
+    text-align: center;
+}
+table.consumers {
+    border-collapse: collapse;
+    width: 100%;
+    border: 1px solid #555;
+}
+table.consumers td, table.consumers th {
+    padding: 2px;
+    border: 1px solid #555;
+}
+table.kv {
+    border: 0;
+}
+table.kv td.k {
+    color: #3f7dd8;
+    border: 0;
+    padding: 2px;
+    padding-right: 10px;
+    font-size: 11px;
+}
+table.kv td.v {
+    border: 0;
+    padding: 2px;
+}
+.section {
+    padding: 10px 2% 10px;
+    overflow: hidden;
+    border-bottom: 1px solid #ccc;
+}
+.section h2 {
+    font-size: 20px;
+    font-weight: normal;
+    margin: 10px auto;
+}
+
+
+#overlay {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    background: rgba( 0, 0, 0, 0.3);
+    z-index: 9;
+    display: none;
+}
+
+#modal {
+    position: fixed;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    top: 15%;
+    height: 60%;
+    background: #fff;
+    padding: 20px;
+    border: #ccc;
+    border-radius: 3px;
+    width: 450px;
+    z-index: 10;
+    display: none;
+}
+
+#modalContent {
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+}

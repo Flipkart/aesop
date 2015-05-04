@@ -17,6 +17,7 @@ package com.flipkart.aesop.processor.es.delete;
 import com.flipkart.aesop.destinationoperation.DeleteDestinationStoreProcessor;
 import com.flipkart.aesop.processor.es.client.ElasticSearchClient;
 import com.flipkart.aesop.event.AbstractEvent;
+import com.linkedin.databus.client.pub.ConsumerCallbackResult;
 import com.linkedin.databus.core.DbusOpcode;
 import org.elasticsearch.action.get.GetResponse;
 import org.trpr.platform.core.impl.logging.LogFactory;
@@ -37,7 +38,7 @@ public class ElasticSearchDeleteProcessor extends DeleteDestinationStoreProcesso
     private ElasticSearchClient elasticSearchClient;
 
     @Override
-    protected void delete(AbstractEvent event)
+    protected ConsumerCallbackResult delete(AbstractEvent event)
     {
         LOGGER.info("Received Delete Event. Event is " + event);
         LOGGER.info("Field Map Pair : " + event.getFieldMapPair().toString());
@@ -64,6 +65,7 @@ public class ElasticSearchDeleteProcessor extends DeleteDestinationStoreProcesso
             LOGGER.info("Server Connection Lost/Delete Error" + e);
             throw new RuntimeException("Delete Failure");
         }
+        return ConsumerCallbackResult.SUCCESS;
 
     }
 

@@ -13,86 +13,111 @@
 
 package com.flipkart.aesop.runtime.bootstrap;
 
-import java.io.IOException;
-import java.nio.ByteOrder;
-
-import org.trpr.platform.core.impl.logging.LogFactory;
-import org.trpr.platform.core.spi.logging.Logger;
-
 import com.flipkart.aesop.runtime.bootstrap.consumer.SourceEventConsumer;
-import com.flipkart.aesop.runtime.bootstrap.producer.BlockingEventProducer;
+import com.flipkart.aesop.runtime.bootstrap.metrics.MetricsCollector;
+import com.flipkart.aesop.runtime.bootstrap.producer.registeration.ProducerRegistration;
 import com.linkedin.databus.container.netty.HttpRelay;
 import com.linkedin.databus2.core.DatabusException;
 import com.linkedin.databus2.core.container.monitoring.mbean.DatabusComponentAdmin;
-import com.linkedin.databus2.core.container.netty.ServerContainer;
+import com.linkedin.databus2.producers.EventProducer;
+import com.linkedin.databus2.relay.config.PhysicalSourceStaticConfig;
+import com.linkedin.databus2.schemas.SchemaRegistryService;
+import com.linkedin.databus2.schemas.SourceIdNameRegistry;
+import org.trpr.platform.core.impl.logging.LogFactory;
+import org.trpr.platform.core.spi.logging.Logger;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The <code>BlockingBootstrapServer</code> class defines behavior of a blocking bootstrap server i.e. serves
  * change data snapshots that may be used to bootstrap slow consumers
  * @author nrbafna
  */
-public class BlockingBootstrapServer extends ServerContainer
+public class BlockingBootstrapServer extends HttpRelay
 {
-	public static final Logger LOGGER = LogFactory.getLogger(BlockingBootstrapServer.class);
+    public static final Logger LOGGER = LogFactory.getLogger(BlockingBootstrapServer.class);
 
-	private BlockingEventProducer producer;
-	private SourceEventConsumer consumer;
+    /** The ProducerRegistration list for the Relay*/
+    protected List<ProducerRegistration> producerRegistrationList = new ArrayList<ProducerRegistration>();
 
-	public BlockingBootstrapServer(StaticConfig staticConfig) throws DatabusException, IOException
-	{
-		super(staticConfig, ByteOrder.BIG_ENDIAN);
+    /*Source Event Consumer */
+    private SourceEventConsumer consumer;
+
+     /** metrics collector */
+    private MetricsCollector metricsCollector;
+
+    /**
+	 * Constructor for this class. Invokes constructor of the super-type with the passed-in arguments
+	 */
+    public BlockingBootstrapServer(StaticConfig config, PhysicalSourceStaticConfig[] pConfigs, SourceIdNameRegistry sourcesIdNameRegistry,
+            SchemaRegistryService schemaRegistry) throws IOException, DatabusException {
+    	super(config, pConfigs, sourcesIdNameRegistry, schemaRegistry);
+        metricsCollector = new MetricsCollector(this);
+    }
+
+    @Override
+    protected DatabusComponentAdmin createComponentAdmin()
+    {
+        return new DatabusComponentAdmin(this, getMbeanServer(), HttpRelay.class.getSimpleName());
+    }
+
+    @Override
+    public void pause()
+    {
+        getComponentStatus().pause();
+        for (ProducerRegistration producerRegistration : this.producerRegistrationList){
+            producerRegistration.getEventProducer().pause();
+        }
+    }
+
+    @Override
+    public void resume()
+    {
+        getComponentStatus().resume();
+        for (ProducerRegistration producerRegistration : this.producerRegistrationList){
+            producerRegistration.getEventProducer().unpause();
+        }
+    }
+
+    @Override
+    public void suspendOnError(Throwable throwable)
+    {
+        getComponentStatus().suspendOnError(throwable);
+    }
+
+    @Override
+    protected void doStart()
+    {
+        super.doStart();
+
+        for (ProducerRegistration producerRegistration : this.producerRegistrationList) {
+            EventProducer producer = producerRegistration.getEventProducer();
+            producer.start(Long.valueOf(String.valueOf(producerRegistration.getProperties().
+                    get("databus.bootstrap.dataSources.sequenceNumbersHandler.file.initVal"))));
+        }
+        this.registerShutdownHook();
+    }
+
+    @Override
+    protected void doShutdown()
+    {
+        for (ProducerRegistration producerRegistration : this.producerRegistrationList){
+            producerRegistration.getEventProducer().shutdown();
+        }
+        consumer.shutdown();
+        super.doShutdown();
+    }
+
+    public MetricsCollector getMetricsCollector() { return metricsCollector; }
+    public List<ProducerRegistration> getProducerRegistrationList() {
+		return this.producerRegistrationList;
 	}
-
-	@Override
-	protected DatabusComponentAdmin createComponentAdmin()
-	{
-		return new DatabusComponentAdmin(this, getMbeanServer(), HttpRelay.class.getSimpleName());
-	}
-
-	@Override
-	public void pause()
-	{
-		getComponentStatus().pause();
-		producer.pause();
-	}
-
-	@Override
-	public void resume()
-	{
-		getComponentStatus().resume();
-		producer.unpause();
-	}
-
-	@Override
-	public void suspendOnError(Throwable throwable)
-	{
-		getComponentStatus().suspendOnError(throwable);
-	}
-
-	@Override
-	protected void doStart()
-	{
-		super.doStart();
-		producer.registerConsumer(consumer);
-		producer.start(0);
-		this.registerShutdownHook();
-	}
-
-	@Override
-	protected void doShutdown()
-	{
-		producer.shutdown();
-		consumer.shutdown();
-		super.doShutdown();
-	}
-
-	public void registerProducer(BlockingEventProducer producer)
-	{
-		this.producer = producer;
-	}
-
-	public void registerConsumer(SourceEventConsumer consumer)
-	{
-		this.consumer = consumer;
-	}
+    public void setProducerRegistrationList(List<ProducerRegistration> producerRegistrationList) {
+        this.producerRegistrationList = producerRegistrationList;
+    }
+    public void registerConsumer(SourceEventConsumer consumer) {
+        this.consumer = consumer;
+    }
 }

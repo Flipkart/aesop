@@ -45,9 +45,8 @@ public class WaitPolicy implements RejectedExecutionHandler
 	{
 		try
 		{
-			while (!e.isShutdown())
+			while (!e.isShutdown() && !e.getQueue().offer(r, _time, _timeUnit))
 			{
-				e.getQueue().offer(r, _time, _timeUnit);
 			}
 		}
 		catch (InterruptedException ie)

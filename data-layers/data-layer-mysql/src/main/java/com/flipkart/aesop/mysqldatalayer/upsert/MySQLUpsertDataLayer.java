@@ -19,6 +19,7 @@ import com.flipkart.aesop.destinationoperation.UpsertDestinationStoreProcessor;
 import com.flipkart.aesop.destinationoperation.utils.DataLayerConstants;
 import com.flipkart.aesop.event.AbstractEvent;
 import com.flipkart.aesop.mysqldatalayer.delete.MySQLDeleteDataLayer;
+import com.linkedin.databus.client.pub.ConsumerCallbackResult;
 import com.linkedin.databus.core.DbusOpcode;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
@@ -50,11 +51,12 @@ public class MySQLUpsertDataLayer extends UpsertDestinationStoreProcessor implem
 	}
 
 	@Override
-	protected void upsert(AbstractEvent event)
+	protected ConsumerCallbackResult upsert(AbstractEvent event)
 	{
 		String upsertQuery = generateUpsertQuery(event);
 		NamedParameterJdbcTemplate jdbcTemplate = jdbcTemplateMap.get(event.getNamespaceName());
 		jdbcTemplate.update(upsertQuery, event.getFieldMapPair());
+        return ConsumerCallbackResult.SUCCESS;
 	}
 
 	/**

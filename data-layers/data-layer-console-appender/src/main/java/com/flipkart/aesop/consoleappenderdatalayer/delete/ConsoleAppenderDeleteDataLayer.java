@@ -3,6 +3,7 @@ package com.flipkart.aesop.consoleappenderdatalayer.delete;
 import com.flipkart.aesop.consoleappenderdatalayer.upsert.ConsoleAppenderUpsertDataLayer;
 import com.flipkart.aesop.destinationoperation.DeleteDestinationStoreProcessor;
 import com.flipkart.aesop.event.AbstractEvent;
+import com.linkedin.databus.client.pub.ConsumerCallbackResult;
 import com.linkedin.databus.core.DbusOpcode;
 import org.trpr.platform.core.impl.logging.LogFactory;
 import org.trpr.platform.core.spi.logging.Logger;
@@ -19,9 +20,11 @@ public class ConsoleAppenderDeleteDataLayer extends DeleteDestinationStoreProces
 	private static final Logger LOGGER = LogFactory.getLogger(ConsoleAppenderDeleteDataLayer.class);
 
 	@Override
-	protected void delete(AbstractEvent event)
+	protected  ConsumerCallbackResult delete(AbstractEvent event)
 	{
-		LOGGER.info("Received Delete Event. Event is " + event);
+		LOGGER.info("DESTINATION_EVENT:DELETE:. Event is " + event);
+
+        return ConsumerCallbackResult.SUCCESS;
 	}
 
 }

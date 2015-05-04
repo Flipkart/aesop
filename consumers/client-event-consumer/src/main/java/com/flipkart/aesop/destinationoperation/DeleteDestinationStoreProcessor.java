@@ -17,6 +17,7 @@ package com.flipkart.aesop.destinationoperation;
 
 import com.flipkart.aesop.event.AbstractEvent;
 import com.flipkart.aesop.processor.DestinationEventProcessor;
+import com.linkedin.databus.client.pub.ConsumerCallbackResult;
 import com.linkedin.databus.core.DbusOpcode;
 
 import javax.naming.OperationNotSupportedException;
@@ -27,15 +28,15 @@ import javax.naming.OperationNotSupportedException;
  */
 public abstract class DeleteDestinationStoreProcessor implements DestinationEventProcessor
 {
-	public void processDestinationEvent(AbstractEvent event) throws OperationNotSupportedException
+	public ConsumerCallbackResult processDestinationEvent(AbstractEvent event) throws OperationNotSupportedException
 	{
 		if (event.getEventType() == DbusOpcode.DELETE)
 		{
-			delete(event);
+			return delete(event);
 		}
 		else
 		{
-			throw new OperationNotSupportedException();
+			return  ConsumerCallbackResult.ERROR_FATAL;
 		}
 	}
 
@@ -43,5 +44,5 @@ public abstract class DeleteDestinationStoreProcessor implements DestinationEven
 	 * Delete function to be implemented by the class extending this class.
 	 * @param event
 	 */
-	protected abstract void delete(AbstractEvent event);
+	protected abstract ConsumerCallbackResult delete(AbstractEvent event);
 }

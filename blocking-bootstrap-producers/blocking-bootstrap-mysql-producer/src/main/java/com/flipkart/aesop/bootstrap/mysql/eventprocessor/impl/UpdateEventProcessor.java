@@ -10,33 +10,44 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.flipkart.aesop.bootstrap.mysql.eventprocessor.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.flipkart.aesop.bootstrap.mysql.eventlistener.OpenReplicationListener;
-import com.flipkart.aesop.bootstrap.mysql.eventprocessor.AbstractBinLogEventProcessor;
-import com.flipkart.aesop.event.AbstractEvent;
+import com.flipkart.aesop.bootstrap.mysql.eventprocessor.BinLogEventProcessor;
+import com.flipkart.aesop.bootstrap.mysql.txnprocessor.MysqlTransactionManager;
 import com.google.code.or.binlog.BinlogEventV4;
 import com.google.code.or.binlog.impl.event.UpdateRowsEvent;
 import com.google.code.or.common.glossary.Pair;
 import com.google.code.or.common.glossary.Row;
 import com.linkedin.databus.core.DbusOpcode;
+import org.trpr.platform.core.impl.logging.LogFactory;
+import org.trpr.platform.core.spi.logging.Logger;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The <code>UpdateEventProcessor</code> processes UpdateRowsEvent from source. This event is received if there is any
  * update operation on the source.
- * @author nrbafna
+ * @author Shoury B
+ * @version 1.0, 07 Mar 2014
  */
-public class UpdateEventProcessor<T extends AbstractEvent> extends AbstractBinLogEventProcessor<T>
+public class UpdateEventProcessor implements BinLogEventProcessor
 {
-	@Override
-	public void process(BinlogEventV4 event, OpenReplicationListener<T> listener)
-	{
-		UpdateRowsEvent updateRowsEvent = (UpdateRowsEvent) event;
+	/** Logger for this class */
+	private static final Logger LOGGER = LogFactory.getLogger(UpdateEventProcessor.class);
 
+	@Override
+	public void process(BinlogEventV4 event, OpenReplicationListener listener) throws Exception
+	{
+		MysqlTransactionManager manager = listener.getMysqlTransactionManager();
+		if (!manager.isBeginTxnSeen())
+		{
+			LOGGER.warn("Skipping event (" + event + ") as this is before the start of first transaction");
+			return;
+		}
+		LOGGER.debug("Update Event Received : " + event);
+		UpdateRowsEvent updateRowsEvent = (UpdateRowsEvent) event;
 		List<Pair<Row>> listOfPairs = updateRowsEvent.getRows();
 		List<Row> rowList = new ArrayList<Row>(listOfPairs.size());
 		for (Pair<Row> pair : listOfPairs)
@@ -44,11 +55,7 @@ public class UpdateEventProcessor<T extends AbstractEvent> extends AbstractBinLo
 			Row row = pair.getAfter();
 			rowList.add(row);
 		}
-
-		List<AbstractEvent> sourceEvents = map(updateRowsEvent.getTableId(), rowList, listener, DbusOpcode.UPSERT);
-		for (AbstractEvent sourceEvent : sourceEvents)
-		{
-			listener.getSourceEventConsumer().onEvent(sourceEvent);
-		}
+		manager.performChanges(updateRowsEvent.getTableId(), updateRowsEvent.getHeader(), rowList, DbusOpcode.UPSERT);
+		LOGGER.debug("Update Successful for  " + event.getHeader().getEventLength() + " . Data updated : " + rowList);
 	}
 }

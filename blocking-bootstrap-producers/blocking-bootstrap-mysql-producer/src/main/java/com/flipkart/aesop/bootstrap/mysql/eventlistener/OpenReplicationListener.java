@@ -13,125 +13,104 @@
 
 package com.flipkart.aesop.bootstrap.mysql.eventlistener;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.flipkart.aesop.bootstrap.mysql.eventprocessor.BinLogEventProcessor;
+import com.flipkart.aesop.bootstrap.mysql.txnprocessor.MysqlTransactionManager;
+import com.google.code.or.binlog.BinlogEventListener;
+import com.google.code.or.binlog.BinlogEventV4;
 import org.trpr.platform.core.impl.logging.LogFactory;
 import org.trpr.platform.core.spi.logging.Logger;
 
-import com.flipkart.aesop.bootstrap.mysql.MysqlEventProducer;
-import com.flipkart.aesop.bootstrap.mysql.eventprocessor.BinLogEventProcessor;
-import com.flipkart.aesop.bootstrap.mysql.mapper.BinLogEventMapper;
-import com.flipkart.aesop.bootstrap.mysql.mapper.impl.DefaultBinLogEventMapper;
-import com.flipkart.aesop.bootstrap.mysql.utils.ORToMysqlMapper;
-import com.flipkart.aesop.event.AbstractEvent;
-import com.flipkart.aesop.runtime.bootstrap.consumer.SourceEventConsumer;
-import com.google.code.or.binlog.BinlogEventListener;
-import com.google.code.or.binlog.BinlogEventV4;
-import com.linkedin.databus2.producers.EventProducer;
-import com.linkedin.databus2.schemas.SchemaRegistryService;
+import java.util.Map;
 
 /**
  * The <OpenReplicationListener> is a binary log callback implementation of {@link BinlogEventListener}.
  * <a href="https://code.google.com/p/open-replicator/">OpenReplicator</a> provides callback to this implementation.
  * @author nrbafna
  */
-public class OpenReplicationListener<T extends AbstractEvent> implements BinlogEventListener
+public class OpenReplicationListener implements BinlogEventListener
 {
-	public static final Logger LOGGER = LogFactory.getLogger(OpenReplicationListener.class);
+    /** Logger for this class */
+    private static final Logger LOGGER = LogFactory.getLogger(OpenReplicationListener.class);
 
-	private String binlogPrefix;
-	private Long endFileNum;
-	private SchemaRegistryService schemaRegistryService;
-	private List<String> interestedSourceList;
-	private Map<String, String> tableUriToSrcNameMap;
-	private BinLogEventMapper<T> binLogEventMapper;
-	private SourceEventConsumer sourceEventConsumer;
-	private Map<Integer, BinLogEventProcessor<T>> processors;
-	private EventProducer shutdownListener;
+    /** MysqlTransactionManager deals with end to end transaction management */
+    private final MysqlTransactionManager mysqlTransactionManager;
 
-	private Map<Long, String> tableIdtoNameMapping = new HashMap<Long, String>();
+    /** Holds all registered events and corresponding event processors */
+    private Map<Integer, BinLogEventProcessor> processors;
 
-	public OpenReplicationListener(String binlogPrefix, Long endFileNum, List<String> interestedSourceList,
-	        Map<String, String> tableUriToSrcNameMap, SchemaRegistryService schemaRegistryService,
-	        SourceEventConsumer sourceEventConsumer, Map<Integer, BinLogEventProcessor<T>> eventProcessorMap,
-	        MysqlEventProducer<T> mysqlEventProducer)
-	{
-		this.binlogPrefix = binlogPrefix;
-		this.endFileNum = endFileNum;
-		this.schemaRegistryService = schemaRegistryService;
-		this.tableUriToSrcNameMap = tableUriToSrcNameMap;
-		this.interestedSourceList = interestedSourceList;
-		this.binLogEventMapper = new DefaultBinLogEventMapper<T>(new ORToMysqlMapper());
-		this.sourceEventConsumer = sourceEventConsumer;
-		this.processors = eventProcessorMap;
-		this.shutdownListener = mysqlEventProducer;
-	}
+    /** Interested bin log prefix */
+    private String binLogPrefix;
 
-	public void onEvents(BinlogEventV4 event)
-	{
-		if (event == null)
-		{
-			LOGGER.error("Received null event");
-			return;
-		}
-		LOGGER.info("Current SCN:" + event.getHeader().getPosition());
+    /**
+     * Constructor for this class
+     * @param mysqlTransactionManager deals with transaction management
+     * @param processors contain all registered events and corresponding event processors
+     * @param binLogPrefix interested bin log prefix
+     */
+    public OpenReplicationListener(MysqlTransactionManager mysqlTransactionManager,
+                                   Map<Integer, BinLogEventProcessor> processors,
+                                   String binLogPrefix)
+    {
+        this.mysqlTransactionManager = mysqlTransactionManager;
+        this.processors = processors;
+        this.binLogPrefix = binLogPrefix;
+    }
 
-		int eventType = event.getHeader().getEventType();
-		BinLogEventProcessor<T> processor = processors.get(eventType);
-		if (processor != null)
-		{
-			processor.process(event, this);
-		}
-		else
-		{
-			LOGGER.warn("Ignoring Unsupported Event! " + event.getHeader().getEventType());
-		}
-	}
+    /**
+     * Callback method which gets called whenever any binary log event is generated at the physical resources registered
+     * @param event generated BinlogEventV4 event
+     * @see com.google.code.or.binlog.BinlogEventListener#onEvents(com.google.code.or.binlog.BinlogEventV4)
+     */
+    @Override
+    public void onEvents(BinlogEventV4 event)
+    {
+        if (event == null)
+        {
+            LOGGER.error("Received null event");
+            return;
+        }
+        LOGGER.info("Current SCN:" + event.getHeader().getPosition());
+        try
+        {
+            BinLogEventProcessor processor = processors.get(event.getHeader().getEventType());
+            if (processor != null)
+            {
+                processor.process(event, this);
+            }
+            else
+            {
+                LOGGER.warn("Ignoring Unsupported Event! " + event.getHeader().getEventType());
+            }
+        }
+        catch (Exception e)
+        {
+            LOGGER.error("Exception occurred while processing event " + e);
+        }
+    }
 
-	public void shutdown()
-	{
-		shutdownListener.shutdown();
-	}
+    /** Getter and Setter methods for this class */
+    public Map<Integer, BinLogEventProcessor> getProcessors()
+    {
+        return processors;
+    }
 
-	public String getBinlogPrefix()
-	{
-		return binlogPrefix;
-	}
+    public void setProcessors(Map<Integer, BinLogEventProcessor> processors)
+    {
+        this.processors = processors;
+    }
 
-	public Long getEndFileNum()
-	{
-		return endFileNum;
-	}
+    public MysqlTransactionManager getMysqlTransactionManager()
+    {
+        return mysqlTransactionManager;
+    }
 
-	public SchemaRegistryService getSchemaRegistryService()
-	{
-		return schemaRegistryService;
-	}
+    public String getBinLogPrefix()
+    {
+        return binLogPrefix;
+    }
 
-	public List<String> getInterestedSourceList()
-	{
-		return interestedSourceList;
-	}
-
-	public Map<String, String> getTableUriToSrcNameMap()
-	{
-		return tableUriToSrcNameMap;
-	}
-
-	public Map<Long, String> getTableIdtoNameMapping()
-	{
-		return tableIdtoNameMapping;
-	}
-
-	public BinLogEventMapper<T> getBinLogEventMapper()
-	{
-		return binLogEventMapper;
-	}
-
-	public SourceEventConsumer getSourceEventConsumer()
-	{
-		return sourceEventConsumer;
-	}
+    public void setBinLogPrefix(String binLogPrefix)
+    {
+        this.binLogPrefix = binLogPrefix;
+    }
 }

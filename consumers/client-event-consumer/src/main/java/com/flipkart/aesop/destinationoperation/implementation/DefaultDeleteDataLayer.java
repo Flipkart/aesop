@@ -10,13 +10,14 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *  
+ *
  *******************************************************************************/
 
 package com.flipkart.aesop.destinationoperation.implementation;
 
 import com.flipkart.aesop.destinationoperation.DeleteDestinationStoreProcessor;
 import com.flipkart.aesop.event.AbstractEvent;
+import com.linkedin.databus.client.pub.ConsumerCallbackResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,13 +27,14 @@ import org.slf4j.LoggerFactory;
  */
 public class DefaultDeleteDataLayer extends DeleteDestinationStoreProcessor
 {
-	/** Logger for this class. */
-	public final static Logger LOGGER = LoggerFactory.getLogger(DefaultDeleteDataLayer.class);
+    /** Logger for this class. */
+    public final static Logger LOGGER = LoggerFactory.getLogger(DefaultDeleteDataLayer.class);
 
-	@Override
-	protected void delete(AbstractEvent event)
-	{
-		LOGGER.info("Delete Event Received " + event.toString() + " by Default Delete Data Layer");
-	}
+    @Override
+    protected ConsumerCallbackResult delete(AbstractEvent event)
+    {
+        LOGGER.info("Delete Event Received " + event.toString() + " by Default Delete Data Layer");
+        return ConsumerCallbackResult.SUCCESS;
+    }
 
 }
