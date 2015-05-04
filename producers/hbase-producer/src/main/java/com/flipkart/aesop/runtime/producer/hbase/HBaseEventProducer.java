@@ -62,6 +62,9 @@ public class HBaseEventProducer<T extends GenericRecord> extends AbstractEventPr
 	private static final String ZK_QUORUM_CONFIG = "hbase.zookeeper.quorum";
 	private static final String ZK_CLIENT_PORT_CONFIG = "hbase.zookeeper.property.clientPort";
 	
+	/** The localhost */
+	private static final String LOCAL_HOST_NAME = "localhost";
+	
 	/** The default ZK settings*/
 	private static final int ZK_CLIENT_PORT = 2181;
 	private static final int ZK_SESSION_TIMEOUT = 20000; // 20 seconds
@@ -98,7 +101,11 @@ public class HBaseEventProducer<T extends GenericRecord> extends AbstractEventPr
             throw new IllegalStateException("'zkQuorum' is comma separated list of only hosts. Specify port using 'zkClientPort' : " + this.zkQuorum);
         }		
 		Assert.notNull(this.sepEventMapper,"'sepEventMapper' cannot be null. No WAL edits event mapper found. This HBase Events producer will not be initialized");		
-		this.localHost = InetAddress.getLocalHost().getHostName();
+		if (this.zkQuorum.contains(LOCAL_HOST_NAME)) { // we dont want 'localhost' to resolve to other names - say from /etc/hosts if ZK is also running locally during testing
+			this.localHost = LOCAL_HOST_NAME;
+		} else {
+			this.localHost = InetAddress.getLocalHost().getHostName();
+		}
 	}
 	
 	/**
