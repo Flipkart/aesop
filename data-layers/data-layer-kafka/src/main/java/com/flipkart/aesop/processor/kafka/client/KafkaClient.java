@@ -13,9 +13,8 @@
 package com.flipkart.aesop.processor.kafka.client;
 
 import com.typesafe.config.ConfigFactory;
-import org.apache.kafka.clients.producer.KafkaProducer;
 import org.springframework.beans.factory.InitializingBean;
-
+import org.apache.kafka.clients.producer.KafkaProducer;
 import com.flipkart.aesop.processor.kafka.config.KafkaConfig;
 import com.typesafe.config.Config;
 import org.trpr.platform.core.impl.logging.LogFactory;
@@ -51,7 +50,7 @@ public class KafkaClient implements InitializingBean
 		this.config = ConfigFactory.parseFile(new File(kafkaConfig.getConfig()));
 
 		Properties props = new Properties();
-		props.put("zk.connect", config.getString("zk.connect"));
+		props.put("zookeeper.connect", config.getString("zookeeper.connect"));
 		props.put("value.serializer", config.getString("value.serializer"));
 		props.put("key.serializer", config.getString("key.serializer"));
 		props.put("zk.connectiontimeout.ms", config.getString("zk.connectiontimeout.ms"));
@@ -78,9 +77,14 @@ public class KafkaClient implements InitializingBean
 		this.kafkaConfig = kafkaConfig;
 	}
 
-	public String getTopic(String entityName)
+	public String getTopic(String nameSpace)
 	{
-		return config.getString(entityName+".topic");
+		return config.getString(nameSpace+".topic");
+	}
+
+	public boolean isSync(String nameSpace)
+	{
+		return config.getBoolean(nameSpace+".sync");
 	}
 
 	 public KafkaProducer getClient()

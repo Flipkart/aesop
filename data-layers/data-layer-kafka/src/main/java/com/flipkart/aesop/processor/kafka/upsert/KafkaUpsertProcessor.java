@@ -18,7 +18,6 @@ import java.util.concurrent.Future;
 import com.flipkart.aesop.processor.kafka.client.KafkaClient;
 import com.flipkart.aesop.processor.kafka.config.KafkaConfig;
 import com.flipkart.aesop.processor.kafka.preprocessor.KafkaUpsertPreprocessor;
-import org.apache.kafka.clients.producer.KafkaProducer;
 import org.trpr.platform.core.impl.logging.LogFactory;
 import org.trpr.platform.core.spi.logging.Logger;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -39,29 +38,49 @@ public class KafkaUpsertProcessor extends KafkaUpsertPreprocessor
 	/** Logger for this class */
 	private static final Logger LOGGER = LogFactory.getLogger(KafkaUpsertProcessor.class);
 
-
-
-
 	@Override
 	protected void upsert(AbstractEvent event)
 	{
-
 		LOGGER.info("Received Upsert Event. Event is " + event);
 		LOGGER.info("Field Map Pair : " + event.getFieldMapPair().toString());
 
 		try
 		{
-			String id = String.valueOf(event.getFieldMapPair().get("id"));
 			ProducerRecord record = createProducerRecord(event);
 			KafkaClient kafkaClient = getKafkaClient();
 
-			Future<RecordMetadata> response = kafkaClient.getClient().send(record);
+			//To make a blocking send
+			boolean isSync = kafkaClient.isSync(event.getNamespaceName());
 
-			if (!response.isDone())
+			if( isSync )
 			{
-				LOGGER.info("Send Error : " + response);
-				throw new RuntimeException("Send Failure");
+				RecordMetadata response = (RecordMetadata)kafkaClient.getClient().send(record).get();
+
+				if (response == null )
+				{
+					LOGGER.error("Send Error : " + response);
+					throw new RuntimeException("Send Failure");
+				}
+				else
+				{
+					LOGGER.info("Send successful :  topic :: partition - " + response.topic() + "::" + response.partition());
+				}
 			}
+			else
+			{
+				Future<RecordMetadata> response = kafkaClient.getClient().send(record);
+				if (response == null  || !response.isDone())
+				{
+					LOGGER.error("Send Error : " + response);
+					throw new RuntimeException("Send Failure");
+				}
+				else
+				{
+					LOGGER.info("Send successful :  topic :: partition - " + response.get().topic() + "::" + response.get().partition());
+				}
+			}
+
+
 		}
 		catch (Exception e)
 		{

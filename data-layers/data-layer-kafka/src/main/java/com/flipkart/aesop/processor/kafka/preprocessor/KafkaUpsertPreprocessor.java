@@ -18,17 +18,35 @@ public abstract class KafkaUpsertPreprocessor extends UpsertDestinationStoreProc
 
     public ProducerRecord createProducerRecord(AbstractEvent event)
     {
-        String topic = kafkaClient.getTopic(event.getEntityName());
-        int partitionForKey = getKafkaPartitionForKey(event.getPrimaryKeyValues());
-        ProducerRecord record = new ProducerRecord(topic,partitionForKey, SerializationUtils.serialize(event.getPrimaryKeyValues().get(0)),SerializationUtils.serialize(event
+        /*Kafka Record is created assuming default key based partitioning
+         * String serialiation has been used for key and value
+         * Topic is configured via properties file
+         */
+        ProducerRecord record = new ProducerRecord(kafkaClient.getTopic(event.getNamespaceName()), getPrimaryKey(event),SerializationUtils.serialize(event
                 .getFieldMapPair()));
 
         return record;
-
     }
 
-    public int getKafkaPartitionForKey(List<Object> primaryKeyValues) {
-        return 1;
+    /*
+     * Helper method to extract primary key from event
+     */
+    private Object getPrimaryKey(AbstractEvent event)
+    {
+        /*Picks the first element from the list
+         * This could be modified further based on requirements
+         */
+        if( event.getPrimaryKeyValues() != null && event.getPrimaryKeyValues().size() > 0 )
+        {
+            return event.getPrimaryKeyValues().get(0);
+        }
+        else
+        {
+            /*
+            If key not found in event this method returns null , relies on the client to partition appropriately
+             */
+            return null;
+        }
     }
 
     /* Getters and Setters start */
