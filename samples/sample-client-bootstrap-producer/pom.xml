@@ -7,13 +7,13 @@
     <parent>
         <groupId>com.flipkart.aesop</groupId>
         <artifactId>aesop</artifactId>
-        <version>1.1.0</version>
+        <version>1.2.0-SNAPSHOT</version>
 	<relativePath>../../pom.xml</relativePath>
     </parent>
 
     <groupId>com.flipkart.aesop</groupId>
     <artifactId>sample-client-bootstrap-producer</artifactId>
-    <version>1.1.0</version>
+    <version>1.2.0-SNAPSHOT</version>
     <name>Sample Client Bootstrap Producer</name>
     <description>Sample Client Bootstrap Producer</description>
 
@@ -51,7 +51,7 @@
         <dependency>
             <groupId>com.flipkart.aesop</groupId>
             <artifactId>runtime-client-bootstrap-producer</artifactId>
-            <version>1.1.0</version>
+            <version>1.2.0-SNAPSHOT</version>
         </dependency>    
     </dependencies>
 

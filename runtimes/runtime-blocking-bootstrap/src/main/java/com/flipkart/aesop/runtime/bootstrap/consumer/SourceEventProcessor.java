@@ -13,6 +13,7 @@
 
 package com.flipkart.aesop.runtime.bootstrap.consumer;
 
+import com.linkedin.databus2.core.BackoffTimer;
 import org.trpr.platform.core.impl.logging.LogFactory;
 import org.trpr.platform.core.spi.logging.Logger;
 
@@ -26,30 +27,50 @@ import com.linkedin.databus.client.pub.ConsumerCallbackResult;
  */
 public class SourceEventProcessor implements Runnable
 {
-	public static final Logger LOGGER = LogFactory.getLogger(SourceEventProcessor.class);
+    public static final Logger LOGGER = LogFactory.getLogger(SourceEventProcessor.class);
 
-	private final AbstractEvent sourceEvent;
-	private final AbstractEventConsumer consumer;
+    private final AbstractEvent sourceEvent;
+    private final AbstractEventConsumer consumer;
+    private final BackoffTimer timer;
 
-	public SourceEventProcessor(AbstractEvent sourceEvent, AbstractEventConsumer consumer)
-	{
-		this.sourceEvent = sourceEvent;
-		this.consumer = consumer;
-	}
+    public SourceEventProcessor(AbstractEvent sourceEvent, AbstractEventConsumer consumer, BackoffTimer timer)
+    {
+        this.sourceEvent = sourceEvent;
+        this.consumer = consumer;
+        this.timer =timer;
+    }
 
-	public void run()
-	{
-		try
-		{
-			LOGGER.info("Processing :" + sourceEvent.getPrimaryKeyValues() + ":" + sourceEvent.getNamespaceName() + ""
-			        + sourceEvent.getEntityName());
-			ConsumerCallbackResult consumerCallbackResult = consumer.processSourceEvent(sourceEvent);
-			LOGGER.info(consumerCallbackResult.toString());
-		}
-		catch (Exception e)
-		{
-			LOGGER.error("Exception occurred while processing event " + e.getMessage(), e);
-		}
-	}
+    @Override
+    public void run()
+    {
+        LOGGER.info("Processing :" + sourceEvent.getPrimaryKeyValues() + ":" + sourceEvent.getNamespaceName() + ""
+                + sourceEvent.getEntityName());
+        process();
+    }
+
+    private void process() {
+        try {
+            ConsumerCallbackResult consumerCallbackResult = consumer.processSourceEvent(sourceEvent);
+            switch (consumerCallbackResult) {
+                case ERROR:
+                    /* Since there is an Error. Back Off and Retry After Some time*/
+                    this.timer.backoffAndSleep();
+                    process();
+                    break;
+                case SUCCESS:
+                case SKIP_CHECKPOINT:
+                    break;
+                case  ERROR_FATAL:
+                    throw new RuntimeException("Fatal Failure for Source Event : " + sourceEvent);
+            }
+            LOGGER.info(consumerCallbackResult.toString());
+        }
+        catch (Exception e)
+        {
+            LOGGER.error("Exception occurred while processing event " + e.getMessage(), e);
+            this.timer.backoffAndSleep();
+            process();
+        }
+    }
 
 }

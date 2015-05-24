@@ -16,7 +16,9 @@
 package com.flipkart.aesop.runtime.producer.hbase;
 
 import java.net.InetAddress;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.avro.generic.GenericRecord;
@@ -57,10 +59,19 @@ public class HBaseEventProducer<T extends GenericRecord> extends AbstractEventPr
 	
 	/** The HBase replication configuration parameter */
 	private static final String HBASE_REPLICATION_CONFIG = "hbase.replication";
+	private static final String ZK_QUORUM_CONFIG = "hbase.zookeeper.quorum";
+	private static final String ZK_CLIENT_PORT_CONFIG = "hbase.zookeeper.property.clientPort";
+	
+	/** The localhost */
+	private static final String LOCAL_HOST_NAME = "localhost";
+	
+	/** The default ZK settings*/
+	private static final int ZK_CLIENT_PORT = 2181;
+	private static final int ZK_SESSION_TIMEOUT = 20000; // 20 seconds
 	
 	/** The default number of worker threads that process WAL edit events*/
 	private static final int WORKER_THREADS = 1;
-
+	
 	/** The SEP consumer instance initialized by this Producer*/
 	protected SepConsumer sepConsumer;
 	
@@ -69,7 +80,8 @@ public class HBaseEventProducer<T extends GenericRecord> extends AbstractEventPr
 	
 	/** The Zookeeper connection properties*/
 	protected String zkQuorum;
-	protected Integer zkPort;
+	protected int zkClientPort = ZK_CLIENT_PORT;
+	protected Integer zkSessionTimeout = ZK_SESSION_TIMEOUT;
 	
 	/** The number of WAL edits processing worker threads*/
 	protected int workerThreads = WORKER_THREADS;
@@ -85,9 +97,15 @@ public class HBaseEventProducer<T extends GenericRecord> extends AbstractEventPr
 	 */
 	public void afterPropertiesSet() throws Exception {
 		Assert.notNull(this.zkQuorum,"'zkQuorum' cannot be null. Zookeeper quorum list must be specified. This HBase Events producer will not be initialized");
-		Assert.notNull(this.zkPort,"'zkPort' cannot be null. Zookeeper port must be specified. This HBase Events producer will not be initialized");		
+        if (this.zkQuorum.contains(":")) {
+            throw new IllegalStateException("'zkQuorum' is comma separated list of only hosts. Specify port using 'zkClientPort' : " + this.zkQuorum);
+        }		
 		Assert.notNull(this.sepEventMapper,"'sepEventMapper' cannot be null. No WAL edits event mapper found. This HBase Events producer will not be initialized");		
-		this.localHost = InetAddress.getLocalHost().getHostName();
+		if (this.zkQuorum.contains(LOCAL_HOST_NAME)) { // we dont want 'localhost' to resolve to other names - say from /etc/hosts if ZK is also running locally during testing
+			this.localHost = LOCAL_HOST_NAME;
+		} else {
+			this.localHost = InetAddress.getLocalHost().getHostName();
+		}
 	}
 	
 	/**
@@ -98,24 +116,53 @@ public class HBaseEventProducer<T extends GenericRecord> extends AbstractEventPr
 		shutdownRequested.set(false);
 		this.sinceSCN.set(sinceSCN);
 		LOGGER.info("Starting SEP subscription : " + this.getName());
-		LOGGER.info("ZK connection details [host:port] = {} : {}", this.zkQuorum, this.zkPort);
+		LOGGER.info("ZK quorum hosts : " + this.zkQuorum);
+		LOGGER.info("ZK client port : " + this.zkClientPort);
 		LOGGER.info("Using hostname to bind to : " + this.localHost);
 		LOGGER.info("Using worker threads : " + this.workerThreads);
 		LOGGER.info("Listening to WAL edits from : " + this.sinceSCN);
 		try {
-	        Configuration conf = HBaseConfiguration.create();
+	        Configuration hbaseConf = HBaseConfiguration.create();
 	        // enable replication to get WAL edits
-	        conf.setBoolean(HBASE_REPLICATION_CONFIG, true);
+	        hbaseConf.setBoolean(HBASE_REPLICATION_CONFIG, true);
+	        // need to explicitly set the ZK host and port details - hosts separated from port - see SepModelImpl constructor source code
+	        hbaseConf.set(ZK_QUORUM_CONFIG, this.zkQuorum);
+	        hbaseConf.setInt(ZK_CLIENT_PORT_CONFIG, this.zkClientPort);
 
-	        ZooKeeperItf zk = ZkUtil.connect(this.zkQuorum, this.zkPort);
-	        SepModel sepModel = new SepModelImpl(zk, conf);
+	        StringBuilder zkQuorumWithPort = new StringBuilder();
+	        String[] zkHostsList = this.zkQuorum.split(",");
+	        for (String zkHost : zkHostsList) {
+	        	zkQuorumWithPort.append(zkHost);
+	        	zkQuorumWithPort.append(":");
+	        	zkQuorumWithPort.append(this.zkClientPort);
+	        	zkQuorumWithPort.append(",");
+	        }
+	        
+	        LOGGER.info("ZK util connect string (host:port) : " + zkQuorumWithPort.toString());
+	        ZooKeeperItf zk = ZkUtil.connect(zkQuorumWithPort.toString(), this.zkSessionTimeout);
+	        
+	        StringBuilder hbaseConfBuilder = new StringBuilder();
+	        Iterator<Entry<String, String>> it = hbaseConf.iterator();
+	        while (it.hasNext()) {
+	        	Entry<String,String> entry = it.next();
+	        	if (entry.getKey().equalsIgnoreCase(HBASE_REPLICATION_CONFIG) || 
+	        			entry.getKey().equalsIgnoreCase(ZK_QUORUM_CONFIG) ||
+	        			entry.getKey().equalsIgnoreCase(ZK_CLIENT_PORT_CONFIG)) {
+	        		hbaseConfBuilder.append(entry.getKey());
+	        		hbaseConfBuilder.append(":");
+	        		hbaseConfBuilder.append(entry.getValue());
+	        		hbaseConfBuilder.append(",");
+	        	}
+	        }
+	        LOGGER.info("SEP Model Hbase configuration = " + hbaseConfBuilder.toString());
+	        SepModel sepModel = new SepModelImpl(zk, hbaseConf);
 
 	        final String subscriptionName = this.getName();
 
 	        if (!sepModel.hasSubscription(subscriptionName)) {
 	            sepModel.addSubscriptionSilent(subscriptionName);
 	        }
-	        this.sepConsumer = new SepConsumer(subscriptionName, this.sinceSCN.get(), new RelayAppender(), this.workerThreads, this.localHost, zk, conf);							
+	        this.sepConsumer = new SepConsumer(subscriptionName, this.sinceSCN.get(), new RelayAppender(), this.workerThreads, this.localHost, zk, hbaseConf);							
 			this.sepConsumer.start();
 		} catch (Exception e) {
 			LOGGER.error("Error starting WAL edits consumer. Producer not started!. Error message : " + e.getMessage(), e);
@@ -126,10 +173,8 @@ public class HBaseEventProducer<T extends GenericRecord> extends AbstractEventPr
 	 * The SEP EventListener that consumes {@link SepEvent} instances and appends them to the Databus event buffer after suitable conversion/interpretation.
 	 */
 	class RelayAppender implements EventListener {
-		public void processEvents(List<SepEvent> sepEvents) 
-		{
-			if(shutdownRequested.get())
-			{
+		public void processEvents(List<SepEvent> sepEvents) {
+			if(shutdownRequested.get()){
 				return;
 			}
 			long lastSavedSCN = sinceSCN.get();
@@ -166,8 +211,7 @@ public class HBaseEventProducer<T extends GenericRecord> extends AbstractEventPr
 	 * Interface method implementation. Stops the SEP consumer
 	 * @see com.linkedin.databus2.producers.EventProducer#shutdown()
 	 */
-	public void shutdown() 
-	{
+	public void shutdown() {
 		LOGGER.info("Shutdown has been requested. HBaseEventProducer shutting down");
 		this.shutdownRequested.set(true);
 		this.sepConsumer.stop();
@@ -204,12 +248,18 @@ public class HBaseEventProducer<T extends GenericRecord> extends AbstractEventPr
 	public void setZkQuorum(String zkQuorum) {
 		this.zkQuorum = zkQuorum;
 	}
-	public Integer getZkPort() {
-		return zkPort;
+	public Integer getZkClientPort() {
+		return zkClientPort;
 	}
-	public void setZkPort(Integer zkPort) {
-		this.zkPort = zkPort;
+	public void setZkClientPort(int zkClientPort) {
+		this.zkClientPort = zkClientPort;
 	}
+	public Integer getZkSessionTimeout() {
+		return zkSessionTimeout;
+	}
+	public void setZkSessionTimeout(Integer zkSessionTimeout) {
+		this.zkSessionTimeout = zkSessionTimeout;
+	}	
 	public int getWorkerThreads() {
 		return workerThreads;
 	}

@@ -19,7 +19,7 @@
     <bean id="hbasePersonProducer" class="com.flipkart.aesop.runtime.producer.hbase.HBaseEventProducer">
     	<property name="physicalSourceConfig" ref="physicalSourceConfig"/>
     	<property name="zkQuorum" value="localhost"/>
-    	<property name="zkPort" value="20000"/>
+    	<property name="zkClientPort" value="2181"/>
     	<property name="sepEventMapper">
     		<bean class="com.flipkart.aesop.relay.sample.PersonSepEventMapper"/>
     	</property>

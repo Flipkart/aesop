@@ -10,34 +10,40 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.flipkart.aesop.bootstrap.mysql.eventprocessor.impl;
 
-import java.util.List;
-
 import com.flipkart.aesop.bootstrap.mysql.eventlistener.OpenReplicationListener;
-import com.flipkart.aesop.bootstrap.mysql.eventprocessor.AbstractBinLogEventProcessor;
-import com.flipkart.aesop.event.AbstractEvent;
+import com.flipkart.aesop.bootstrap.mysql.eventprocessor.BinLogEventProcessor;
 import com.google.code.or.binlog.BinlogEventV4;
 import com.google.code.or.binlog.impl.event.DeleteRowsEvent;
 import com.linkedin.databus.core.DbusOpcode;
+import org.trpr.platform.core.impl.logging.LogFactory;
+import org.trpr.platform.core.spi.logging.Logger;
 
 /**
- * The <code>DeleteEventProcessor</code> processes DeleteRowsEvent from source. This event is received if there is any
- * delete operation on the source.
- * @author nrbafna
+ * The <code>DeleteEventProcessor</code> processes DeleteRowsEvent from source. This event gets called when ever few
+ * row/(s) are deleted at the source.
+ * @author Shoury B
+ * @version 1.0, 07 Mar 2014
  */
-public class DeleteEventProcessor<T extends AbstractEvent> extends AbstractBinLogEventProcessor<T>
+public class DeleteEventProcessor implements BinLogEventProcessor
 {
+	/** Logger for this class */
+	private static final Logger LOGGER = LogFactory.getLogger(DeleteEventProcessor.class);
+
 	@Override
-	public void process(BinlogEventV4 event, OpenReplicationListener<T> listener)
+	public void process(BinlogEventV4 event, OpenReplicationListener listener) throws Exception
 	{
-		DeleteRowsEvent deleteEvent = (DeleteRowsEvent) event;
-		List<AbstractEvent> sourceEvents =
-		        map(deleteEvent.getTableId(), deleteEvent.getRows(), listener, DbusOpcode.DELETE);
-		for (AbstractEvent sourceEvent : sourceEvents)
+		if (!listener.getMysqlTransactionManager().isBeginTxnSeen())
 		{
-			listener.getSourceEventConsumer().onEvent(sourceEvent);
+			LOGGER.warn("Skipping event (" + event + ") as this is before the start of first transaction");
+			return;
 		}
+		LOGGER.debug("Delete Event Received : " + event);
+		DeleteRowsEvent deleteRowsEvent = (DeleteRowsEvent) event;
+		listener.getMysqlTransactionManager().performChanges(deleteRowsEvent.getTableId(), deleteRowsEvent.getHeader(),
+		        deleteRowsEvent.getRows(), DbusOpcode.DELETE);
+		LOGGER.debug("Delete Successful for  " + event.getHeader().getEventLength() + " . Data deleted : "
+		        + deleteRowsEvent.getRows());
 	}
 }
