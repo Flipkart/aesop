@@ -35,7 +35,7 @@ public class KafkaDeleteProcessor extends DeleteDestinationStoreProcessor
 	@Override
 	protected void delete(AbstractEvent event)
 	{
-		//KAFKA logs
+		//KAFKA logs - delete not supported with the current version
 	}
 
 	/* Getters and Setters start */

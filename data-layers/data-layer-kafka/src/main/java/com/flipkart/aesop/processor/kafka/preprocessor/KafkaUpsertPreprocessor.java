@@ -6,7 +6,10 @@ import com.flipkart.aesop.processor.kafka.client.KafkaClient;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.util.SerializationUtils;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.List;
+import com.linkedin.databus.core.DbusOpcode;
 
 /**
  * Created by r.yadav on 10/04/15.
@@ -22,8 +25,8 @@ public abstract class KafkaUpsertPreprocessor extends UpsertDestinationStoreProc
          * String serialiation has been used for key and value
          * Topic is configured via properties file
          */
-        ProducerRecord record = new ProducerRecord(kafkaClient.getTopic(event.getNamespaceName()), getPrimaryKey(event),SerializationUtils.serialize(event
-                .getFieldMapPair()));
+        ProducerRecord record = new ProducerRecord(kafkaClient.getTopic(event.getNamespaceName()), getPrimaryKey(event),SerializationUtils.serialize(getPayload(event
+        )));
 
         return record;
     }
@@ -47,6 +50,33 @@ public abstract class KafkaUpsertPreprocessor extends UpsertDestinationStoreProc
              */
             return null;
         }
+    }
+
+    /*
+     * Helper method to generate kafka Payload from event
+     */
+    private Map<String,Object> getPayload(AbstractEvent event)
+    {
+        Object key = getPrimaryKey(event);
+        Map<String,Object> fieldMap = event.getFieldMapPair();
+        String entityName = event.getEntityName();
+        String nameSpaceName = event.getNamespaceName();
+        String opCode = event.getEventType().name();
+
+        Map<String,Object> payload = new HashMap<String,Object>();
+        mapput(payload,"KEY", key);
+        mapput(payload,"FIELD_MAP", fieldMap);
+        mapput(payload,"ENTITY" , entityName);
+        mapput(payload,"NAMESPACE" , nameSpaceName);
+        mapput(payload,"OPCODE", opCode);
+
+        return payload;
+    }
+
+    private void mapput(Map<String, Object> map, String key, Object value)
+    {
+        if (key != null && value != null)
+            map.put(key, value);
     }
 
     /* Getters and Setters start */
