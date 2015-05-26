@@ -42,7 +42,7 @@
 		    	<property name="singleton" value="true"/>
 		    	<property name="properties">
 		    		<props>
-			        	<prop key="databus.relay.container.httpPort">25020</prop>
+			        	<prop key="databus.relay.container.httpPort">25021</prop>
 						<prop key="databus.relay.container.jmx.rmiEnabled">false</prop>
 						<prop key="databus.relay.eventBuffer.allocationPolicy">MMAPPED_MEMORY</prop>
 						<prop key="databus.relay.eventBuffer.queuePolicy">OVERWRITE_ON_WRITE</prop>
@@ -58,8 +58,8 @@
 	    	</bean>    	
     	</property>
 		<property name="schemaRegistryLocation" value="schemas_registry"/>
-		<property name="mmappedDirectoryLocation" value="../../../../sandbox/mmapped_directory"/> <!-- This is relative to projects root -->
-		<property name="maxScnDirectoryLocation" value="../../../../sandbox/maxscn_directory"/> <!-- This is relative to projects root -->
+		<property name="mmappedDirectoryLocation" value="../../../sandbox/mmapped_directory"/> <!-- This is relative to projects root -->
+		<property name="maxScnDirectoryLocation" value="../../../sandbox/maxscn_directory"/> <!-- This is relative to projects root -->
     </bean>
 
 </beans>
