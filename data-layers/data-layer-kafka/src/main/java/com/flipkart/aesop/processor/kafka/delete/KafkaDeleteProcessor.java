@@ -19,6 +19,7 @@ import com.flipkart.aesop.destinationoperation.DeleteDestinationStoreProcessor;
 import com.flipkart.aesop.event.AbstractEvent;
 import com.flipkart.aesop.processor.kafka.client.KafkaClient;
 import com.linkedin.databus.core.DbusOpcode;
+import com.linkedin.databus.client.pub.ConsumerCallbackResult;
 
 /**
  * Kafka Delete Data Layer. Persists {@link DbusOpcode#DELETE} events to Log File.
@@ -33,9 +34,11 @@ public class KafkaDeleteProcessor extends DeleteDestinationStoreProcessor
 	private KafkaClient kafkaClient;
 
 	@Override
-	protected void delete(AbstractEvent event)
+	protected ConsumerCallbackResult delete(AbstractEvent event)
 	{
 		//KAFKA logs - delete not supported with the current version
+		LOGGER.error("Delete operation not supported for Kafka version");
+		return ConsumerCallbackResult.SUCCESS;
 	}
 
 	/* Getters and Setters start */

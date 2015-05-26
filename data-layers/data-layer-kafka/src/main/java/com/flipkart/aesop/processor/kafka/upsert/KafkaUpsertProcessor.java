@@ -23,6 +23,7 @@ import org.trpr.platform.core.spi.logging.Logger;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.springframework.util.SerializationUtils;
+import com.linkedin.databus.client.pub.ConsumerCallbackResult;
 
 import com.flipkart.aesop.destinationoperation.UpsertDestinationStoreProcessor;
 import com.flipkart.aesop.event.AbstractEvent;
@@ -39,7 +40,7 @@ public class KafkaUpsertProcessor extends KafkaUpsertPreprocessor
 	private static final Logger LOGGER = LogFactory.getLogger(KafkaUpsertProcessor.class);
 
 	@Override
-	protected void upsert(AbstractEvent event)
+	protected ConsumerCallbackResult upsert(AbstractEvent event)
 	{
 		LOGGER.info("Received Upsert Event. Event is " + event);
 		LOGGER.info("Field Map Pair : " + event.getFieldMapPair().toString());
@@ -59,11 +60,13 @@ public class KafkaUpsertProcessor extends KafkaUpsertPreprocessor
 				if (response == null )
 				{
 					LOGGER.error("Send Error : " + response);
-					throw new RuntimeException("Send Failure");
+//					throw new RuntimeException("Send Failure");
+					return ConsumerCallbackResult.ERROR;
 				}
 				else
 				{
 					LOGGER.info("Send successful :  topic :: partition - " + response.topic() + "::" + response.partition());
+					return ConsumerCallbackResult.SUCCESS;
 				}
 			}
 			else
@@ -72,14 +75,16 @@ public class KafkaUpsertProcessor extends KafkaUpsertPreprocessor
 				if (response == null  || !response.isDone())
 				{
 					LOGGER.error("Send Error : " + response);
-					throw new RuntimeException("Send Failure");
+//					throw new RuntimeException("Send Failure");
+					return ConsumerCallbackResult.ERROR;
 				}
 				else
 				{
 					LOGGER.info("Send successful :  topic :: partition - " + response.get().topic() + "::" + response.get().partition());
+					return ConsumerCallbackResult.SUCCESS;
 				}
 			}
-
+			return ConsumerCallbackResult.SUCCESS;
 
 		}
 		catch (Exception e)
