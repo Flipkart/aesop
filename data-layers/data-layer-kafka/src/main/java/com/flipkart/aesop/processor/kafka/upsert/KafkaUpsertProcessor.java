@@ -84,7 +84,6 @@ public class KafkaUpsertProcessor extends KafkaUpsertPreprocessor
 					return ConsumerCallbackResult.SUCCESS;
 				}
 			}
-			return ConsumerCallbackResult.SUCCESS;
 
 		}
 		catch (Exception e)
