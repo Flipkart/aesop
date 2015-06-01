@@ -23,33 +23,33 @@ import com.linkedin.databus.client.pub.ConsumerCallbackResult;
 
 /**
  * Kafka Delete Data Layer. Persists {@link DbusOpcode#DELETE} events to Log File.
+ *
  * @author Ravindra Yadav
  */
-public class KafkaDeleteProcessor extends DeleteDestinationStoreProcessor
-{
-	/** Logger for this class */
-	private static final Logger LOGGER = LogFactory.getLogger(KafkaDeleteProcessor.class);
+public class KafkaDeleteProcessor extends DeleteDestinationStoreProcessor {
+    /**
+     * Logger for this class
+     */
+    private static final Logger LOGGER = LogFactory.getLogger(KafkaDeleteProcessor.class);
 
-	/* Kafka Data Layer Client. */
-	private KafkaClient kafkaClient;
+    /* Kafka Data Layer Client. */
+    private KafkaClient kafkaClient;
 
-	@Override
-	protected ConsumerCallbackResult delete(AbstractEvent event)
-	{
-		//KAFKA logs - delete not supported with the current version
-		LOGGER.error("Delete operation not supported for Kafka version");
-		return ConsumerCallbackResult.SUCCESS;
-	}
+    @Override
+    protected ConsumerCallbackResult delete(AbstractEvent event) {
+        /*KAFKA logs - delete not supported with the current version ,
+		 Not throwing Unsupported Operation because Client cluster should not consider this as error*/
+        LOGGER.error("Delete operation not supported for Kafka version");
+        return ConsumerCallbackResult.SUCCESS;
+    }
 
-	/* Getters and Setters start */
-	public void setKafkaClient(KafkaClient kafkaClient)
-	{
-		this.kafkaClient = kafkaClient;
-	}
+    /* Getters and Setters start */
+    public void setKafkaClient(KafkaClient kafkaClient) {
+        this.kafkaClient = kafkaClient;
+    }
 
-	public KafkaClient getKafkaClient()
-	{
-		return this.kafkaClient;
-	}
+    public KafkaClient getKafkaClient() {
+        return this.kafkaClient;
+    }
 	/* Getters and Setters end */
 }

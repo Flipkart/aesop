@@ -31,66 +31,51 @@ import com.flipkart.aesop.event.AbstractEvent;
 
 /**
  * Kafka Upsert Data Layer. Persists {@link DbusOpcode#UPSERT} events to Logs.
+ *
  * @author Ravindra Yadav
  * @see com.flipkart.aesop.processor.kafka.delete.KafkaDeleteProcessor
  */
-public class KafkaUpsertProcessor extends KafkaUpsertPreprocessor
-{
-	/** Logger for this class */
-	private static final Logger LOGGER = LogFactory.getLogger(KafkaUpsertProcessor.class);
+public class KafkaUpsertProcessor extends KafkaUpsertPreprocessor {
+    /**
+     * Logger for this class
+     */
+    private static final Logger LOGGER = LogFactory.getLogger(KafkaUpsertProcessor.class);
 
-	@Override
-	protected ConsumerCallbackResult upsert(AbstractEvent event)
-	{
-		LOGGER.info("Received Upsert Event. Event is " + event);
-		LOGGER.info("Field Map Pair : " + event.getFieldMapPair().toString());
+    @Override
+    protected ConsumerCallbackResult upsert(AbstractEvent event) {
+        LOGGER.info("Received Upsert Event. Event is " + event);
+        LOGGER.info("Field Map Pair : " + event.getFieldMapPair().toString());
 
-		try
-		{
-			ProducerRecord record = createProducerRecord(event);
-			KafkaClient kafkaClient = getKafkaClient();
+        try {
+            ProducerRecord record = createProducerRecord(event);
+            KafkaClient kafkaClient = getKafkaClient();
 
-			//To make a blocking send
-			boolean isSync = kafkaClient.isSync(event.getNamespaceName());
+            //To make a blocking send
+            boolean isSync = kafkaClient.isSync(event.getNamespaceName());
 
-			if( isSync )
-			{
-				RecordMetadata response = (RecordMetadata)kafkaClient.getClient().send(record).get();
+            if (isSync) {
+                RecordMetadata response = (RecordMetadata) kafkaClient.getClient().send(record).get();
 
-				if (response == null )
-				{
-					LOGGER.error("Send Error : " + response);
-//					throw new RuntimeException("Send Failure");
-					return ConsumerCallbackResult.ERROR;
-				}
-				else
-				{
-					LOGGER.info("Send successful :  topic :: partition - " + response.topic() + "::" + response.partition());
-					return ConsumerCallbackResult.SUCCESS;
-				}
-			}
-			else
-			{
-				Future<RecordMetadata> response = kafkaClient.getClient().send(record);
-				if (response == null  || !response.isDone())
-				{
-					LOGGER.error("Send Error : " + response);
-//					throw new RuntimeException("Send Failure");
-					return ConsumerCallbackResult.ERROR;
-				}
-				else
-				{
-					LOGGER.info("Send successful :  topic :: partition - " + response.get().topic() + "::" + response.get().partition());
-					return ConsumerCallbackResult.SUCCESS;
-				}
-			}
+                if (response == null) {
+                    LOGGER.error("Kafka Send Error : " + response);
+                    return ConsumerCallbackResult.ERROR;
+                } else {
+                    LOGGER.info("Send successful :  topic :: partition - " + response.topic() + "::" + response.partition());
+                    return ConsumerCallbackResult.SUCCESS;
+                }
+            } else {
+                kafkaClient.getClient().send(record);
 
-		}
-		catch (Exception e)
-		{
-			LOGGER.info("Server Connection Lost/Send Error" + e);
-			throw new RuntimeException("Send Failure");
-		}
-	}
+                //Callback not provided with this implementation
+                LOGGER.info("Async Send successful ");
+                return ConsumerCallbackResult.SUCCESS;
+
+            }
+
+        } catch (Exception e) {
+            LOGGER.error("Kafka Server Connection Lost/Send Error" + e);
+            return ConsumerCallbackResult.ERROR;
+        }
+    }
 
 }

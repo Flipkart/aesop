@@ -81,7 +81,7 @@
         <property name="kafkaClient" ref="kafkaClient"/>
 	</bean>
 
-    <bean id="kafkaClient" class="com.flipkart.aesop.processor.kafka.client.KafkaClientImpl">
+    <bean id="kafkaClient" class="com.flipkart.aesop.processor.kafka.client.KafkaClient">
         <property name="kafkaConfig" ref="kafkaConfig"/>
     </bean>
 

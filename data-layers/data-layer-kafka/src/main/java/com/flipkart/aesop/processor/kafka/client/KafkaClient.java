@@ -25,72 +25,65 @@ import java.util.Properties;
 
 /**
  * Initiates Kafka Client , reads config from KafkaConfig
+ *
  * @author Ravindra Yadav
  */
-public class KafkaClient implements InitializingBean
-{
+public class KafkaClient implements InitializingBean {
 
-	/* Kafka Config set by spring-beans */
-	protected KafkaConfig kafkaConfig;
+    /* Kafka Config set by spring-beans */
+    protected KafkaConfig kafkaConfig;
 
-	/* Aesop Config Instance */
-	protected Config config;
+    /* Aesop Config Instance */
+    protected Config config;
 
-	/* This variable denotes the Kafka server client */
-	 protected KafkaProducer client;
+    /* This variable denotes the Kafka server client */
+    protected KafkaProducer client;
 
-	/**
-	 * This method is called from {@link org.springframework.beans.factory.InitializingBean#afterPropertiesSet()} to
-	 * initialize the Kafka Client
-	 */
-	private static final Logger LOGGER = LogFactory.getLogger(KafkaClient.class);
+    /**
+     * This method is called from {@link org.springframework.beans.factory.InitializingBean#afterPropertiesSet()} to
+     * initialize the Kafka Client
+     */
+    private static final Logger LOGGER = LogFactory.getLogger(KafkaClient.class);
 
-	void init()
-	{
-		this.config = ConfigFactory.parseFile(new File(kafkaConfig.getConfig()));
+    void init() {
+        this.config = ConfigFactory.parseFile(new File(kafkaConfig.getConfig()));
 
-		Properties props = new Properties();
-		props.put("zookeeper.connect", config.getString("zookeeper.connect"));
-		props.put("value.serializer", config.getString("value.serializer"));
-		props.put("key.serializer", config.getString("key.serializer"));
-		props.put("zk.connectiontimeout.ms", config.getString("zk.connectiontimeout.ms"));
-		props.put("bootstrap.servers", config.getString("bootstrap.servers"));
+        Properties props = new Properties();
+        props.put("zookeeper.connect", config.getString("zookeeper.connect"));
+        props.put("value.serializer", config.getString("value.serializer"));
+        props.put("key.serializer", config.getString("key.serializer"));
+        props.put("zk.connectiontimeout.ms", config.getString("zk.connectiontimeout.ms"));
+        props.put("bootstrap.servers", config.getString("bootstrap.servers"));
 
-		KafkaProducer client = new KafkaProducer(props);
-		this.client = client;
-	}
+        KafkaProducer client = new KafkaProducer(props);
+        this.client = client;
+    }
 
-	 @Override
-	 public void afterPropertiesSet() throws Exception
-	 {
-		 init();
-	 }
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        init();
+    }
 
-	/* Getters and Setters Start */
-	public KafkaConfig getKafkaConfig()
-	{
-		return kafkaConfig;
-	}
+    /* Getters and Setters Start */
+    public KafkaConfig getKafkaConfig() {
+        return kafkaConfig;
+    }
 
-	public void setKafkaConfig(KafkaConfig kafkaConfig)
-	{
-		this.kafkaConfig = kafkaConfig;
-	}
+    public void setKafkaConfig(KafkaConfig kafkaConfig) {
+        this.kafkaConfig = kafkaConfig;
+    }
 
-	public String getTopic(String nameSpace)
-	{
-		return config.getString(nameSpace+".topic");
-	}
+    public String getTopic(String nameSpace) {
+        return config.getString(nameSpace + ".topic");
+    }
 
-	public boolean isSync(String nameSpace)
-	{
-		return config.getBoolean(nameSpace+".sync");
-	}
+    public boolean isSync(String nameSpace) {
+        return config.getBoolean(nameSpace + ".sync");
+    }
 
-	 public KafkaProducer getClient()
-	 {
-		 return client;
-	 }
-	/* Getters and Setters End */
+    public KafkaProducer getClient() {
+        return client;
+    }
+    /* Getters and Setters End */
 
 }

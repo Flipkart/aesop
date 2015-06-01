@@ -20,28 +20,23 @@ package com.flipkart.aesop.processor.kafka.config;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
-public class KafkaConfig implements InitializingBean
-{
-	public String config;
+public class KafkaConfig implements InitializingBean {
+    public String config;
 
-	public KafkaConfig(String config)
-	{
-		this.config = config;
-	}
+    public KafkaConfig(String config) {
+        this.config = config;
+    }
 
-	public void setConfig(String config)
-	{
-		this.config = config;
-	}
+    public void setConfig(String config) {
+        this.config = config;
+    }
 
-	public String getConfig()
-	{
-		return this.config;
-	}
+    public String getConfig() {
+        return this.config;
+    }
 
-	public void afterPropertiesSet() throws Exception
-	{
-		/* Assert if filename is ot empty */
-		Assert.notNull(this.config, "'KafkaConfig' cannot be null. This Databus Client will not be initialized");
-	}
+    public void afterPropertiesSet() throws Exception {
+        /* Assert if filename is ot empty */
+        Assert.notNull(this.config, "'KafkaConfig' cannot be null. This Databus Client will not be initialized");
+    }
 }
