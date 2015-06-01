@@ -27,7 +27,7 @@ public abstract class KafkaUpsertPreprocessor extends UpsertDestinationStoreProc
 
     public ProducerRecord createProducerRecord(AbstractEvent event) {
         /*Kafka Record is created assuming default key based partitioning
-         * String serialiation has been used for key and value
+         * String serialiation has been used for key and byte for value
          * Topic is configured via properties file
          */
         ProducerRecord record = new ProducerRecord(kafkaClient.getTopic(event.getNamespaceName()), getPrimaryKey(event), SerializationUtils.serialize(getPayload(event
