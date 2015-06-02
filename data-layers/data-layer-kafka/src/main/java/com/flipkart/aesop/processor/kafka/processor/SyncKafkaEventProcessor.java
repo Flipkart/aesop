@@ -44,7 +44,6 @@ public class SyncKafkaEventProcessor implements DestinationEventProcessor {
     @Override
     public ConsumerCallbackResult processDestinationEvent(AbstractEvent event) {
         LOGGER.info("Received Abstract Event. Event is " + event);
-        LOGGER.info("Field Map Pair : " + event.getFieldMapPair().toString());
 
         try {
             ProducerRecord record = kafkaEventDefaultPreprocessor.createProducerRecord(event);
