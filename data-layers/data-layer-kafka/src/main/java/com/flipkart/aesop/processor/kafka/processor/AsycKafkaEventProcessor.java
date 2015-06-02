@@ -10,56 +10,54 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
-package com.flipkart.aesop.processor.kafka.delete;
+package com.flipkart.aesop.processor.kafka.processor;
 
-import com.flipkart.aesop.destinationoperation.UpsertDestinationStoreProcessor;
+import com.flipkart.aesop.processor.DestinationEventProcessor;
+import com.flipkart.aesop.processor.kafka.client.KafkaClient;
 import com.flipkart.aesop.processor.kafka.preprocessor.KafkaEventDefaultPreprocessor;
-import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.clients.producer.RecordMetadata;
 import org.trpr.platform.core.impl.logging.LogFactory;
 import org.trpr.platform.core.spi.logging.Logger;
-
-import com.flipkart.aesop.destinationoperation.DeleteDestinationStoreProcessor;
-import com.flipkart.aesop.event.AbstractEvent;
-import com.flipkart.aesop.processor.kafka.client.KafkaClient;
-import com.linkedin.databus.core.DbusOpcode;
+import org.apache.kafka.clients.producer.ProducerRecord;
 import com.linkedin.databus.client.pub.ConsumerCallbackResult;
 
+import com.flipkart.aesop.event.AbstractEvent;
+
+
 /**
- * Kafka Delete Event Data Layer. Persists {@link DbusOpcode#DELETE} events to Log File.
+ * Kafka Event Data Layer. Persists events to Kafka asynchronously.
  *
  * @author Ravindra Yadav
+ * @see com.flipkart.aesop.processor.kafka.processor.AsycKafkaEventProcessor
  */
-public class SyncKafkaDeleteProcessor extends DeleteDestinationStoreProcessor {
+public class AsycKafkaEventProcessor implements DestinationEventProcessor {
     /**
      * Logger for this class
      */
-    private static final Logger LOGGER = LogFactory.getLogger(SyncKafkaDeleteProcessor.class);
+    private static final Logger LOGGER = LogFactory.getLogger(AsycKafkaEventProcessor.class);
     private KafkaEventDefaultPreprocessor kafkaEventDefaultPreprocessor;
 
+
     @Override
-    protected ConsumerCallbackResult delete(AbstractEvent event) {
-        LOGGER.info("Received Delete Event. Event is " + event);
+    public ConsumerCallbackResult processDestinationEvent(AbstractEvent event) {
+        LOGGER.info("Received Abstract Event. Event is " + event);
         LOGGER.info("Field Map Pair : " + event.getFieldMapPair().toString());
 
         try {
             ProducerRecord record = kafkaEventDefaultPreprocessor.createProducerRecord(event);
             KafkaClient kafkaClient = kafkaEventDefaultPreprocessor.getKafkaClient();
 
-            RecordMetadata response = (RecordMetadata) kafkaClient.getClient().send(record).get();
+            kafkaClient.getClient().send(record);
 
-            if (response == null) {
-                LOGGER.error("Kafka Send Error : " + response);
-                return ConsumerCallbackResult.ERROR;
-            } else {
-                LOGGER.info("Send successful :  topic :: partition - " + response.topic() + "::" + response.partition());
-                return ConsumerCallbackResult.SUCCESS;
-            }
-            }catch(Exception e){
-                LOGGER.error("Kafka Server Connection Lost/Send Error" + e);
-                return ConsumerCallbackResult.ERROR;
-            }
+            //Callback not provided with this implementation
+            LOGGER.info("Async Send successful ");
+            return ConsumerCallbackResult.SUCCESS;
+
+
+        } catch (Exception e) {
+            LOGGER.error("Kafka Server Connection Lost/Send Error" + e);
+            return ConsumerCallbackResult.ERROR;
         }
+    }
 
     public KafkaEventDefaultPreprocessor getKafkaEventDefaultPreprocessor() {
         return kafkaEventDefaultPreprocessor;
@@ -68,5 +66,4 @@ public class SyncKafkaDeleteProcessor extends DeleteDestinationStoreProcessor {
     public void setKafkaEventDefaultPreprocessor(KafkaEventDefaultPreprocessor kafkaEventDefaultPreprocessor) {
         this.kafkaEventDefaultPreprocessor = kafkaEventDefaultPreprocessor;
     }
-
-    }
+}

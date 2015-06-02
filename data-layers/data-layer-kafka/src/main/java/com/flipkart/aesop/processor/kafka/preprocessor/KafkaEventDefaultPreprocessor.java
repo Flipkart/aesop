@@ -1,3 +1,15 @@
+/*******************************************************************************
+ * Copyright 2012-2015, the original author or authors.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obta a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *******************************************************************************/
 package com.flipkart.aesop.processor.kafka.preprocessor;
 
 import com.flipkart.aesop.event.AbstractEvent;
@@ -13,6 +25,7 @@ import com.linkedin.databus.core.DbusOpcode;
 
 /**
  * Created by r.yadav on 10/04/15.
+ * This class generated KafkaProducer payload to be pushed to Kafka. The payload is pushed as Map<String,Object>
  */
 public  class KafkaEventDefaultPreprocessor  {
 

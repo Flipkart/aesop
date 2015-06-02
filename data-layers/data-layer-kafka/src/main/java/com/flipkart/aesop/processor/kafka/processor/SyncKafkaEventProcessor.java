@@ -10,41 +10,40 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
-package com.flipkart.aesop.processor.kafka.upsert;
+package com.flipkart.aesop.processor.kafka.processor;
 
-import java.util.List;
-import java.util.concurrent.Future;
-
+import com.flipkart.aesop.processor.DestinationEventProcessor;
 import com.flipkart.aesop.processor.kafka.client.KafkaClient;
-import com.flipkart.aesop.processor.kafka.config.KafkaConfig;
 import com.flipkart.aesop.processor.kafka.preprocessor.KafkaEventDefaultPreprocessor;
 import org.trpr.platform.core.impl.logging.LogFactory;
 import org.trpr.platform.core.spi.logging.Logger;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
-import org.springframework.util.SerializationUtils;
 import com.linkedin.databus.client.pub.ConsumerCallbackResult;
 
-import com.flipkart.aesop.destinationoperation.UpsertDestinationStoreProcessor;
 import com.flipkart.aesop.event.AbstractEvent;
 
 
 /**
- * Kafka Upsert Data Layer. Persists {@link DbusOpcode#UPSERT} events to Logs.
+ * Kafka Event Processor Data Layer. Persists events to Kafka in Sync.
  *
  * @author Ravindra Yadav
- * @see com.flipkart.aesop.processor.kafka.update.SyncKafkaUpsertProcessor
+ * @see com.flipkart.aesop.processor.kafka.processor.SyncKafkaEventProcessor
  */
-public class SyncKafkaUpsertProcessor extends UpsertDestinationStoreProcessor {
+public class SyncKafkaEventProcessor implements DestinationEventProcessor {
     /**
      * Logger for this class
      */
-    private static final Logger LOGGER = LogFactory.getLogger(SyncKafkaUpsertProcessor.class);
+    private static final Logger LOGGER = LogFactory.getLogger(SyncKafkaEventProcessor.class);
+
+    /*
+     *This class does preprocessing of the abstract event and creates Kafka payload
+     */
     private KafkaEventDefaultPreprocessor kafkaEventDefaultPreprocessor;
 
     @Override
-    protected ConsumerCallbackResult upsert(AbstractEvent event) {
-        LOGGER.info("Received Upsert Event. Event is " + event);
+    public ConsumerCallbackResult processDestinationEvent(AbstractEvent event) {
+        LOGGER.info("Received Abstract Event. Event is " + event);
         LOGGER.info("Field Map Pair : " + event.getFieldMapPair().toString());
 
         try {

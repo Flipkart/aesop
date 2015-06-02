@@ -16,8 +16,8 @@
 		<property name="mapper" ref="defaultMapperImpl" />
 		<property name="destinationProcessorMap">
 			<map>
-				<entry key-ref="upsertDbusOpCode" value-ref="kafkaUpsertProcessor" />
-				<entry key-ref="deleteDbusOpCode" value-ref="kafkaDeleteProcessor" />
+				<entry key-ref="upsertDbusOpCode" value-ref="kafkaEventProcessor" />
+				<entry key-ref="deleteDbusOpCode" value-ref="kafkaEventProcessor" />
 			</map>
 		</property>
 		<property name="sourceEventFactory" ref="sourceEventFactory" />
@@ -71,13 +71,8 @@
 	<bean id="sourceEventFactory"
 		class="com.flipkart.aesop.event.implementation.SourceEventFactory" />
 
-    <bean id="kafkaUpsertProcessor"
-          class="com.flipkart.aesop.processor.kafka.upsert.SyncKafkaUpsertProcessor">
-        <property name="kafkaEventDefaultPreprocessor" ref="kafkaEventDefaultPreprocessor"/>
-    </bean>
-
-    <bean id="kafkaDeleteProcessor"
-          class="com.flipkart.aesop.processor.kafka.delete.SyncKafkaDeleteProcessor">
+    <bean id="kafkaEventProcessor"
+          class="com.flipkart.aesop.processor.kafka.processor.SyncKafkaEventProcessor">
         <property name="kafkaEventDefaultPreprocessor" ref="kafkaEventDefaultPreprocessor"/>
     </bean>
 
