@@ -134,12 +134,15 @@ public class DefaultEventConsumerImpl extends AbstractEventConsumer
             DestinationEventProcessor destinationEventProcessor =
 			        destinationProcessorMap.get(destinationEvent.getEventType());
 
-            /* Process Destination Event */
-			try
-			{
-                if(destinationEventProcessor != null) {
-				    return  destinationEventProcessor.processDestinationEvent(destinationEventAfterTransformation);
-                }
+            /* Process Destination Events */
+			try {
+				if (destinationEventProcessor != null) {
+					ConsumerCallbackResult result = destinationEventProcessor
+							.processDestinationEvent(destinationEventAfterTransformation);
+					if (ConsumerCallbackResult.isFailure(result)) {
+						return result;
+					}
+				}
 			}
 			catch (OperationNotSupportedException e)
 			{
