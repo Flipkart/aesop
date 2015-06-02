@@ -76,11 +76,7 @@ public class KafkaClient implements InitializingBean {
     public String getTopic(String nameSpace) {
         return config.getString(nameSpace + ".topic");
     }
-
-    public boolean isSync(String nameSpace) {
-        return config.getBoolean(nameSpace + ".sync");
-    }
-
+   
     public KafkaProducer getClient() {
         return client;
     }

@@ -71,18 +71,22 @@
 	<bean id="sourceEventFactory"
 		class="com.flipkart.aesop.event.implementation.SourceEventFactory" />
 
-	<bean id="kafkaUpsertProcessor"
-		class="com.flipkart.aesop.processor.kafka.upsert.KafkaUpsertProcessor">
-        <property name="kafkaClient" ref="kafkaClient"/>
-	</bean>
+    <bean id="kafkaUpsertProcessor"
+          class="com.flipkart.aesop.processor.kafka.upsert.SyncKafkaUpsertProcessor">
+        <property name="kafkaEventDefaultPreprocessor" ref="kafkaEventDefaultPreprocessor"/>
+    </bean>
 
-	<bean id="kafkaDeleteProcessor"
-		class="com.flipkart.aesop.processor.kafka.delete.KafkaDeleteProcessor">
-        <property name="kafkaClient" ref="kafkaClient"/>
-	</bean>
+    <bean id="kafkaDeleteProcessor"
+          class="com.flipkart.aesop.processor.kafka.delete.SyncKafkaDeleteProcessor">
+        <property name="kafkaEventDefaultPreprocessor" ref="kafkaEventDefaultPreprocessor"/>
+    </bean>
 
     <bean id="kafkaClient" class="com.flipkart.aesop.processor.kafka.client.KafkaClient">
         <property name="kafkaConfig" ref="kafkaConfig"/>
+    </bean>
+
+    <bean id="kafkaEventDefaultPreprocessor" class="com.flipkart.aesop.processor.kafka.preprocessor.KafkaEventDefaultPreprocessor">
+    <property name="kafkaClient" ref="kafkaClient"/>
     </bean>
 
     <bean id="kafkaConfig" class="com.flipkart.aesop.processor.kafka.config.KafkaConfig">

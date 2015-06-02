@@ -190,31 +190,4 @@
 			</plugins>
 		</pluginManagement>
 	</build>
-	<profiles>
-		<profile>
-			<id>local</id>
-			<build>
-				<filters>
-					<filter>src/main/filters/local.properties</filter>
-				</filters>
-			</build>
-		</profile>
-		<profile>
-			<id>stage</id>
-			<build>
-				<filters>
-					<filter>src/main/filters/stage.properties</filter>
-				</filters>
-			</build>
-		</profile>
-
-		<profile>
-			<id>prod</id>
-			<build>
-				<filters>
-					<filter>src/main/filters/prod.properties</filter>
-				</filters>
-			</build>
-		</profile>
-	</profiles>
 </project>

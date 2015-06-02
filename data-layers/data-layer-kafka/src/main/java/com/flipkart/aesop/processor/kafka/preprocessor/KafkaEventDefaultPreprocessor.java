@@ -1,6 +1,5 @@
 package com.flipkart.aesop.processor.kafka.preprocessor;
 
-import com.flipkart.aesop.destinationoperation.UpsertDestinationStoreProcessor;
 import com.flipkart.aesop.event.AbstractEvent;
 import com.flipkart.aesop.processor.kafka.client.KafkaClient;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -15,7 +14,7 @@ import com.linkedin.databus.core.DbusOpcode;
 /**
  * Created by r.yadav on 10/04/15.
  */
-public abstract class KafkaUpsertPreprocessor extends UpsertDestinationStoreProcessor {
+public  class KafkaEventDefaultPreprocessor  {
 
     /* Kafka Initializer Client. */
     private KafkaClient kafkaClient;

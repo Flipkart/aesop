@@ -17,7 +17,7 @@ import java.util.concurrent.Future;
 
 import com.flipkart.aesop.processor.kafka.client.KafkaClient;
 import com.flipkart.aesop.processor.kafka.config.KafkaConfig;
-import com.flipkart.aesop.processor.kafka.preprocessor.KafkaUpsertPreprocessor;
+import com.flipkart.aesop.processor.kafka.preprocessor.KafkaEventDefaultPreprocessor;
 import org.trpr.platform.core.impl.logging.LogFactory;
 import org.trpr.platform.core.spi.logging.Logger;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -33,13 +33,14 @@ import com.flipkart.aesop.event.AbstractEvent;
  * Kafka Upsert Data Layer. Persists {@link DbusOpcode#UPSERT} events to Logs.
  *
  * @author Ravindra Yadav
- * @see com.flipkart.aesop.processor.kafka.delete.KafkaDeleteProcessor
+ * @see com.flipkart.aesop.processor.kafka.update.SyncKafkaUpsertProcessor
  */
-public class KafkaUpsertProcessor extends KafkaUpsertPreprocessor {
+public class SyncKafkaUpsertProcessor extends UpsertDestinationStoreProcessor {
     /**
      * Logger for this class
      */
-    private static final Logger LOGGER = LogFactory.getLogger(KafkaUpsertProcessor.class);
+    private static final Logger LOGGER = LogFactory.getLogger(SyncKafkaUpsertProcessor.class);
+    private KafkaEventDefaultPreprocessor kafkaEventDefaultPreprocessor;
 
     @Override
     protected ConsumerCallbackResult upsert(AbstractEvent event) {
@@ -47,29 +48,19 @@ public class KafkaUpsertProcessor extends KafkaUpsertPreprocessor {
         LOGGER.info("Field Map Pair : " + event.getFieldMapPair().toString());
 
         try {
-            ProducerRecord record = createProducerRecord(event);
-            KafkaClient kafkaClient = getKafkaClient();
+            ProducerRecord record = kafkaEventDefaultPreprocessor.createProducerRecord(event);
+            KafkaClient kafkaClient = kafkaEventDefaultPreprocessor.getKafkaClient();
 
-            //To make a blocking send
-            boolean isSync = kafkaClient.isSync(event.getNamespaceName());
+            /*making a blocking send */
 
-            if (isSync) {
-                RecordMetadata response = (RecordMetadata) kafkaClient.getClient().send(record).get();
+            RecordMetadata response = (RecordMetadata) kafkaClient.getClient().send(record).get();
 
-                if (response == null) {
-                    LOGGER.error("Kafka Send Error : " + response);
-                    return ConsumerCallbackResult.ERROR;
-                } else {
-                    LOGGER.info("Send successful :  topic :: partition - " + response.topic() + "::" + response.partition());
-                    return ConsumerCallbackResult.SUCCESS;
-                }
+            if (response == null) {
+                LOGGER.error("Kafka Send Error : " + response);
+                return ConsumerCallbackResult.ERROR;
             } else {
-                kafkaClient.getClient().send(record);
-
-                //Callback not provided with this implementation
-                LOGGER.info("Async Send successful ");
+                LOGGER.info("Send successful :  topic :: partition - " + response.topic() + "::" + response.partition());
                 return ConsumerCallbackResult.SUCCESS;
-
             }
 
         } catch (Exception e) {
@@ -78,4 +69,11 @@ public class KafkaUpsertProcessor extends KafkaUpsertPreprocessor {
         }
     }
 
+    public KafkaEventDefaultPreprocessor getKafkaEventDefaultPreprocessor() {
+        return kafkaEventDefaultPreprocessor;
+    }
+
+    public void setKafkaEventDefaultPreprocessor(KafkaEventDefaultPreprocessor kafkaEventDefaultPreprocessor) {
+        this.kafkaEventDefaultPreprocessor = kafkaEventDefaultPreprocessor;
+    }
 }
