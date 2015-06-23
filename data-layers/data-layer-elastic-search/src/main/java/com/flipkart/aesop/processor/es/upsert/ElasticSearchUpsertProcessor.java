@@ -23,7 +23,6 @@ import org.elasticsearch.action.index.IndexResponse;
 import org.trpr.platform.core.impl.logging.LogFactory;
 import org.trpr.platform.core.spi.logging.Logger;
 
-import static org.apache.commons.lang.StringUtils.isBlank;
 
 /**
  * ElasticSearch Upsert Data Layer. Persists {@link DbusOpcode#UPSERT} events to Logs.
@@ -48,16 +47,14 @@ public class ElasticSearchUpsertProcessor extends UpsertDestinationStoreProcesso
         try {
             String id = String.valueOf(event.getFieldMapPair().get("id"));
             //delete if "id" exists
-            String index = isBlank(event.getNamespaceName()) ? elasticSearchClient.getIndex() : event.getNamespaceName();
-            String type = isBlank(event.getEntityName()) ? elasticSearchClient.getType() : event.getEntityName();
 
-            elasticSearchClient.getClient().prepareDelete(index,
-                    type, id)
+            elasticSearchClient.getClient().prepareDelete(event.getNamespaceName(),
+                    event.getEntityName(), id)
                     .execute()
                     .actionGet();
             //create the new id
-            IndexResponse response = elasticSearchClient.getClient().prepareIndex(index,
-                    type, id)
+            IndexResponse response = elasticSearchClient.getClient().prepareIndex(event.getNamespaceName(),
+                    event.getEntityName(), id)
                     .setSource(event.getFieldMapPair())
                     .execute()
                     .get();
