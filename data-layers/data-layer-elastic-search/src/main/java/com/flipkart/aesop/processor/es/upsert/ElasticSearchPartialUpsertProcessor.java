@@ -10,6 +10,8 @@ import org.elasticsearch.action.update.UpdateResponse;
 import org.trpr.platform.core.impl.logging.LogFactory;
 import org.trpr.platform.core.spi.logging.Logger;
 
+import static org.apache.commons.lang.StringUtils.isBlank;
+
 /**
  * <code>ElasticSearchPartialUpsertProcessor</code> is an elastic search upsert data layer which allows partial updates to an
  * existing document (based on simple recursive merge, inner merging of objects,
@@ -37,11 +39,13 @@ public class ElasticSearchPartialUpsertProcessor extends UpsertDestinationStoreP
         try {
 
             String docId = String.valueOf(event.getFieldMapPair().get("id"));
+            String index = isBlank(event.getNamespaceName()) ? elasticSearchClient.getIndex() : event.getNamespaceName();
+            String type = isBlank(event.getEntityName()) ? elasticSearchClient.getType() : event.getEntityName();
 
-            IndexRequest indexReq = new IndexRequest(elasticSearchClient.getIndex(), elasticSearchClient.getType(), docId).
+            IndexRequest indexReq = new IndexRequest(index, type, docId).
                     source(event.getFieldMapPair());
 
-            UpdateRequest updateReq = new UpdateRequest(elasticSearchClient.getIndex(), elasticSearchClient.getType(), docId).
+            UpdateRequest updateReq = new UpdateRequest(index, type, docId).
                     doc(event.getFieldMapPair()).
                     upsert(indexReq);
 
