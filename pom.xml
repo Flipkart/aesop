@@ -86,7 +86,6 @@
         <module>consumers/client-event-consumer</module>
         <module>utilities/avro-schema-generator</module>
         <module>data-layers/data-layer-hbase</module>
-        <module>data-layers/data-layer-kafka</module>
         <module>data-layers/data-layer-mysql</module>
         <module>data-layers/data-layer-console-appender</module>
         <module>data-layers/data-layer-elastic-search</module>
@@ -103,7 +102,6 @@
         <module>samples/sample-console-appender-client-cluster-consumer</module>
         <module>samples/sample-elastic-search-client-cluster-consumer</module>
         <module>samples/sample-hbase-client-cluster-consumer</module>
-        <module>samples/sample-kafka-client-cluster-consumer</module>
         <module>samples/sample-diff-relay</module>
         <module>samples/sample-mapper-processor-nesting-client</module>
     </modules>

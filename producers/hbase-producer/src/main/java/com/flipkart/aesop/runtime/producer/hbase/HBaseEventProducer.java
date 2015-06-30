@@ -183,18 +183,18 @@ public class HBaseEventProducer<T extends GenericRecord> extends AbstractEventPr
             	T changeEvent = sepEventMapper.mapSepEvent(sepEvent);
             	byte[] schemaId=SchemaHelper.getSchemaId(changeEvent.getSchema().toString());
                	byte[] serializedEvent = serializeEvent(changeEvent);
-            	// we find the last processed timestamp and are conservative to take the earliest
-            	long latestTimestamp = 0;
+            	// we find the earliest processed timestamp of the KVs available in the WAL Edit, so as to not miss any edits
+            	long earliestKVTimestamp = Long.MAX_VALUE;
             	for (KeyValue kv : sepEvent.getKeyValues()) {
-            		latestTimestamp = Math.max(latestTimestamp, kv.getTimestamp());
+            		earliestKVTimestamp = Math.min(earliestKVTimestamp, kv.getTimestamp());
             	}
 				DbusEventKey eventKey = new DbusEventKey(sepEvent.getRow()); // we use the SepEvent row key as the identifier
-				DbusEventInfo eventInfo = new DbusEventInfo(DbusOpcode.UPSERT,latestTimestamp,
+				DbusEventInfo eventInfo = new DbusEventInfo(DbusOpcode.UPSERT,earliestKVTimestamp,
 						(short)physicalSourceStaticConfig.getId(),(short)physicalSourceStaticConfig.getId(),
 						System.nanoTime(),(short)physicalSourceStaticConfig.getSources()[0].getId(), // here we use the Logical Source Id
 						schemaId,serializedEvent, false, true);
 				eventBuffer.appendEvent(eventKey, eventInfo, dbusEventsStatisticsCollector);    
-				sinceSCN.set(Math.max(lastSavedSCN, latestTimestamp));
+				sinceSCN.set(Math.max(lastSavedSCN, earliestKVTimestamp));
             }
             eventBuffer.endEvents(sinceSCN.get() , dbusEventsStatisticsCollector);
 			try {
