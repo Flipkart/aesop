@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import com.flipkart.aesop.runtime.producer.spi.SCNGenerator;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
@@ -88,8 +89,11 @@ public class HBaseEventProducer<T extends GenericRecord> extends AbstractEventPr
 	
 	/** The SepEventMapper for translating WAL edits to change events*/
 	protected SepEventMapper<T> sepEventMapper;
-	
-	private volatile AtomicBoolean shutdownRequested = new AtomicBoolean(false);
+
+    /** The ScnGenerator for generating relayer Scn*/
+    private SCNGenerator scnGenerator = new HBaseSCNGenerator();
+
+    private volatile AtomicBoolean shutdownRequested = new AtomicBoolean(false);
 
 	/**
 	 * Interface method implementation. Checks for mandatory dependencies and creates the SEP consumer
@@ -114,7 +118,7 @@ public class HBaseEventProducer<T extends GenericRecord> extends AbstractEventPr
 	 */
 	public void start (long sinceSCN) {
 		shutdownRequested.set(false);
-		this.sinceSCN.set(sinceSCN);
+        this.sinceSCN.set(scnGenerator.getSCN(sinceSCN,localHost));
 		LOGGER.info("Starting SEP subscription : " + this.getName());
 		LOGGER.info("ZK quorum hosts : " + this.zkQuorum);
 		LOGGER.info("ZK client port : " + this.zkClientPort);
@@ -162,7 +166,7 @@ public class HBaseEventProducer<T extends GenericRecord> extends AbstractEventPr
 	        if (!sepModel.hasSubscription(subscriptionName)) {
 	            sepModel.addSubscriptionSilent(subscriptionName);
 	        }
-	        this.sepConsumer = new SepConsumer(subscriptionName, this.sinceSCN.get(), new RelayAppender(), this.workerThreads, this.localHost, zk, hbaseConf);							
+            this.sepConsumer = new SepConsumer(subscriptionName, generateSepSnc(this.sinceSCN.get()), new RelayAppender(), this.workerThreads, this.localHost, zk, hbaseConf);
 			this.sepConsumer.start();
 		} catch (Exception e) {
 			LOGGER.error("Error starting WAL edits consumer. Producer not started!. Error message : " + e.getMessage(), e);
@@ -189,12 +193,13 @@ public class HBaseEventProducer<T extends GenericRecord> extends AbstractEventPr
             		earliestKVTimestamp = Math.min(earliestKVTimestamp, kv.getTimestamp());
             	}
 				DbusEventKey eventKey = new DbusEventKey(sepEvent.getRow()); // we use the SepEvent row key as the identifier
-				DbusEventInfo eventInfo = new DbusEventInfo(DbusOpcode.UPSERT,earliestKVTimestamp,
-						(short)physicalSourceStaticConfig.getId(),(short)physicalSourceStaticConfig.getId(),
-						System.nanoTime(),(short)physicalSourceStaticConfig.getSources()[0].getId(), // here we use the Logical Source Id
-						schemaId,serializedEvent, false, true);
-				eventBuffer.appendEvent(eventKey, eventInfo, dbusEventsStatisticsCollector);    
-				sinceSCN.set(Math.max(lastSavedSCN, earliestKVTimestamp));
+                long eventScnNumber = scnGenerator.getSCN(earliestKVTimestamp,localHost);
+                DbusEventInfo eventInfo = new DbusEventInfo(DbusOpcode.UPSERT,eventScnNumber,
+                        (short)physicalSourceStaticConfig.getId(),(short)physicalSourceStaticConfig.getId(),
+                        System.nanoTime(),(short)physicalSourceStaticConfig.getSources()[0].getId(), // here we use the Logical Source Id
+                        schemaId,serializedEvent, false, true);
+                eventBuffer.appendEvent(eventKey, eventInfo, dbusEventsStatisticsCollector);
+                sinceSCN.set(Math.max(lastSavedSCN, eventScnNumber));
             }
             eventBuffer.endEvents(sinceSCN.get() , dbusEventsStatisticsCollector);
 			try {
@@ -206,7 +211,20 @@ public class HBaseEventProducer<T extends GenericRecord> extends AbstractEventPr
 			LOGGER.debug("Processed SEP event count : " + sepEvents.size());
 		}		 	        	
     }
-	
+
+    /**
+     * Utility to generate SEP Scn (WALEdits) from Relayer Scn.
+     *
+     * @param relayerScn - lastSavedScn on the relayer. lastSavedScn is (SepScn<<10|running_number)
+     * @return sepScn
+     */
+    private long generateSepSnc(long relayerScn) {
+        if (relayerScn == -1 || relayerScn == 0) {
+            return relayerScn;
+        }
+        return relayerScn >> 10;
+    }
+
 	/**
 	 * Interface method implementation. Stops the SEP consumer
 	 * @see com.linkedin.databus2.producers.EventProducer#shutdown()
