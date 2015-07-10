@@ -12,7 +12,7 @@ import org.trpr.platform.core.spi.logging.Logger;
 
 
 /**
- * <code>ElasticSearchPartialUpsertProcessor</code> is an elastic search upsert data layer which allows partial updates to an
+ * <code>ElasticSearchPartialUpsertProcessor</code> is an elastic search processor data layer which allows partial updates to an
  * existing document (based on simple recursive merge, inner merging of objects,
  * replacing core "keys/values" and arrays) / indexing a new document in-case
  * it doesn't exist.<br/><br/>
