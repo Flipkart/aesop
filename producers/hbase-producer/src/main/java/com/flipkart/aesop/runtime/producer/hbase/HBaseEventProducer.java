@@ -75,10 +75,9 @@ public class HBaseEventProducer<T extends GenericRecord> extends AbstractEventPr
 	
 	/** The SEP consumer instance initialized by this Producer*/
 	protected SepConsumer sepConsumer;
-	
-	/** Host name where this producer is running i.e. local host name*/
-	private String localHost;
-	
+    /** The SepEventMapper for translating WAL edits to change events*/
+    protected SepEventMapper<T> sepEventMapper;
+
 	/** The Zookeeper connection properties*/
 	protected String zkQuorum;
 	protected int zkClientPort = ZK_CLIENT_PORT;
@@ -86,14 +85,14 @@ public class HBaseEventProducer<T extends GenericRecord> extends AbstractEventPr
 	
 	/** The number of WAL edits processing worker threads*/
 	protected int workerThreads = WORKER_THREADS;
-	
-	/** The SepEventMapper for translating WAL edits to change events*/
-	protected SepEventMapper<T> sepEventMapper;
 
     /** The ScnGenerator for generating relayer Scn*/
-    private SCNGenerator scnGenerator = new HBaseSCNGenerator();
+    protected SCNGenerator scnGenerator = new MonotonicSequenceSCNGenerator();
 
     private volatile AtomicBoolean shutdownRequested = new AtomicBoolean(false);
+
+    /** Host name where this producer is running i.e. local host name*/
+    private String localHost;
 
 	/**
 	 * Interface method implementation. Checks for mandatory dependencies and creates the SEP consumer
@@ -104,7 +103,7 @@ public class HBaseEventProducer<T extends GenericRecord> extends AbstractEventPr
         if (this.zkQuorum.contains(":")) {
             throw new IllegalStateException("'zkQuorum' is comma separated list of only hosts. Specify port using 'zkClientPort' : " + this.zkQuorum);
         }		
-		Assert.notNull(this.sepEventMapper,"'sepEventMapper' cannot be null. No WAL edits event mapper found. This HBase Events producer will not be initialized");		
+		Assert.notNull(this.sepEventMapper,"'sepEventMapper' cannot be null. No WAL edits event mapper found. This HBase Events producer will not be initialized");
 		if (this.zkQuorum.contains(LOCAL_HOST_NAME)) { // we dont want 'localhost' to resolve to other names - say from /etc/hosts if ZK is also running locally during testing
 			this.localHost = LOCAL_HOST_NAME;
 		} else {
@@ -166,7 +165,7 @@ public class HBaseEventProducer<T extends GenericRecord> extends AbstractEventPr
 	        if (!sepModel.hasSubscription(subscriptionName)) {
 	            sepModel.addSubscriptionSilent(subscriptionName);
 	        }
-            this.sepConsumer = new SepConsumer(subscriptionName, generateSepSnc(this.sinceSCN.get()), new RelayAppender(), this.workerThreads, this.localHost, zk, hbaseConf);
+            this.sepConsumer = new SepConsumer(subscriptionName, generateSEPSCN(this.sinceSCN.get()), new RelayAppender(), this.workerThreads, this.localHost, zk, hbaseConf);
 			this.sepConsumer.start();
 		} catch (Exception e) {
 			LOGGER.error("Error starting WAL edits consumer. Producer not started!. Error message : " + e.getMessage(), e);
@@ -213,16 +212,15 @@ public class HBaseEventProducer<T extends GenericRecord> extends AbstractEventPr
     }
 
     /**
-     * Utility to generate SEP Scn (WALEdits) from Relayer Scn.
-     *
-     * @param relayerScn - lastSavedScn on the relayer. lastSavedScn is (SepScn<<10|running_number)
-     * @return sepScn
+     * Utility to generate SEP SCN (WALEdits) from Relayer Scn.
+     * @param relayerSCN - lastSavedSCN on the relayer. lastSavedSCN is (SepSCN<<10|running_number)
+     * @return sepSCN
      */
-    private long generateSepSnc(long relayerScn) {
-        if (relayerScn == -1 || relayerScn == 0) {
-            return relayerScn;
+    private long generateSEPSCN(long relayerSCN) {
+        if (relayerSCN == -1 || relayerSCN == 0) {
+            return relayerSCN;
         }
-        return relayerScn >> 10;
+        return relayerSCN >> 10;
     }
 
 	/**
@@ -290,6 +288,12 @@ public class HBaseEventProducer<T extends GenericRecord> extends AbstractEventPr
 	public void setSepEventMapper(SepEventMapper<T> sepEventMapper) {
 		this.sepEventMapper = sepEventMapper;
 	}
-	/** End Setter/Getter methods*/
+    public SCNGenerator getScnGenerator() {
+        return scnGenerator;
+    }
+    public void setScnGenerator(SCNGenerator scnGenerator) {
+        this.scnGenerator = scnGenerator;
+    }
+    /** End Setter/Getter methods*/
 
 }
