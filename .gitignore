@@ -175,6 +175,7 @@ pip-log.txt
 containerPortNum_*
 target
 bin
+.recommenders
 .svn/README.md~
 /README.md~
 /CHANGELOG.md~
