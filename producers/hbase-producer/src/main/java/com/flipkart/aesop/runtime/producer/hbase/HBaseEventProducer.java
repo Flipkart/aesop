@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import com.flipkart.aesop.runtime.producer.spi.SCNGenerator;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
@@ -74,10 +75,9 @@ public class HBaseEventProducer<T extends GenericRecord> extends AbstractEventPr
 	
 	/** The SEP consumer instance initialized by this Producer*/
 	protected SepConsumer sepConsumer;
-	
-	/** Host name where this producer is running i.e. local host name*/
-	private String localHost;
-	
+    /** The SepEventMapper for translating WAL edits to change events*/
+    protected SepEventMapper<T> sepEventMapper;
+
 	/** The Zookeeper connection properties*/
 	protected String zkQuorum;
 	protected int zkClientPort = ZK_CLIENT_PORT;
@@ -85,11 +85,14 @@ public class HBaseEventProducer<T extends GenericRecord> extends AbstractEventPr
 	
 	/** The number of WAL edits processing worker threads*/
 	protected int workerThreads = WORKER_THREADS;
-	
-	/** The SepEventMapper for translating WAL edits to change events*/
-	protected SepEventMapper<T> sepEventMapper;
-	
-	private volatile AtomicBoolean shutdownRequested = new AtomicBoolean(false);
+
+    /** The ScnGenerator for generating relayer Scn*/
+    protected SCNGenerator scnGenerator = new MonotonicSequenceSCNGenerator();
+
+    private volatile AtomicBoolean shutdownRequested = new AtomicBoolean(false);
+
+    /** Host name where this producer is running i.e. local host name*/
+    private String localHost;
 
 	/**
 	 * Interface method implementation. Checks for mandatory dependencies and creates the SEP consumer
@@ -100,7 +103,7 @@ public class HBaseEventProducer<T extends GenericRecord> extends AbstractEventPr
         if (this.zkQuorum.contains(":")) {
             throw new IllegalStateException("'zkQuorum' is comma separated list of only hosts. Specify port using 'zkClientPort' : " + this.zkQuorum);
         }		
-		Assert.notNull(this.sepEventMapper,"'sepEventMapper' cannot be null. No WAL edits event mapper found. This HBase Events producer will not be initialized");		
+		Assert.notNull(this.sepEventMapper,"'sepEventMapper' cannot be null. No WAL edits event mapper found. This HBase Events producer will not be initialized");
 		if (this.zkQuorum.contains(LOCAL_HOST_NAME)) { // we dont want 'localhost' to resolve to other names - say from /etc/hosts if ZK is also running locally during testing
 			this.localHost = LOCAL_HOST_NAME;
 		} else {
@@ -114,7 +117,7 @@ public class HBaseEventProducer<T extends GenericRecord> extends AbstractEventPr
 	 */
 	public void start (long sinceSCN) {
 		shutdownRequested.set(false);
-		this.sinceSCN.set(sinceSCN);
+        this.sinceSCN.set(scnGenerator.getSCN(sinceSCN,localHost));
 		LOGGER.info("Starting SEP subscription : " + this.getName());
 		LOGGER.info("ZK quorum hosts : " + this.zkQuorum);
 		LOGGER.info("ZK client port : " + this.zkClientPort);
@@ -162,7 +165,7 @@ public class HBaseEventProducer<T extends GenericRecord> extends AbstractEventPr
 	        if (!sepModel.hasSubscription(subscriptionName)) {
 	            sepModel.addSubscriptionSilent(subscriptionName);
 	        }
-	        this.sepConsumer = new SepConsumer(subscriptionName, this.sinceSCN.get(), new RelayAppender(), this.workerThreads, this.localHost, zk, hbaseConf);							
+            this.sepConsumer = new SepConsumer(subscriptionName, generateSEPSCN(this.sinceSCN.get()), new RelayAppender(), this.workerThreads, this.localHost, zk, hbaseConf);
 			this.sepConsumer.start();
 		} catch (Exception e) {
 			LOGGER.error("Error starting WAL edits consumer. Producer not started!. Error message : " + e.getMessage(), e);
@@ -189,12 +192,13 @@ public class HBaseEventProducer<T extends GenericRecord> extends AbstractEventPr
             		earliestKVTimestamp = Math.min(earliestKVTimestamp, kv.getTimestamp());
             	}
 				DbusEventKey eventKey = new DbusEventKey(sepEvent.getRow()); // we use the SepEvent row key as the identifier
-				DbusEventInfo eventInfo = new DbusEventInfo(DbusOpcode.UPSERT,earliestKVTimestamp,
-						(short)physicalSourceStaticConfig.getId(),(short)physicalSourceStaticConfig.getId(),
-						System.nanoTime(),(short)physicalSourceStaticConfig.getSources()[0].getId(), // here we use the Logical Source Id
-						schemaId,serializedEvent, false, true);
-				eventBuffer.appendEvent(eventKey, eventInfo, dbusEventsStatisticsCollector);    
-				sinceSCN.set(Math.max(lastSavedSCN, earliestKVTimestamp));
+                long eventScnNumber = scnGenerator.getSCN(earliestKVTimestamp,localHost);
+                DbusEventInfo eventInfo = new DbusEventInfo(DbusOpcode.UPSERT,eventScnNumber,
+                        (short)physicalSourceStaticConfig.getId(),(short)physicalSourceStaticConfig.getId(),
+                        System.nanoTime(),(short)physicalSourceStaticConfig.getSources()[0].getId(), // here we use the Logical Source Id
+                        schemaId,serializedEvent, false, true);
+                eventBuffer.appendEvent(eventKey, eventInfo, dbusEventsStatisticsCollector);
+                sinceSCN.set(Math.max(lastSavedSCN, eventScnNumber));
             }
             eventBuffer.endEvents(sinceSCN.get() , dbusEventsStatisticsCollector);
 			try {
@@ -206,7 +210,19 @@ public class HBaseEventProducer<T extends GenericRecord> extends AbstractEventPr
 			LOGGER.debug("Processed SEP event count : " + sepEvents.size());
 		}		 	        	
     }
-	
+
+    /**
+     * Utility to generate SEP SCN (WALEdits) from Relayer Scn.
+     * @param relayerSCN - lastSavedSCN on the relayer. lastSavedSCN is (SepSCN<<10|running_number)
+     * @return sepSCN
+     */
+    private long generateSEPSCN(long relayerSCN) {
+        if (relayerSCN == -1 || relayerSCN == 0) {
+            return relayerSCN;
+        }
+        return relayerSCN >> 10;
+    }
+
 	/**
 	 * Interface method implementation. Stops the SEP consumer
 	 * @see com.linkedin.databus2.producers.EventProducer#shutdown()
@@ -272,6 +288,12 @@ public class HBaseEventProducer<T extends GenericRecord> extends AbstractEventPr
 	public void setSepEventMapper(SepEventMapper<T> sepEventMapper) {
 		this.sepEventMapper = sepEventMapper;
 	}
-	/** End Setter/Getter methods*/
+    public SCNGenerator getScnGenerator() {
+        return scnGenerator;
+    }
+    public void setScnGenerator(SCNGenerator scnGenerator) {
+        this.scnGenerator = scnGenerator;
+    }
+    /** End Setter/Getter methods*/
 
 }
