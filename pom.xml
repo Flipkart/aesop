@@ -7,7 +7,7 @@
     <artifactId>aesop</artifactId>
     <name>Aesop Full Build</name>
     <packaging>pom</packaging>
-    <version>1.2.0</version>
+    <version>1.2.1-SNAPSHOT</version>
 
     <licenses>
         <license>
@@ -89,7 +89,7 @@
         <module>data-layers/data-layer-mysql</module>
         <module>data-layers/data-layer-console-appender</module>
         <module>data-layers/data-layer-elastic-search</module>
-        <module>data-layers/data-layer-kafka</module>
+        <!-- <module>data-layers/data-layer-kafka</module> -->
         <module>samples/sample-memory-relay</module>
         <module>samples/sample-hbase-relay</module>
         <module>samples/sample-mysql-mysql-blocking-bootstrap</module>
