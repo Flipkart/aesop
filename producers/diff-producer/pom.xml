@@ -7,13 +7,13 @@
     <parent>
         <groupId>com.flipkart.aesop</groupId>
         <artifactId>aesop</artifactId>
-        <version>1.2.0</version>
+        <version>1.2.1-SNAPSHOT</version>
 	<relativePath>../../pom.xml</relativePath>
     </parent>
 
     <groupId>com.flipkart.aesop</groupId>
     <artifactId>diff-producer</artifactId>
-    <version>1.2.0</version>
+    <version>1.2.1-SNAPSHOT</version>
     <name>Serialized state diff event producer</name>
     <description>Serialized state diff event producer</description>
 
@@ -51,7 +51,7 @@
         <dependency>
             <groupId>com.flipkart.aesop</groupId>
             <artifactId>runtime-relay</artifactId>
-            <version>1.2.0</version>
+            <version>1.2.1-SNAPSHOT</version>
         </dependency>    
         <!-- Zeno dependencies -->
 		<dependency>

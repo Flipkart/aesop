@@ -4,13 +4,13 @@
 	<parent>
 		<groupId>com.flipkart.aesop</groupId>
 		<artifactId>aesop</artifactId>
-		<version>1.2.0</version>
+		<version>1.2.1-SNAPSHOT</version>
 		<relativePath>../../pom.xml</relativePath>
 	</parent>
 
 	<artifactId>avro-schema-generator</artifactId>
 	<packaging>jar</packaging>
-	<version>1.2.0</version>
+	<version>1.2.1-SNAPSHOT</version>
 	<name>avro-schema-generator</name>
 	<description>Generate avro schemas for mysql tables</description>
 	<url>http://maven.apache.org</url>
