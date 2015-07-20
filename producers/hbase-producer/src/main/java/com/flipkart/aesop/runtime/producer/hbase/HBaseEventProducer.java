@@ -117,7 +117,7 @@ public class HBaseEventProducer<T extends GenericRecord> extends AbstractEventPr
 	 */
 	public void start (long sinceSCN) {
 		shutdownRequested.set(false);
-        this.sinceSCN.set(scnGenerator.getSCN(sinceSCN,localHost));
+        this.sinceSCN.set(sinceSCN);
 		LOGGER.info("Starting SEP subscription : " + this.getName());
 		LOGGER.info("ZK quorum hosts : " + this.zkQuorum);
 		LOGGER.info("ZK client port : " + this.zkClientPort);
