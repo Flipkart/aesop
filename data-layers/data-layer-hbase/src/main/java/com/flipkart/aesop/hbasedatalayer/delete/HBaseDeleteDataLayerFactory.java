@@ -18,15 +18,15 @@ import java.util.Map;
 
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
+import com.flipkart.aesop.hbasedatalayer.AbstractHBaseDataLayerFactory;
 import com.flipkart.aesop.hbasedatalayer.upsert.HBaseUpsertDataLayerFactory;
-import com.flipkart.aesop.destinationoperation.AbstractJDBCDataLayerFactory;
 
 /**
  * Generates objects of {@link HBaseDeleteDataLayer} and ensures that it is singleton.
  * @author Prakhar Jain
  * @see HBaseUpsertDataLayerFactory
  */
-public class HBaseDeleteDataLayerFactory extends AbstractJDBCDataLayerFactory<HBaseDeleteDataLayer>
+public class HBaseDeleteDataLayerFactory extends AbstractHBaseDataLayerFactory<HBaseDeleteDataLayer>
 {
 	@Override
 	public HBaseDeleteDataLayer createDestinationOperationHandler(
