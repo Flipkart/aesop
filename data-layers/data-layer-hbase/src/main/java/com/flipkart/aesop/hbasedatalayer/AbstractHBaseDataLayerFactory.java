@@ -31,6 +31,7 @@ public abstract class AbstractHBaseDataLayerFactory<T extends JDBCDataLayer>
 	private Properties dataSourceProperties;
 	private String driverClass;
 	private String jdbcUrl;
+	private String dataSourceName;
 	private Map<String, NamedParameterJdbcTemplate> jdbcTemplateMap;
 	public static final Logger LOGGER = LogFactory
 			.getLogger(AbstractHBaseDataLayerFactory.class);
@@ -55,16 +56,11 @@ public abstract class AbstractHBaseDataLayerFactory<T extends JDBCDataLayer>
 	private void createJdbcTemplateMap() {
 		jdbcTemplateMap = new HashMap<String, NamedParameterJdbcTemplate>();
 		DataSource dataSource = getDataSource();
-		NamedParameterJdbcTemplate upsertNamedParameterJdbcTemplate = new NamedParameterJdbcTemplate(
-				dataSource);
-		NamedParameterJdbcTemplate deleteNamedParameterJdbcTemplate = new NamedParameterJdbcTemplate(
+		NamedParameterJdbcTemplate namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(
 				dataSource);
 		jdbcTemplateMap.put(
-				com.linkedin.databus.core.DbusOpcode.UPSERT.toString(),
-				upsertNamedParameterJdbcTemplate);
-		jdbcTemplateMap.put(
-				com.linkedin.databus.core.DbusOpcode.DELETE.toString(),
-				deleteNamedParameterJdbcTemplate);
+				getDataSourceName(),
+				namedParameterJdbcTemplate);
 
 	}
 
@@ -105,6 +101,14 @@ public abstract class AbstractHBaseDataLayerFactory<T extends JDBCDataLayer>
 
 	public void setJdbcUrl(String jdbcUrl) {
 		this.jdbcUrl = jdbcUrl;
+	}
+
+	public String getDataSourceName() {
+		return dataSourceName;
+	}
+
+	public void setDataSourceName(String dataSourceName) {
+		this.dataSourceName = dataSourceName;
 	}
 
 }

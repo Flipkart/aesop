@@ -91,6 +91,7 @@
 				<prop key="c3p0.testConnectionOnCheckin">true</prop>
 			</props>
 		</property>
+		<property name="dataSourceName" value="or_test" />
 	</bean>
 
 	<bean id="hBaseDeleteDataLayer"
@@ -107,6 +108,7 @@
 				<prop key="c3p0.testConnectionOnCheckin">true</prop>
 			</props>
 		</property>
+		<property name="dataSourceName" value="or_test" />
 	</bean>
 
 
