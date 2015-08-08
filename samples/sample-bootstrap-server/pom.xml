@@ -7,13 +7,13 @@
     <parent>
         <groupId>com.flipkart.aesop</groupId>
         <artifactId>aesop</artifactId>
-        <version>1.2.0-SNAPSHOT</version>
+        <version>1.2.1-SNAPSHOT</version>
 	<relativePath>../../pom.xml</relativePath>
     </parent>
 
     <groupId>com.flipkart.aesop</groupId>
     <artifactId>sample-bootstrap-server</artifactId>
-    <version>1.2.0-SNAPSHOT</version>
+    <version>1.2.1-SNAPSHOT</version>
     <name>Sample Bootstrap Server</name>
     <description>Sample Bootstrap Server</description>
 
@@ -51,7 +51,7 @@
         <dependency>
             <groupId>com.flipkart.aesop</groupId>
             <artifactId>runtime-bootstrap</artifactId>
-            <version>1.2.0-SNAPSHOT</version>
+            <version>1.2.1-SNAPSHOT</version>
         </dependency>    
     </dependencies>
 

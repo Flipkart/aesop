@@ -1,3 +1,6 @@
+## 1.2.0 (Jul 10, 2015)
+- Bugfix release
+
 ## 1.1.0 (Apr 2, 2015)
 - Upgrading snapshot to release
 

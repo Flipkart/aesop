@@ -7,13 +7,13 @@
     <parent>
         <groupId>com.flipkart.aesop</groupId>
         <artifactId>aesop</artifactId>
-        <version>1.2.0-SNAPSHOT</version>
+        <version>1.2.1-SNAPSHOT</version>
 	<relativePath>../../pom.xml</relativePath>
     </parent>
 
     <groupId>com.flipkart.aesop</groupId>
     <artifactId>sample-hbase-relay</artifactId>
-    <version>1.2.0-SNAPSHOT</version>
+    <version>1.2.1-SNAPSHOT</version>
     <name>Sample Relay with HBase WAL edits Producer</name>
     <description>Sample Relay with HBase WAL edits Producer</description>
 
@@ -51,7 +51,7 @@
         <dependency>
             <groupId>com.flipkart.aesop</groupId>
             <artifactId>hbase-producer</artifactId>
-            <version>1.2.0-SNAPSHOT</version>
+            <version>1.2.1-SNAPSHOT</version>
             <exclusions>
             	<exclusion>
             		<artifactId>servlet-api-2.5</artifactId>
