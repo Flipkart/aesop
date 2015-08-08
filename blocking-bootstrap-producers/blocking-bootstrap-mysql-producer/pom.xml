@@ -19,7 +19,6 @@
         <dependency>
             <groupId>com.flipkart.aesop</groupId>
             <artifactId>runtime-blocking-bootstrap</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.flipkart</groupId>

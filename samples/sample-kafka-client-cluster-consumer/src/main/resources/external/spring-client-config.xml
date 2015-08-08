@@ -85,7 +85,7 @@
     </bean>
 
     <bean id="kafkaConfig" class="com.flipkart.aesop.processor.kafka.config.KafkaConfig">
-        <constructor-arg value="config.infra.kafka.conf" />
+        <constructor-arg value="resources/config.infra.kafka.conf" />
     </bean>
 
     <bean id="sampleClient"

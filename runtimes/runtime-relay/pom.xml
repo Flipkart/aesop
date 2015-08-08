@@ -10,10 +10,8 @@
          <relativePath>../../pom.xml</relativePath>
 	</parent>
 
-	<groupId>com.flipkart.aesop</groupId>
 	<artifactId>runtime-relay</artifactId>
 	<name>Relay Runtime</name>
-	<version>1.2.1-SNAPSHOT</version>
 	<description>Relay Runtime</description>
 
 	<licenses>
@@ -168,7 +166,6 @@
 		<dependency>
 			<groupId>com.flipkart.aesop</groupId>
 			<artifactId>runtime</artifactId>
-			<version>1.2.1-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 

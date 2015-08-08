@@ -19,7 +19,6 @@ import org.springframework.util.SerializationUtils;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.List;
 
 import com.linkedin.databus.core.DbusOpcode;
 
@@ -42,10 +41,9 @@ public  class KafkaEventDefaultPreprocessor  {
          * String serialiation has been used for key and byte for value
          * Topic is configured via properties file
          */
-        ProducerRecord record = new ProducerRecord(kafkaClient.getTopic(event.getNamespaceName()), getPrimaryKey(event), SerializationUtils.serialize(getPayload(event
-        )));
 
-        return record;
+        return new ProducerRecord(kafkaClient.getTopic(event.getNamespaceName()), getPrimaryKey(event), SerializationUtils.serialize(getPayload(event
+        )));
     }
 
     /*

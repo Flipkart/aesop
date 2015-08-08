@@ -6,7 +6,6 @@
         <version>1.2.1-SNAPSHOT</version>
 	<relativePath>../../pom.xml</relativePath>
     </parent>
-  <groupId>com.flipkart.aesop</groupId>
   <artifactId>data-layer-elastic-search</artifactId>
   <name>Elastic Search Data Layer</name>
   <description>Elastic Search Data Layer</description>
@@ -57,12 +56,10 @@
         <dependency>
             <groupId>com.flipkart.aesop</groupId>
             <artifactId>runtime-client-cluster</artifactId>
-            <version>1.2.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.flipkart.aesop</groupId>
             <artifactId>client-event-consumer</artifactId>
-            <version>1.2.1-SNAPSHOT</version>
         </dependency>
   </dependencies>
 </project>

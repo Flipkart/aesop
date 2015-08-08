@@ -12,7 +12,6 @@
     </parent>
 
     <artifactId>sample-client-common</artifactId>
-    <version>${project.parent.version}</version>
     <name>Sample Client Common</name>
     <description>Sample Client Common</description>
 
@@ -41,18 +40,15 @@
         <dependency>
             <groupId>org.apache.avro</groupId>
             <artifactId>avro</artifactId>
-            <version>1.7.5</version>
         </dependency>
         <!-- aesop dependencies -->
         <dependency>
             <groupId>com.flipkart.aesop</groupId>
             <artifactId>runtime-client-cluster</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.flipkart.aesop</groupId>
             <artifactId>client-event-consumer</artifactId>
-            <version>${project.version}</version>
         </dependency>
     </dependencies>
 </project>

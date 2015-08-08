@@ -10,10 +10,8 @@
         <relativePath>../../pom.xml</relativePath>
 	</parent>
 
-	<groupId>com.flipkart.aesop</groupId>
 	<artifactId>runtime-client-bootstrap-producer</artifactId>
 	<name>Client Bootstrap Producer Runtime</name>
-	<version>1.2.1-SNAPSHOT</version>
 	<description>Client Bootstrap Producer Runtime</description>
 
 	<licenses>
@@ -100,7 +98,6 @@
 		<dependency>
 			<groupId>com.flipkart.aesop</groupId>
 			<artifactId>runtime-client</artifactId>
-			<version>1.2.1-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 

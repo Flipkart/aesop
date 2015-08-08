@@ -89,7 +89,7 @@
         <module>data-layers/data-layer-mysql</module>
         <module>data-layers/data-layer-console-appender</module>
         <module>data-layers/data-layer-elastic-search</module>
-        <!-- <module>data-layers/data-layer-kafka</module> -->
+        <module>data-layers/data-layer-kafka</module>
         <module>samples/sample-memory-relay</module>
         <module>samples/sample-hbase-relay</module>
         <module>samples/sample-mysql-mysql-blocking-bootstrap</module>
@@ -107,4 +107,66 @@
         <module>samples/sample-diff-relay</module>
         <module>samples/sample-mapper-processor-nesting-client</module>
     </modules>
+
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.flipkart.aesop</groupId>
+                <artifactId>runtime-client-cluster</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.flipkart.aesop</groupId>
+                <artifactId>client-event-consumer</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.flipkart.aesop</groupId>
+                <artifactId>runtime</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.flipkart.aesop</groupId>
+                <artifactId>runtime-blocking-bootstrap</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.flipkart.aesop</groupId>
+                <artifactId>runtime-relay</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.flipkart.aesop</groupId>
+                <artifactId>runtime-bootstrap</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.flipkart.aesop</groupId>
+                <artifactId>runtime-client</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.flipkart.aesop</groupId>
+                <artifactId>runtime-client-bootstrap-producer</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <!-- Third party dependencies -->
+            <dependency>
+                <groupId>org.apache.avro</groupId>
+                <artifactId>avro</artifactId>
+                <version>1.7.5</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>log4j-over-slf4j</artifactId>
+                <version>1.7.5</version>
+            </dependency>
+            <dependency>
+                <groupId>mysql</groupId>
+                <artifactId>mysql-connector-java</artifactId>
+                <version>5.1.35</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 </project>

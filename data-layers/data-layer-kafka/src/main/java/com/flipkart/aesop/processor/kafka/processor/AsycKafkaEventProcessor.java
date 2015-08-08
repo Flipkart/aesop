@@ -37,6 +37,7 @@ public class AsycKafkaEventProcessor implements DestinationEventProcessor {
     private KafkaEventDefaultPreprocessor kafkaEventDefaultPreprocessor;
 
 
+    @SuppressWarnings(value = "unchecked")
     @Override
     public ConsumerCallbackResult processDestinationEvent(AbstractEvent event) {
         LOGGER.info("Received Abstract Event. Event is " + event);

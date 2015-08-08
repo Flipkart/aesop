@@ -11,9 +11,7 @@
 	<relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <groupId>com.flipkart.aesop</groupId>
     <artifactId>hbase-producer</artifactId>
-    <version>1.2.1-SNAPSHOT</version>
     <name>Hbase WAL Edits event producer</name>
     <description>Hbase WAL Edits event producer</description>
 
@@ -73,8 +71,7 @@
         <dependency>
             <groupId>com.flipkart.aesop</groupId>
             <artifactId>runtime-relay</artifactId>
-            <version>1.2.1-SNAPSHOT</version>
-        </dependency>    
+        </dependency>
         <!-- HBase SEP dependencies -->
     	<dependency>
       		<groupId>com.ngdata</groupId>

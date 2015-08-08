@@ -54,7 +54,10 @@
 		<dependency>
 			<groupId>com.flipkart.aesop</groupId>
 			<artifactId>runtime</artifactId>
-			<version>1.2.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.flipkart.aesop</groupId>
+			<artifactId>client-event-consumer</artifactId>
 		</dependency>
 		<!-- Databus dependencies -->
 		<dependency>
@@ -91,13 +94,8 @@
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>log4j-over-slf4j</artifactId>
-			<version>1.7.5</version>
 		</dependency>
-		<dependency>
-			<groupId>com.flipkart.aesop</groupId>
-			<artifactId>client-event-consumer</artifactId>
-			<version>${project.version}</version>
-		</dependency>
+
 		<dependency>
 			<groupId>com.linkedin.databus</groupId>
 			<artifactId>databus2-event-producer-common</artifactId>

@@ -55,8 +55,7 @@ public class KafkaClient implements InitializingBean {
         props.put("zk.connectiontimeout.ms", config.getString("zk.connectiontimeout.ms"));
         props.put("bootstrap.servers", config.getString("bootstrap.servers"));
 
-        KafkaProducer client = new KafkaProducer(props);
-        this.client = client;
+        this.client = new KafkaProducer(props);
     }
 
     @Override

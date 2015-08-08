@@ -41,6 +41,7 @@ public class SyncKafkaEventProcessor implements DestinationEventProcessor {
      */
     private KafkaEventDefaultPreprocessor kafkaEventDefaultPreprocessor;
 
+    @SuppressWarnings(value = "unchecked")
     @Override
     public ConsumerCallbackResult processDestinationEvent(AbstractEvent event) {
         LOGGER.info("Received Abstract Event. Event is " + event);
@@ -54,7 +55,7 @@ public class SyncKafkaEventProcessor implements DestinationEventProcessor {
             RecordMetadata response = (RecordMetadata) kafkaClient.getClient().send(record).get();
 
             if (response == null) {
-                LOGGER.error("Kafka Send Error : " + response);
+                LOGGER.error("Kafka Send Error : NULL");
                 return ConsumerCallbackResult.ERROR;
             } else {
                 LOGGER.info("Send successful :  topic :: partition - " + response.topic() + "::" + response.partition());
