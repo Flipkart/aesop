@@ -12,7 +12,7 @@
             <list>
                 <bean class="com.flipkart.aesop.runtime.config.InitBackedProducerRegistration">
                     <property name="properties">
-                        <bean id="productRegistrationPropertiesFactory1" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+                        <bean id="productRegistrationPropertiesFactory" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
                             <property name="singleton" value="true"/>
                             <property name="properties">
                                 <props>
@@ -24,35 +24,12 @@
                     <property name="eventProducer" ref="mysqlPersonProducer"/>
                     <property name="physicalSourceConfig" ref="physicalSourceConfig"/>
                 </bean>
-                <bean class="com.flipkart.aesop.runtime.config.ProducerRegistration">
-                    <property name="properties">
-                        <bean id="productRegistrationPropertiesFactory" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
-                            <property name="singleton" value="true"/>
-                            <property name="properties">
-                                <props>
-                                    <prop key="databus.relay.dataSources.sequenceNumbersHandler.file.initVal">4294967300</prop>
-                                </props>
-                            </property>
-                        </bean>
-                    </property>
-                    <property name="eventProducer" ref="mysqlPersonProducer1"/>
-                    <property name="physicalSourceConfig" ref="physicalSourceConfig1"/>
-                </bean>
             </list>
         </property>
     </bean>
 
     <bean id="mysqlPersonProducer" class="com.flipkart.aesop.runtime.producer.MysqlEventProducer">
         <property name="physicalSourceConfig" ref="physicalSourceConfig"/>
-        <property name="eventsMap" ref="eventsMapRef"/>
-        <property name="binLogEventMappers" ref="binLogEventMappersRef"/>
-        <property name="schemaChangeEventProcessor">
-            <bean class="com.flipkart.aesop.runtime.producer.schema.eventprocessor.impl.NopSchemaChangeEventProcessor" />
-        </property>
-    </bean>
-
-    <bean id="mysqlPersonProducer1" class="com.flipkart.aesop.runtime.producer.MysqlEventProducer">
-        <property name="physicalSourceConfig" ref="physicalSourceConfig1"/>
         <property name="eventsMap" ref="eventsMapRef"/>
         <property name="binLogEventMappers" ref="binLogEventMappersRef"/>
         <property name="schemaChangeEventProcessor">
@@ -93,27 +70,10 @@
         <property name="orToAvroMapper" ref="orToAvroMapper"/>
     </bean>
 
-    <bean id="physicalSourceConfig1" class="com.linkedin.databus2.relay.config.PhysicalSourceConfig">
-        <property name="id" value="1"/>
-        <property name="name" value="personPhysicalSource1"/>
-        <property name="uri" value="mysql://or_test%2For_test@localhost:3306/3306/mysql-bin"/>
-        <!-- <property name="databus.relay.dataSources.sequenceNumbersHandler.file.initVal" value=""/> -->
-        <property name="sources">
-            <list>
-                <bean id="logicalSourceConfig1" class="com.linkedin.databus2.relay.config.LogicalSourceConfig">
-                    <property name="id" value="40"/>
-                    <property name="name" value="pz.subscription_service.user_subscription"/>
-                    <property name="uri" value="subscription_service.user_subscription"/>
-                    <property name="partitionFunction" value="constant:1"/>
-                </bean>
-            </list>
-        </property>
-    </bean>
-
     <bean id="physicalSourceConfig" class="com.linkedin.databus2.relay.config.PhysicalSourceConfig">
-        <property name="id" value="2"/>
+        <property name="id" value="1"/>
         <property name="name" value="personPhysicalSource"/>
-        <property name="uri" value="mysql://or_test%2For_test@localhost:3307/3307/mysql-bin"/>
+        <property name="uri" value="mysql://or_test%2For_test@localhost:3306/12345/mysql-bin"/>
         <property name="sources">
             <list>
                 <bean id="logicalSourceConfig" class="com.linkedin.databus2.relay.config.LogicalSourceConfig">
