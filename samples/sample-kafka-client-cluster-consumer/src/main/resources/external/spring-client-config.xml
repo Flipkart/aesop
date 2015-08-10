@@ -72,16 +72,24 @@
 		class="com.flipkart.aesop.event.implementation.SourceEventFactory" />
 
     <bean id="kafkaEventProcessor"
-          class="com.flipkart.aesop.processor.kafka.processor.SyncKafkaEventProcessor">
-        <property name="kafkaEventDefaultPreprocessor" ref="kafkaEventDefaultPreprocessor"/>
+          class="com.flipkart.aesop.processor.kafka.processor.impl.SyncKafkaEventProcessor">
+        <property name="kafkaClient" ref="kafkaClient"/>
+        <property name="producerRecordAdaptor" ref="producerRecordAdapter"/>
     </bean>
 
     <bean id="kafkaClient" class="com.flipkart.aesop.processor.kafka.client.KafkaClient">
         <property name="kafkaConfig" ref="kafkaConfig"/>
     </bean>
 
-    <bean id="kafkaEventDefaultPreprocessor" class="com.flipkart.aesop.processor.kafka.preprocessor.KafkaEventDefaultPreprocessor">
-    <property name="kafkaClient" ref="kafkaClient"/>
+    <bean id="producerRecordAdapter" class="com.flipkart.aesop.processor.kafka.producer.adaptor.impl.DefaultProducerRecordAdaptor">
+        <property name="keyCodec" ref="StringCodec"/>
+        <property name="valueCodec" ref="MapCodec"/>
+    </bean>
+
+    <bean id="StringCodec" class="com.flipkart.aesop.processor.kafka.producer.codec.StringCodec">
+    </bean>
+
+    <bean id="MapCodec" class="com.flipkart.aesop.processor.kafka.producer.codec.MapCodec">
     </bean>
 
     <bean id="kafkaConfig" class="com.flipkart.aesop.processor.kafka.config.KafkaConfig">

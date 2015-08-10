@@ -12,11 +12,11 @@
  *******************************************************************************/
 package com.flipkart.aesop.processor.kafka.client;
 
-import com.typesafe.config.ConfigFactory;
-import org.springframework.beans.factory.InitializingBean;
-import org.apache.kafka.clients.producer.KafkaProducer;
 import com.flipkart.aesop.processor.kafka.config.KafkaConfig;
 import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.springframework.beans.factory.InitializingBean;
 import org.trpr.platform.core.impl.logging.LogFactory;
 import org.trpr.platform.core.spi.logging.Logger;
 
@@ -50,8 +50,8 @@ public class KafkaClient implements InitializingBean {
 
         Properties props = new Properties();
         props.put("zookeeper.connect", config.getString("zookeeper.connect"));
-        props.put("value.serializer", config.getString("value.serializer"));
-        props.put("key.serializer", config.getString("key.serializer"));
+        props.put("value.serializer", "org.apache.kafka.common.serialization.ByteArraySerializer");
+        props.put("key.serializer", "org.apache.kafka.common.serialization.ByteArraySerializer");
         props.put("zk.connectiontimeout.ms", config.getString("zk.connectiontimeout.ms"));
         props.put("bootstrap.servers", config.getString("bootstrap.servers"));
 
@@ -72,10 +72,6 @@ public class KafkaClient implements InitializingBean {
         this.kafkaConfig = kafkaConfig;
     }
 
-    public String getTopic(String nameSpace) {
-        return config.getString(nameSpace + ".topic");
-    }
-   
     public KafkaProducer getClient() {
         return client;
     }
