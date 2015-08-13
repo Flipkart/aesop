@@ -1,3 +1,10 @@
+## 1.2.1-SNAPSHOT (Jul 10, 2015)
+- **New features:**
+  - Support for Kafka Data Layer and Client Consumer
+- **Bug Fixes:**
+  - Fixes for Hbase Relay
+  - Fix for Sample Mysql Relay
+
 ## 1.2.0 (Jul 10, 2015)
 - Bugfix release
 

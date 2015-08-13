@@ -6,10 +6,10 @@ building Eventually Consistent data sources and systems.
 ## Releases
 | Release | Date | Description |
 |:------------|:----------------|:------------|
+| Version 1.2.1-SNAPSHOT    | Aug 2015       |    Feature enhancements and bug fix release
 | Version 1.2.0             | Jul 2015       |    Bug fix release
 | Version 1.1.0             | Apr 2015       |    Feature enhancements and bug fix release
 | Version 1.1.0-SNAPSHOT    | Feb 2015       |    Second GA release
-| Version 1.0.7-SNAPSHOT    | July 2014      |    First GA release
 
 ## Changelog
 Changelog can be viewed in CHANGELOG.md file (https://github.com/Flipkart/aesop/blob/master/CHANGELOG.md)
