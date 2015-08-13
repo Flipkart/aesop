@@ -79,24 +79,9 @@
 
 	<bean id="hBaseUpsertDataLayer"
 		class="com.flipkart.aesop.hbasedatalayer.upsert.HBaseUpsertDataLayerFactory ">
-		<property name="dataSourceMap" ref="dataSourceMap" />
-	</bean>
-
-	<bean id="hBaseDeleteDataLayer"
-		class="com.flipkart.aesop.hbasedatalayer.delete.HBaseDeleteDataLayerFactory">
-		<property name="dataSourceMap" ref="dataSourceMap" />
-	</bean>
-
-	<util:map id="dataSourceMap">
-		<entry key="or_test">
-			<ref bean="dataSource"></ref>
-		</entry>
-	</util:map>
-
-	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
 		<property name="driverClass" value="org.apache.phoenix.jdbc.PhoenixDriver" />
 		<property name="jdbcUrl" value="#{hbaseConfig.getConnectionUrl()}" />
-		<property name="properties">
+		<property name="dataSourceProperties">
 			<props>
 				<prop key="c3p0.acquire_increment">5</prop>
 				<prop key="c3p0.idle_test_period">100</prop>
@@ -106,11 +91,26 @@
 				<prop key="c3p0.testConnectionOnCheckin">true</prop>
 			</props>
 		</property>
-		<property name="maxIdleTime" value="3600" />
-		<property name="idleConnectionTestPeriod" value="300" />
-		<property name="testConnectionOnCheckin" value="true" />
-		<property name="preferredTestQuery" value="select 1 from PERSON" />
+		<property name="dataSourceName" value="or_test" />
 	</bean>
+
+	<bean id="hBaseDeleteDataLayer"
+		class="com.flipkart.aesop.hbasedatalayer.delete.HBaseDeleteDataLayerFactory">
+		<property name="driverClass" value="org.apache.phoenix.jdbc.PhoenixDriver" />
+		<property name="jdbcUrl" value="#{hbaseConfig.getConnectionUrl()}" />
+		<property name="dataSourceProperties">
+			<props>
+				<prop key="c3p0.acquire_increment">5</prop>
+				<prop key="c3p0.idle_test_period">100</prop>
+				<prop key="c3p0.max_size">50</prop>
+				<prop key="c3p0.max_statements">0</prop>
+				<prop key="c3p0.min_size">5</prop>
+				<prop key="c3p0.testConnectionOnCheckin">true</prop>
+			</props>
+		</property>
+		<property name="dataSourceName" value="or_test" />
+	</bean>
+
 
 	<bean id="clusterRegistration" class="com.flipkart.aesop.runtime.config.ClusterRegistration"
 		abstract="true">
