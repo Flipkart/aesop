@@ -148,6 +148,7 @@ public class DefaultEventConsumerImpl extends AbstractEventConsumer
 			{
 				LOGGER.error("Operation Not Supported Exception occured while executing Destination Store Operation.",
 				        e);
+				return ConsumerCallbackResult.ERROR;
 			}
         }
         return ConsumerCallbackResult.SUCCESS;
