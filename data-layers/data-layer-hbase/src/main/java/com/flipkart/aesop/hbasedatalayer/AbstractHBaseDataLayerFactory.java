@@ -1,3 +1,17 @@
+/*******************************************************************************
+ *
+ * Copyright 2012-2015, the original author or authors.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obta a copy of the License at
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *  
+ *******************************************************************************/
 package com.flipkart.aesop.hbasedatalayer;
 
 import java.beans.PropertyVetoException;
@@ -27,15 +41,29 @@ import com.mchange.v2.c3p0.ComboPooledDataSource;
  */
 public abstract class AbstractHBaseDataLayerFactory<T extends JDBCDataLayer>
 		implements FactoryBean<T> {
-
+	/** c3p0 properties to be used for creating jdbcTemplate **/
 	private Properties dataSourceProperties;
+	/** Name of driver class to be used for creating jdbcTemplate **/
 	private String driverClass;
+	/** jdbc url of hbase **/
 	private String jdbcUrl;
+	/** name of data source to be used for wirtes **/
 	private String dataSourceName;
+	/**
+	 * JDBC Template Map, with Namespace name as key and the corresponding JDBC
+	 * template as value.
+	 **/
 	private Map<String, NamedParameterJdbcTemplate> jdbcTemplateMap;
+	/** Logger for this class. */
 	public static final Logger LOGGER = LogFactory
 			.getLogger(AbstractHBaseDataLayerFactory.class);
 
+	/**
+	 * Creates Destination Later using the JDBC Template.
+	 * 
+	 * @param jdbcTemplateMap
+	 * @return Destination Data Layer
+	 */
 	public abstract T createDestinationOperationHandler(
 			Map<String, NamedParameterJdbcTemplate> jdbcTemplateMap);
 
@@ -58,9 +86,7 @@ public abstract class AbstractHBaseDataLayerFactory<T extends JDBCDataLayer>
 		DataSource dataSource = getDataSource();
 		NamedParameterJdbcTemplate namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(
 				dataSource);
-		jdbcTemplateMap.put(
-				getDataSourceName(),
-				namedParameterJdbcTemplate);
+		jdbcTemplateMap.put(getDataSourceName(), namedParameterJdbcTemplate);
 
 	}
 
