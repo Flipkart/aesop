@@ -62,6 +62,8 @@ public class HBaseEventProducer<T extends GenericRecord> extends AbstractEventPr
 	private static final String HBASE_REPLICATION_CONFIG = "hbase.replication";
 	private static final String ZK_QUORUM_CONFIG = "hbase.zookeeper.quorum";
 	private static final String ZK_CLIENT_PORT_CONFIG = "hbase.zookeeper.property.clientPort";
+    /** Timeout in case, SEP is taking more time to consume the events. After timeout, RS will push the same load again**/
+    private static final String RPC_TIMEOUT_CONFIG = "hbase.rpc.timeout";
 	
 	/** The localhost */
 	private static final String LOCAL_HOST_NAME = "localhost";
@@ -69,10 +71,14 @@ public class HBaseEventProducer<T extends GenericRecord> extends AbstractEventPr
 	/** The default ZK settings*/
 	private static final int ZK_CLIENT_PORT = 2181;
 	private static final int ZK_SESSION_TIMEOUT = 20000; // 20 seconds
+    private static final String RPC_TIMEOUT = "60000"; //60 sec default
 	
 	/** The default number of worker threads that process WAL edit events*/
 	private static final int WORKER_THREADS = 1;
-	
+
+    /**RPC Timeout for SEP to consume the events sent by RS**/
+    protected String rpcTimeout = RPC_TIMEOUT;
+
 	/** The SEP consumer instance initialized by this Producer*/
 	protected SepConsumer sepConsumer;
     /** The SepEventMapper for translating WAL edits to change events*/
@@ -121,6 +127,8 @@ public class HBaseEventProducer<T extends GenericRecord> extends AbstractEventPr
 		LOGGER.info("Starting SEP subscription : " + this.getName());
 		LOGGER.info("ZK quorum hosts : " + this.zkQuorum);
 		LOGGER.info("ZK client port : " + this.zkClientPort);
+        LOGGER.info("ZK session timeout : " + this.zkSessionTimeout);
+        LOGGER.info("RPC timeout : " + this.rpcTimeout);
 		LOGGER.info("Using hostname to bind to : " + this.localHost);
 		LOGGER.info("Using worker threads : " + this.workerThreads);
 		LOGGER.info("Listening to WAL edits from : " + this.sinceSCN);
@@ -131,6 +139,7 @@ public class HBaseEventProducer<T extends GenericRecord> extends AbstractEventPr
 	        // need to explicitly set the ZK host and port details - hosts separated from port - see SepModelImpl constructor source code
 	        hbaseConf.set(ZK_QUORUM_CONFIG, this.zkQuorum);
 	        hbaseConf.setInt(ZK_CLIENT_PORT_CONFIG, this.zkClientPort);
+            hbaseConf.set(RPC_TIMEOUT_CONFIG,this.rpcTimeout);
 
 	        StringBuilder zkQuorumWithPort = new StringBuilder();
 	        String[] zkHostsList = this.zkQuorum.split(",");
@@ -293,6 +302,12 @@ public class HBaseEventProducer<T extends GenericRecord> extends AbstractEventPr
     }
     public void setScnGenerator(SCNGenerator scnGenerator) {
         this.scnGenerator = scnGenerator;
+    }
+    public String getRpcTimeout() {
+        return rpcTimeout;
+    }
+    public void setRpcTimeout(String rpcTimeout) {
+        this.rpcTimeout = rpcTimeout;
     }
     /** End Setter/Getter methods*/
 
