@@ -122,8 +122,8 @@
         <property name="mapper" ref="defaultMapperImpl" />
         <property name="destinationProcessorMap">
             <map>
-                <entry key-ref="upsertDbusOpCode" value-ref="upsertConsole" />
-                <entry key-ref="deleteDbusOpCode" value-ref="deleteConsole" />
+                <entry key-ref="upsertDbusOpCode" value-ref="mysqlUpsertDataLayer" />
+                <entry key-ref="deleteDbusOpCode" value-ref="mysqlDeleteDataLayer" />
             </map>
         </property>
         <property name="sourceEventFactory" ref="sourceEventFactory" />
@@ -184,4 +184,40 @@
     <bean id="deleteConsole"
           class="com.flipkart.aesop.consoleappenderdatalayer.delete.ConsoleAppenderDeleteDataLayer">
     </bean>
+
+    <bean id="mysqlUpsertDataLayer"
+          class="com.flipkart.aesop.mysqldatalayer.upsert.MySQLUpsertDataLayerFactory ">
+        <property name="dataSourceMap" ref="dataSourceMap" />
+    </bean>
+
+    <bean id="mysqlDeleteDataLayer"
+          class="com.flipkart.aesop.mysqldatalayer.delete.MySQLDeleteDataLayerFactory">
+        <property name="dataSourceMap" ref="dataSourceMap" />
+    </bean>
+
+    <util:map id="dataSourceMap">
+        <entry key="or_test" value-ref="dataSource"/>
+    </util:map>
+
+    <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+        <property name="driverClass" value="com.mysql.jdbc.Driver" />
+        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/or_test"/>
+        <property name="properties">
+            <props>
+                <prop key="c3p0.acquire_increment">5</prop>
+                <prop key="c3p0.idle_test_period">100</prop>
+                <prop key="c3p0.max_size">50</prop>
+                <prop key="c3p0.max_statements">0</prop>
+                <prop key="c3p0.min_size">5</prop>
+                <prop key="c3p0.testConnectionOnCheckin">true</prop>
+                <prop key="user">or_test</prop>
+                <prop key="password">or_test</prop>
+            </props>
+        </property>
+        <property name="maxIdleTime" value="3600" />
+        <property name="idleConnectionTestPeriod" value="300" />
+        <property name="testConnectionOnCheckin" value="true" />
+        <property name="preferredTestQuery" value="select 1" />
+    </bean>
+
 </beans>
