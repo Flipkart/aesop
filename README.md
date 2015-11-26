@@ -2,6 +2,13 @@ Aesop
 =====
 A keen observer of changes that can also relay change events reliably to interested parties. Provides useful infrastructure for 
 building Eventually Consistent data sources and systems.
+Growing list of change data source and destinations:
+
+| Sources | Destinations | Notes |
+|:------------|:----------------|:------------|
+| MySQL            | MySQL, HBase, Elastic Search, Kafka       |   [MySQL source ](https://github.com/Flipkart/aesop/wiki/MySQL-change-event-producer)
+| HBase            | MySQL, HBase, Elastic Search, Kafka       |   [HBase source] (https://github.com/Flipkart/aesop/wiki/HBase-change-event-producer) 
+| Any Data source  | Any destination       |   [Pull Producer] (https://github.com/Flipkart/aesop/wiki/Pull-change-event-producer) 
 
 ## Releases
 | Release | Date | Description |
