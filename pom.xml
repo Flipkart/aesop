@@ -90,6 +90,7 @@
         <module>data-layers/data-layer-console-appender</module>
         <module>data-layers/data-layer-elastic-search</module>
         <module>data-layers/data-layer-kafka</module>
+        <module>data-layers/data-layer-api-caller</module>
         <module>samples/sample-memory-relay</module>
         <module>samples/sample-hbase-relay</module>
         <module>samples/sample-mysql-mysql-blocking-bootstrap</module>
@@ -100,6 +101,7 @@
         <module>samples/sample-snapshot-serializer</module>
         <module>samples/sample-mysql-relay</module>
         <module>samples/sample-client-common</module>
+        <module>samples/sample-api-caller-client-cluster-consumer</module>
         <module>samples/sample-console-appender-client-cluster-consumer</module>
         <module>samples/sample-elastic-search-client-cluster-consumer</module>
         <module>samples/sample-hbase-client-cluster-consumer</module>

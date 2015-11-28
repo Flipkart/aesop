@@ -1,0 +1,64 @@
+{
+  "name" : "ShipmentStatusHistories",
+  "type" : "record",
+  "doc" : "Auto-generated Avro schema for ShipmentStatusHistories. Generated at Oct 23, 2015 06:03:36 PM IST",
+  "namespace" : "shipping-lite",
+  "meta" : "pk=id",
+  "fields" : [ {
+    "name" : "id",
+    "type" : [ "long", "null" ],
+    "meta" : "dbFieldName=id;dbFieldPosition=1;dbFieldType=bigint"
+  }, {
+    "name" : "createdAt",
+    "type" : [ "long", "null" ],
+    "meta" : "dbFieldName=createdAt;dbFieldPosition=2;dbFieldType=datetime"
+  }, {
+    "name" : "parentSrId",
+    "type" : [ "string", "null" ],
+    "meta" : "dbFieldName=parentSrId;dbFieldPosition=3;dbFieldType=varchar"
+  }, {
+    "name" : "receivedBy",
+    "type" : [ "string", "null" ],
+    "meta" : "dbFieldName=receivedBy;dbFieldPosition=4;dbFieldType=varchar"
+  }, {
+    "name" : "remarks",
+    "type" : [ "string", "null" ],
+    "meta" : "dbFieldName=remarks;dbFieldPosition=5;dbFieldType=varchar"
+  }, {
+    "name" : "shipmentId",
+    "type" : [ "long", "null" ],
+    "meta" : "dbFieldName=shipmentId;dbFieldPosition=6;dbFieldType=bigint"
+  }, {
+    "name" : "srId",
+    "type" : [ "string", "null" ],
+    "meta" : "dbFieldName=srId;dbFieldPosition=7;dbFieldType=varchar"
+  }, {
+    "name" : "status",
+    "type" : [ "string", "null" ],
+    "meta" : "dbFieldName=status;dbFieldPosition=8;dbFieldType=varchar"
+  }, {
+    "name" : "statusDateTime",
+    "type" : [ "string", "null" ],
+    "meta" : "dbFieldName=statusDateTime;dbFieldPosition=9;dbFieldType=varchar"
+  }, {
+    "name" : "statusLocation",
+    "type" : [ "string", "null" ],
+    "meta" : "dbFieldName=statusLocation;dbFieldPosition=10;dbFieldType=varchar"
+  }, {
+    "name" : "updatedAt",
+    "type" : [ "long", "null" ],
+    "meta" : "dbFieldName=updatedAt;dbFieldPosition=11;dbFieldType=datetime"
+  }, {
+    "name" : "secondaryStatus",
+    "type" : [ "string", "null" ],
+    "meta" : "dbFieldName=secondaryStatus;dbFieldPosition=12;dbFieldType=varchar"
+  }, {
+    "name" : "statusType",
+    "type" : [ "string", "null" ],
+    "meta" : "dbFieldName=statusType;dbFieldPosition=13;dbFieldType=varchar"
+  }, {
+    "name" : "updatedBy",
+    "type" : [ "string", "null" ],
+    "meta" : "dbFieldName=updatedBy;dbFieldPosition=14;dbFieldType=varchar"
+  } ]
+}

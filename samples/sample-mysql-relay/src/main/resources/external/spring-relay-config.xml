@@ -73,13 +73,14 @@
     <bean id="physicalSourceConfig" class="com.linkedin.databus2.relay.config.PhysicalSourceConfig">
         <property name="id" value="1"/>
         <property name="name" value="personPhysicalSource"/>
-        <property name="uri" value="mysql://or_test%2For_test@localhost:3306/12345/mysql-bin"/>
+        <!-- <property name="uri" value="mysql://aman%2Faman@flo-fkl-db1.stage.ch.flipkart.com:3306/12345/mysql-bin"/> -->
+        <property name="uri" value="mysql://aman.gupta%2Faman.gupta@flo-fkl-db1.stage.ch.flipkart.com:3306/12345/mysql-bin" />
         <property name="sources">
             <list>
                 <bean id="logicalSourceConfig" class="com.linkedin.databus2.relay.config.LogicalSourceConfig">
                     <property name="id" value="41"/>
-                    <property name="name" value="com.flipkart.aesop.events.ortest.Person"/>
-                    <property name="uri" value="or_test.person"/>
+                    <property name="name" value="com.flipkart.aesop.events.shipping-lite.ShipmentStatusHistories"/>
+                    <property name="uri" value="shipping-lite.ShipmentStatusHistories"/>
                     <property name="partitionFunction" value="constant:1"/>
                 </bean>
             </list>
