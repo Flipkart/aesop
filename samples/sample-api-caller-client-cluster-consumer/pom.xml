@@ -120,7 +120,7 @@
                                     <fileset dir="target/classes/scripts" />
                                 </copy>
                                 <copy
-                                        file="target/sample-call-api-consumer-${project.version}.jar"
+                                        file="target/sample-api-caller-client-cluster-consumer-${project.version}.jar"
                                         toDir="distribution/lib" overwrite="true" />
                                 <copy file="target/classes/project.properties"
                                       tofile="distribution/resources/external/project.properties.snapshot"

@@ -73,14 +73,14 @@
 
     <bean id="apiCallerUpsertDataLayer"
           class="com.flipkart.aesop.apicallerdatalayer.upsert.ApiCallerUpsertDataLayerFactory">
-        <property name="url" value="http://flo-marvin-backend.stage.ch.flipkart.com/workflows/aesop_marvin/start" />
-        <property name="headers" value="{'MARVIN_CLIENT_ID':'shipping-lite-secondary-datastore','MARVIN_REF_ID':'$parentSrId','MARVIN_WORKFLOW_IDEMPOTENCY':true,'MARVIN_IDEMPOTENCY_DURATION':60}" />
+        <property name="url" value="http://localhost:8080/test" />
+        <property name="headers" value="{'Header1':'value1','header2':'value2'}" />
     </bean>
 
     <bean id="apiCallerDeleteDataLayer"
           class="com.flipkart.aesop.apicallerdatalayer.delete.ApiCallerDeleteDataLayerFactory">
-        <property name="url" value="http://flo-marvin-backend.stage.ch.flipkart.com/workflows/aesop_marvin/start" />
-        <property name="headers" value="{'MARVIN_CLIENT_ID':'shipping-lite-secondary-datastore','MARVIN_REF_ID':'$parentSrId','MARVIN_WORKFLOW_IDEMPOTENCY':true,'MARVIN_IDEMPOTENCY_DURATION':60}" />
+        <property name="url" value="http://localhost:8080/test" />
+        <property name="headers" value="{'Header1':'value1','header2':'value2'}" />
     </bean>
 
     <bean id="sampleClient"
