@@ -73,7 +73,6 @@
     <bean id="physicalSourceConfig" class="com.linkedin.databus2.relay.config.PhysicalSourceConfig">
         <property name="id" value="1"/>
         <property name="name" value="personPhysicalSource"/>
-        <!-- <property name="uri" value="mysql://aman%2Faman@flo-fkl-db1.stage.ch.flipkart.com:3306/12345/mysql-bin"/> -->
         <property name="uri" value="mysql://aman.gupta%2Faman.gupta@flo-fkl-db1.stage.ch.flipkart.com:3306/12345/mysql-bin" />
         <property name="sources">
             <list>

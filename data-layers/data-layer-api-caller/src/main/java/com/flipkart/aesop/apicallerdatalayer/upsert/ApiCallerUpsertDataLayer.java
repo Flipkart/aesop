@@ -23,7 +23,6 @@ import java.util.Iterator;
  */
 public class ApiCallerUpsertDataLayer extends UpsertDestinationStoreProcessor
 {
-    /** Logger for this class*/
     private static final Logger LOGGER = LogFactory.getLogger(ApiCallerUpsertDataLayer.class);
     private URL url;
     private JSONObject headers;
@@ -35,17 +34,9 @@ public class ApiCallerUpsertDataLayer extends UpsertDestinationStoreProcessor
     @Override
     protected ConsumerCallbackResult upsert(AbstractEvent event) {
         try {
-            /*
-            JSONObject param =new JSONObject();
-            Object[] keyset = event.getFieldMapPair().keySet().toArray();
-            Object[] values = event.getFieldMapPair().values().toArray();
-            for(int i=0;i<event.getFieldMapPair().size();i++)
-            {
-                param.put(String.valueOf(keyset[i]),String.valueOf(values[i]));
-            }
-            */
             JSONObject param = new JSONObject(event.getFieldMapPair());
             final String USER_AGENT = "Mozilla/5.0";
+            LOGGER.info("Making a post call to url: "+url+" with payload as: "+param.toString());
             HttpURLConnection con = (HttpURLConnection)url.openConnection();
             con.setRequestMethod("POST");
             con.setRequestProperty("User-Agent", USER_AGENT);
@@ -53,6 +44,7 @@ public class ApiCallerUpsertDataLayer extends UpsertDestinationStoreProcessor
             con.setRequestProperty("Content-Type", "application/json");
             con.setRequestProperty("Accept", "application/json");
             Iterator<String> it = headers.keys();
+            //If a header value starts with $, the corresponding value from the payload is used.
             while(it.hasNext()){
                 String header = it.next();
                 String value = headers.get(header).toString();
@@ -61,44 +53,17 @@ public class ApiCallerUpsertDataLayer extends UpsertDestinationStoreProcessor
                 }
                 con.setRequestProperty(header,value);
             }
-            // Send post request
             con.setDoOutput(true);
             DataOutputStream wr = new DataOutputStream(con.getOutputStream());
             wr.writeBytes(param.toString());
-            LOGGER.info(param.toString());
             wr.flush();
             wr.close();
             int responseCode = con.getResponseCode();
-            LOGGER.info("Received response code from service:" + responseCode);
-            switch (responseCode) {
-                case 200:
-                    LOGGER.info("API called successfully");
-                    return ConsumerCallbackResult.SUCCESS;
-                case 201:
-                    LOGGER.info("API called successfully");
-                    return ConsumerCallbackResult.SUCCESS;
-                case 202:
-                    LOGGER.info("API called successfully");
-                    return ConsumerCallbackResult.SUCCESS;
-                case 204:
-                    LOGGER.info("API called successfully");
-                    return ConsumerCallbackResult.SUCCESS;
-                default:
-                    LOGGER.info("API COULD NOT BE CALLED!! Response Code:"+responseCode);
-                    return ConsumerCallbackResult.ERROR;
-            }
+            LOGGER.info("Call successful with response code as "+responseCode+ "for payload: "+param.toString());
+            return ConsumerCallbackResult.SUCCESS;
+        } catch(Exception e){
+            LOGGER.error("Call unsuccessful with error:",e);
+            return ConsumerCallbackResult.ERROR;
         }
-        catch (ProtocolException e) {
-            e.printStackTrace();
-            LOGGER.info("API COULD NOT BE CALLED!! ProtocolException Occurred");
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-            LOGGER.info("API COULD NOT BE CALLED!! IOException Occurred");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        LOGGER.info("API COULD NOT BE CALLED!! Some shit happened");
-        return ConsumerCallbackResult.ERROR;
     }
 }
