@@ -55,8 +55,13 @@ public class ApiCallerUpsertDataLayer extends UpsertDestinationStoreProcessor
             wr.flush();
             wr.close();
             int responseCode = con.getResponseCode();
-            LOGGER.info("Call successful with response code as "+responseCode+ "for payload: "+param);
-            return ConsumerCallbackResult.SUCCESS;
+            if(responseCode >= 200 && responseCode <300) {
+                LOGGER.info("Call successful with response code as " + responseCode + "for payload: " + param);
+                return ConsumerCallbackResult.SUCCESS;
+            }else {
+                LOGGER.info("Call unsuccessful with response code as " + responseCode + "and message as "+con.getResponseMessage()+"for payload: " + param);
+                return ConsumerCallbackResult.ERROR;
+            }
         } catch(Exception e){
             LOGGER.error("Call unsuccessful with error:",e);
             return ConsumerCallbackResult.ERROR;
