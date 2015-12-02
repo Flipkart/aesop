@@ -89,7 +89,7 @@
         <property name="clusterRegistrations">
             <list>
                 <bean class="com.flipkart.aesop.runtime.config.ClusterRegistration">
-                    <property name="clusterName" value="pz_console_appender_cluster" />
+                    <property name="clusterName" value="pz_api_caller_cluster" />
                     <property name="consumerFactory">
                         <bean class="com.flipkart.aesop.eventconsumer.ConsumerFactory">
                             <property name="eventConsumerFactoryList">
@@ -147,7 +147,7 @@
             <list>
                 <bean class="com.flipkart.aesop.runtime.config.ClusterInfoConfig">
                     <property name="id" value="1" />
-                    <property name="clusterName" value="pz_console_appender_cluster" />
+                    <property name="clusterName" value="pz_api_caller_cluster" />
                     <property name="zkAddr" value="localhost:2181" />
                     <property name="numPartitions" value="2" />
                     <property name="quorum" value="1" />
