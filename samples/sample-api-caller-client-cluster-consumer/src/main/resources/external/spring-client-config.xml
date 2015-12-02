@@ -13,7 +13,7 @@
 
     <bean id="defaultEventConsumerFactory"
           class="com.flipkart.aesop.eventconsumer.implementation.DefaultEventConsumerFactoryBean">
-        <property name="mapper" ref="DoNothingMapper" />
+        <property name="mapper" ref="defaultMapperImpl" />
         <property name="destinationProcessorMap">
             <map>
                 <entry key-ref="upsertDbusOpCode" value-ref="apiCallerUpsertDataLayer" />
@@ -29,8 +29,17 @@
         <property name="totalDestinationGroups" value="1" />
     </bean>
 
-    <bean id="DoNothingMapper"
-          class="com.flipkart.aesop.mapper.implementation.DoNothingMapper">
+
+    <util:constant id="upsertDbusOpCode"
+                   static-field="com.linkedin.databus.core.DbusOpcode.UPSERT" />
+    <util:constant id="deleteDbusOpCode"
+                   static-field="com.linkedin.databus.core.DbusOpcode.DELETE" />
+
+    <bean id="mapperConfig"
+          class="com.flipkart.aesop.mapper.config.implementation.MapperConfigImpl"
+          factory-method="getInstance" />
+    <bean id="defaultMapperImpl"
+          class="com.flipkart.aesop.mapper.implementation.DefaultMapperImpl">
         <property name="configFilePath" value="resources/application.conf" />
         <property name="configRoot" value="MAPPER_CONFIG" />
         <property name="mapperConfig" ref="mapperConfig" />
@@ -44,15 +53,6 @@
         <property name="eventGroupFinder" ref="defaultEventGroupFinder" />
         <property name="destinationEventFactory" ref="destinationEventFactory" />
     </bean>
-
-    <util:constant id="upsertDbusOpCode"
-                   static-field="com.linkedin.databus.core.DbusOpcode.UPSERT" />
-    <util:constant id="deleteDbusOpCode"
-                   static-field="com.linkedin.databus.core.DbusOpcode.DELETE" />
-
-    <bean id="mapperConfig"
-          class="com.flipkart.aesop.mapper.config.implementation.MapperConfigImpl"
-          factory-method="getInstance" />
 
     <util:constant id="noNamespaceEntityMapperType"
                    static-field="com.flipkart.aesop.mapper.implementation.MapperType.MAP_WITHOUT_SOURCE_NAMESPACE_ENTITY_CONFIG" />
