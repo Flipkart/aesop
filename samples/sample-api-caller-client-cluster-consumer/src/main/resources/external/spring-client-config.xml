@@ -16,15 +16,15 @@
         <property name="mapper" ref="defaultMapperImpl" />
         <property name="destinationProcessorMap">
             <map>
-                <entry key-ref="upsertDbusOpCode" value-ref="apiCallerUpsertDataLayer" />
-                <entry key-ref="deleteDbusOpCode" value-ref="apiCallerDeleteDataLayer" />
+                <entry key-ref="upsertDbusOpCode" value-ref="apiCallerDataLayer" />
+                <entry key-ref="deleteDbusOpCode" value-ref="apiCallerDataLayer" />
             </map>
         </property>
         <property name="sourceEventFactory" ref="sourceEventFactory" />
         <property name="destinationGroupSet">
-            <list>
+            <set>
                 <value>1</value>
-            </list>
+            </set>
         </property>
         <property name="totalDestinationGroups" value="1" />
     </bean>
@@ -71,18 +71,42 @@
     <bean id="sourceEventFactory"
           class="com.flipkart.aesop.event.implementation.SourceEventFactory" />
 
-    <bean id="apiCallerUpsertDataLayer"
-          class="com.flipkart.aesop.apicallerdatalayer.upsert.ApiCallerUpsertDataLayerFactory">
-        <property name="url" value="http://localhost:8080/test" />
-        <property name="headers" value="{'Header1':'value1','header2':'value2'}" />
+    <bean id="apiCallerDataLayer"
+          class="com.flipkart.aesop.apicallerdatalayer.ApiCallerDataLayer">
+        <property name="url" value="http://localhost:8076/test" />
+        <property name="staticHeaderProvider" ref="defaultStaticHeaderProvider" />
+        <property name="contextualHeaderProvider" ref="defaultContextualHeaderProvider" />
+        <property name="httpPostClient" ref="CasClient"/>
     </bean>
 
+    <bean id="defaultStaticHeaderProvider" class="com.flipkart.aesop.apicallerdatalayer.headers.StaticHeaderProvider">
+        <constructor-arg name="headers" value="Header1=value1,header2=value2"/>
+    </bean>
+    <bean id="defaultContextualHeaderProvider" class="com.flipkart.aesop.apicallerdatalayer.headers.ContextualHeaderProvider">
+        <constructor-arg name="headers" value="Header3=lastName" />
+    </bean>
+
+    <bean id = "CasClient" class="com.flipkart.aesop.apicallerdatalayer.client.implementation.HttpCASPostClientImpl">
+        <constructor-arg name="cache" ref="inMemoryCache"/>
+        <constructor-arg name="casUrl" value="https://flo-rubycas-server.nm.flipkart.com/"/>
+        <constructor-arg name="enableAuth" value="false"/>
+        <constructor-arg name="password" value="null"/>
+        <constructor-arg name="user" value="null"/>
+    </bean>
+    <bean id = "JavaxClient" class="com.flipkart.aesop.apicallerdatalayer.client.implementation.HttpJavaxPostClientImpl"/>
+    <bean id = "inMemoryCache" class="com.flipkart.casclient.util.InMemoryCache"/>
+    <!--
     <bean id="apiCallerDeleteDataLayer"
           class="com.flipkart.aesop.apicallerdatalayer.delete.ApiCallerDeleteDataLayerFactory">
         <property name="url" value="http://localhost:8080/test" />
         <property name="headers" value="{'Header1':'value1','header2':'value2'}" />
     </bean>
-
+    <bean id = "ApiCallerDataLayer" class="com.flipkart.aesop.apicallerdatalayer.ApiCallerDataLayer">
+        <property name="headers" value="http://localhost:8080/test" />
+        <property name="url" value="{'Header1':'value1','header2':'value2'}" />
+        <property name="casClient" ref="casClient" />
+    </bean>
+    -->
     <bean id="sampleClient"
           class="com.flipkart.aesop.runtime.clusterclient.DefaultClusterClientFactory">
         <property name="clientClusterConfig" ref="clientClusterConfig" />
@@ -102,7 +126,7 @@
                     </property>
                     <property name="logicalSources">
                         <list value-type="java.lang.String">
-                            <value>pz.shipping-lite.ShipmentStatusHistories</value>
+                            <value>com.flipkart.aesop.events.ortest.Person</value>
                         </list>
                     </property>
                 </bean>
@@ -137,7 +161,7 @@
                     <property name="relayPort" value="25021" />
                     <property name="relayLogicalSourceNames">
                         <list value-type="java.lang.String">
-                            <value>pz.shipping-lite.ShipmentStatusHistories</value>
+                            <value>com.flipkart.aesop.events.ortest.Person</value>
                         </list>
                     </property>
                 </bean>

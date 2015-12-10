@@ -30,6 +30,31 @@
             <artifactId>gson</artifactId>
             <version>2.2.2</version>
         </dependency>
+        <dependency>
+            <groupId>flipkart.scm</groupId>
+            <artifactId>java-cas-client</artifactId>
+            <version>0.0.17.4-auth</version>
+        </dependency>
+        <dependency>
+            <groupId>com.ning</groupId>
+            <artifactId>async-http-client</artifactId>
+            <version>1.8.15</version>
+        </dependency>
+        <dependency>
+            <groupId>com.flipkart.kloud.authn</groupId>
+            <artifactId>client</artifactId>
+            <version>15.07.17.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.flipkart.kloud.authn</groupId>
+            <artifactId>dropwizard8-relying-party</artifactId>
+            <version>15.07.17.1</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.ws.rs</groupId>
+            <artifactId>javax.ws.rs-api</artifactId>
+            <version>2.0</version>
+        </dependency>
     </dependencies>
 
 
