@@ -74,16 +74,16 @@
     <bean id="apiCallerDataLayer"
           class="com.flipkart.aesop.apicallerdatalayer.ApiCallerDataLayer">
         <property name="url" value="http://localhost:8076/test" />
-        <property name="staticHeaderProvider" ref="defaultStaticHeaderProvider" />
-        <property name="contextualHeaderProvider" ref="defaultContextualHeaderProvider" />
+        <property name="staticHeaderProvider" ref="stringBasedStaticHeaderProvider" />
+        <property name="contextualHeaderProvider" ref="stringBasedContextualHeaderProvider" />
         <property name="httpPostClient" ref="CasClient"/>
     </bean>
 
-    <bean id="defaultStaticHeaderProvider" class="com.flipkart.aesop.apicallerdatalayer.headers.StaticHeaderProvider">
-        <constructor-arg name="headers" value="Header1=value1,header2=value2"/>
+    <bean id="stringBasedStaticHeaderProvider" class="com.flipkart.aesop.apicallerdatalayer.headers.impl.StringBasedStaticHeaderProviderImpl">
+        <constructor-arg name="headers" value="header1=value1,header2=value2"/>
     </bean>
-    <bean id="defaultContextualHeaderProvider" class="com.flipkart.aesop.apicallerdatalayer.headers.ContextualHeaderProvider">
-        <constructor-arg name="headers" value="Header3=lastName" />
+    <bean id="stringBasedContextualHeaderProvider" class="com.flipkart.aesop.apicallerdatalayer.headers.impl.StringBasedContextualHeaderProviderImpl">
+        <constructor-arg name="headers" value="header3=value3"/>
     </bean>
 
     <bean id = "CasClient" class="com.flipkart.aesop.apicallerdatalayer.client.implementation.HttpCASPostClientImpl">

@@ -1,7 +1,6 @@
 package com.flipkart.aesop.apicallerdatalayer.client.implementation;
 
 
-import com.flipkart.aesop.apicallerdatalayer.ApiCallerDataLayer;
 import com.flipkart.aesop.apicallerdatalayer.client.HttpPostClient;
 import org.trpr.platform.core.impl.logging.LogFactory;
 import org.trpr.platform.core.spi.logging.Logger;
@@ -18,7 +17,7 @@ import java.util.Map;
  */
 public class HttpJavaxPostClientImpl implements HttpPostClient {
     Client client = ClientBuilder.newClient();
-    private static final Logger LOGGER = LogFactory.getLogger(ApiCallerDataLayer.class);
+    private static final Logger LOGGER = LogFactory.getLogger(HttpJavaxPostClientImpl.class);
     @Override
     public Response post(String url, String payload, Map<String, String> headers) {
 
