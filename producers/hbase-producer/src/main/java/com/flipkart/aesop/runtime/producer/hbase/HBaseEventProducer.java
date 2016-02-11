@@ -71,13 +71,13 @@ public class HBaseEventProducer<T extends GenericRecord> extends AbstractEventPr
 	/** The default ZK settings*/
 	private static final int ZK_CLIENT_PORT = 2181;
 	private static final int ZK_SESSION_TIMEOUT = 20000; // 20 seconds
-    private static final String RPC_TIMEOUT = "60000"; //60 sec default
+    private static final int RPC_TIMEOUT = 60000; //60 sec default
 	
 	/** The default number of worker threads that process WAL edit events*/
 	private static final int WORKER_THREADS = 1;
 
     /**RPC Timeout for SEP to consume the events sent by RS**/
-    protected String rpcTimeout = RPC_TIMEOUT;
+    protected int rpcTimeout = RPC_TIMEOUT;
 
 	/** The SEP consumer instance initialized by this Producer*/
 	protected SepConsumer sepConsumer;
@@ -139,7 +139,7 @@ public class HBaseEventProducer<T extends GenericRecord> extends AbstractEventPr
 	        // need to explicitly set the ZK host and port details - hosts separated from port - see SepModelImpl constructor source code
 	        hbaseConf.set(ZK_QUORUM_CONFIG, this.zkQuorum);
 	        hbaseConf.setInt(ZK_CLIENT_PORT_CONFIG, this.zkClientPort);
-            hbaseConf.set(RPC_TIMEOUT_CONFIG,this.rpcTimeout);
+            hbaseConf.setInt(RPC_TIMEOUT_CONFIG,this.rpcTimeout);
 
 	        StringBuilder zkQuorumWithPort = new StringBuilder();
 	        String[] zkHostsList = this.zkQuorum.split(",");
@@ -303,10 +303,10 @@ public class HBaseEventProducer<T extends GenericRecord> extends AbstractEventPr
     public void setScnGenerator(SCNGenerator scnGenerator) {
         this.scnGenerator = scnGenerator;
     }
-    public String getRpcTimeout() {
+    public int getRpcTimeout() {
         return rpcTimeout;
     }
-    public void setRpcTimeout(String rpcTimeout) {
+    public void setRpcTimeout(int rpcTimeout) {
         this.rpcTimeout = rpcTimeout;
     }
     /** End Setter/Getter methods*/
