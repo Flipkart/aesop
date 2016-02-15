@@ -268,8 +268,15 @@ public class RuntimeConfigServiceImpl  implements RuntimeConfigService {
 			throw new PlatformException("Unable to create directory structure for uploading file");
 		}
 
-		FileOutputStream fos = new FileOutputStream(destFile);
-		fos.write(fileContents);						
+		FileOutputStream fos = null;
+		try{
+			fos = new FileOutputStream(destFile);
+			fos.write(fileContents);
+		}finally {
+			if(fos != null)
+				fos.close();
+		}
+								
 	}
 	
     /** Getter/Setter methods */
