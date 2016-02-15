@@ -31,6 +31,9 @@ import java.util.Map.Entry;
  */
 public class MapperHelper
 {
+	private MapperHelper() {
+	}
+
 	/**
 	 * Gets Namespace mapAll Path.
 	 * @param configRoot

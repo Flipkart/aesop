@@ -28,6 +28,9 @@ public class MysqlUtils
 	private static final String FIELDS_DETAILS_FETCH_QUERY =
 	        "SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = ? and TABLE_NAME = ?";
 
+	private MysqlUtils() {
+	}
+
 	/**
 	 * Release db resource.
 	 * @param connection object

@@ -40,5 +40,7 @@ public class SerializerConstants {
 	/** The Date format instances for used in naming files and state engine versions*/
 	public static SimpleDateFormat DAILY_DIR_FORMAT = new SimpleDateFormat(DAILY_DIR_FORMAT_STRING);
 	public static SimpleDateFormat DAILY_FILE_FORMAT = new SimpleDateFormat(DAILY_FILE_FORMAT_STRING);
-		
+
+	private SerializerConstants() {
+	}
 }

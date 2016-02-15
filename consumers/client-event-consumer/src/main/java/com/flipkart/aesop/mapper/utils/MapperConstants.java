@@ -29,4 +29,7 @@ public class MapperConstants
 	public static final String DESTINATION_PRIMARY_KEY_LIST = "primaryKeyList";
 	public static final String EXCLUSION_LIST_FIELD_NAME = "exclusionList";
 	public static final String MAP_ALL_FIELD_NAME = "mapAll";
+
+	private MapperConstants() {
+	}
 }
