@@ -25,7 +25,6 @@ import com.flipkart.aesop.runtime.producer.spi.SCNGenerator;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
-import org.apache.hadoop.hbase.KeyValue;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 import org.trpr.platform.core.PlatformException;
@@ -195,13 +194,13 @@ public class HBaseEventProducer<T extends GenericRecord> extends AbstractEventPr
             	T changeEvent = sepEventMapper.mapSepEvent(sepEvent);
             	byte[] schemaId=SchemaHelper.getSchemaId(changeEvent.getSchema().toString());
                	byte[] serializedEvent = serializeEvent(changeEvent);
-            	// we find the earliest processed timestamp of the KVs available in the WAL Edit, so as to not miss any edits
-            	long earliestKVTimestamp = Long.MAX_VALUE;
-            	for (KeyValue kv : sepEvent.getKeyValues()) {
-            		earliestKVTimestamp = Math.min(earliestKVTimestamp, kv.getTimestamp());
-            	}
+				// In case of multiple region servers, events in the sepEvents can be out of order wrt of event timestamp
+				// because of which SCN numbers will not be monotonically increasing If SCN is generated from event timestamp hence some events might get skipped
+				// because, for databus to process the event, SCN should be monotonically increasing in the same window
+				// Hence using eventEntryTimestamp instead of event timestamp for SCN generator
+				long eventEntryTimestamp = System.nanoTime();
 				DbusEventKey eventKey = new DbusEventKey(sepEvent.getRow()); // we use the SepEvent row key as the identifier
-                long eventScnNumber = scnGenerator.getSCN(earliestKVTimestamp,localHost);
+                long eventScnNumber = scnGenerator.getSCN(eventEntryTimestamp,localHost);
                 DbusEventInfo eventInfo = new DbusEventInfo(DbusOpcode.UPSERT,eventScnNumber,
                         (short)physicalSourceStaticConfig.getId(),(short)physicalSourceStaticConfig.getId(),
                         System.nanoTime(),(short)physicalSourceStaticConfig.getSources()[0].getId(), // here we use the Logical Source Id
