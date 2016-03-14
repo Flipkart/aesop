@@ -12,7 +12,6 @@
  */
 package com.flipkart.aesop.runtime.producer.eventprocessor.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.trpr.platform.core.impl.logging.LogFactory;
@@ -54,13 +53,8 @@ public class UpdateEventProcessor implements BinLogEventProcessor
 		LOGGER.debug("Update Event Received : " + event);
 		UpdateRowsEvent updateRowsEvent = (UpdateRowsEvent) event;
 		List<Pair<Row>> listOfPairs = updateRowsEvent.getRows();
-		List<Row> rowList = new ArrayList<Row>(listOfPairs.size());
-		for (Pair<Row> pair : listOfPairs)
-		{
-			Row row = pair.getAfter();
-			rowList.add(row);
-		}
-		manager.performChanges(updateRowsEvent.getTableId(), updateRowsEvent.getHeader(), rowList, DbusOpcode.UPSERT);
-		LOGGER.debug("Update Successful for  " + event.getHeader().getEventLength() + " . Data updated : " + rowList);
+
+		manager.performChanges(updateRowsEvent.getTableId(), updateRowsEvent.getHeader(), listOfPairs, DbusOpcode.UPSERT);
+		LOGGER.debug("Update Successful for  " + event.getHeader().getEventLength() + " . Data updated : " + listOfPairs);
 	}
 }

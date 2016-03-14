@@ -1,5 +1,7 @@
 package com.flipkart.aesop.runtime.producer.eventprocessor.impl;
 
+import com.google.code.or.common.glossary.Pair;
+import com.google.code.or.common.glossary.Row;
 import org.trpr.platform.core.impl.logging.LogFactory;
 import org.trpr.platform.core.spi.logging.Logger;
 
@@ -8,6 +10,9 @@ import com.flipkart.aesop.runtime.producer.eventprocessor.BinLogEventProcessor;
 import com.google.code.or.binlog.BinlogEventV4;
 import com.google.code.or.binlog.impl.event.DeleteRowsEventV2;
 import com.linkedin.databus.core.DbusOpcode;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The <code>DeleteEventV2Processor</code> processes DeleteRowsEventV2 from source. This event gets called when ever few
@@ -33,9 +38,18 @@ public class DeleteEventV2Processor implements BinLogEventProcessor
 		}
 		LOGGER.debug("Delete Event Received : " + event);
 		DeleteRowsEventV2 deleteRowsEvent = (DeleteRowsEventV2) event;
+		List<Row> rowList = deleteRowsEvent.getRows();
+		List<Pair<Row>> listOfPairs = new ArrayList<Pair<Row>>(rowList.size());
+
+		for (Row row : rowList)
+		{
+			Pair rowPair = new Pair(null, row);
+			listOfPairs.add(rowPair);
+		}
+
 		listener.getMysqlTransactionManager().performChanges(deleteRowsEvent.getTableId(), deleteRowsEvent.getHeader(),
-		        deleteRowsEvent.getRows(), DbusOpcode.DELETE);
+				listOfPairs, DbusOpcode.DELETE);
 		LOGGER.debug("Delete Successful for  " + event.getHeader().getEventLength() + " . Data deleted : "
-		        + deleteRowsEvent.getRows());
+		        + rowList);
 	}
 }

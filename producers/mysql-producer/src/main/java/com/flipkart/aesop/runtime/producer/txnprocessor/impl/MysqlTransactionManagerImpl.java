@@ -18,6 +18,7 @@ import com.flipkart.aesop.runtime.producer.mapper.BinLogEventMapper;
 import com.flipkart.aesop.runtime.producer.spi.SCNGenerator;
 import com.flipkart.aesop.runtime.producer.txnprocessor.MysqlTransactionManager;
 import com.google.code.or.binlog.BinlogEventV4Header;
+import com.google.code.or.common.glossary.Pair;
 import com.google.code.or.common.glossary.Row;
 import com.linkedin.databus.core.DatabusRuntimeException;
 import com.linkedin.databus.core.DbusEventBufferAppendable;
@@ -271,11 +272,11 @@ public class MysqlTransactionManagerImpl<T extends GenericRecord> implements Mys
     /**
      * Persists event related data in transaction object
      * @param eventHeader Binary log event header
-     * @param rowList list of mutated rows
+     * @param listOfPairs list of mutated rows
      * @param databusOpcode operation code indicating nature of change such as insertion,deletion or updation.
      */
     @Override
-    public void performChanges(long tableId, BinlogEventV4Header eventHeader, List<Row> rowList,
+    public void performChanges(long tableId, BinlogEventV4Header eventHeader, List<Pair<Row>> listOfPairs,
                                final DbusOpcode databusOpcode)
     {
         try
@@ -289,7 +290,7 @@ public class MysqlTransactionManagerImpl<T extends GenericRecord> implements Mys
             {
                 List<DbChangeEntry> entries =
                         eventManagerMap.get(Integer.valueOf(tableUriToSrcIdMap.get(currTableName))).frameAvroRecord(
-                                eventHeader, rowList, databusOpcode, binLogEventMappers, schema.getSchema(),
+                                eventHeader, listOfPairs, databusOpcode, binLogEventMappers, schema.getSchema(),
                                 this.scnGenerator.getSCN(frameSCN(currFileNum, (int) eventHeader.getPosition()),
                                         this.mySqlEventProducer.getBinLogHost()));
                 for (DbChangeEntry entry : entries)

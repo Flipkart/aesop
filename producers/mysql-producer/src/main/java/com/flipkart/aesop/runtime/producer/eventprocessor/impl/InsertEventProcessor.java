@@ -12,6 +12,8 @@
  */
 package com.flipkart.aesop.runtime.producer.eventprocessor.impl;
 
+import com.google.code.or.common.glossary.Pair;
+import com.google.code.or.common.glossary.Row;
 import org.trpr.platform.core.impl.logging.LogFactory;
 import org.trpr.platform.core.spi.logging.Logger;
 
@@ -20,6 +22,9 @@ import com.flipkart.aesop.runtime.producer.eventprocessor.BinLogEventProcessor;
 import com.google.code.or.binlog.BinlogEventV4;
 import com.google.code.or.binlog.impl.event.WriteRowsEvent;
 import com.linkedin.databus.core.DbusOpcode;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The <code>InsertEventProcessor</code> processes WriteRowsEvent from source. This event is received whenever insertion
@@ -46,10 +51,20 @@ public class InsertEventProcessor implements BinLogEventProcessor
 		}
 		LOGGER.debug("Insert Event Received : " + event);
 		WriteRowsEvent wre = (WriteRowsEvent) event;
-		listener.getMysqlTransactionManager().performChanges(wre.getTableId(), wre.getHeader(), wre.getRows(),
-		        DbusOpcode.UPSERT);
+		List<Row> rowList = wre.getRows();
+		List<Pair<Row>> listOfPairs = new ArrayList<Pair<Row>>(rowList.size());
+
+		for (Row row : rowList)
+		{
+			//Inserting Old Row as null
+			Pair rowPair = new Pair(null, row);
+			listOfPairs.add(rowPair);
+		}
+
+		listener.getMysqlTransactionManager().performChanges(wre.getTableId(), wre.getHeader(), listOfPairs,
+				DbusOpcode.UPSERT);
 		LOGGER.debug("Insertion Successful for  " + event.getHeader().getEventLength() + " . Data inserted : "
-		        + wre.getRows());
+		        + rowList);
 	}
 
 }

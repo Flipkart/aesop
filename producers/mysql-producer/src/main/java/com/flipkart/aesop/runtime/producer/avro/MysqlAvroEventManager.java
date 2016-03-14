@@ -14,11 +14,11 @@ package com.flipkart.aesop.runtime.producer.avro;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+import com.flipkart.aesop.runtime.producer.avro.utils.AvroSchemaHelper;
+import com.flipkart.aesop.runtime.producer.eventhelper.BinLogEventHelper;
+import com.google.code.or.common.glossary.Pair;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericDatumWriter;
 import org.apache.avro.generic.GenericRecord;
@@ -75,11 +75,15 @@ public class MysqlAvroEventManager<T extends GenericRecord>
 	/** physical source id */
 	protected final int pSourceId;
 
+	/** flag for getting old values */
+	private final boolean isOldValueRequired;
+
 	/** constructor for this class */
-	public MysqlAvroEventManager(int lSourceId, int pSourceId) throws DatabusException
+	public MysqlAvroEventManager(int lSourceId, int pSourceId, boolean isOldValueRequired) throws DatabusException
 	{
 		this.lSourceId = lSourceId;
 		this.pSourceId = pSourceId;
+		this.isOldValueRequired = isOldValueRequired;
 	}
 
 	/**
@@ -120,14 +124,14 @@ public class MysqlAvroEventManager<T extends GenericRecord>
 	 *            Sample :
 	 *            [header=BinlogEventV4HeaderImpl[timestamp=1394108600000,eventType=25,serverId=1,eventLength=85
 	 *            ,nextPosition=1501,flags=0,timestampOfReceipt=1394108600580]
-	 * @param rowList contains list of all mutated rows
+	 * @param listOfPairs contains list of all mutated rows
 	 * @param dbusOpCode code indicating type of operation such as insertion, update or delete
-	 * @param binLogEventMapper mapper corresponding to the source to which event belongs to
+	 * @param binLogEventMappers mapper corresponding to the source to which event belongs to
 	 * @param schema schema corresponding to the source to which event belongs to
 	 * @param scn system change number
 	 * @return List<DbChangeEntry> list of change records
 	 */
-	public List<DbChangeEntry> frameAvroRecord(final BinlogEventV4Header eventHeader, final List<Row> rowList,
+	public List<DbChangeEntry> frameAvroRecord(final BinlogEventV4Header eventHeader, final List<Pair<Row>> listOfPairs,
 	        final DbusOpcode dbusOpCode, Map<Integer, BinLogEventMapper<T>> binLogEventMappers, final Schema schema,
 	        final long scn)
 	{
@@ -137,19 +141,47 @@ public class MysqlAvroEventManager<T extends GenericRecord>
 		{
 			final long timestampInNanos = eventHeader.getTimestamp() * 1000000L;
 			final boolean isReplicated = false;
-			for (Row row : rowList)
+			for (Pair pair : listOfPairs)
 			{
-				List<Column> columns = row.getColumns();
+				Row oldRow = (Row) pair.getBefore();
+				Row newRow = (Row) pair.getAfter();
+
 				// getting the appropriate bin log mapper for the logicalSource
 				BinLogEventMapper<T> binLogEventMapper =
 				        binLogEventMappers.get(lSourceId) == null ? new DefaultBinLogEventMapper<T>(new ORToAvroMapper())
 				                : binLogEventMappers.get(lSourceId);
 
-				GenericRecord genericRecord = binLogEventMapper.mapBinLogEvent(eventHeader, row, dbusOpCode, schema);
-				List<KeyPair> keyPairList = generateKeyPair(columns, schema);
+				String oldValueMapField = AvroSchemaHelper.getRowChangeField(schema);
+				GenericRecord newGenericRecord;
+
+				if (oldValueMapField != null)
+				{
+					BinLogEventHelper.appendColumnToRow(newRow, null);
+					newGenericRecord = binLogEventMapper.mapBinLogEvent(eventHeader, newRow, dbusOpCode, schema);
+
+					Object changedOldValues = null;
+
+					// oldRow will be null incases of inserts and deletes statements
+					if (this.isOldValueRequired && oldRow != null)
+					{
+						BinLogEventHelper.appendColumnToRow(oldRow, null);
+						GenericRecord oldGenericRecord = binLogEventMapper.mapBinLogEvent(eventHeader, oldRow, dbusOpCode, schema);
+						changedOldValues = calculateChange(oldGenericRecord, newGenericRecord);
+					}
+
+					newGenericRecord.put(oldValueMapField, changedOldValues);
+				}
+				else
+				{
+					newGenericRecord = binLogEventMapper.mapBinLogEvent(eventHeader, newRow, dbusOpCode, schema);
+				}
+
+				List<KeyPair> keyPairList = generateKeyPair(newRow.getColumns(), schema);
+
+				LOGGER.info("Final value getting pushed " + newGenericRecord.toString());
 				DbChangeEntry dbChangeEntry =
-				        new DbChangeEntry(scn, timestampInNanos, genericRecord, dbusOpCode, isReplicated, schema,
-				                keyPairList);
+						new DbChangeEntry(scn, timestampInNanos, newGenericRecord, dbusOpCode, isReplicated, schema,
+								keyPairList);
 				entryList.add(dbChangeEntry);
 				LOGGER.debug("Successfully Processed the Row " + dbChangeEntry);
 			}
@@ -165,6 +197,34 @@ public class MysqlAvroEventManager<T extends GenericRecord>
 			throw new DatabusRuntimeException(de);
 		}
 		return entryList;
+	}
+
+	/**
+	 * This method scans new and old records and calculates changes.
+	 *
+	 * @param oldGenericRecord is a generic rocord representing old-record before change
+	 * @param newGenericRecord is a generic rocord representing new-record after change
+	 * @return HashMap<String, Object> this contains changes in form of <columnName,ColumnValue>
+	 */
+	private Map<String, Object> calculateChange(GenericRecord oldGenericRecord, GenericRecord newGenericRecord)
+	{
+		Map <String, Object> changedOldValue = new HashMap<String, Object>();
+		for (Schema.Field  field : newGenericRecord.getSchema().getFields())
+		{
+			String fieldName = field.name();
+			Object oldFieldValue = oldGenericRecord.get(fieldName);
+			Object newFieldValue = newGenericRecord.get(fieldName);
+
+			if (oldFieldValue == null && newFieldValue != null)
+			{
+				changedOldValue.put(fieldName, oldFieldValue);
+			}
+			if (oldFieldValue != null && !oldFieldValue.equals(newFieldValue))
+			{
+				changedOldValue.put(fieldName, oldFieldValue);
+			}
+		}
+		return changedOldValue;
 	}
 
 	/**
