@@ -27,6 +27,7 @@ public class MysqlBinLogEventImpl implements MysqlBinLogEvent
 {
 	private static String PK_FIELD_NAME = "pk";
 	private static String META_FIELD_TYPE_NAME = "dbFieldType";
+	private static String META_ROW_CHANGE_FIELD = "rowChangeField";
 	private Schema schema;
 	private List<String> pKeyList = new ArrayList<String>(3);
 	private Map<String, Object> keyValuePairs = new HashMap<String, Object>();
@@ -39,13 +40,21 @@ public class MysqlBinLogEventImpl implements MysqlBinLogEvent
 		this.schema = writerSchema.getSchema();
 		this.eventType = event.getOpcode();
 		this.pKeyList = getPkListFromSchema(schema);
+		HashMap <String, String> fieldToMysqlDataType = fieldToDataTypeMap(schema);
 		for (Field field : schema.getFields())
 		{
-			String mysqlType = SchemaHelper.getMetaField(field, META_FIELD_TYPE_NAME);
-			this.keyValuePairs.put(
-			        field.name(),
-			        AvroToMysqlMapper.avroToMysqlType(genericRecord.get(field.name()),
-			                MysqlDataTypes.valueOf(mysqlType.toUpperCase())));
+			Object recordValue = genericRecord.get(field.name());
+			Object mysqlTypedObject;
+			if (isRowChangeField(field))
+			{
+				mysqlTypedObject = getMysqlObjectForRowChangeField((HashMap<Object, Object>) recordValue, fieldToMysqlDataType);
+			}
+			else
+			{
+				String mysqlType = fieldToMysqlDataType.get(field.name());
+				mysqlTypedObject = getMysqlTypedObject(mysqlType, recordValue);
+			}
+			this.keyValuePairs.put(field.name(), mysqlTypedObject);
 		}
 
 	}
@@ -125,6 +134,69 @@ public class MysqlBinLogEventImpl implements MysqlBinLogEvent
 		builder.append("pKeyList : " + getPrimaryKeyList().toString() + ", ");
 		builder.append("keyValuePairs : " + getKeyValuePair().toString());
 		return builder.toString();
+	}
+
+	/**
+	 * Check whether given field is rowChangeField
+	 * @param field
+	 * @return True/False
+	 */
+	private boolean isRowChangeField(Schema.Field field)
+	{
+		String fieldValue = SchemaHelper.getMetaField(field, META_ROW_CHANGE_FIELD);
+		return fieldValue != null;
+	}
+
+	/**
+	 * Generates a hash storing fieldName to intended MysqlDataType from schema
+	 * @param schema
+	 * @return Map containg FieldName to Mysql Type mapping
+	 */
+	private HashMap<String, String> fieldToDataTypeMap(Schema schema)
+	{
+		HashMap<String, String> map = new HashMap <String, String>();
+		for (Schema.Field field : schema.getFields())
+		{
+			String mysqlType = SchemaHelper.getMetaField(field, META_FIELD_TYPE_NAME);
+			map.put(field.name(), mysqlType);
+		}
+		return map;
+	}
+
+	/**
+	 * This returns mysql object from avro object and intented mysql datatype
+	 * @param mysqlType
+	 * @param fieldValue
+	 * @return MysqlTypedObject using AvroToMysqlMapper
+	 */
+	private Object getMysqlTypedObject(String mysqlType, Object fieldValue)
+	{
+		MysqlDataTypes mysqlTypeToConvert = MysqlDataTypes.valueOf(mysqlType.toUpperCase());
+		Object mysqlTypedObject = AvroToMysqlMapper.avroToMysqlType(fieldValue, mysqlTypeToConvert);
+		return mysqlTypedObject;
+	}
+
+	/**
+	 * This specifically handles rowChangeField which comes in form HashMap and converting each key/value to Mysql type
+	 * @param fieldValue
+	 * @param fieldToMysqlDataType
+	 * @return MysqlTypedObject using AvroToMysqlMapper
+	 */
+	private HashMap<String, Object> getMysqlObjectForRowChangeField(HashMap<Object, Object> fieldValue,
+												   HashMap <String, String> fieldToMysqlDataType)
+	{
+		HashMap<String, Object> mysqlTypedObject = null;
+		if (fieldValue != null)
+		{
+			mysqlTypedObject = new HashMap<String, Object>();
+			for (Object key : fieldValue.keySet())
+			{
+				String fieldName = key.toString();
+				String sqltype = fieldToMysqlDataType.get(fieldName);
+				mysqlTypedObject.put(fieldName, getMysqlTypedObject(sqltype, fieldValue.get(key)));
+			}
+		}
+		return mysqlTypedObject;
 	}
 
 }
