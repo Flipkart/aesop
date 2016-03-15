@@ -7,9 +7,9 @@ import java.util.List;
 /**
  * Created by akshit.agarwal on 14/03/16.
  */
-public class AvroSchemaHelper extends SchemaHelper
+public class AvroSchemaHelper
 {
-    private static String rowChangeMetaField = "rowChangeField";
+    private static String ROW_CHANGE_META_FIELD = "rowChangeField";
 
     public static String getRowChangeField(Schema schema)
     {
@@ -17,7 +17,7 @@ public class AvroSchemaHelper extends SchemaHelper
         String rowChangeField = null;
         for (Schema.Field field : schemaFields)
         {
-            String fieldValue = SchemaHelper.getMetaField(field, rowChangeMetaField);
+            String fieldValue = SchemaHelper.getMetaField(field, ROW_CHANGE_META_FIELD);
             if (fieldValue != null)
             {
                 rowChangeField = field.name();

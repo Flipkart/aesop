@@ -1,5 +1,9 @@
 package com.flipkart.aesop.avro.schemagenerator.data;
 
+import java.lang.Object;
+import java.util.Arrays;
+import java.util.HashMap;
+
 /**
  * <code> MysqlToAvroMapper </code> maps Mysql data type to Avro data types.
  * @author chandan.bansal
@@ -94,16 +98,26 @@ public enum MysqlToAvroMapper
 	TIME("long"),
 
 	/** The year. */
-	YEAR("long");
+	YEAR("long"),
+
+	/** For HashMap.
+	 * Though this Mysql Datatype does exist, this required for
+	 * passing record changes in form of Avro Map datatype.
+	 */
+	MAP(new HashMap<String, Object>(){{
+	        put("type", "map");
+			put("values", Arrays.asList("int", "long", "float", "double", "bytes", "string", "null"));
+	    }});
+
 
 	/** The avro type. */
-	private final String avroType;
+	private final Object avroType;
 
 	/**
 	 * enum constructor.
 	 * @param avroType the avro data type
 	 */
-	private MysqlToAvroMapper(String avroType)
+	private MysqlToAvroMapper(Object avroType)
 	{
 		this.avroType = avroType;
 	}
@@ -112,7 +126,7 @@ public enum MysqlToAvroMapper
 	 * Gets the avro type.
 	 * @return the avro type
 	 */
-	public String getAvroType()
+	public Object getAvroType()
 	{
 		return avroType;
 	}

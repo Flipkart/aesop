@@ -53,7 +53,7 @@ import com.linkedin.databus2.schemas.utils.SchemaHelper;
 /**
  * <code>MysqlAvroEventManager</code> deals with avro events and provides avro specific functionalities
  * such as framing an avro record and appending avro events to event buffer.
- * 
+ *
  * <pre>
  * <ul> 
  * <li>Provides means to serialize avro events</li>
@@ -145,12 +145,10 @@ public class MysqlAvroEventManager<T extends GenericRecord>
 			{
 				Row oldRow = (Row) pair.getBefore();
 				Row newRow = (Row) pair.getAfter();
-
 				// getting the appropriate bin log mapper for the logicalSource
 				BinLogEventMapper<T> binLogEventMapper =
-				        binLogEventMappers.get(lSourceId) == null ? new DefaultBinLogEventMapper<T>(new ORToAvroMapper())
-				                : binLogEventMappers.get(lSourceId);
-
+						binLogEventMappers.get(lSourceId) == null ? new DefaultBinLogEventMapper<T>(new ORToAvroMapper())
+								: binLogEventMappers.get(lSourceId);
 				String oldValueMapField = AvroSchemaHelper.getRowChangeField(schema);
 				GenericRecord newGenericRecord;
 
@@ -158,7 +156,6 @@ public class MysqlAvroEventManager<T extends GenericRecord>
 				{
 					BinLogEventHelper.appendColumnToRow(newRow, null);
 					newGenericRecord = binLogEventMapper.mapBinLogEvent(eventHeader, newRow, dbusOpCode, schema);
-
 					Object changedOldValues = null;
 
 					// oldRow will be null incases of inserts and deletes statements
@@ -168,7 +165,6 @@ public class MysqlAvroEventManager<T extends GenericRecord>
 						GenericRecord oldGenericRecord = binLogEventMapper.mapBinLogEvent(eventHeader, oldRow, dbusOpCode, schema);
 						changedOldValues = calculateChange(oldGenericRecord, newGenericRecord);
 					}
-
 					newGenericRecord.put(oldValueMapField, changedOldValues);
 				}
 				else
@@ -177,8 +173,6 @@ public class MysqlAvroEventManager<T extends GenericRecord>
 				}
 
 				List<KeyPair> keyPairList = generateKeyPair(newRow.getColumns(), schema);
-
-				LOGGER.info("Final value getting pushed " + newGenericRecord.toString());
 				DbChangeEntry dbChangeEntry =
 						new DbChangeEntry(scn, timestampInNanos, newGenericRecord, dbusOpCode, isReplicated, schema,
 								keyPairList);

@@ -10,7 +10,6 @@ import java.util.List;
  */
 public class BinLogEventHelper
 {
-
     public static void appendColumnToRow(Row actualRow, Column columnToAppend)
     {
         List<Column> oldColValues = actualRow.getColumns();

@@ -45,7 +45,7 @@ public class TableRecord
 		/** schema field name */
 		private String name;
 		/** array of field types */
-		private String[] type;
+		private Object[] type;
 		/** meta for the field */
 		private String meta;
 
@@ -53,10 +53,16 @@ public class TableRecord
 		{
 			/** this can be different from dbFieldName */
 			this.name = dbFieldName;
-			this.type = new String[]{MysqlToAvroMapper.valueOf(dbFieldType.toUpperCase()).getAvroType(), "null"};
+			this.type = new Object[]{MysqlToAvroMapper.valueOf(dbFieldType.toUpperCase()).getAvroType(), "null"};
 			this.meta =
 			        "dbFieldName=" + dbFieldName + ";dbFieldPosition=" + dbFieldPosition + ";dbFieldType="
 			                + dbFieldType;
+		}
+
+
+		public void markAsRowChangeField()
+		{
+			this.meta = this.meta + ";rowChangeField=true";
 		}
 
 		public String getName()
@@ -69,7 +75,7 @@ public class TableRecord
 			this.name = name;
 		}
 
-		public String[] getType()
+		public Object[] getType()
 		{
 			return type;
 		}

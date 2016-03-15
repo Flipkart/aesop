@@ -28,6 +28,9 @@ public class MysqlUtils
 	private static final String FIELDS_DETAILS_FETCH_QUERY =
 	        "SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = ? and TABLE_NAME = ?";
 
+	/** Fieldname storing old values */
+	private static final String OLD_ROW_VALUE_FIELD_NAME = "__oldValue";
+
 	/**
 	 * Release db resource.
 	 * @param connection object
@@ -258,6 +261,7 @@ public class MysqlUtils
 		Connection connection = null;
 		PreparedStatement preparedStatement = null;
 		ResultSet resultSet = null;
+		int columnCount = 0;
 		try
 		{
 			connection = MysqlConnectionProvider.getInstance().getConnection(db);
@@ -267,10 +271,13 @@ public class MysqlUtils
 			resultSet = preparedStatement.executeQuery();
 			while (resultSet.next())
 			{
+				columnCount++;
 				fieldInfoList.add(new TableRecord.Field(resultSet.getString("COLUMN_NAME"), resultSet
 				        .getString("DATA_TYPE"), resultSet.getInt("ORDINAL_POSITION")));
 			}
 
+			// This could be flag based
+			fieldInfoList.add(getOldRecordFieldDetails(columnCount));
 		}
 		catch (SQLException e)
 		{
@@ -281,6 +288,21 @@ public class MysqlUtils
 			releaseDBResource(connection, resultSet, preparedStatement);
 		}
 		return fieldInfoList;
+	}
+
+	/**
+	 * This create a new field meant for storing old changed record details in form of map
+	 * @param columnCount
+	 * @return
+	 */
+	private static TableRecord.Field getOldRecordFieldDetails(int columnCount)
+	{
+		String dbFieldName = OLD_ROW_VALUE_FIELD_NAME;
+		String dbFieldType = "MAP";
+		int dbFieldPosition = (columnCount + 1);
+		TableRecord.Field oldRecordField = new TableRecord.Field(dbFieldName, dbFieldType, dbFieldPosition);
+		oldRecordField.markAsRowChangeField();
+		return oldRecordField;
 	}
 
 }

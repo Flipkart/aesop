@@ -7,22 +7,30 @@
   "fields" : [ {
     "name" : "id",
     "type" : [ "long", "null" ],
-    "meta" : "dbFieldName=ID;dbFieldPosition=0;dbFieldType=bigint"
+    "meta" : "dbFieldName=ID;dbFieldPosition=1;dbFieldType=bigint"
   }, {
     "name" : "firstName",
     "type" : [ "string", "null" ],
-    "meta" : "dbFieldName=FIRST_NAME;dbFieldPosition=1;dbFieldType=varchar"
+    "meta" : "dbFieldName=FIRST_NAME;dbFieldPosition=2;dbFieldType=varchar"
   }, {
     "name" : "lastName",
     "type" : [ "string", "null" ],
-    "meta" : "dbFieldName=LAST_NAME;dbFieldPosition=2;dbFieldType=varchar"
+    "meta" : "dbFieldName=LAST_NAME;dbFieldPosition=3;dbFieldType=varchar"
   }, {
     "name" : "birthDate",
     "type" : [ "long", "null" ],
-    "meta" : "dbFieldName=BIRTH_DATE;dbFieldPosition=3;dbFieldType=timestamp"
+    "meta" : "dbFieldName=BIRTH_DATE;dbFieldPosition=4;dbFieldType=timestamp"
   }, {
     "name" : "deleted",
     "type" : [ "string", "null" ],
-    "meta" : "dbFieldName=DELETED;dbFieldPosition=4;dbFieldType=varchar"
-  } ]
+    "meta" : "dbFieldName=DELETED;dbFieldPosition=5;dbFieldType=varchar"
+  }, {
+       "name" : "_oldValue",
+       "type" : [ {
+         "values" : [ "int", "long", "float", "double", "bytes", "string", "null" ],
+         "type" : "map"
+       }, "null" ],
+       "meta" : "dbFieldName=_oldValue;dbFieldPosition=6;dbFieldType=MAP;rowChangeField=true"
+  }
+  ]
 }
