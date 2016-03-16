@@ -7,6 +7,7 @@ import org.apache.avro.Schema;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 public class AvroSchemaHelper
@@ -31,9 +32,9 @@ public class AvroSchemaHelper
 	 * @param schema
 	 * @return Map containg FieldName to Mysql Type mapping
 	 */
-	public static HashMap<String, String> fieldToDataTypeMap(Schema schema)
+	public static Map<String, String> fieldToDataTypeMap(Schema schema)
 	{
-		HashMap<String, String> map = new HashMap <String, String>();
+		Map<String, String> map = new HashMap <String, String>();
 		for (Schema.Field field : schema.getFields())
 		{
 			String mysqlType = SchemaHelper.getMetaField(field, META_FIELD_TYPE_NAME);

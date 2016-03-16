@@ -40,7 +40,7 @@ public class MysqlBinLogEventImpl implements MysqlBinLogEvent
 		this.schema = writerSchema.getSchema();
 		this.eventType = event.getOpcode();
 		this.pKeyList = getPkListFromSchema(schema);
-		HashMap <String, String> fieldToMysqlDataType = fieldToDataTypeMap(schema);
+		Map <String, String> fieldToMysqlDataType = fieldToDataTypeMap(schema);
 		for (Field field : schema.getFields())
 		{
 			Object recordValue = genericRecord.get(field.name());
@@ -152,9 +152,9 @@ public class MysqlBinLogEventImpl implements MysqlBinLogEvent
 	 * @param schema
 	 * @return Map containg FieldName to Mysql Type mapping
 	 */
-	private HashMap<String, String> fieldToDataTypeMap(Schema schema)
+	private Map<String, String> fieldToDataTypeMap(Schema schema)
 	{
-		HashMap<String, String> map = new HashMap <String, String>();
+		Map<String, String> map = new HashMap <String, String>();
 		for (Schema.Field field : schema.getFields())
 		{
 			String mysqlType = SchemaHelper.getMetaField(field, META_FIELD_TYPE_NAME);
@@ -182,10 +182,10 @@ public class MysqlBinLogEventImpl implements MysqlBinLogEvent
 	 * @param fieldToMysqlDataType
 	 * @return MysqlTypedObject using AvroToMysqlMapper
 	 */
-	private HashMap<String, Object> getMysqlObjectForRowChangeField(HashMap<Object, Object> fieldValue,
-												   HashMap <String, String> fieldToMysqlDataType)
+	private Map<String, Object> getMysqlObjectForRowChangeField(HashMap<Object, Object> fieldValue,
+																Map <String, String> fieldToMysqlDataType)
 	{
-		HashMap<String, Object> mysqlTypedObject = null;
+		Map<String, Object> mysqlTypedObject = null;
 		if (fieldValue != null)
 		{
 			mysqlTypedObject = new HashMap<String, Object>();

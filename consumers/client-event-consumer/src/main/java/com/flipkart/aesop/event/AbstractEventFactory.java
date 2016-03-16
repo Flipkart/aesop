@@ -49,7 +49,7 @@ public abstract class AbstractEventFactory<T extends AbstractEvent> implements E
 		String namespaceName = schema.getNamespace();
 		String entityName = schema.getName();
 		Map<String, Object> fieldMap = new HashMap<String, Object>();
-		HashMap <String, String> fieldToMysqlDataType = AvroSchemaHelper.fieldToDataTypeMap(schema);
+		Map <String, String> fieldToMysqlDataType = AvroSchemaHelper.fieldToDataTypeMap(schema);
 
 		for (Field field : schema.getFields())
 		{
@@ -120,10 +120,10 @@ public abstract class AbstractEventFactory<T extends AbstractEvent> implements E
 	 * @param fieldToMysqlDataType
 	 * @return MysqlTypedObject using AvroToMysqlMapper
 	 */
-	private HashMap<String, Object> getMysqlObjectForRowChangeField(HashMap<Object, Object> fieldValue,
-												   HashMap <String, String> fieldToMysqlDataType)
+	private Map<String, Object> getMysqlObjectForRowChangeField(HashMap<Object, Object> fieldValue,
+												   Map <String, String> fieldToMysqlDataType)
 	{
-		HashMap<String, Object> mysqlTypedObject = null;
+		Map<String, Object> mysqlTypedObject = null;
 		if (fieldValue != null)
 		{
 			mysqlTypedObject = new HashMap<String, Object>();

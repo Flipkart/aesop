@@ -156,7 +156,7 @@ public class MysqlAvroEventManager<T extends GenericRecord>
 				{
 					BinLogEventHelper.appendColumnToRow(newRow, null);
 					newGenericRecord = binLogEventMapper.mapBinLogEvent(eventHeader, newRow, dbusOpCode, schema);
-					Object changedOldValues = null;
+					Map<String, Object> changedOldValues = null;
 
 					// oldRow will be null incases of inserts and deletes statements
 					if (this.isOldValueRequired && oldRow != null)
