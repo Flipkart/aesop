@@ -43,8 +43,7 @@ public class InsertEventV2Processor implements BinLogEventProcessor
 
 		for (Row row : rowList)
 		{
-			Pair rowPair = new Pair(null, row);
-			listOfPairs.add(rowPair);
+			listOfPairs.add(new Pair<Row>(null, row));
 		}
 
 		listener.getMysqlTransactionManager().performChanges(wre.getTableId(), wre.getHeader(), listOfPairs,

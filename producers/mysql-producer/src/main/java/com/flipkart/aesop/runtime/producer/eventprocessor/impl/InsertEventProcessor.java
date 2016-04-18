@@ -57,8 +57,7 @@ public class InsertEventProcessor implements BinLogEventProcessor
 		for (Row row : rowList)
 		{
 			//Inserting Old Row as null
-			Pair rowPair = new Pair(null, row);
-			listOfPairs.add(rowPair);
+			listOfPairs.add(new Pair<Row>(null, row));
 		}
 
 		listener.getMysqlTransactionManager().performChanges(wre.getTableId(), wre.getHeader(), listOfPairs,

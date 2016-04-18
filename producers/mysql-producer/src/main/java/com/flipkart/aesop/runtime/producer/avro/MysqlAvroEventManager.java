@@ -150,31 +150,32 @@ public class MysqlAvroEventManager<T extends GenericRecord>
 						binLogEventMappers.get(lSourceId) == null ? new DefaultBinLogEventMapper<T>(new ORToAvroMapper())
 								: binLogEventMappers.get(lSourceId);
 				String oldValueMapField = AvroSchemaHelper.getRowChangeField(schema);
-				GenericRecord newGenericRecord;
+				GenericRecord newRecord;
 
 				if (oldValueMapField != null)
 				{
 					BinLogEventHelper.appendColumnToRow(newRow, null);
-					newGenericRecord = binLogEventMapper.mapBinLogEvent(eventHeader, newRow, dbusOpCode, schema);
+					newRecord = binLogEventMapper.mapBinLogEvent(eventHeader, newRow, dbusOpCode, schema);
 					Map<String, Object> changedOldValues = null;
 
 					// oldRow will be null incases of inserts and deletes statements
 					if (this.isOldValueRequired && oldRow != null)
 					{
 						BinLogEventHelper.appendColumnToRow(oldRow, null);
-						GenericRecord oldGenericRecord = binLogEventMapper.mapBinLogEvent(eventHeader, oldRow, dbusOpCode, schema);
-						changedOldValues = calculateChange(oldGenericRecord, newGenericRecord);
+						GenericRecord oldRecord = binLogEventMapper.mapBinLogEvent(eventHeader, oldRow, dbusOpCode, schema);
+						changedOldValues = MysqlAvroEventManager.calculateChange(oldRecord, newRecord);
 					}
-					newGenericRecord.put(oldValueMapField, changedOldValues);
+					newRecord.put(oldValueMapField, changedOldValues);
 				}
 				else
 				{
-					newGenericRecord = binLogEventMapper.mapBinLogEvent(eventHeader, newRow, dbusOpCode, schema);
+					newRecord = binLogEventMapper.mapBinLogEvent(eventHeader, newRow, dbusOpCode, schema);
 				}
 
 				List<KeyPair> keyPairList = generateKeyPair(newRow.getColumns(), schema);
+				LOGGER.info("Final new record" + newRecord.toString());
 				DbChangeEntry dbChangeEntry =
-						new DbChangeEntry(scn, timestampInNanos, newGenericRecord, dbusOpCode, isReplicated, schema,
+						new DbChangeEntry(scn, timestampInNanos, newRecord, dbusOpCode, isReplicated, schema,
 								keyPairList);
 				entryList.add(dbChangeEntry);
 				LOGGER.debug("Successfully Processed the Row " + dbChangeEntry);
@@ -196,28 +197,30 @@ public class MysqlAvroEventManager<T extends GenericRecord>
 	/**
 	 * This method scans new and old records and calculates changes.
 	 *
-	 * @param oldGenericRecord is a generic rocord representing old-record before change
-	 * @param newGenericRecord is a generic rocord representing new-record after change
+	 * @param oldRecord is a generic record representing old-record before change
+	 * @param newRecord is a generic record representing new-record after change
 	 * @return HashMap<String, Object> this contains changes in form of <columnName,ColumnValue>
 	 */
-	private Map<String, Object> calculateChange(GenericRecord oldGenericRecord, GenericRecord newGenericRecord)
+	private static Map<String, Object> calculateChange(GenericRecord oldRecord, GenericRecord newRecord)
 	{
 		Map <String, Object> changedOldValue = new HashMap<String, Object>();
-		for (Schema.Field  field : newGenericRecord.getSchema().getFields())
+		for (Schema.Field  field : newRecord.getSchema().getFields())
 		{
 			String fieldName = field.name();
-			Object oldFieldValue = oldGenericRecord.get(fieldName);
-			Object newFieldValue = newGenericRecord.get(fieldName);
+			Object oldValue = oldRecord.get(fieldName);
+			Object newValue = newRecord.get(fieldName);
 
-			if (oldFieldValue == null && newFieldValue != null)
+			if (oldValue == null && newValue != null)
 			{
-				changedOldValue.put(fieldName, oldFieldValue);
+				changedOldValue.put(fieldName, oldValue);
 			}
-			if (oldFieldValue != null && !oldFieldValue.equals(newFieldValue))
+			if (oldValue != null && !oldValue.equals(newValue))
 			{
-				changedOldValue.put(fieldName, oldFieldValue);
+				changedOldValue.put(fieldName, oldValue);
 			}
 		}
+		//Test it
+		assert (changedOldValue.isEmpty() != true) : "Old and New Record values are same or equals not working as expected";
 		return changedOldValue;
 	}
 

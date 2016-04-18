@@ -154,11 +154,10 @@ public class MysqlBinLogEventImpl implements MysqlBinLogEvent
 	 */
 	private Map<String, String> fieldToDataTypeMap(Schema schema)
 	{
-		Map<String, String> map = new HashMap <String, String>();
+		Map<String, String> map = new HashMap <String, String>(schema.getFields().size());
 		for (Schema.Field field : schema.getFields())
 		{
-			String mysqlType = SchemaHelper.getMetaField(field, META_FIELD_TYPE_NAME);
-			map.put(field.name(), mysqlType);
+			map.put(field.name(), SchemaHelper.getMetaField(field, META_FIELD_TYPE_NAME));
 		}
 		return map;
 	}

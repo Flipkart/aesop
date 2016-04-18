@@ -57,8 +57,7 @@ public class DeleteEventProcessor implements BinLogEventProcessor
 
 		for (Row row : rowList)
 		{
-			Pair rowPair = new Pair(null, row);
-			listOfPairs.add(rowPair);
+			listOfPairs.add(new Pair<Row>(null, row));
 		}
 
 		listener.getMysqlTransactionManager().performChanges(deleteRowsEvent.getTableId(), deleteRowsEvent.getHeader(),
