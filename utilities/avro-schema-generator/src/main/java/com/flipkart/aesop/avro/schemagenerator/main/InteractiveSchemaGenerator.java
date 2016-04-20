@@ -189,8 +189,7 @@ public class InteractiveSchemaGenerator
 	 * Run schema gen tool.
 	 * @return true, if successful
 	 */
-	public boolean runSchemaGenTool()
-	{
+	public boolean runSchemaGenTool() throws IllegalArgumentException {
 		for (String table : _tableNames)
 		{
 

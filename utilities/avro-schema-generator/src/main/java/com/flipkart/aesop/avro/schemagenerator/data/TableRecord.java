@@ -36,6 +36,21 @@ public class TableRecord
 		this.fields = fields;
 	}
 
+	public TableRecord(String name, String type, String doc, String namespace, List<String> primaryKeys,
+	        List<Field> fields, String rowChangeFieldName) throws IllegalArgumentException
+	{
+		if (rowChangeFieldName == null)
+		{
+			throw new IllegalArgumentException("rowChangeFieldName can't be NULL");
+		}
+		this.name = name;
+		this.type = type;
+		this.doc = doc;
+		this.namespace = namespace;
+		this.meta = "pk=" + StringUtils.join(primaryKeys, ",") + ";rowChangeField=" + rowChangeFieldName;
+		this.fields = fields;
+	}
+
 	/**
 	 * <code>Field</code> encapsulate the field schema for the table
 	 * @author yogesh.dahiya
@@ -57,12 +72,6 @@ public class TableRecord
 			this.meta =
 			        "dbFieldName=" + dbFieldName + ";dbFieldPosition=" + dbFieldPosition + ";dbFieldType="
 			                + dbFieldType;
-		}
-
-
-		public void markAsRowChangeField()
-		{
-			this.meta = this.meta + ";rowChangeField=true";
 		}
 
 		public String getName()

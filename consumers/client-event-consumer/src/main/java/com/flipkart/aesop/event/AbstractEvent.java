@@ -39,6 +39,9 @@ public abstract class AbstractEvent implements Event
 	/** Event Type. */
 	protected final DbusOpcode eventType;
 
+	/** OldRowMap : Storing changes. */
+	protected Map<String, Object> rowChangeMap;
+
 	/**
 	 * Constructs the basic event using mandatory fields.
 	 * @param fieldsMap
@@ -102,10 +105,18 @@ public abstract class AbstractEvent implements Event
 		return primaryKeyValues;
 	}
 
+	public Map<String, Object> getRowChangeMap() {
+		return rowChangeMap;
+	}
+
+	public void setRowChangeMap(Map<String, Object> rowChangeMap) {
+		this.rowChangeMap = rowChangeMap;
+	}
+
 	@Override
 	public String toString()
 	{
 		return "AbstractEvent [fieldsMap=" + fieldMap + ", primaryKeysSet=" + primaryKeysSet + ", entityName="
-		        + entityName + ", namespaceName=" + namespaceName + ", eventType=" + eventType + "]";
+		        + entityName + ", namespaceName=" + namespaceName + ", eventType=" + eventType + ", rowChangeMap=" + rowChangeMap + "]";
 	}
 }

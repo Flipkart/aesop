@@ -85,16 +85,16 @@ public class SchemaGeneratorCli
 
 			
 			String outputFolder=commandLine.getOptionValue("f");
+			String oldValueFieldName = commandLine.hasOption("q") ? commandLine.getOptionValue("q") : null;
+
 			//check if outputFolder exists, if not create one.
 			File f = new File(outputFolder);
 			if (!f.exists() || !f.isDirectory()) {
 					f.mkdir();
 				}
-			
-			
-			
+
 			SchemaGenerator schemaGenerator =
-			        new SchemaGenerator(dataSourceConfigs, tablesInclusionListMap, tablesExclusionListMap);
+			        new SchemaGenerator(dataSourceConfigs, tablesInclusionListMap, tablesExclusionListMap, oldValueFieldName);
 			System.out.println("Generating Schema ...\n");
 			if (commandLine.hasOption("t"))
 			{
@@ -150,16 +150,17 @@ public class SchemaGeneratorCli
 				.addOption("f", "output-folder", true, "path to the folder for storing output")
 				.addOption("v", "version", true, "version number of schema")
 				.addOption("h", "host", true, "host name for connection ; default localhost")
-		        .addOption("o", "port", true, "port for connection ; default 3306")
+				.addOption("o", "port", true, "port for connection ; default 3306")
 		        .addOption("u", "user", true, "user name for connection ; default root")
 		        .addOption("p", "password", true, "password for the connection ; default empty string")
 		        .addOption("t", "table", true, "table name for schema generation ; default all ")
 		        .addOption("e", "exclusion-list", true, "exclusion list ; default none")
 		        .addOption("i", "inclusion-list", true, "inclusion list ; default all")
-		        .addOption("?", "help", false, "help")
-		        .addOption(
-		                OptionBuilder.withArgName("dbName").withLongOpt("db").withDescription("db name for connection")
-		                        .hasArg().create('d'))
+				.addOption("?", "help", false, "help")
+				.addOption("q", "row-change-field", true, "fieldname to represents old-changes")
+				.addOption(
+						OptionBuilder.withArgName("dbName").withLongOpt("db").withDescription("db name for connection")
+								.hasArg().create('d'))
 
 		        .addOption(
 		                OptionBuilder.withArgName("args").withLongOpt("exclusion-list")

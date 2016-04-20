@@ -50,23 +50,23 @@ public abstract class AbstractEventFactory<T extends AbstractEvent> implements E
 		String entityName = schema.getName();
 		Map<String, Object> fieldMap = new HashMap<String, Object>();
 		Map <String, String> fieldToMysqlDataType = AvroSchemaHelper.fieldToDataTypeMap(schema);
+		String rowChangeField = AvroSchemaHelper.getRowChangeField(schema);
+		Map<String, Object> rowChangeMap = null;
 
 		for (Field field : schema.getFields())
 		{
 			Object recordValue = genericRecord.get(field.name());
-			Object mysqlTypedObject;
-			if (AvroSchemaHelper.isRowChangeField(field))
+			if (field.name().equals(rowChangeField))
 			{
-				mysqlTypedObject = getMysqlObjectForRowChangeField((HashMap<Object, Object>) recordValue, fieldToMysqlDataType);
+				rowChangeMap = getMysqlObjectForRowChangeField((HashMap<Object, Object>) recordValue, fieldToMysqlDataType);
 			}
 			else
 			{
-				String mysqlType = fieldToMysqlDataType.get(field.name());
-				mysqlTypedObject = getMysqlTypedObject(mysqlType, recordValue);
+				fieldMap.put(field.name(), getMysqlTypedObject(fieldToMysqlDataType.get(field.name()), recordValue));
 			}
-			fieldMap.put(field.name(), mysqlTypedObject);
 		}
 		AbstractEvent event = createEventInstance(fieldMap, primaryKeysSet, entityName, namespaceName, eventType);
+		event.setRowChangeMap(rowChangeMap);
 		return event;
 	}
 

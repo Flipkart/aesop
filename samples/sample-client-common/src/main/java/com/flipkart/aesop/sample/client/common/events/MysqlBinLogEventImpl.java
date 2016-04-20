@@ -31,6 +31,7 @@ public class MysqlBinLogEventImpl implements MysqlBinLogEvent
 	private Schema schema;
 	private List<String> pKeyList = new ArrayList<String>(3);
 	private Map<String, Object> keyValuePairs = new HashMap<String, Object>();
+	private Map<String, Object> rowChangeMap = new HashMap<String, Object>();
 	private DbusOpcode eventType;
 
 	public MysqlBinLogEventImpl(DbusEvent event, DbusEventDecoder eventDecoder) throws DatabusException
@@ -41,31 +42,31 @@ public class MysqlBinLogEventImpl implements MysqlBinLogEvent
 		this.eventType = event.getOpcode();
 		this.pKeyList = getPkListFromSchema(schema);
 		Map <String, String> fieldToMysqlDataType = fieldToDataTypeMap(schema);
+		String rowChangeField = getRowChangeField(schema);
+
 		for (Field field : schema.getFields())
 		{
 			Object recordValue = genericRecord.get(field.name());
-			Object mysqlTypedObject;
-			if (isRowChangeField(field))
+			if (field.name().equals(rowChangeField))
 			{
-				mysqlTypedObject = getMysqlObjectForRowChangeField((HashMap<Object, Object>) recordValue, fieldToMysqlDataType);
+				this.rowChangeMap = getMysqlObjectForRowChangeField((HashMap<Object, Object>) recordValue, fieldToMysqlDataType);
 			}
 			else
 			{
-				String mysqlType = fieldToMysqlDataType.get(field.name());
-				mysqlTypedObject = getMysqlTypedObject(mysqlType, recordValue);
+				this.keyValuePairs.put(field.name(), getMysqlTypedObject(fieldToMysqlDataType.get(field.name()), recordValue));
 			}
-			this.keyValuePairs.put(field.name(), mysqlTypedObject);
 		}
 
 	}
 
-	public MysqlBinLogEventImpl(Schema schema, Map<String, Object> keyValuePairs, DbusOpcode eventType)
+	public MysqlBinLogEventImpl(Schema schema, Map<String, Object> keyValuePairs, DbusOpcode eventType, Map<String, Object> rowChangeMap)
 	        throws DatabusException
 	{
 		this.eventType = eventType;
 		this.keyValuePairs = keyValuePairs;
 		this.pKeyList = getPkListFromSchema(schema);
 		this.schema = schema;
+		this.rowChangeMap = rowChangeMap;
 
 	}
 
@@ -125,6 +126,8 @@ public class MysqlBinLogEventImpl implements MysqlBinLogEvent
 		return this.eventType;
 	}
 
+	public Map<String, Object> getRowChangeMap() { return rowChangeMap; }
+
 	public String toString()
 	{
 		StringBuilder builder = new StringBuilder();
@@ -132,19 +135,19 @@ public class MysqlBinLogEventImpl implements MysqlBinLogEvent
 		builder.append("entityName : " + getEntityName() + ", ");
 		builder.append("eventType : " + getEventType().toString() + ", ");
 		builder.append("pKeyList : " + getPrimaryKeyList().toString() + ", ");
-		builder.append("keyValuePairs : " + getKeyValuePair().toString());
+		builder.append("keyValuePairs : " + getKeyValuePair().toString() + ", ");
+		builder.append("rowChangeMap : " + getRowChangeMap().toString());
 		return builder.toString();
 	}
 
 	/**
 	 * Check whether given field is rowChangeField
-	 * @param field
-	 * @return True/False
+	 * @param schema
+	 * @return name of rowChangeField
 	 */
-	private boolean isRowChangeField(Schema.Field field)
+	private String getRowChangeField(Schema schema)
 	{
-		String fieldValue = SchemaHelper.getMetaField(field, META_ROW_CHANGE_FIELD);
-		return fieldValue != null;
+		return (SchemaHelper.getMetaField(schema, META_ROW_CHANGE_FIELD));
 	}
 
 	/**

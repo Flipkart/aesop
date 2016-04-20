@@ -16,9 +16,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.*;
 
+import com.flipkart.aesop.runtime.producer.avro.exception.InvalidAvroSchemaException;
 import com.flipkart.aesop.runtime.producer.avro.utils.AvroSchemaHelper;
 import com.flipkart.aesop.runtime.producer.eventhelper.BinLogEventHelper;
 import com.google.code.or.common.glossary.Pair;
+import com.google.common.base.Objects;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericDatumWriter;
 import org.apache.avro.generic.GenericRecord;
@@ -149,27 +151,24 @@ public class MysqlAvroEventManager<T extends GenericRecord>
 				BinLogEventMapper<T> binLogEventMapper =
 						binLogEventMappers.get(lSourceId) == null ? new DefaultBinLogEventMapper<T>(new ORToAvroMapper())
 								: binLogEventMappers.get(lSourceId);
-				String oldValueMapField = AvroSchemaHelper.getRowChangeField(schema);
-				GenericRecord newRecord;
+				GenericRecord newRecord = binLogEventMapper.mapBinLogEvent(eventHeader, newRow, dbusOpCode, schema);
 
-				if (oldValueMapField != null)
+				if (this.isOldValueRequired)
 				{
-					BinLogEventHelper.appendColumnToRow(newRow, null);
-					newRecord = binLogEventMapper.mapBinLogEvent(eventHeader, newRow, dbusOpCode, schema);
-					Map<String, Object> changedOldValues = null;
-
-					// oldRow will be null incases of inserts and deletes statements
-					if (this.isOldValueRequired && oldRow != null)
+					String rowChangeFieldName = AvroSchemaHelper.getRowChangeField(schema);
+					if (rowChangeFieldName == null)
 					{
-						BinLogEventHelper.appendColumnToRow(oldRow, null);
+						LOGGER.error("Schema Configuration Mismatch: isOldValueRequired flag is set but no field in schema found");
+						throw new InvalidAvroSchemaException("isOldValueRequired flag is set but no field in schema found");
+					}
+
+					Map<String, Object> changedOldValues = null;
+					if(oldRow != null)
+					{
 						GenericRecord oldRecord = binLogEventMapper.mapBinLogEvent(eventHeader, oldRow, dbusOpCode, schema);
 						changedOldValues = MysqlAvroEventManager.calculateChange(oldRecord, newRecord);
 					}
-					newRecord.put(oldValueMapField, changedOldValues);
-				}
-				else
-				{
-					newRecord = binLogEventMapper.mapBinLogEvent(eventHeader, newRow, dbusOpCode, schema);
+					newRecord.put(rowChangeFieldName, changedOldValues);
 				}
 
 				List<KeyPair> keyPairList = generateKeyPair(newRow.getColumns(), schema);
@@ -210,17 +209,12 @@ public class MysqlAvroEventManager<T extends GenericRecord>
 			Object oldValue = oldRecord.get(fieldName);
 			Object newValue = newRecord.get(fieldName);
 
-			if (oldValue == null && newValue != null)
-			{
-				changedOldValue.put(fieldName, oldValue);
-			}
-			if (oldValue != null && !oldValue.equals(newValue))
+			if (!Objects.equal(oldValue, newValue))
 			{
 				changedOldValue.put(fieldName, oldValue);
 			}
 		}
-		//Test it
-		assert (changedOldValue.isEmpty() != true) : "Old and New Record values are same or equals not working as expected";
+		assert (changedOldValue.isEmpty() == false) : "Old and New Record values are same or equals not working as expected";
 		return changedOldValue;
 	}
 

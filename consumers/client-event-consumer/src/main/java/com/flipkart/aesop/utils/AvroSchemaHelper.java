@@ -17,14 +17,13 @@ public class AvroSchemaHelper
 	public static String PRIMARY_KEY_FIELD_NAME = "pk";
 
 	/**
-	 * Check whether given field is rowChangeField
-	 * @param field
-	 * @return True/False
+	 * Returns the fieldname marked as row change field from schema meta
+	 * @param schema
+	 * @return rowChangeFieldName
 	 */
-	public static boolean isRowChangeField(Schema.Field field)
+	public static String getRowChangeField(Schema schema)
 	{
-		String fieldValue = SchemaHelper.getMetaField(field, META_ROW_CHANGE_FIELD);
-		return fieldValue != null;
+		return (SchemaHelper.getMetaField(schema, META_ROW_CHANGE_FIELD));
 	}
 
 	/**
