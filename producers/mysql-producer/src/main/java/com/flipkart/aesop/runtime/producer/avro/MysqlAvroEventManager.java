@@ -137,7 +137,7 @@ public class MysqlAvroEventManager<T extends GenericRecord>
 	        final long scn)
 	{
 		List<DbChangeEntry> entryList = new ArrayList<DbChangeEntry>();
-		LOGGER.debug("Received frame avro record request for " + eventHeader);
+		LOGGER.debug("Received frame avro record request for {}", eventHeader);
 		try
 		{
 			final long timestampInNanos = eventHeader.getTimestamp() * 1000000L;
@@ -171,12 +171,12 @@ public class MysqlAvroEventManager<T extends GenericRecord>
 				}
 
 				List<KeyPair> keyPairList = generateKeyPair(newRow.getColumns(), schema);
-				LOGGER.debug("Record value in the event" + newRecord.toString());
+				LOGGER.debug("Record value in the event: {}", newRecord.toString());
 				DbChangeEntry dbChangeEntry =
 						new DbChangeEntry(scn, timestampInNanos, newRecord, dbusOpCode, isReplicated, schema,
 								keyPairList);
 				entryList.add(dbChangeEntry);
-				LOGGER.debug("Successfully Processed the Row " + dbChangeEntry);
+				LOGGER.debug("Successfully Processed the Row {}", dbChangeEntry);
 			}
 		}
 		catch (NoSuchSchemaException ne)

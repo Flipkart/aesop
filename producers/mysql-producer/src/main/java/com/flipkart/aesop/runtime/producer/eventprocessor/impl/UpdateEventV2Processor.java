@@ -43,6 +43,6 @@ public class UpdateEventV2Processor implements BinLogEventProcessor
 		List<Pair<Row>> listOfPairs = updateRowsEvent.getRows();
 
 		manager.performChanges(updateRowsEvent.getTableId(), updateRowsEvent.getHeader(), listOfPairs, DbusOpcode.UPSERT);
-		LOGGER.debug("Update Successful for  " + event.getHeader().getEventLength() + " . Data updated : " + listOfPairs);
+		LOGGER.debug("Update Successful for  {} . Data updated : {}", event.getHeader().getEventLength(), listOfPairs);
 	}
 }

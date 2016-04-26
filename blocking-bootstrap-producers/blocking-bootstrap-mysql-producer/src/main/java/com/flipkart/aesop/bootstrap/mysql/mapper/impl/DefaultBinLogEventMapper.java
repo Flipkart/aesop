@@ -86,7 +86,7 @@ public class DefaultBinLogEventMapper<T extends AbstractEvent> implements BinLog
 			}
 
 			return (T)new SourceEvent(keyValuePairs, getPkListFromSchema(schema), schema.getName(), schema.getNamespace(),
-			        eventType);
+			        eventType, null);
 		}
 		catch (Exception e)
 		{

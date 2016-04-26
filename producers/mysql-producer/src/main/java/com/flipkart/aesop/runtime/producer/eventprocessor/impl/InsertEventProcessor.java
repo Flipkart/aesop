@@ -46,10 +46,10 @@ public class InsertEventProcessor implements BinLogEventProcessor
 	{
 		if (!listener.getMysqlTransactionManager().isBeginTxnSeen())
 		{
-			LOGGER.warn("Skipping event (" + event + ") as this is before the start of first transaction");
+			LOGGER.warn("Skipping event ({}) as this is before the start of first transaction", event);
 			return;
 		}
-		LOGGER.debug("Insert Event Received : " + event);
+		LOGGER.debug("Insert Event Received : {}", event);
 		WriteRowsEvent wre = (WriteRowsEvent) event;
 		List<Row> rowList = wre.getRows();
 		List<Pair<Row>> listOfPairs = new ArrayList<Pair<Row>>(rowList.size());
@@ -62,8 +62,7 @@ public class InsertEventProcessor implements BinLogEventProcessor
 
 		listener.getMysqlTransactionManager().performChanges(wre.getTableId(), wre.getHeader(), listOfPairs,
 				DbusOpcode.UPSERT);
-		LOGGER.debug("Insertion Successful for  " + event.getHeader().getEventLength() + " . Data inserted : "
-		        + rowList);
+		LOGGER.debug("Insertion Successful for  {} . Data inserted : {}", event.getHeader().getEventLength(), rowList);
 	}
 
 }

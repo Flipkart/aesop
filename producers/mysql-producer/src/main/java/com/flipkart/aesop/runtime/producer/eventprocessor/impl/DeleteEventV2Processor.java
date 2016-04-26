@@ -33,10 +33,10 @@ public class DeleteEventV2Processor implements BinLogEventProcessor
 	{
 		if (!listener.getMysqlTransactionManager().isBeginTxnSeen())
 		{
-			LOGGER.warn("Skipping event (" + event + ") as this is before the start of first transaction");
+			LOGGER.warn("Skipping event ({}) as this is before the start of first transaction", event);
 			return;
 		}
-		LOGGER.debug("Delete Event Received : " + event);
+		LOGGER.debug("Delete Event Received : {}", event);
 		DeleteRowsEventV2 deleteRowsEvent = (DeleteRowsEventV2) event;
 		List<Row> rowList = deleteRowsEvent.getRows();
 		List<Pair<Row>> listOfPairs = new ArrayList<Pair<Row>>(rowList.size());
@@ -50,7 +50,6 @@ public class DeleteEventV2Processor implements BinLogEventProcessor
 
 		listener.getMysqlTransactionManager().performChanges(deleteRowsEvent.getTableId(), deleteRowsEvent.getHeader(),
 				listOfPairs, DbusOpcode.DELETE);
-		LOGGER.debug("Delete Successful for  " + event.getHeader().getEventLength() + " . Data deleted : "
-		        + rowList);
+		LOGGER.debug("Delete Successful for  {} . Data deleted : {}", event.getHeader().getEventLength(), rowList);
 	}
 }
