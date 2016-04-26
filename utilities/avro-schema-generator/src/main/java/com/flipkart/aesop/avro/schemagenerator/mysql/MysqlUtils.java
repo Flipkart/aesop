@@ -28,9 +28,6 @@ public class MysqlUtils
 	private static final String FIELDS_DETAILS_FETCH_QUERY =
 	        "SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = ? and TABLE_NAME = ?";
 
-	/** Fieldname storing old values */
-	private static final String OLD_ROW_VALUE_FIELD_NAME = "__oldValue";
-
 	/**
 	 * Release db resource.
 	 * @param connection object

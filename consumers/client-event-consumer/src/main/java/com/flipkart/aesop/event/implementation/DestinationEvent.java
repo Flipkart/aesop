@@ -36,10 +36,11 @@ public class DestinationEvent extends AbstractEvent
 	 * @param entityName
 	 * @param namespaceName
 	 * @param eventType
+	 * @param rowChangeMap
 	 */
 	public DestinationEvent(Map<String, Object> fieldsMap, Set<String> primaryKeysSet, String entityName,
-	        String namespaceName, DbusOpcode eventType)
+	        String namespaceName, DbusOpcode eventType, Map<String, Object> rowChangeMap)
 	{
-		super(fieldsMap, primaryKeysSet, entityName, namespaceName, eventType);
+		super(fieldsMap, primaryKeysSet, entityName, namespaceName, eventType, rowChangeMap);
 	}
 }

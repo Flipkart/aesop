@@ -39,25 +39,27 @@ public abstract class AbstractEvent implements Event
 	/** Event Type. */
 	protected final DbusOpcode eventType;
 
-	/** OldRowMap : Storing changes. */
-	protected Map<String, Object> rowChangeMap;
+	/** OldRowMap : Storing changes.
+	 * This field holds field Change values (old values) */
+	protected final Map<String, Object> rowChangeMap;
 
 	/**
 	 * Constructs the basic event using mandatory fields.
-	 * @param fieldsMap
+	 * @param fieldMap
 	 * @param primaryKeysSet
 	 * @param entityName
 	 * @param namespaceName
 	 * @param eventType
+	 * @param rowChangeMap
 	 */
-	public AbstractEvent(Map<String, Object> fieldsMap, Set<String> primaryKeysSet, String entityName,
-	        String namespaceName, DbusOpcode eventType)
-	{
-		this.fieldMap = fieldsMap;
+	public AbstractEvent(Map<String, Object> fieldMap, Set<String> primaryKeysSet, String entityName,
+						 String namespaceName, DbusOpcode eventType, Map<String, Object> rowChangeMap) {
+		this.fieldMap = fieldMap;
 		this.primaryKeysSet = primaryKeysSet;
 		this.entityName = entityName;
 		this.namespaceName = namespaceName;
 		this.eventType = eventType;
+		this.rowChangeMap = rowChangeMap;
 	}
 
 	public Map<String, Object> getFieldMapPair()
@@ -107,10 +109,6 @@ public abstract class AbstractEvent implements Event
 
 	public Map<String, Object> getRowChangeMap() {
 		return rowChangeMap;
-	}
-
-	public void setRowChangeMap(Map<String, Object> rowChangeMap) {
-		this.rowChangeMap = rowChangeMap;
 	}
 
 	@Override

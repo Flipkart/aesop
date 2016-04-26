@@ -101,8 +101,8 @@ public enum MysqlToAvroMapper
 	YEAR("long"),
 
 	/** For HashMap.
-	 * Though this Mysql Datatype does exist, this required for
-	 * passing record changes in form of Avro Map datatype.
+	 * Though this Mysql Datatype does not exist, this required for
+	 * passing record changes in form of Avro Map datatype. Avro MAP datatype
 	 */
 	MAP(new HashMap<String, Object>(){{
 	        put("type", "map");
@@ -110,7 +110,10 @@ public enum MysqlToAvroMapper
 	    }});
 
 
-	/** The avro type. */
+	/** The avro type.
+	 * The reason its returning Object type because along with String datatypes required for defining "long","int" etc
+	 * We need to support Map (avro map datatype) which of the type HashMap
+	 */
 	private final Object avroType;
 
 	/**

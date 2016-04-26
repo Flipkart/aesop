@@ -157,7 +157,7 @@ public class SchemaGeneratorCli
 		        .addOption("e", "exclusion-list", true, "exclusion list ; default none")
 		        .addOption("i", "inclusion-list", true, "inclusion list ; default all")
 				.addOption("?", "help", false, "help")
-				.addOption("q", "row-change-field", true, "fieldname to represents old-changes")
+				.addOption("q", "row-change-field", true, "fieldname to represents old-row-values")
 				.addOption(
 						OptionBuilder.withArgName("dbName").withLongOpt("db").withDescription("db name for connection")
 								.hasArg().create('d'))

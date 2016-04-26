@@ -57,6 +57,8 @@ public class DeleteEventProcessor implements BinLogEventProcessor
 
 		for (Row row : rowList)
 		{
+			/* null is added in before to maintain consistency between with update and further in code we dont need to
+			 *differentiate update and delete */
 			listOfPairs.add(new Pair<Row>(null, row));
 		}
 

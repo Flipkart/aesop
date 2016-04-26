@@ -82,9 +82,4 @@ public interface Event
 	 * @return rowChangeMap
 	 */
 	public Map<String, Object> getRowChangeMap();
-
-	/**
-	 * Sets the change Map which store old values of record.
-	 */
-	public void setRowChangeMap(Map<String, Object> rowChangeMap);
 }

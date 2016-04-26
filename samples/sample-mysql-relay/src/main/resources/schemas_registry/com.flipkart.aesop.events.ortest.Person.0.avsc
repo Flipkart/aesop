@@ -2,7 +2,7 @@
   "name" : "Person",
   "doc" : "Auto-generated Avro schema for sy$person. Generated at Dec 04, 2012 05:07:05 PM PST",
   "type" : "record",
-  "meta" : "dbFieldName=person;pk=id;",
+  "meta" : "dbFieldName=person;pk=id;rowChangeField=_oldValue",
   "namespace" : "or_test",
   "fields" : [ {
     "name" : "id",
@@ -30,7 +30,7 @@
          "values" : [ "int", "long", "float", "double", "bytes", "string", "null" ],
          "type" : "map"
        }, "null" ],
-       "meta" : "dbFieldName=_oldValue;dbFieldPosition=6;dbFieldType=MAP;rowChangeField=true"
+       "meta" : "dbFieldName=_oldValue;dbFieldPosition=6;dbFieldType=MAP"
   }
   ]
 }

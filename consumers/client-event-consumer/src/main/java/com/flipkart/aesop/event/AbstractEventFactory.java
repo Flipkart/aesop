@@ -10,7 +10,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *  
+ *
  *******************************************************************************/
 
 package com.flipkart.aesop.event;
@@ -20,12 +20,10 @@ import java.util.Map;
 import java.util.Set;
 
 import com.flipkart.aesop.utils.AvroSchemaHelper;
+import com.flipkart.aesop.utils.AvroToMysqlConverter;
 import org.apache.avro.Schema;
 import org.apache.avro.Schema.Field;
 import org.apache.avro.generic.GenericRecord;
-
-import com.flipkart.aesop.utils.AvroToMysqlMapper;
-import com.flipkart.aesop.utils.MysqlDataTypes;
 import com.linkedin.databus.client.pub.DbusEventDecoder;
 import com.linkedin.databus.core.DbusEvent;
 import com.linkedin.databus.core.DbusOpcode;
@@ -58,15 +56,17 @@ public abstract class AbstractEventFactory<T extends AbstractEvent> implements E
 			Object recordValue = genericRecord.get(field.name());
 			if (field.name().equals(rowChangeField))
 			{
-				rowChangeMap = getMysqlObjectForRowChangeField((HashMap<Object, Object>) recordValue, fieldToMysqlDataType);
+				rowChangeMap = AvroToMysqlConverter.getMysqlTypedObjectForMap((Map<Object, Object>) recordValue,
+						fieldToMysqlDataType);
 			}
 			else
 			{
-				fieldMap.put(field.name(), getMysqlTypedObject(fieldToMysqlDataType.get(field.name()), recordValue));
+				fieldMap.put(field.name(),
+						AvroToMysqlConverter.getMysqlTypedObject(fieldToMysqlDataType.get(field.name()), recordValue));
 			}
 		}
-		AbstractEvent event = createEventInstance(fieldMap, primaryKeysSet, entityName, namespaceName, eventType);
-		event.setRowChangeMap(rowChangeMap);
+		AbstractEvent event = createEventInstance(fieldMap, primaryKeysSet, entityName, namespaceName, eventType,
+				rowChangeMap);
 		return event;
 	}
 
@@ -80,60 +80,26 @@ public abstract class AbstractEventFactory<T extends AbstractEvent> implements E
 	 * @return Actual Event instance.
 	 */
 	protected abstract AbstractEvent createEventInstance(Map<String, Object> fieldsMap, Set<String> primaryKeysSet,
-	        String entityName, String namespaceName, DbusOpcode eventType);
+														 String entityName, String namespaceName, DbusOpcode eventType, Map<String, Object> rowChangeMap);
 
-	public AbstractEvent createEvent(Schema schema, Map<String, Object> keyValuePairs, DbusOpcode eventType)
-	        throws DatabusException
+	public AbstractEvent createEvent(Schema schema, Map<String, Object> keyValuePairs, DbusOpcode eventType, Map<String, Object> rowChangeMap)
+			throws DatabusException
 	{
 		String entityName = schema.getName();
 		String namespaceName = schema.getNamespace();
 		Set<String> primaryKeysSet = AvroSchemaHelper.getPrimaryKeysSetFromSchema(schema);
 
-		AbstractEvent event = createEventInstance(keyValuePairs, primaryKeysSet, entityName, namespaceName, eventType);
+		AbstractEvent event =
+				createEventInstance(keyValuePairs, primaryKeysSet, entityName, namespaceName, eventType, rowChangeMap);
 		return event;
 	}
 
 	public AbstractEvent createEvent(Map<String, Object> fieldsMap, Set<String> primaryFieldsSet, String entityName,
-	        String namespaceName, DbusOpcode eventType)
+									 String namespaceName, DbusOpcode eventType, Map<String, Object> rowChangeMap)
 	{
-		AbstractEvent event = createEventInstance(fieldsMap, primaryFieldsSet, entityName, namespaceName, eventType);
+		AbstractEvent event =
+				createEventInstance(fieldsMap, primaryFieldsSet, entityName, namespaceName, eventType, rowChangeMap);
 
 		return event;
-	}
-
-	/**
-	 * This returns mysql object from avro object and intented mysql datatype
-	 * @param mysqlType
-	 * @param fieldValue
-	 * @return MysqlTypedObject using AvroToMysqlMapper
-	 */
-	private Object getMysqlTypedObject(String mysqlType, Object fieldValue)
-	{
-		MysqlDataTypes mysqlTypeToConvert = MysqlDataTypes.valueOf(mysqlType.toUpperCase());
-		Object mysqlTypedObject = AvroToMysqlMapper.avroToMysqlType(fieldValue, mysqlTypeToConvert);
-		return mysqlTypedObject;
-	}
-
-	/**
-	 * This specifically handles rowChangeField which comes in form HashMap and converting each key/value to Mysql type
-	 * @param fieldValue
-	 * @param fieldToMysqlDataType
-	 * @return MysqlTypedObject using AvroToMysqlMapper
-	 */
-	private Map<String, Object> getMysqlObjectForRowChangeField(HashMap<Object, Object> fieldValue,
-												   Map <String, String> fieldToMysqlDataType)
-	{
-		Map<String, Object> mysqlTypedObject = null;
-		if (fieldValue != null)
-		{
-			mysqlTypedObject = new HashMap<String, Object>();
-			for (Object key : fieldValue.keySet())
-			{
-				String fieldName = key.toString();
-				String sqltype = fieldToMysqlDataType.get(fieldName);
-				mysqlTypedObject.put(fieldName, getMysqlTypedObject(sqltype, fieldValue.get(key)));
-			}
-		}
-		return mysqlTypedObject;
 	}
 }

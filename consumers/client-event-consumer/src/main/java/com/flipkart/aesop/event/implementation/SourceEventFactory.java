@@ -18,6 +18,7 @@ package com.flipkart.aesop.event.implementation;
 import java.util.Map;
 import java.util.Set;
 
+import com.flipkart.aesop.event.AbstractEvent;
 import com.flipkart.aesop.event.AbstractEventFactory;
 import com.linkedin.databus.core.DbusOpcode;
 
@@ -29,8 +30,8 @@ public class SourceEventFactory extends AbstractEventFactory<SourceEvent>
 {
 	@Override
 	protected SourceEvent createEventInstance(Map<String, Object> fieldsMap, Set<String> primaryKeysSet,
-	        String entityName, String namespaceName, DbusOpcode eventType)
+	        String entityName, String namespaceName, DbusOpcode eventType,  Map<String, Object> rowChangeMap)
 	{
-		return new SourceEvent(fieldsMap, primaryKeysSet, entityName, namespaceName, eventType);
+		return new SourceEvent(fieldsMap, primaryKeysSet, entityName, namespaceName, eventType, rowChangeMap);
 	}
 }

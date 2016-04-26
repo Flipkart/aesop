@@ -32,23 +32,20 @@ public class TableRecord
 		this.type = type;
 		this.doc = doc;
 		this.namespace = namespace;
-		this.meta = "pk=" + StringUtils.join(primaryKeys, ",");
+		this.meta = generateMeta(primaryKeys);
 		this.fields = fields;
 	}
 
 	public TableRecord(String name, String type, String doc, String namespace, List<String> primaryKeys,
 	        List<Field> fields, String rowChangeFieldName) throws IllegalArgumentException
 	{
-		if (rowChangeFieldName == null)
-		{
-			throw new IllegalArgumentException("rowChangeFieldName can't be NULL");
-		}
-		this.name = name;
-		this.type = type;
-		this.doc = doc;
-		this.namespace = namespace;
-		this.meta = "pk=" + StringUtils.join(primaryKeys, ",") + ";rowChangeField=" + rowChangeFieldName;
-		this.fields = fields;
+		this(name, type, doc, namespace, primaryKeys, fields);
+		if(rowChangeFieldName == null) { throw new IllegalArgumentException("rowChangeFieldName can't be NULL"); }
+		this.meta = generateMeta(primaryKeys) + "; rowChangeField=" + rowChangeFieldName;
+	}
+
+	private String generateMeta(List<String> primaryKeys) {
+	   return "pk=" + StringUtils.join(primaryKeys, ",");
 	}
 
 	/**
