@@ -25,7 +25,6 @@ import com.flipkart.aesop.runtime.producer.spi.SCNGenerator;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
-import org.apache.hadoop.hbase.KeyValue;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 import org.trpr.platform.core.PlatformException;
@@ -71,13 +70,13 @@ public class HBaseEventProducer<T extends GenericRecord> extends AbstractEventPr
 	/** The default ZK settings*/
 	private static final int ZK_CLIENT_PORT = 2181;
 	private static final int ZK_SESSION_TIMEOUT = 20000; // 20 seconds
-    private static final String RPC_TIMEOUT = "60000"; //60 sec default
+    private static final int RPC_TIMEOUT = 60000; //60 sec default
 	
 	/** The default number of worker threads that process WAL edit events*/
 	private static final int WORKER_THREADS = 1;
 
     /**RPC Timeout for SEP to consume the events sent by RS**/
-    protected String rpcTimeout = RPC_TIMEOUT;
+    protected int rpcTimeout = RPC_TIMEOUT;
 
 	/** The SEP consumer instance initialized by this Producer*/
 	protected SepConsumer sepConsumer;
@@ -139,7 +138,7 @@ public class HBaseEventProducer<T extends GenericRecord> extends AbstractEventPr
 	        // need to explicitly set the ZK host and port details - hosts separated from port - see SepModelImpl constructor source code
 	        hbaseConf.set(ZK_QUORUM_CONFIG, this.zkQuorum);
 	        hbaseConf.setInt(ZK_CLIENT_PORT_CONFIG, this.zkClientPort);
-            hbaseConf.set(RPC_TIMEOUT_CONFIG,this.rpcTimeout);
+            hbaseConf.setInt(RPC_TIMEOUT_CONFIG,this.rpcTimeout);
 
 	        StringBuilder zkQuorumWithPort = new StringBuilder();
 	        String[] zkHostsList = this.zkQuorum.split(",");
@@ -195,13 +194,13 @@ public class HBaseEventProducer<T extends GenericRecord> extends AbstractEventPr
             	T changeEvent = sepEventMapper.mapSepEvent(sepEvent);
             	byte[] schemaId=SchemaHelper.getSchemaId(changeEvent.getSchema().toString());
                	byte[] serializedEvent = serializeEvent(changeEvent);
-            	// we find the earliest processed timestamp of the KVs available in the WAL Edit, so as to not miss any edits
-            	long earliestKVTimestamp = Long.MAX_VALUE;
-            	for (KeyValue kv : sepEvent.getKeyValues()) {
-            		earliestKVTimestamp = Math.min(earliestKVTimestamp, kv.getTimestamp());
-            	}
+				// In case of multiple region servers, events in the sepEvents can be out of order wrt of event timestamp
+				// because of which SCN numbers will not be monotonically increasing If SCN is generated from event timestamp hence some events might get skipped
+				// because, for databus to process the event, SCN should be monotonically increasing in the same window
+				// Hence using eventEntryTimestamp instead of event timestamp for SCN generator
+				long eventEntryTimestamp = System.nanoTime();
 				DbusEventKey eventKey = new DbusEventKey(sepEvent.getRow()); // we use the SepEvent row key as the identifier
-                long eventScnNumber = scnGenerator.getSCN(earliestKVTimestamp,localHost);
+                long eventScnNumber = scnGenerator.getSCN(eventEntryTimestamp,localHost);
                 DbusEventInfo eventInfo = new DbusEventInfo(DbusOpcode.UPSERT,eventScnNumber,
                         (short)physicalSourceStaticConfig.getId(),(short)physicalSourceStaticConfig.getId(),
                         System.nanoTime(),(short)physicalSourceStaticConfig.getSources()[0].getId(), // here we use the Logical Source Id
@@ -303,10 +302,10 @@ public class HBaseEventProducer<T extends GenericRecord> extends AbstractEventPr
     public void setScnGenerator(SCNGenerator scnGenerator) {
         this.scnGenerator = scnGenerator;
     }
-    public String getRpcTimeout() {
+    public int getRpcTimeout() {
         return rpcTimeout;
     }
-    public void setRpcTimeout(String rpcTimeout) {
+    public void setRpcTimeout(int rpcTimeout) {
         this.rpcTimeout = rpcTimeout;
     }
     /** End Setter/Getter methods*/

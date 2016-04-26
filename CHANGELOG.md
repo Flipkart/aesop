@@ -1,3 +1,6 @@
+## 1.2.1 (Apr 21, 2016)
+- Bugfix release
+
 ## 1.2.1-SNAPSHOT (Jul 10, 2015)
 - **New features:**
   - Support for Kafka Data Layer and Client Consumer
