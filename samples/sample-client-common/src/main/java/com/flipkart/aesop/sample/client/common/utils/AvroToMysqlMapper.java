@@ -27,14 +27,17 @@ public class AvroToMysqlMapper
 	{
 		if (value instanceof java.nio.ByteBuffer)
 		{
-			if (mysqlType == MysqlDataTypes.BIT || mysqlType == MysqlDataTypes.BLOB
-			        || mysqlType == MysqlDataTypes.TINYBLOB || mysqlType == MysqlDataTypes.MEDIUMBLOB
-			        || mysqlType == MysqlDataTypes.LONGBLOB || mysqlType == MysqlDataTypes.TINYTEXT
+			if ( mysqlType == MysqlDataTypes.BIT || mysqlType == MysqlDataTypes.TINYTEXT
 			        || mysqlType == MysqlDataTypes.MEDIUMTEXT || mysqlType == MysqlDataTypes.LONGTEXT
 			        || mysqlType == MysqlDataTypes.TEXT)
 			{
 				return new String(((java.nio.ByteBuffer) value).array());
 			}
+            else if (mysqlType == MysqlDataTypes.BLOB
+                    || mysqlType == MysqlDataTypes.TINYBLOB || mysqlType == MysqlDataTypes.MEDIUMBLOB
+                    || mysqlType == MysqlDataTypes.LONGBLOB ) {
+                return value;
+            }
 			else
 			{
 				LOGGER.error("Incompatible types java.nio.ByteBuffer and " + mysqlType.toString());
