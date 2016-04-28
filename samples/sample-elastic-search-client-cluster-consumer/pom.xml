@@ -4,7 +4,7 @@
     <parent>
         <groupId>com.flipkart.aesop</groupId>
         <artifactId>aesop</artifactId>
-        <version>1.2.1</version>
+        <version>1.2.2-SNAPSHOT</version>
 	<relativePath>../../pom.xml</relativePath>
     </parent>
 	<artifactId>sample-elastic-search-client-cluster-consumer</artifactId>
@@ -48,7 +48,7 @@
 		<dependency>
 			<groupId>com.flipkart.aesop</groupId>
 			<artifactId>data-layer-elastic-search</artifactId>
-			<version>1.2.1</version>
+			<version>1.2.2-SNAPSHOT</version>
 		</dependency>
 		
 	</dependencies>

@@ -6,13 +6,13 @@
 	<parent>
 		<groupId>com.flipkart.aesop</groupId>
 		<artifactId>aesop</artifactId>
-		<version>1.2.1</version>
+		<version>1.2.2-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
 	</parent>
 
 	<artifactId>runtime-blocking-bootstrap</artifactId>
 	<name>Bootstrap Blocking Runtime</name>
-	<version>1.2.1</version>
+	<version>1.2.2-SNAPSHOT</version>
 	<description>Blocking Bootstrap Runtime</description>
 
 	<properties>
