@@ -255,7 +255,6 @@ public class MysqlUtils
 		Connection connection = null;
 		PreparedStatement preparedStatement = null;
 		ResultSet resultSet = null;
-		int columnCount = 0;
 		try
 		{
 			connection = MysqlConnectionProvider.getInstance().getConnection(db);
@@ -265,7 +264,6 @@ public class MysqlUtils
 			resultSet = preparedStatement.executeQuery();
 			while (resultSet.next())
 			{
-				columnCount++;
 				fieldInfoList.add(new TableRecord.Field(resultSet.getString("COLUMN_NAME"), resultSet
 				        .getString("DATA_TYPE"), resultSet.getInt("ORDINAL_POSITION")));
 			}

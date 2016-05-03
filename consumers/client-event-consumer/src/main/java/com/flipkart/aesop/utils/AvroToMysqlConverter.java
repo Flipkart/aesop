@@ -21,7 +21,7 @@ import java.util.Map;
 public abstract class AvroToMysqlConverter
 {
     /**
-   	 * This returns mysql object from avro object and intented mysql datatype
+   	 * This returns mysql object from avro object and intended mysql datatype
    	 * @param mysqlType
    	 * @param fieldValue
    	 * @return MysqlTypedObject using AvroToMysqlMapper
@@ -38,7 +38,7 @@ public abstract class AvroToMysqlConverter
    	 * @return MysqlTypedObject using AvroToMysqlMapper
    	 */
    	public static Map<String, Object> getMysqlTypedObjectForMap(Map<Object, Object> fieldMap,
-                                                         Map <String, String> fieldToMysqlDataType)
+                                                         Map<String, String> fieldToMysqlDataType)
    	{
    		Map<String, Object> mysqlTypedObject = null;
    		if (fieldMap != null)

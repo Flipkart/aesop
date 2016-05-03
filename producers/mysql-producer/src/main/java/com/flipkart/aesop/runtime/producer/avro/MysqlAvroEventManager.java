@@ -142,7 +142,7 @@ public class MysqlAvroEventManager<T extends GenericRecord>
 		{
 			final long timestampInNanos = eventHeader.getTimestamp() * 1000000L;
 			final boolean isReplicated = false;
-			for (Pair pair : pairs)
+			for (Pair<Row> pair : pairs)
 			{
 				Row oldRow = (Row) pair.getBefore();
 				Row newRow = (Row) pair.getAfter();
@@ -171,7 +171,7 @@ public class MysqlAvroEventManager<T extends GenericRecord>
 				}
 
 				List<KeyPair> keyPairList = generateKeyPair(newRow.getColumns(), schema);
-				LOGGER.debug("Record value in the event: {}", newRecord.toString());
+				LOGGER.debug("Record value in the event: {}", newRecord);
 				DbChangeEntry dbChangeEntry =
 						new DbChangeEntry(scn, timestampInNanos, newRecord, dbusOpCode, isReplicated, schema,
 								keyPairList);
