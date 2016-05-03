@@ -29,8 +29,8 @@ public class DestinationEventFactory extends AbstractEventFactory<DestinationEve
 {
 	@Override
 	protected DestinationEvent createEventInstance(Map<String, Object> fieldsMap, Set<String> primaryKeysSet,
-	        String entityName, String namespaceName, DbusOpcode eventType)
+	        String entityName, String namespaceName, DbusOpcode eventType, Map<String, Object> rowChangeMap)
 	{
-		return new DestinationEvent(fieldsMap, primaryKeysSet, entityName, namespaceName, eventType);
+		return new DestinationEvent(fieldsMap, primaryKeysSet, entityName, namespaceName, eventType, rowChangeMap);
 	}
 }

@@ -14,11 +14,12 @@ package com.flipkart.aesop.runtime.producer.avro;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+import com.flipkart.aesop.runtime.producer.avro.exception.InvalidAvroSchemaException;
+import com.flipkart.aesop.runtime.producer.avro.utils.AvroSchemaHelper;
+import com.google.code.or.common.glossary.Pair;
+import com.google.common.base.Objects;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericDatumWriter;
 import org.apache.avro.generic.GenericRecord;
@@ -53,7 +54,7 @@ import com.linkedin.databus2.schemas.utils.SchemaHelper;
 /**
  * <code>MysqlAvroEventManager</code> deals with avro events and provides avro specific functionalities
  * such as framing an avro record and appending avro events to event buffer.
- * 
+ *
  * <pre>
  * <ul> 
  * <li>Provides means to serialize avro events</li>
@@ -75,11 +76,15 @@ public class MysqlAvroEventManager<T extends GenericRecord>
 	/** physical source id */
 	protected final int pSourceId;
 
+	/** flag for getting old values */
+	private final boolean oldValueRequired;
+
 	/** constructor for this class */
-	public MysqlAvroEventManager(int lSourceId, int pSourceId) throws DatabusException
+	public MysqlAvroEventManager(int lSourceId, int pSourceId, boolean oldValueRequired) throws DatabusException
 	{
 		this.lSourceId = lSourceId;
 		this.pSourceId = pSourceId;
+		this.oldValueRequired = oldValueRequired;
 	}
 
 	/**
@@ -120,38 +125,58 @@ public class MysqlAvroEventManager<T extends GenericRecord>
 	 *            Sample :
 	 *            [header=BinlogEventV4HeaderImpl[timestamp=1394108600000,eventType=25,serverId=1,eventLength=85
 	 *            ,nextPosition=1501,flags=0,timestampOfReceipt=1394108600580]
-	 * @param rowList contains list of all mutated rows
+	 * @param pairs contains list of all mutated rows
 	 * @param dbusOpCode code indicating type of operation such as insertion, update or delete
-	 * @param binLogEventMapper mapper corresponding to the source to which event belongs to
+	 * @param binLogEventMappers mapper corresponding to the source to which event belongs to
 	 * @param schema schema corresponding to the source to which event belongs to
 	 * @param scn system change number
 	 * @return List<DbChangeEntry> list of change records
 	 */
-	public List<DbChangeEntry> frameAvroRecord(final BinlogEventV4Header eventHeader, final List<Row> rowList,
+	public List<DbChangeEntry> frameAvroRecord(final BinlogEventV4Header eventHeader, final List<Pair<Row>> pairs,
 	        final DbusOpcode dbusOpCode, Map<Integer, BinLogEventMapper<T>> binLogEventMappers, final Schema schema,
 	        final long scn)
 	{
 		List<DbChangeEntry> entryList = new ArrayList<DbChangeEntry>();
-		LOGGER.debug("Received frame avro record request for " + eventHeader);
+		LOGGER.debug("Received frame avro record request for {}", eventHeader);
 		try
 		{
 			final long timestampInNanos = eventHeader.getTimestamp() * 1000000L;
 			final boolean isReplicated = false;
-			for (Row row : rowList)
+			for (Pair<Row> pair : pairs)
 			{
-				List<Column> columns = row.getColumns();
+				Row oldRow = (Row) pair.getBefore();
+				Row newRow = (Row) pair.getAfter();
 				// getting the appropriate bin log mapper for the logicalSource
 				BinLogEventMapper<T> binLogEventMapper =
-				        binLogEventMappers.get(lSourceId) == null ? new DefaultBinLogEventMapper<T>(new ORToAvroMapper())
-				                : binLogEventMappers.get(lSourceId);
+						binLogEventMappers.get(lSourceId) == null ? new DefaultBinLogEventMapper<T>(new ORToAvroMapper())
+								: binLogEventMappers.get(lSourceId);
+				GenericRecord newRecord = binLogEventMapper.mapBinLogEvent(eventHeader, newRow, dbusOpCode, schema);
 
-				GenericRecord genericRecord = binLogEventMapper.mapBinLogEvent(eventHeader, row, dbusOpCode, schema);
-				List<KeyPair> keyPairList = generateKeyPair(columns, schema);
+				if (this.oldValueRequired)
+				{
+					String rowChangeFieldName = AvroSchemaHelper.getRowChangeField(schema);
+					if (rowChangeFieldName == null)
+					{
+						LOGGER.error("Schema Configuration Mismatch: oldValueRequired flag is set but no field in schema found");
+						throw new InvalidAvroSchemaException("oldValueRequired flag is set but no field in schema found");
+					}
+
+					Map<String, Object> changedOldValues = null;
+					if(oldRow != null)
+					{
+						GenericRecord oldRecord = binLogEventMapper.mapBinLogEvent(eventHeader, oldRow, dbusOpCode, schema);
+						changedOldValues = MysqlAvroEventManager.calculateChange(oldRecord, newRecord);
+					}
+					newRecord.put(rowChangeFieldName, changedOldValues);
+				}
+
+				List<KeyPair> keyPairList = generateKeyPair(newRow.getColumns(), schema);
+				LOGGER.debug("Record value in the event: {}", newRecord);
 				DbChangeEntry dbChangeEntry =
-				        new DbChangeEntry(scn, timestampInNanos, genericRecord, dbusOpCode, isReplicated, schema,
-				                keyPairList);
+						new DbChangeEntry(scn, timestampInNanos, newRecord, dbusOpCode, isReplicated, schema,
+								keyPairList);
 				entryList.add(dbChangeEntry);
-				LOGGER.debug("Successfully Processed the Row " + dbChangeEntry);
+				LOGGER.debug("Successfully Processed the Row {}", dbChangeEntry);
 			}
 		}
 		catch (NoSuchSchemaException ne)
@@ -165,6 +190,31 @@ public class MysqlAvroEventManager<T extends GenericRecord>
 			throw new DatabusRuntimeException(de);
 		}
 		return entryList;
+	}
+
+	/**
+	 * This method scans new and old records and calculates changes.
+	 *
+	 * @param oldRecord is a generic record representing old-record before change
+	 * @param newRecord is a generic record representing new-record after change
+	 * @return HashMap<String, Object> this contains changes in form of <columnName,ColumnValue>
+	 */
+	private static Map<String, Object> calculateChange(GenericRecord oldRecord, GenericRecord newRecord)
+	{
+		Map <String, Object> changedOldValue = new HashMap<String, Object>();
+		for (Schema.Field  field : newRecord.getSchema().getFields())
+		{
+			String fieldName = field.name();
+			Object oldValue = oldRecord.get(fieldName);
+			Object newValue = newRecord.get(fieldName);
+
+			if (!Objects.equal(oldValue, newValue))
+			{
+				changedOldValue.put(fieldName, oldValue);
+			}
+		}
+		assert (changedOldValue.isEmpty() == false) : "Old and New Record values are same or equals not working as expected";
+		return changedOldValue;
 	}
 
 	/**

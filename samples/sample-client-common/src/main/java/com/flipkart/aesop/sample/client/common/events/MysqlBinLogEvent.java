@@ -25,4 +25,6 @@ public interface MysqlBinLogEvent
 
 	public List<Object> getPrimaryKeyValues();
 
+	public Map<String, Object> getRowChangeMap();
+
 }

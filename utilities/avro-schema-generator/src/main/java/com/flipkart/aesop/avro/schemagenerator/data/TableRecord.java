@@ -32,8 +32,20 @@ public class TableRecord
 		this.type = type;
 		this.doc = doc;
 		this.namespace = namespace;
-		this.meta = "pk=" + StringUtils.join(primaryKeys, ",");
+		this.meta = generateMeta(primaryKeys);
 		this.fields = fields;
+	}
+
+	public TableRecord(String name, String type, String doc, String namespace, List<String> primaryKeys,
+	        List<Field> fields, String rowChangeFieldName) throws IllegalArgumentException
+	{
+		this(name, type, doc, namespace, primaryKeys, fields);
+		if(rowChangeFieldName == null) { throw new IllegalArgumentException("rowChangeFieldName can't be NULL"); }
+		this.meta = generateMeta(primaryKeys) + "; rowChangeField=" + rowChangeFieldName;
+	}
+
+	private String generateMeta(List<String> primaryKeys) {
+	   return "pk=" + StringUtils.join(primaryKeys, ",");
 	}
 
 	/**
@@ -45,7 +57,7 @@ public class TableRecord
 		/** schema field name */
 		private String name;
 		/** array of field types */
-		private String[] type;
+		private Object[] type;
 		/** meta for the field */
 		private String meta;
 
@@ -53,7 +65,7 @@ public class TableRecord
 		{
 			/** this can be different from dbFieldName */
 			this.name = dbFieldName;
-			this.type = new String[]{MysqlToAvroMapper.valueOf(dbFieldType.toUpperCase()).getAvroType(), "null"};
+			this.type = new Object[]{MysqlToAvroMapper.valueOf(dbFieldType.toUpperCase()).getAvroType(), "null"};
 			this.meta =
 			        "dbFieldName=" + dbFieldName + ";dbFieldPosition=" + dbFieldPosition + ";dbFieldType="
 			                + dbFieldType;
@@ -69,7 +81,7 @@ public class TableRecord
 			this.name = name;
 		}
 
-		public String[] getType()
+		public Object[] getType()
 		{
 			return type;
 		}

@@ -70,7 +70,8 @@ public enum MapperType
 
 			AbstractEvent destinationEvent =
 			        destinationEventFactory.createEvent(sourceEvent.getFieldMapPair(), sourceEvent.getPrimaryKeySet(),
-			                sourceEvent.getEntityName(), sourceEvent.getNamespaceName(), sourceEvent.getEventType());
+			                sourceEvent.getEntityName(), sourceEvent.getNamespaceName(), sourceEvent.getEventType(),
+					        sourceEvent.getRowChangeMap());
 
 			return Arrays.asList(destinationEvent);
 		}
@@ -106,7 +107,7 @@ public enum MapperType
 
 			AbstractEvent destinationEvent =
 			        destinationEventFactory.createEvent(sourceEvent.getFieldMapPair(), sourceEvent.getPrimaryKeySet(),
-			                sourceEvent.getEntityName(), sourceEvent.getNamespaceName(), sourceEvent.getEventType());
+			                sourceEvent.getEntityName(), sourceEvent.getNamespaceName(), sourceEvent.getEventType(), sourceEvent.getRowChangeMap());
 
 			return Arrays.asList(destinationEvent);
 		}
@@ -170,7 +171,8 @@ public enum MapperType
 
 				AbstractEvent destinationEvent =
 				        destinationEventFactory.createEvent(destinationEventColumnMap, primaryKeySet,
-				                destinationEntity, destinationNamespace, sourceEvent.getEventType());
+				                destinationEntity, destinationNamespace, sourceEvent.getEventType(),
+								sourceEvent.getRowChangeMap());
 
 				destinationEventList.add(destinationEvent);
 			}
