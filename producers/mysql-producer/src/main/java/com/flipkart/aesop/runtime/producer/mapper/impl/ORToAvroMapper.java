@@ -22,29 +22,11 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Date;
 
+import com.google.code.or.common.glossary.column.*;
 import org.trpr.platform.core.impl.logging.LogFactory;
 import org.trpr.platform.core.spi.logging.Logger;
 
 import com.google.code.or.common.glossary.Column;
-import com.google.code.or.common.glossary.column.BitColumn;
-import com.google.code.or.common.glossary.column.BlobColumn;
-import com.google.code.or.common.glossary.column.DateColumn;
-import com.google.code.or.common.glossary.column.DatetimeColumn;
-import com.google.code.or.common.glossary.column.DecimalColumn;
-import com.google.code.or.common.glossary.column.DoubleColumn;
-import com.google.code.or.common.glossary.column.EnumColumn;
-import com.google.code.or.common.glossary.column.FloatColumn;
-import com.google.code.or.common.glossary.column.Int24Column;
-import com.google.code.or.common.glossary.column.LongColumn;
-import com.google.code.or.common.glossary.column.LongLongColumn;
-import com.google.code.or.common.glossary.column.NullColumn;
-import com.google.code.or.common.glossary.column.SetColumn;
-import com.google.code.or.common.glossary.column.ShortColumn;
-import com.google.code.or.common.glossary.column.StringColumn;
-import com.google.code.or.common.glossary.column.TimeColumn;
-import com.google.code.or.common.glossary.column.TimestampColumn;
-import com.google.code.or.common.glossary.column.TinyColumn;
-import com.google.code.or.common.glossary.column.YearColumn;
 import com.linkedin.databus.core.DatabusRuntimeException;
 import com.linkedin.databus2.core.DatabusException;
 /**
@@ -133,7 +115,15 @@ public class ORToAvroMapper {
 			TimestampColumn timeStampColumn = (TimestampColumn) column;
 			Timestamp timeStamp = timeStampColumn.getValue();
 			return timeStamp.getTime();
-		}else if (column instanceof TinyColumn){
+		}else if (column instanceof Timestamp2Column){
+            Timestamp2Column timeStampColumn = (Timestamp2Column) column;
+            Timestamp timeStamp = timeStampColumn.getValue();
+            return timeStamp.getTime();
+        }else if (column instanceof Datetime2Column){
+            Datetime2Column datetime2Column = (Datetime2Column) column;
+            Date date = datetime2Column.getValue();
+            return (date.getTime()/1000) * 1000;
+        } else if (column instanceof TinyColumn){
 			TinyColumn tinyColumn = (TinyColumn) column;
 			return tinyColumn.getValue();
 		}else if (column instanceof YearColumn){
