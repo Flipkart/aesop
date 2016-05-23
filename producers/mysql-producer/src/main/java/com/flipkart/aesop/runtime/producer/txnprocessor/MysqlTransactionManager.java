@@ -20,6 +20,7 @@ import java.util.Map;
 
 import com.google.code.or.binlog.BinlogEventV4Header;
 import com.google.code.or.common.glossary.Row;
+import com.google.code.or.common.glossary.Pair;
 import com.linkedin.databus.core.DbusOpcode;
 /**
  * <code>MysqlTransactionManager>/code> defines contracts specific for Mysql transactions. Inherits contracts from {@link TransactionProcessor} and {@link SourceProcessor} 
@@ -28,7 +29,7 @@ import com.linkedin.databus.core.DbusOpcode;
  */
 public interface MysqlTransactionManager extends TransactionProcessor,SourceProcessor{
 	/** Persists change events in event buffer */
-	void performChanges(long tableId,BinlogEventV4Header eventHeader, List<Row> rowList, final DbusOpcode doc);
+	void performChanges(long tableId,BinlogEventV4Header eventHeader, List<Pair<Row>> rowPairs, final DbusOpcode doc);
 	/** Set the current bin log file number*/
 	void setCurrFileNum(int currFileNum) ;
 	/** Get the map of mysqlTableId to tableName mapping */

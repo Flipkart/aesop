@@ -76,4 +76,10 @@ public interface Event
 	 * @return {@link List} of Primary Keys
 	 */
 	public List<Object> getPrimaryKeyValues();
+
+	/**
+	 * Gets the change Map which store old values of record.
+	 * @return rowChangeMap
+	 */
+	public Map<String, Object> getRowChangeMap();
 }

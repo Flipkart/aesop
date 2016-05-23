@@ -41,11 +41,13 @@ public class SchemaGenerator implements InitializingBean
 	/** date formatter. */
 	private SimpleDateFormat df = new SimpleDateFormat("MMM dd, yyyy hh:mm:ss a zzz");
 
+	private String rowChangeFieldName = null;
+
 	/**
 	 * Instantiates a new schema generator.
-	 * @param dataSourceConfig - configuration to initialize datasource
-	 * @param inclusionList
-	 * @param exclusionList
+	 * @param dataSourceConfigs - configuration to initialize datasource
+	 * @param tablesInclusionListMap
+	 * @param tablesExclusionListMap
 	 * @throws PropertyVetoException the property veto exception
 	 */
 	public SchemaGenerator(List<DataSourceConfig> dataSourceConfigs, Map<String, List<String>> tablesInclusionListMap,
@@ -58,6 +60,26 @@ public class SchemaGenerator implements InitializingBean
 		this.tablesInclusionListMap = tablesInclusionListMap;
 		this.tablesExclusionListMap = tablesExclusionListMap;
 
+	}
+
+	/**
+	 * Instantiates a new schema generator.
+	 * @param dataSourceConfigs - configuration to initialize datasource
+	 * @param tablesInclusionListMap
+	 * @param tablesExclusionListMap
+	 * @param rowChangeFieldName
+	 * @throws PropertyVetoException the property veto exception
+	 */
+	public SchemaGenerator(List<DataSourceConfig> dataSourceConfigs, Map<String, List<String>> tablesInclusionListMap,
+	        Map<String, List<String>> tablesExclusionListMap, String rowChangeFieldName) throws PropertyVetoException
+	{
+		for (DataSourceConfig dataSourceConfig : dataSourceConfigs)
+		{
+			MysqlConnectionProvider.getInstance().addDataSource(dataSourceConfig);
+		}
+		this.tablesInclusionListMap = tablesInclusionListMap;
+		this.tablesExclusionListMap = tablesExclusionListMap;
+		this.rowChangeFieldName = rowChangeFieldName;
 	}
 
 	/**
@@ -84,7 +106,7 @@ public class SchemaGenerator implements InitializingBean
 	 * @return table to schema mapping
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
-	public Map<String, String> generateSchemaForAllTables(String dbName) throws IOException
+	public Map<String, String> generateSchemaForAllTables(String dbName) throws IOException, IllegalArgumentException
 	{
 		Map<String, String> tableNameToSchemaMap = new HashMap<String, String>();
 		List<String> tableNameList = MysqlUtils.getTablesInDB(dbName);
@@ -125,7 +147,18 @@ public class SchemaGenerator implements InitializingBean
 		String doc =
 		        "Auto-generated Avro schema for " + tableName + ". Generated at "
 		                + df.format(new Date(System.currentTimeMillis()));
-		TableRecord tableRecord = new TableRecord(tableName, "record", doc, namespace, primaryKeys, fields);
+
+		TableRecord tableRecord;
+		if (rowChangeFieldName != null)
+		{
+			SchemaGenerator.validateRowChangeField(tableName, namespace, fields, rowChangeFieldName);
+			fields.add(new TableRecord.Field(rowChangeFieldName, "MAP", fields.size() + 1));
+			tableRecord = new TableRecord(tableName, "record", doc, namespace, primaryKeys, fields, rowChangeFieldName);
+		}
+		else
+		{
+			tableRecord = new TableRecord(tableName, "record", doc, namespace, primaryKeys, fields);
+		}
 
 		/* mapping tableRecord to json */
 		StringWriter writer = new StringWriter();
@@ -177,6 +210,34 @@ public class SchemaGenerator implements InitializingBean
 	public void setTablesExclusionListMap(Map<String, List<String>> tablesExclusionListMap)
 	{
 		this.tablesExclusionListMap = tablesExclusionListMap;
+	}
+
+
+	public String getRowChangeFieldName() {
+		return rowChangeFieldName;
+	}
+
+	public void setRowChangeFieldName(String rowChangeFieldName) {
+		this.rowChangeFieldName = rowChangeFieldName;
+	}
+
+	/**
+	 * @param fields
+	 * @param rowChangeFieldName
+	 */
+	private static void validateRowChangeField(String tableName, String namespace, List<TableRecord.Field> fields,
+											   String rowChangeFieldName) throws IllegalArgumentException
+	{
+		for (TableRecord.Field field : fields)
+		{
+			if (field.getName().equals(rowChangeFieldName))
+			{
+				throw new IllegalArgumentException("FAILED: rowChangeFieldName: " + rowChangeFieldName + " clashes with orignal field: " +
+						field.getName() + " (TableName:" + tableName + ",Namespace:" + namespace + ")");
+			}
+
+		}
+
 	}
 
 }

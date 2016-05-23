@@ -1,23 +1,18 @@
 package com.flipkart.aesop.sample.client.common.events;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+import com.flipkart.aesop.utils.AvroToMysqlConverter;
 import org.apache.avro.Schema;
 import org.apache.avro.Schema.Field;
 import org.apache.avro.generic.GenericRecord;
 
-import com.flipkart.aesop.sample.client.common.utils.AvroToMysqlMapper;
-import com.flipkart.aesop.sample.client.common.utils.MysqlDataTypes;
 import com.linkedin.databus.client.pub.DbusEventDecoder;
-import com.linkedin.databus.core.DbusConstants;
 import com.linkedin.databus.core.DbusEvent;
 import com.linkedin.databus.core.DbusOpcode;
 import com.linkedin.databus2.core.DatabusException;
 import com.linkedin.databus2.schemas.VersionedSchema;
-import com.linkedin.databus2.schemas.utils.SchemaHelper;
+import com.flipkart.aesop.utils.AvroSchemaHelper;
 
 /**
  * @author yogesh.dahiya
@@ -25,11 +20,10 @@ import com.linkedin.databus2.schemas.utils.SchemaHelper;
 
 public class MysqlBinLogEventImpl implements MysqlBinLogEvent
 {
-	private static String PK_FIELD_NAME = "pk";
-	private static String META_FIELD_TYPE_NAME = "dbFieldType";
 	private Schema schema;
 	private List<String> pKeyList = new ArrayList<String>(3);
 	private Map<String, Object> keyValuePairs = new HashMap<String, Object>();
+	private Map<String, Object> rowChangeMap = new HashMap<String, Object>();
 	private DbusOpcode eventType;
 
 	public MysqlBinLogEventImpl(DbusEvent event, DbusEventDecoder eventDecoder) throws DatabusException
@@ -39,41 +33,47 @@ public class MysqlBinLogEventImpl implements MysqlBinLogEvent
 		this.schema = writerSchema.getSchema();
 		this.eventType = event.getOpcode();
 		this.pKeyList = getPkListFromSchema(schema);
+		this.rowChangeMap = null;
+		Map <String, String> fieldToMysqlDataType = AvroSchemaHelper.fieldToDataTypeMap(schema);
+		String rowChangeField = AvroSchemaHelper.getRowChangeField(schema);
+
 		for (Field field : schema.getFields())
 		{
-			String mysqlType = SchemaHelper.getMetaField(field, META_FIELD_TYPE_NAME);
-			this.keyValuePairs.put(
-			        field.name(),
-			        AvroToMysqlMapper.avroToMysqlType(genericRecord.get(field.name()),
-			                MysqlDataTypes.valueOf(mysqlType.toUpperCase())));
+			Object recordValue = genericRecord.get(field.name());
+			if (field.name().equals(rowChangeField))
+			{
+				this.rowChangeMap = AvroToMysqlConverter.getMysqlTypedObjectForMap((Map<Object, Object>) recordValue,
+						fieldToMysqlDataType);
+			}
+			else
+			{
+				this.keyValuePairs.put(field.name(),
+						AvroToMysqlConverter.getMysqlTypedObject(fieldToMysqlDataType.get(field.name()), recordValue));
+			}
 		}
 
 	}
 
-	public MysqlBinLogEventImpl(Schema schema, Map<String, Object> keyValuePairs, DbusOpcode eventType)
+	public MysqlBinLogEventImpl(Schema schema, Map<String, Object> keyValuePairs, DbusOpcode eventType, Map<String, Object> rowChangeMap)
 	        throws DatabusException
 	{
 		this.eventType = eventType;
 		this.keyValuePairs = keyValuePairs;
 		this.pKeyList = getPkListFromSchema(schema);
 		this.schema = schema;
+		this.rowChangeMap = rowChangeMap;
 
 	}
 
 	private List<String> getPkListFromSchema(Schema schema) throws DatabusException
 	{
-		List<String> pKeyList = new ArrayList<String>(3);
-		String pkFieldName = SchemaHelper.getMetaField(schema, PK_FIELD_NAME);
-		if (pkFieldName == null)
+		Set<String> primaryKeySet = AvroSchemaHelper.getPrimaryKeysSetFromSchema(schema);
+		List<String> primaryKeyList = new ArrayList<String>(3);
+		for (String s : primaryKeySet)
 		{
-			throw new DatabusException("No primary key specified in the schema");
+			primaryKeyList.add(s);
 		}
-		for (String s : pkFieldName.split(DbusConstants.COMPOUND_KEY_SEPARATOR))
-		{
-			pKeyList.add(s.trim());
-		}
-		assert (pKeyList.size() >= 1);
-		return pKeyList;
+		return primaryKeyList;
 	}
 
 	public Map<String, Object> getKeyValuePair()
@@ -116,6 +116,8 @@ public class MysqlBinLogEventImpl implements MysqlBinLogEvent
 		return this.eventType;
 	}
 
+	public Map<String, Object> getRowChangeMap() { return rowChangeMap; }
+
 	public String toString()
 	{
 		StringBuilder builder = new StringBuilder();
@@ -123,8 +125,8 @@ public class MysqlBinLogEventImpl implements MysqlBinLogEvent
 		builder.append("entityName : " + getEntityName() + ", ");
 		builder.append("eventType : " + getEventType().toString() + ", ");
 		builder.append("pKeyList : " + getPrimaryKeyList().toString() + ", ");
-		builder.append("keyValuePairs : " + getKeyValuePair().toString());
+		builder.append("keyValuePairs : " + getKeyValuePair().toString() + ", ");
+		builder.append("rowChangeMap : " + getRowChangeMap());
 		return builder.toString();
 	}
-
 }

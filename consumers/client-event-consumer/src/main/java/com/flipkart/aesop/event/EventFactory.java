@@ -51,7 +51,8 @@ public interface EventFactory
 	 * @return {@link AbstractEvent}
 	 * @throws DatabusException
 	 */
-	public AbstractEvent createEvent(Schema schema, Map<String, Object> fieldMap, DbusOpcode eventType)
+	public AbstractEvent createEvent(Schema schema, Map<String, Object> fieldMap, DbusOpcode eventType,
+									 Map<String, Object> rowChangeMap)
 	        throws DatabusException;
 
 	/**
@@ -61,8 +62,9 @@ public interface EventFactory
 	 * @param entityName
 	 * @param namespaceName
 	 * @param eventType
+	 * @param rowChangeMap
 	 * @return {@link AbstractEvent}
 	 */
 	public AbstractEvent createEvent(Map<String, Object> fieldsMap, Set<String> primaryFieldsSet, String entityName,
-	        String namespaceName, DbusOpcode eventType);
+									 String namespaceName, DbusOpcode eventType, Map<String, Object> rowChangeMap);
 }
