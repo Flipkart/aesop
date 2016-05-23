@@ -19,6 +19,7 @@ package com.flipkart.aesop.runtime.producer.mapper.impl;
 import java.util.Comparator;
 import java.util.List;
 
+import com.flipkart.aesop.runtime.producer.avro.utils.AvroSchemaHelper;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.GenericRecord;
@@ -78,6 +79,7 @@ public class DefaultBinLogEventMapper<T extends GenericRecord> implements BinLog
 		GenericRecord record = new GenericData.Record(schema);
 		List<Column> columns = row.getColumns();
 		List<Schema.Field> orderedFields;
+		String rowChangeField = AvroSchemaHelper.getRowChangeField(schema);
 
 		try
 		{
@@ -97,7 +99,7 @@ public class DefaultBinLogEventMapper<T extends GenericRecord> implements BinLog
 			int cnt = 0;
 			for (Schema.Field field : orderedFields)
 			{
-				Column column = columns.get(cnt);
+				Column column = field.name().equals(rowChangeField) ? null : columns.get(cnt);
 				record.put(field.name(), column == null ? null : orToAvroMapper.orToAvroType(column));
 				cnt++;
 			}
