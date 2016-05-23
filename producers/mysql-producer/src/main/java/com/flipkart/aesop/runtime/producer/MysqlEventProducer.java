@@ -75,7 +75,12 @@ public class MysqlEventProducer<T extends GenericRecord> extends AbstractEventPr
 	protected SchemaChangeEventProcessor schemaChangeEventProcessor;
 	/** The SCN generator implementation, initialized to the default simple implementation*/
 	protected SCNGenerator scnGenerator = new NaiveSCNGenerator();
+	/** Stores the flag value for propogating old/changed row values. Defaulting it to false */
+	private boolean oldValueRequired;
 
+	public void setOldValueRequired(boolean oldValueRequired) {
+		this.oldValueRequired = oldValueRequired;
+	}
 	/**
 	 * Interface method implementation. Checks for mandatory dependencies and creates the Open Replicator
 	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
@@ -181,7 +186,7 @@ public class MysqlEventProducer<T extends GenericRecord> extends AbstractEventPr
 	        PhysicalSourceStaticConfig pConfig) throws DatabusException, EventCreationException,
 	        UnsupportedKeyException, InvalidConfigException
 	{
-		MysqlAvroEventManager<T> manager = new MysqlAvroEventManager<T>(sourceConfig.getId(), (short) pConfig.getId());
+		MysqlAvroEventManager<T> manager = new MysqlAvroEventManager<T>(sourceConfig.getId(), (short) pConfig.getId(), this.oldValueRequired);
 		return manager;
 	}
 

@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.flipkart.aesop.runtime.producer.avro.utils.AvroSchemaHelper;
 import org.apache.avro.Schema;
 import org.trpr.platform.core.impl.logging.LogFactory;
 import org.trpr.platform.core.spi.logging.Logger;
@@ -80,12 +81,20 @@ public class UpdateSchemaChangeEventProcessor implements SchemaChangeEventProces
 	@Override
 	public void process(String databaseName, String tableName) throws Exception
 	{
-		String newSchemaJson = schemaGenerator.generateSchema(databaseName, tableName);
 		String tableUri = databaseName.toLowerCase() + "." + tableName.toLowerCase();
-		VersionedSchema olderSchema =
+		VersionedSchema olderVersionedSchema =
 		        schemaRegistryService.fetchLatestVersionedSchemaBySourceName(tableUriToSrcNameMap.get(tableUri));
 
-		short olderVersion = (olderSchema != null) ? (short) olderSchema.getVersion() : 0;
+		short olderVersion = 0;
+		if (olderVersionedSchema != null)
+		{
+			Schema oldSchema = olderVersionedSchema.getSchema();
+			schemaGenerator.setRowChangeFieldName(AvroSchemaHelper.getRowChangeField(oldSchema));
+			olderVersion = (short) olderVersionedSchema.getVersion();
+		}
+
+		String newSchemaJson = schemaGenerator.generateSchema(databaseName, tableName);
+
 		/** if the olderVersion is at its Max value then overwrite it */
 		Short newVersion = olderVersion == Short.MAX_VALUE ? olderVersion : (short) (olderVersion + 1);
 		VersionedSchema newSchema =

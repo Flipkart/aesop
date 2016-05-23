@@ -35,6 +35,7 @@
         <property name="schemaChangeEventProcessor">
             <bean class="com.flipkart.aesop.runtime.producer.schema.eventprocessor.impl.NopSchemaChangeEventProcessor" />
         </property>
+        <property name="isOldValueRequired" value="false"/>
     </bean>
 
     <bean id="orToAvroMapper" class="com.flipkart.aesop.runtime.producer.mapper.impl.ORToAvroMapper"/>

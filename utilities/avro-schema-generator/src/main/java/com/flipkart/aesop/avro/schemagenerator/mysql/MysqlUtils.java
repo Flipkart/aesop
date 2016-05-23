@@ -105,7 +105,7 @@ public class MysqlUtils
 
 	/**
 	 * Gets the primary keys.
-	 * @param dataSourceId the dataSourceId
+	 * @param dbName the dataSourceId
 	 * @param tableName the table name
 	 * @return the primary keys
 	 */
@@ -140,7 +140,6 @@ public class MysqlUtils
 
 	/**
 	 * Gets the fields in table.
-	 * @param dataSourceId the dataSourceId
 	 * @param db the database
 	 * @param table the table
 	 * @return the fields in table
@@ -174,7 +173,7 @@ public class MysqlUtils
 
 	/**
 	 * checks if the current table is a valid table in the given schema.
-	 * @param dataSourceId the dataSourceId
+	 * @param dataBase the dataSourceId
 	 * @param table : table name
 	 * @return true if valid table, false otherwise
 	 */
@@ -210,7 +209,6 @@ public class MysqlUtils
 
 	/**
 	 * Checks if the field is present in the table.
-	 * @param dataSourceId the dataSourceId
 	 * @param database the database
 	 * @param field The field to check if it's valid
 	 * @param table the table
@@ -247,7 +245,6 @@ public class MysqlUtils
 
 	/**
 	 * Gets the field details.
-	 * @param dataSourceId the dataSourceId
 	 * @param db the db name
 	 * @param table the table name
 	 * @return the field details
@@ -270,7 +267,6 @@ public class MysqlUtils
 				fieldInfoList.add(new TableRecord.Field(resultSet.getString("COLUMN_NAME"), resultSet
 				        .getString("DATA_TYPE"), resultSet.getInt("ORDINAL_POSITION")));
 			}
-
 		}
 		catch (SQLException e)
 		{
