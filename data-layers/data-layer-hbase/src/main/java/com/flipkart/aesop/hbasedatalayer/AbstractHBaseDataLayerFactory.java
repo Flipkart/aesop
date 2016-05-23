@@ -15,14 +15,19 @@
 package com.flipkart.aesop.hbasedatalayer;
 
 import java.beans.PropertyVetoException;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
 import javax.sql.DataSource;
 
+
+import java.sql.Statement;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.trpr.platform.core.impl.logging.LogFactory;
 import org.trpr.platform.core.spi.logging.Logger;
 
@@ -91,19 +96,19 @@ public abstract class AbstractHBaseDataLayerFactory<T extends JDBCDataLayer>
 	}
 
 	private DataSource getDataSource() {
-		ComboPooledDataSource comboPooledDataSource = null;
-		try {
-			comboPooledDataSource = new ComboPooledDataSource();
-			comboPooledDataSource.setDriverClass(getDriverClass());
-			comboPooledDataSource.setJdbcUrl(getJdbcUrl());
-			comboPooledDataSource.setProperties(getDataSourceProperties());
-		} catch (PropertyVetoException e) {
-			LOGGER.error(e.getMessage());
-		}
-
-		return comboPooledDataSource;
-
-	}
+        DriverManagerDataSource driverManagerDataSource = null;
+        try {
+            driverManagerDataSource = new DriverManagerDataSource();
+            driverManagerDataSource.setDriverClassName(getDriverClass());
+            driverManagerDataSource.setUrl(getJdbcUrl());
+            Properties props = new Properties();
+            props.put("phoenix.connection.autoCommit","true");
+            driverManagerDataSource.setConnectionProperties(props);
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage());
+        }
+        return driverManagerDataSource;
+    }
 
 	public Properties getDataSourceProperties() {
 		return dataSourceProperties;

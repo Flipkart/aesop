@@ -25,6 +25,8 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.trpr.platform.core.impl.logging.LogFactory;
 import org.trpr.platform.core.spi.logging.Logger;
 
+import javax.naming.OperationNotSupportedException;
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -57,10 +59,24 @@ public class HBaseUpsertDataLayer extends UpsertDestinationStoreProcessor implem
 	@Override
 	protected ConsumerCallbackResult upsert(AbstractEvent event)
 	{
-		String upsertQuery = generateUpsertQuery(event);
-		NamedParameterJdbcTemplate jdbcTemplate = jdbcTemplateMap.get(event.getNamespaceName());
-		jdbcTemplate.update(upsertQuery, event.getFieldMapPair());
-        return ConsumerCallbackResult.SUCCESS;
+        Long startTime = System.currentTimeMillis();
+        LOGGER.debug("------------------ Starting UPSERT " + Thread.currentThread().getId() + "------------------------------");
+        try {
+            String upsertQuery = generateUpsertQuery(event);
+            LOGGER.debug("Query executed thread "+Thread.currentThread().getId()+" query "+upsertQuery);
+            LOGGER.debug("DATA  "+ Thread.currentThread().getId()+" values "+event.getFieldMapPair());
+            NamedParameterJdbcTemplate jdbcTemplate = jdbcTemplateMap.get(event.getNamespaceName());
+            jdbcTemplate.update(upsertQuery, event.getFieldMapPair());
+            Long stopTime = System.currentTimeMillis();
+            LOGGER.debug("Upsert done for thread " + Thread.currentThread().getId() + " Time taken to upsert " + (stopTime - startTime));
+            LOGGER.debug("------------------ End SUCCESS "+ Thread.currentThread().getId() + "------------------------------");
+            return ConsumerCallbackResult.SUCCESS;
+        }
+        catch(Exception ex) {
+            LOGGER.debug("Exception for thread " + Thread.currentThread().getId() + " " + ex.getMessage(), ex);
+            LOGGER.debug("------------------ End FAILED "+ Thread.currentThread().getId() + "------------------------------");
+            return ConsumerCallbackResult.ERROR;
+        }
 	}
 
 	/**
