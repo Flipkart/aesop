@@ -13,10 +13,10 @@ Growing list of change data source and destinations:
 ## Releases
 | Release | Date | Description |
 |:------------|:----------------|:------------|
+| Version 1.2.3-SNAPSHOT    | May 2016       |    Move to Trooper 2.0.0, log4j2 instead of logback
 | Version 1.2.1             | Apr 2016       |    Bug fix release
 | Version 1.2.1-SNAPSHOT    | Aug 2015       |    Feature enhancements and bug fix release
 | Version 1.2.0             | Jul 2015       |    Bug fix release
-| Version 1.1.0             | Apr 2015       |    Feature enhancements and bug fix release
 
 ## Changelog
 Changelog can be viewed in CHANGELOG.md file (https://github.com/Flipkart/aesop/blob/master/CHANGELOG.md)

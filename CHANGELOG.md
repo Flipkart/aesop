@@ -1,3 +1,7 @@
+## 1.2.3-SNAPSHOT (May 23, 2016)
+- Move to Trooper 2.0.0 release
+- Move from logback to log4j2 for logging
+
 ## 1.2.1 (Apr 21, 2016)
 - Bugfix release
 
