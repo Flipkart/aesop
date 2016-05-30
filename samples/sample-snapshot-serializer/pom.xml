@@ -7,7 +7,7 @@
     <parent>
         <groupId>com.flipkart.aesop</groupId>
         <artifactId>aesop</artifactId>
-        <version>1.2.2-SNAPSHOT</version>
+        <version>1.2.3-SNAPSHOT</version>
 	<relativePath>../../pom.xml</relativePath>	
     </parent>
 
@@ -52,7 +52,7 @@
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
-			<version>1.6.4</version>
+			<version>${slf4j.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-lang</groupId>
@@ -63,17 +63,7 @@
         <dependency>
             <groupId>com.flipkart.aesop</groupId>
             <artifactId>runtime-snapshot-serializer</artifactId>
-            <version>1.2.2-SNAPSHOT</version>
-		    <exclusions>
-	        	<exclusion> <!-- Remove slf4j over log4j -->
-		      	  <groupId>org.slf4j</groupId> 
-		          <artifactId>slf4j-log4j12</artifactId>
-		        </exclusion>
-	        	<exclusion> <!-- Remove jcl over slf4j  -->
-				  <groupId>org.slf4j</groupId>
-				  <artifactId>jcl-over-slf4j</artifactId>
-		        </exclusion>		        
-		    </exclusions>		             
+            <version>1.2.3-SNAPSHOT</version>
         </dependency>    
         <!-- Third party dependencies -->
         <dependency>

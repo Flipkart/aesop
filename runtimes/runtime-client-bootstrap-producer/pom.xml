@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>com.flipkart.aesop</groupId>
 		<artifactId>aesop</artifactId>
-		<version>1.2.2-SNAPSHOT</version>
+		<version>1.2.3-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
 	</parent>
 
@@ -56,7 +56,7 @@
 					<groupId>org.apache.avro</groupId>
 					<artifactId>avro</artifactId>
 				</exclusion>
-				<!-- Removing slf4j-log4j12 as we use log4j-over-slf4j bridge -->
+				<!-- Removing slf4j-log4j12. We only need the slf4j facade -->
 				<exclusion>
 					<artifactId>slf4j-log4j12</artifactId>
 					<groupId>org.slf4j</groupId>
@@ -87,7 +87,7 @@
 					<groupId>org.apache.avro</groupId>
 					<artifactId>avro</artifactId>
 				</exclusion>
-				<!-- Removing slf4j-log4j12 as we use log4j-over-slf4j bridge -->
+				<!-- Removing slf4j-log4j12. We only need the slf4j facade -->
 				<exclusion>
 					<artifactId>slf4j-log4j12</artifactId>
 					<groupId>org.slf4j</groupId>

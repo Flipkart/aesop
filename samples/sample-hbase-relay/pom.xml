@@ -7,7 +7,7 @@
     <parent>
         <groupId>com.flipkart.aesop</groupId>
         <artifactId>aesop</artifactId>
-        <version>1.2.2-SNAPSHOT</version>
+        <version>1.2.3-SNAPSHOT</version>
 	<relativePath>../../pom.xml</relativePath>
     </parent>
 
@@ -49,15 +49,16 @@
         <dependency>
             <groupId>com.flipkart.aesop</groupId>
             <artifactId>hbase-producer</artifactId>
-            <version>1.2.2-SNAPSHOT</version>
+            <version>1.2.3-SNAPSHOT</version>
             <exclusions>
             	<exclusion>
-            		<artifactId>servlet-api-2.5</artifactId>
             		<groupId>org.mortbay.jetty</groupId>
+            		<artifactId>servlet-api-2.5</artifactId>
             	</exclusion>
+            	<!-- Removing slf4j-log4j12. We only need the slf4j facade -->
             	<exclusion>
-            		<artifactId>slf4j-log4j12</artifactId>
             		<groupId>org.slf4j</groupId>
+            		<artifactId>slf4j-log4j12</artifactId>
             	</exclusion>
             </exclusions>
         </dependency>    

@@ -7,7 +7,7 @@
     <parent>
         <groupId>com.flipkart.aesop</groupId>
         <artifactId>aesop</artifactId>
-        <version>1.2.2-SNAPSHOT</version>
+        <version>1.2.3-SNAPSHOT</version>
 	<relativePath>../../pom.xml</relativePath>
     </parent>
 
@@ -26,14 +26,17 @@
             <version>1.1.1</version>
             <scope>compile</scope>
             <exclusions>
+            	<!-- Removing log4j as we use log4j2 -->
                 <exclusion>
                     <groupId>log4j</groupId>
                     <artifactId>log4j</artifactId>
                 </exclusion>
+                <!-- Removing slf4j-api. Correct version will come through as transitive dependency -->
                 <exclusion>
                     <groupId>org.slf4j</groupId>
                     <artifactId>slf4j-api</artifactId>
                 </exclusion>
+                <!-- Removing slf4j-log4j12. We only need the slf4j facade -->
                 <exclusion>
                     <groupId>org.slf4j</groupId>
                     <artifactId>slf4j-log4j12</artifactId>

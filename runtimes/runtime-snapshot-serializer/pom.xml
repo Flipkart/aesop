@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.flipkart.aesop</groupId>
         <artifactId>aesop</artifactId>
-        <version>1.2.2-SNAPSHOT</version>
+        <version>1.2.3-SNAPSHOT</version>
 <relativePath>../../pom.xml</relativePath>	
     </parent>
 
@@ -45,11 +45,6 @@
 
     <dependencies>
 		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>1.6.4</version>
-		</dependency>
-		<dependency>
 			<groupId>commons-lang</groupId>
 			<artifactId>commons-lang</artifactId>
 			<version>2.4</version>
@@ -59,21 +54,6 @@
             <groupId>org.trpr</groupId>
             <artifactId>batch-core</artifactId>
             <version>${org.trpr.version}</version>
-		    <exclusions>
-	        	<exclusion> <!-- Remove slf4j over log4j -->
-		      	  <groupId>org.slf4j</groupId> 
-		          <artifactId>slf4j-log4j12</artifactId>
-		        </exclusion>
-	        	<exclusion> <!-- Remove jcl over slf4j  -->
-				  <groupId>org.slf4j</groupId>
-				  <artifactId>jcl-over-slf4j</artifactId>
-		        </exclusion>		        
-				<!-- Removing log4j as we use log4j-over-slf4j bridge -->
-			    <exclusion>
-			        <groupId>log4j</groupId>
-			        <artifactId>log4j</artifactId>
-			    </exclusion>
-		    </exclusions>		 
         </dependency>
         <!-- Zeno dependencies -->
 		<dependency>
