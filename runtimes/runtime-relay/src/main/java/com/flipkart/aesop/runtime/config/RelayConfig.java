@@ -57,6 +57,15 @@ public class RelayConfig implements InitializingBean {
 	/** The MAX SCN file directory location */
 	private String maxScnDirectoryLocation;
 
+    /** The MAX_INITIAL_LINE_LENGTH configures netty's maxInitialLineLength */
+    private int maxInitialLineLength;
+
+    /** The MAX_HEADER_SIZE configures netty's maxHeaderSize */
+    private int maxHeaderSize;
+
+    /** The MAX_CHUNK_SIZE configures netty's maxChunkSize */
+    private int maxChunkSize;
+
 	/**
 	 * Interface method implementation. Ensures that all property names start
 	 * with {@link RelayConfig#RELAY_PROPERTIES_PREFIX}
@@ -125,4 +134,27 @@ public class RelayConfig implements InitializingBean {
 						+ this.maxScnDirectoryLocation).getAbsolutePath());
 	}
 
+    public int getMaxInitialLineLength() {
+        return maxInitialLineLength;
+    }
+
+    public void setMaxInitialLineLength(int maxInitialLineLength) {
+        this.maxInitialLineLength = maxInitialLineLength;
+    }
+
+    public int getMaxHeaderSize() {
+        return maxHeaderSize;
+    }
+
+    public void setMaxHeaderSize(int maxHeaderSize) {
+        this.maxHeaderSize = maxHeaderSize;
+    }
+
+    public int getMaxChunkSize() {
+        return maxChunkSize;
+    }
+
+    public void setMaxChunkSize(int maxChunkSize) {
+        this.maxChunkSize = maxChunkSize;
+    }
 }

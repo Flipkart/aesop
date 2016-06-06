@@ -66,14 +66,26 @@ public class DefaultRelay extends HttpRelay {
     
     /** List of disconnected peers. We'll use a copy on write list to deal with concurrency. writes are low on this list*/
     private List<String> disconnectedPeers = new CopyOnWriteArrayList<String>();
+
+    /** The MAX_INITIAL_LINE_LENGTH configures netty's maxInitialLineLength */
+    private int maxInitialLineLength;
+
+    /** The MAX_HEADER_SIZE configures netty's maxHeaderSize */
+    private int maxHeaderSize;
+
+    /** The MAX_CHUNK_SIZE configures netty's maxChunkSize */
+    private int maxChunkSize;
     
 	/**
 	 * Constructor for this class. Invokes constructor of the super-type with the passed-in arguments
 	 */
     public DefaultRelay(StaticConfig config, PhysicalSourceStaticConfig[] pConfigs, SourceIdNameRegistry sourcesIdNameRegistry,
-            SchemaRegistryService schemaRegistry) throws IOException, InvalidConfigException, DatabusException {
+            SchemaRegistryService schemaRegistry, int maxInitialLineLength, int maxHeaderSize, int maxChunkSize) throws IOException, InvalidConfigException, DatabusException {
     	super(config, pConfigs, sourcesIdNameRegistry, schemaRegistry);
         metricsCollector = new MetricsCollector(this);
+        this.maxInitialLineLength = maxInitialLineLength;
+        this.maxHeaderSize = maxHeaderSize;
+        this.maxChunkSize = maxChunkSize;
     }
     
     /**
@@ -197,5 +209,16 @@ public class DefaultRelay extends HttpRelay {
 		return this.producerRegistrationList;
 	}
     public MetricsCollector getMetricsCollector() { return metricsCollector; }
-	
+
+    public int getMaxInitialLineLength() {
+        return maxInitialLineLength;
+    }
+
+    public int getMaxHeaderSize() {
+        return maxHeaderSize;
+    }
+
+    public int getMaxChunkSize() {
+        return maxChunkSize;
+    }
 }

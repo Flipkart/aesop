@@ -18,6 +18,7 @@ package com.flipkart.aesop.runtime.relay.netty;
 import com.flipkart.aesop.runtime.relay.DefaultRelay;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
+import org.jboss.netty.handler.codec.http.HttpRequestDecoder;
 
 /**
  * The <code>HttpRelayPipelineFactory</code> class is a code port of the Databus {@link com.linkedin.databus.container.netty.HttpRelayPipelineFactory} that 
@@ -43,7 +44,14 @@ public class HttpRelayPipelineFactory implements ChannelPipelineFactory {
         ChannelPipeline pipeline = oldPipelineFactory.getPipeline();
         RelayStatisticsCollectingHandler relayStatsHandler =
             new RelayStatisticsCollectingHandler(relay);
-        pipeline.addBefore("databusRequestRunner", "relayStatsCollector", relayStatsHandler);        
+        pipeline.addBefore("databusRequestRunner", "relayStatsCollector", relayStatsHandler);
+        int maxInitialLineLength = relay.getMaxInitialLineLength();
+        int maxHeaderSize = relay.getMaxHeaderSize();
+        int maxChunkSize = relay.getMaxChunkSize();
+        if (0 != maxInitialLineLength && 0 != maxHeaderSize && 0 != maxChunkSize) {
+            HttpRequestDecoder httpRequestDecoder = new HttpRequestDecoder(maxInitialLineLength, maxHeaderSize, maxChunkSize);
+            pipeline.replace(pipeline.get("decoder"),"decoder", httpRequestDecoder);
+        }
         return pipeline;
     }
 }

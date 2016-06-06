@@ -111,7 +111,8 @@ public class DefaultRelayFactory  implements FactoryBean<DefaultRelay>, Initiali
         }
         //Initialising relay. Only passing the first static config as everything else apart from
         // initial SCN per producer is the same. Initial SCN per producer has already been set
-        relay = new DefaultRelay(staticConfigList[0],pStaticConfigs,SourceIdNameRegistry.createFromIdNamePairs(staticConfigList[0].getSourceIds()),schemaRegistryService);
+        relay = new DefaultRelay(staticConfigList[0],pStaticConfigs,SourceIdNameRegistry.createFromIdNamePairs(staticConfigList[0].getSourceIds()),
+                schemaRegistryService,relayConfig.getMaxInitialLineLength(),relayConfig.getMaxHeaderSize(),relayConfig.getMaxChunkSize());
 
         //Commenting out this line. The {@link #getMaxScnReaderWriters() getMaxScnReaderWriters} is not used anywhere.
         //relay.setMaxScnReaderWriters(this.maxScnReaderWriters.get(this.producerRegistrationList.get(0)));
