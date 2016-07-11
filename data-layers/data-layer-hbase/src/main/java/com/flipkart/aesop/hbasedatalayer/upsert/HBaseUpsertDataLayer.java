@@ -74,7 +74,7 @@ public class HBaseUpsertDataLayer extends UpsertDestinationStoreProcessor implem
 	{
         Long startTime = System.currentTimeMillis();
         long threadId = Thread.currentThread().getId();
-        LOGGER.debug(" Starting UPSERT " + threadId );
+        LOGGER.debug("Starting UPSERT " + threadId );
         try {
             String upsertQuery = generateUpsertQuery(event);
             LOGGER.debug("Query executed thread " + threadId + " query " + upsertQuery);
