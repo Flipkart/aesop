@@ -56,25 +56,43 @@ public class HBaseUpsertDataLayer extends UpsertDestinationStoreProcessor implem
 		return jdbcTemplateMap;
 	}
 
+    private boolean validEvent(AbstractEvent event, long threadId) {
+        LOGGER.debug("validating primaryKeys for event " + event.getEntityName() + " in thread " + threadId);
+        boolean validEvent = true;
+        for (String primaryKey : event.getPrimaryKeySet()) {
+            Object primaryKeyValue = event.getFieldMapPair().get(primaryKey);
+            LOGGER.debug("primary key " + primaryKey + " value " + primaryKeyValue);
+            if (null == primaryKeyValue ||  "".equalsIgnoreCase(primaryKeyValue.toString().trim())) {
+                validEvent = false;
+            }
+        }
+        return validEvent;
+    }
+
 	@Override
 	protected ConsumerCallbackResult upsert(AbstractEvent event)
 	{
         Long startTime = System.currentTimeMillis();
-        LOGGER.debug("------------------ Starting UPSERT " + Thread.currentThread().getId() + "------------------------------");
+        long threadId = Thread.currentThread().getId();
+        LOGGER.debug(" Starting UPSERT " + threadId );
         try {
             String upsertQuery = generateUpsertQuery(event);
-            LOGGER.debug("Query executed thread "+Thread.currentThread().getId()+" query "+upsertQuery);
-            LOGGER.debug("DATA  "+ Thread.currentThread().getId()+" values "+event.getFieldMapPair());
-            NamedParameterJdbcTemplate jdbcTemplate = jdbcTemplateMap.get(event.getNamespaceName());
-            jdbcTemplate.update(upsertQuery, event.getFieldMapPair());
-            Long stopTime = System.currentTimeMillis();
-            LOGGER.debug("Upsert done for thread " + Thread.currentThread().getId() + " Time taken to upsert " + (stopTime - startTime));
-            LOGGER.debug("------------------ End SUCCESS "+ Thread.currentThread().getId() + "------------------------------");
+            LOGGER.debug("Query executed thread " + threadId + " query " + upsertQuery);
+            LOGGER.debug("DATA  " + threadId + " values " + event.getFieldMapPair());
+            if (validEvent(event, threadId)) {
+                NamedParameterJdbcTemplate jdbcTemplate = jdbcTemplateMap.get(event.getNamespaceName());
+                jdbcTemplate.update(upsertQuery, event.getFieldMapPair());
+                Long stopTime = System.currentTimeMillis();
+                LOGGER.debug("Upsert done for thread " + threadId + " Time taken to upsert " + (stopTime - startTime));
+            } else {
+                LOGGER.error("Invalid event obtained for thread " + threadId + " Event " + event.toString());
+            }
+            LOGGER.debug("End SUCCESS " + threadId);
             return ConsumerCallbackResult.SUCCESS;
         }
         catch(Exception ex) {
-            LOGGER.debug("Exception for thread " + Thread.currentThread().getId() + " " + ex.getMessage(), ex);
-            LOGGER.debug("------------------ End FAILED "+ Thread.currentThread().getId() + "------------------------------");
+            LOGGER.debug("Exception for thread " + threadId + " " + ex.getMessage(), ex);
+            LOGGER.debug("End FAILED "+ threadId );
             return ConsumerCallbackResult.ERROR;
         }
 	}
