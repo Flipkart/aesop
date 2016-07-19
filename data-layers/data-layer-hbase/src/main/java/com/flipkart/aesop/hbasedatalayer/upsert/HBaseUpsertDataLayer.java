@@ -64,6 +64,10 @@ public class HBaseUpsertDataLayer extends UpsertDestinationStoreProcessor implem
             LOGGER.debug("primary key " + primaryKey + " value " + primaryKeyValue);
             if (null == primaryKeyValue ||  "".equalsIgnoreCase(primaryKeyValue.toString().trim())) {
                 validEvent = false;
+            } else if (primaryKeyValue instanceof String) {
+                LOGGER.debug("updating primary key value in thread " + threadId + " original value " + primaryKeyValue +
+                        " updated value " + primaryKeyValue.toString().trim());
+                event.getFieldMapPair().put(primaryKey, primaryKeyValue.toString().trim());
             }
         }
         return validEvent;
