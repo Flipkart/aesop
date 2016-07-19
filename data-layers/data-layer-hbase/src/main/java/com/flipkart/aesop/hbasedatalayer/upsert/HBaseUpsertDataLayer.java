@@ -95,7 +95,7 @@ public class HBaseUpsertDataLayer extends UpsertDestinationStoreProcessor implem
             return ConsumerCallbackResult.SUCCESS;
         }
         catch(Exception ex) {
-            LOGGER.debug("Exception for thread " + threadId + " " + ex.getMessage(), ex);
+            LOGGER.error("Exception for thread " + threadId + " event " + event.toString() + " exception " + ex.getMessage(), ex);
             LOGGER.debug("End FAILED "+ threadId );
             return ConsumerCallbackResult.ERROR;
         }
