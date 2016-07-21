@@ -55,6 +55,7 @@ public enum MysqlDataTypes
 	MEDIUMBLOB,
 	LONGBLOB,
 	ENUM,
+    VARCHARORTEXT,
 	SET;
 
 }
