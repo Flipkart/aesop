@@ -56,4 +56,7 @@ public class MySQLConstants
 	public static final int GTID_LOG_EVENT = 33;
 	public static final int ANONYMOUS_GTID_LOG_EVENT = 34;
 	public static final int PREVIOUS_GTIDS_LOG_EVENT = 35;
+
+	private MySQLConstants() {
+	}
 }

@@ -11,4 +11,7 @@ public final class KafkaDataLayerConstants {
     public static final String OPCODE = "OPCODE";
 
     public static final String DEFAULT_KAFKA_SUFFIX = ".topic";
+
+    private KafkaDataLayerConstants() {
+    }
 }

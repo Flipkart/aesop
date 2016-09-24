@@ -25,6 +25,9 @@ import java.util.Set;
  */
 public class DataLayerHelper
 {
+	private DataLayerHelper() {
+	}
+
 	/**
 	 * Generates a map which has non-primary fields as null.
 	 * @param fieldMap

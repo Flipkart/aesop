@@ -29,6 +29,9 @@ import com.flipkart.aesop.avro.schemagenerator.mysql.DataSourceConfig;
 
 public class SchemaGeneratorCli
 {
+	private SchemaGeneratorCli() {
+	}
+
 	public static void main(String[] commandLineArguments)
 	{
 		final CommandLineParser cmdLineGnuParser = new GnuParser();

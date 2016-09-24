@@ -33,7 +33,10 @@ import org.apache.hadoop.hbase.client.HBaseAdmin;
  * 
  */
 public class SchemaSetupMain {
-	
+
+	private SchemaSetupMain() {
+	}
+
 	public static void main(String[] args) throws Exception {
 		Configuration conf = HBaseConfiguration.create();
 		createSchema(conf);

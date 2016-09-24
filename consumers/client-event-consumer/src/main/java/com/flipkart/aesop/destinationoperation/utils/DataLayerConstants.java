@@ -26,4 +26,7 @@ public class DataLayerConstants
 	public static final String EQUALTO_AND_COLON = "=:";
 	public static final String AND = " AND ";
 	public static final String PLACEHOLDER = "?";
+
+	private DataLayerConstants() {
+	}
 }

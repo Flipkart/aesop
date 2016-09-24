@@ -16,6 +16,9 @@ public class AvroToMysqlMapper
 	/** Logger for this class */
 	private static final Logger LOGGER = LogFactory.getLogger(AvroToMysqlMapper.class);
 
+	private AvroToMysqlMapper() {
+	}
+
 	/**
 	 * Provides mapping of data from avro to mysql
 	 * @param Object value of avro data type
