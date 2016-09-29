@@ -139,6 +139,9 @@ public class MetricsCollector {
 
             Map<String,Object> map = new HashMap<String,Object>();
             map.put("producer",this.collector.producerSCN);
+            Map<String, Long> numberOfConsumers = new HashMap<String, Long>();
+            numberOfConsumers.put("numberOfConsumers", Long.parseLong(""+relay.getPeers().size()));
+            map.put("consumers", numberOfConsumers);
             // we want stats of only connected clients as known to the Relay
             Map<String,Long> connectedClientSCN = new HashMap<String,Long>();
             Map<String,Long> groupHostClient = new HashMap<String,Long>();
