@@ -57,6 +57,12 @@ public class RelayInfo {
 	public String getProducerSinceSCN() {
 		return producerSinceSCN;
 	}
+    public Long fetchProducerSinceSCNInLong() {
+        return Long.parseLong(producerSinceSCN);
+    }
+    public Long fetchProducerSinceSCNBinLong() {
+        return fetchProducerSinceSCNInLong() >> 32;
+    }
 	public void setProducerSinceSCN(String producerSinceSCN) {
 		this.producerSinceSCN = producerSinceSCN;
 	}
@@ -98,15 +104,19 @@ public class RelayInfo {
 
             if(clientHostSCN == null) {
                 clientHostSCN = new HashMap<String, Long>();
+                clientHostSCN.put("PARTITIONS", 0L);
             }
 
             if(clientHostSCN.get("MIN") == null || clientHostSCN.get("MIN") > clientSCN) {
                 clientHostSCN.put("MIN", clientSCN);
+                clientHostSCN.put("MIN-BINLOG", clientSCN >> 32);
             }
 
             if(clientHostSCN.get("MAX") == null || clientHostSCN.get("MAX") < clientSCN) {
                 clientHostSCN.put("MAX", clientSCN);
+                clientHostSCN.put("MAX-BINLOG", clientSCN >> 32);
             }
+            clientHostSCN.put("PARTITIONS", clientHostSCN.get("PARTITIONS") + 1);
 
             this.hostGroupedClient.put(
                     clientHost, clientHostSCN

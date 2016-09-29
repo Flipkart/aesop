@@ -194,7 +194,7 @@ public class MysqlAvroEventManager<T extends GenericRecord>
 		catch (RuntimeException ex)
 		{
 			LOGGER.error("Failed to serialize avro record : " + record + " Exception : " + ex.getMessage()
-			        + "  Cause: " + ex.getCause());
+			        + "  Cause: " + ex.getCause(), ex);
 			throw new EventCreationException("Failed to serialize the Avro GenericRecord", ex);
 		}
 		finally

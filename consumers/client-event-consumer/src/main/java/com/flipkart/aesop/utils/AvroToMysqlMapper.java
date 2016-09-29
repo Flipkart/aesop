@@ -44,7 +44,7 @@ public class AvroToMysqlMapper
 		{
             if (mysqlType == MysqlDataTypes.BIT || mysqlType == MysqlDataTypes.TINYTEXT
                     || mysqlType == MysqlDataTypes.MEDIUMTEXT || mysqlType == MysqlDataTypes.LONGTEXT
-                    || mysqlType == MysqlDataTypes.TEXT)
+                    || mysqlType == MysqlDataTypes.TEXT || mysqlType == MysqlDataTypes.VARCHARORTEXT)
             {
                 return new String(((java.nio.ByteBuffer) value).array());
             } else if(mysqlType == MysqlDataTypes.TINYBLOB || mysqlType == MysqlDataTypes.MEDIUMBLOB
@@ -87,7 +87,7 @@ public class AvroToMysqlMapper
 		}
 		else if (value instanceof String)
 		{
-			if (mysqlType == MysqlDataTypes.CHAR || mysqlType == MysqlDataTypes.VARCHAR)
+			if (mysqlType == MysqlDataTypes.CHAR || mysqlType == MysqlDataTypes.VARCHAR || mysqlType == MysqlDataTypes.VARCHARORTEXT)
 			{
 				return value;
 			}
@@ -103,7 +103,7 @@ public class AvroToMysqlMapper
 		}
 		else if (value instanceof Utf8)
 		{
-			if (mysqlType == MysqlDataTypes.CHAR || mysqlType == MysqlDataTypes.VARCHAR)
+			if (mysqlType == MysqlDataTypes.CHAR || mysqlType == MysqlDataTypes.VARCHAR || mysqlType == MysqlDataTypes.VARCHARORTEXT)
 			{
 				return value.toString();
 			}

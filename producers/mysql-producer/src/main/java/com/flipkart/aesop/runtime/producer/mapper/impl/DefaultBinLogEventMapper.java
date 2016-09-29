@@ -95,10 +95,16 @@ public class DefaultBinLogEventMapper<T extends GenericRecord> implements BinLog
 				        }
 			        });
 			int cnt = 0;
+            int columnsSize = columns.size();
 			for (Schema.Field field : orderedFields)
 			{
+                if (cnt < columnsSize) {
 				Column column = columns.get(cnt);
 				record.put(field.name(), column == null ? null : orToAvroMapper.orToAvroType(column));
+
+                } else {
+                    record.put(field.name(), null);
+                }
 				cnt++;
 			}
 			LOGGER.info("Mapped GenricRecord for schema " + schema.getName() + " : " + record.toString());
@@ -106,8 +112,9 @@ public class DefaultBinLogEventMapper<T extends GenericRecord> implements BinLog
 		}
 		catch (Exception e)
 		{
-			LOGGER.error("Error while mapping to DefaultBinlogEvent . Exception : " + e.getMessage() + " Cause: "
-			        + e.getCause());
+			LOGGER.error("Error while mapping to DefaultBinlogEvent . Exception : " + e.getMessage() +
+                    " Cause: " + e.getCause(), e);
+            LOGGER.error("Schema " + schema.getName() + " " + row.toString());
 		}
 		return null;
 	}
