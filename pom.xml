@@ -53,7 +53,7 @@
         <repository>
             <id>repo.fusesource.com</id>
             <name>repo.fusesource.com</name>
-            <url>http://repo.fusesource.com/maven2/</url>
+            <url>https://repo.fusesource.com/maven2/</url>
             <layout>default</layout>
         </repository>
     </repositories>
